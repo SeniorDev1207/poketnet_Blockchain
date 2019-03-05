@@ -156,30 +156,6 @@ var menu = (function(){
 				}
 			},
 
-			messenger : {
-				init : function(el){
-
-						
-				},
-
-				click : function(el){
-
-					if(!isMobile())
-						self.nav.api.go({
-							href : 'userpage?id=messenger&report=messenger',
-							history : true,
-							open : true
-						})
-					else
-						self.nav.api.load({
-							href : 'messenger',
-							history : true,
-							open : true
-						})
-
-				}
-			},
-
 			savecross : {
 				init : function(el){
 

@@ -17,8 +17,6 @@ const Badge = require('./js/vendor/electron-windows-badge.js');
 const { autoUpdater } = require("electron-updater");
 const log = require('electron-log');
 
-var updatesLoading = false;
-
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
@@ -27,28 +25,25 @@ function Log(text) {
 }
 
 autoUpdater.on('checking-for-update', () => {
-    win.webContents.send('updater-message', { msg: 'checking-for-update', type : 'info', ev : ev })
+    Log('Checking for update...');
 })
-autoUpdater.on('update-available', (ev) => {
-
-    updatesLoading = true
-
-    win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : ev })
+autoUpdater.on('update-available', (info) => {
+    Log('Update available.');
 })
-autoUpdater.on('update-not-available', (ev) => {
-    win.webContents.send('updater-message', { msg: 'update-not-available', type : 'info', ev : ev })
+autoUpdater.on('update-not-available', (info) => {
+    Log('Update not available.');
 })
 autoUpdater.on('error', (err) => {
-    win.webContents.send('updater-message', { msg: `${err}`, type : 'error' })
+    Log('Error in auto-updater. ' + err);
 })
 autoUpdater.on('download-progress', (progressObj) => {
-    win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : progressObj })
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    Log(log_message);
 })
 autoUpdater.on('update-downloaded', (info) => {
-
-    updatesLoading = false
-    
-    mainWindow.webContents.send('updater-message', { msg : 'update-downloaded', type : 'info', ev : ev })
+    Log('Update downloaded');
 });
 //---------------------------------------------------
 
@@ -168,11 +163,7 @@ function initApp() {
     createTray();
 
     log.info('First check updates...');
-
-    autoUpdater.checkForUpdates()
-
-
-   // autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdatesAndNotify();
 }
 
 function closeNotification() {

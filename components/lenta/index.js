@@ -1746,15 +1746,7 @@ var lenta = (function(){
 
 									var w = _w * (_img.width / _img.height);
 
-									if (w > images.width()){
-										w = images.width()
-
-										h = w * ( _img.height / _img.width) 
-
-										el.height(h);
-									}
-
-									el.width(w);
+									el.width(_w * (_img.width / _img.height));
 								}
 
 								if(_img.height > _img.width * 1.2 || isMobile()){
@@ -1787,7 +1779,7 @@ var lenta = (function(){
 								clbk()
 						}
 
-						if(!isMobile() && s.settings.v != 'a' && image.images.length > 1){
+						if(!isMobile() && s.settings.v != 'a'){
 							images.isotope({
 
 								layoutMode: 'packery',
