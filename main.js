@@ -26,7 +26,7 @@ function Log(text) {
     log.info(text);
 }
 
-autoUpdater.on('checking-for-update', (ev) => {
+autoUpdater.on('checking-for-update', () => {
     win.webContents.send('updater-message', { msg: 'checking-for-update', type : 'info', ev : ev })
 })
 autoUpdater.on('update-available', (ev) => {
@@ -41,8 +41,8 @@ autoUpdater.on('update-not-available', (ev) => {
 autoUpdater.on('error', (err) => {
     win.webContents.send('updater-message', { msg: `${err}`, type : 'error' })
 })
-autoUpdater.on('download-progress', (ev) => {
-    win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : ev })
+autoUpdater.on('download-progress', (progressObj) => {
+    win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : progressObj })
 })
 autoUpdater.on('update-downloaded', (ev) => {
 
@@ -169,11 +169,10 @@ function initApp() {
 
     log.info('First check updates...');
 
-    autoUpdater.checkForUpdates();
-    
-    setTimeout(() => {
-        autoUpdater.checkForUpdates();
-    }, 10*60*1000);
+    autoUpdater.checkForUpdates()
+
+
+   // autoUpdater.checkForUpdatesAndNotify();
 }
 
 function closeNotification() {
@@ -237,7 +236,7 @@ function createWindow() {
 
     win.loadFile('index_el.html')
 
-    //win.webContents.openDevTools()
+    win.webContents.openDevTools()
 
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault();
