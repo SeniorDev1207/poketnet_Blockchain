@@ -43,11 +43,13 @@
     },
     "build": {
         "productName": "Pocketnet",
-        "publish": [{
-            "provider": "github",
-            "owner": "pocketnetapp",
-            "repo": "pocketnet.gui"
-        }],
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "pocketnetapp",
+                "repo": "pocketnet.gui"
+            }
+        ],
         "nsis": {
             "artifactName": "${productName}Setup.${ext}",
             "oneClick": false,
@@ -58,10 +60,8 @@
             "menuCategory": true,
             "installerIcon": "assets/icons/win/icon.ico",
             "uninstallerIcon": "assets/icons/win/icon.ico",
-            "uninstallDisplayName": "${productName}, v${version}",
             "deleteAppDataOnUninstall": true,
-            "license": "LICENSE",
-            "include": "build/installer.nsh"
+            "license": "license.txt"
         },
         "mac": {
             "icon": "assets/icons/mac/icon.icns"
