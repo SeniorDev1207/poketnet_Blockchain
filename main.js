@@ -230,11 +230,8 @@ function createWindow() {
         height: mainScreen.size.height,
         /*frame: false, */
         //fullscreen : true,
-        title: "Pocketnet",
-        show: false
-    });
-    win.maximize();
-    win.show();
+        title: "Pocketnet"
+    })
 
     Menu.setApplicationMenu(null)
 
@@ -279,6 +276,12 @@ function createWindow() {
         }
 
         closeNotification()
+
+    })
+
+    ipcMain.on('quitAndInstall', function(e) {
+
+        autoUpdater.quitAndInstall()
 
     })
 
