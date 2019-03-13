@@ -3,16 +3,11 @@ var platformRTC = function(p){
 
 	if(!p) p = {};
 
-	var user = p.user || {};
+	var user = p.user || null;
 	var platform = p.platform || null;
 	var deviceModificator = hash_32b_to_16b(hashFnv32a(makeid()))
 
-
-		user.id = (user.device || '') + deviceModificator
-
 	var peers = {};
-
-
 
 	var configuration = { 
 		"iceServers": [
@@ -200,30 +195,6 @@ var platformRTC = function(p){
 			}
 		}
 
-		self.get = {
-			relayed : function(clbk){
-
-				ajax({
-					action : "relayed.address",
-					data : {
-						address : user.address
-					},
-
-					success : function(d){
-
-						if (clbk)
-							clbk(d.data)
-					},
-
-					fail : function(){
-						if (clbk)
-							clbk(null)
-					}
-				})
-
-			}
-		}
-
 		return self;
 	}
 
@@ -240,7 +211,19 @@ var platformRTC = function(p){
 			negotiated : true
 		}; 
 
-		
+		var channelid = function(){
+
+			var ids = [self.peer.user.id, user.id];
+
+				ids = _.sortBy(ids);
+
+			var str = _.reduce(ids, function(m, id){
+				return m + "" + id
+			}, '')
+
+			return hash_32b_to_16b(hashFnv32a(str))
+		}
+
 		var channelEvents = {
 			receiveSyncRequest : function(message, chatid){
 
@@ -313,6 +296,7 @@ var platformRTC = function(p){
 
 		self.init = function(c){
 
+			//dataChannelOptions.id = channelid()
 
 			//'messenger', dataChannelOptions
 
@@ -419,7 +403,6 @@ var platformRTC = function(p){
 			},
 
 			relay : function(m, chatid, addresses){
-				
 				var message = JSON.stringify({
 
 					message : m,
@@ -428,7 +411,8 @@ var platformRTC = function(p){
 					relay : 1
 
 				})
-				
+
+				self.c.send(message)
 			}
 		}
 
@@ -518,6 +502,8 @@ var platformRTC = function(p){
 
 				    }); 
 						
+				    
+						
 				}, function (error) { 
 				    console.log("answer error", error)
 				});
@@ -529,10 +515,9 @@ var platformRTC = function(p){
 		self.close = function(id){			
 			
 			delete self.chats[id]
+			delete self.relay[id]
 
-			if(id == 'relay') self.relay = null;
-
-			if(_.isEmpty(self.chats) && !self.relay){
+			if(_.isEmpty(self.chats) && _.isEmpty(self.relay)){
 
 				self.channel.close()
 
@@ -572,44 +557,14 @@ var platformRTC = function(p){
 		}
 
 		self.relaySend = function(message, chatid){
+			//self.relay.messages.get();
+
 			self.channel.api.relay(message, chatid, self.relay.users)
-		}
-
-		self.relayToReciever = function(id){
-
-			/*self.relay
-
-			self.channel.api.relay(message, chatid, self.relay.users)*/
+			
 		}
 
 		return self;
 	}
-
-	/*var relayedRTC = function(id, chatid, from){
-		var self = this;
-
-			self.peer = null;
-			self.id = device;
-
-		self.peer = function(user, events){	
-
-			peers[user.id] || (peers[user.id] = new peerRTC(user, events))	
-
-			self.peer = peers[user.id]
-			self.peer.events = events
-			self.peer.init()
-
-			self.linkPeer(self.peer)
-
-		    return peer
-		}
-
-		self.linkPeer = function(peer){
-			peer.relayed = self
-		}
-
-		return self;
-	}	*/
 
 	var relayRTC = function(device, offlineUsers, events){
 		var self = this;
@@ -638,6 +593,12 @@ var platformRTC = function(p){
 					a : addresses
 				})
 
+				/*_.each(addresses, function(address){
+					storages[chatid][address] || (storages[chatid][address] = new MessageStorage({id : chatid + address});)
+				
+
+				})*/
+
 				if (events.add){
 					events.add(chatid, addresses)
 				}
@@ -652,14 +613,9 @@ var platformRTC = function(p){
 			self.peer = peers[user.id]
 			self.peer.events = events
 			self.peer.init()
-
-			self.linkPeer(self.peer)
+			self.peer.relay = self
 
 		    return peer
-		}
-
-		self.linkPeer = function(peer){
-			peer.relay = self
 		}
 
 		self.users = offlineUsers || []
@@ -717,16 +673,12 @@ var platformRTC = function(p){
 			    peer.events = events
 			    peer.init()
 
+			   	peer.chats[self.id] = self
 
-		    self.linkPeer(peer, user.id)
+		    self.peers[user.id] = peer
+
 
 		    return peer
-		}
-
-		self.linkPeer = function(peer, id){
-			peer.chats[self.id] = self
-
-		    self.peers[id] = peer
 		}
 
 		self.sync = function(){
@@ -751,7 +703,7 @@ var platformRTC = function(p){
 			})
 
 			if (events.send){
-				events.send(message.tm + message.f)
+				events.send()
 			}
 
 			_.each(self.clbks.send.message || {}, function(c){
@@ -801,13 +753,9 @@ var platformRTC = function(p){
 			}
 		}
 
-		self.get = {
-			message : function(id){
-				return self.storage.GetMessage(id);
-			}
-		}
-
 		self.close = function(){
+
+			console.log("CLOSECHAT")
 
 			_.each(self.peers, function(p){
 
@@ -837,8 +785,6 @@ var platformRTC = function(p){
 			self.chats = {};
 
 			self.relay = {};
-
-			self.relayed = {};
 
 			self.clbks = {};
 
@@ -883,118 +829,6 @@ var platformRTC = function(p){
 			}
 		}
 
-		var relayed = {
-			relay : function(data){
-
-				if(!self.relay[data.id]){
-
-					relays.create(data.id, [])
-
-				}
-
-				var peer = peers[data.id]
-
-				if(!peer){
-					peer = self.relay[data.id].peer({
-
-						id : data.id,
-						address : data.address
-
-					}, {
-						candidate : function(candidate){
-
-							send({ 
-				               	type: "candidate", 
-				               	candidate: candidate,
-				               	id : data.id
-				            });
-
-						},
-
-						offer : function(offer){
-							send({ 
-						        type: "offer", 
-						        id : data.id,
-						        offer : offer,
-
-						        relay : user.id,
-
-						        getRelay : true
-						    }); 
-						}
-					})
-
-					peer.offer()
-
-				}
-
-				return self.relayed[id]
-			},
-			direct : function(data){
-				var chs = []
-
-				var chatids = []
-
-				_.each(data.chats, function(chat){
-					var ch = chats.create(chat.chatid, chat.addresses)
-
-						chs.push(ch)
-						chatids.push(ch.id)
-
-				    _.each(clbks.chat || {}, function(c){
-				    	c(data, ch)
-				    })
-
-				})
-			    	
-			    if (chs.length){
-
-			    	var peer = peers[data.id]
-
-					_.each(chs, function(ch){
-
-						if(!peer){
-							peer = ch.peer({
-
-								id : data.id,
-								address : data.address
-
-							}, {
-								candidate : function(candidate){
-
-									send({ 
-						               	type: "candidate", 
-						               	candidate: candidate,
-						               	id : data.id
-						            });
-								},
-
-								offer : function(offer){
-									send({ 
-								        type: "offer", 
-								        id : data.id,
-								        offer : offer,
-								        chatid : chs[0].id
-								    }); 
-								}
-							})
-
-							peer.offer()
-						}
-						else
-						{
-							ch.linkPeer(peer, data.id)
-						}
-
-
-						peer.sync(chat.id)
-					})
-					
-
-			    }
-			}
-		}
-
 		var relays = {
 			create : function(id, offlineUsers){
 
@@ -1015,7 +849,7 @@ var platformRTC = function(p){
 					})
 				}
 
-				return self.relay[id]
+				return self.chats[id]
 			},
 
 			close : function(id){
@@ -1023,9 +857,7 @@ var platformRTC = function(p){
 				if(!self.relay[id]) return
 
 				self.relay[id].close()
-			},
-
-			
+			}
 		}
 
 		var chats = {
@@ -1034,11 +866,10 @@ var platformRTC = function(p){
 				if(!self.chats[id]){
 
 					self.chats[id] = new chatRTC(id, addresses, {
-						send : function(mid){
+						send : function(){
 							send({
 								type : 'message',
-								chatid : id,
-								id : mid
+								chatid : id
 							})
 						},
 
@@ -1114,7 +945,6 @@ var platformRTC = function(p){
 				if (chat){
 
 					if(!peer){
-
 						peer = chat.peer({
 
 							id : data.id,
@@ -1141,11 +971,6 @@ var platformRTC = function(p){
 						})
 
 						peer.offer()
-
-					}
-					else
-					{
-						chat.linkPeer(peer, data.id)
 					}
 
 					
@@ -1197,12 +1022,8 @@ var platformRTC = function(p){
 					if (data.chatid){
 						context = self.chats[data.chatid]
 					}
-
-					if (data.relay)
+					else
 					{
-
-						relays.create(data.relay, data.offline)
-
 						context = self.relays[data.id]
 					}
 
@@ -1238,22 +1059,13 @@ var platformRTC = function(p){
 							        id : data.id 
 							    }); 
 							}
-						})						
+						})
 
-					}
-					else
-					{
-						context.linkPeer(peer, data.id)
-					}
+						peer.answer(data.offer)
 
-					peer.answer(data.offer)
-
-					if (data.chatid){
-						peer.sync(data.chatid)
-					}
-
-					if (data.relay && data.get){
-						peer.relayToReciever(data.id)
+						if (data.chatid){
+							peer.sync(data.chatid)
+						}
 
 					}
 
@@ -1349,17 +1161,19 @@ var platformRTC = function(p){
 							        id : user.id,
 							        offer : offer,
 
-							        relay : user.device
+							        relayid : user.device
 							    }); 
 							}
 						})
 
 						peer.offer()
 
+
 					}
 
-					peer.relaySend(chats[data.chatid].getMessage(data.id), data.chatid) // + messages
+					peer.relaySend(data.chatid) // + messages
 						
+
 				})
 
 				
@@ -1481,56 +1295,17 @@ var platformRTC = function(p){
 		}
 
 		self.api = {
-			getRelayed : function(clbk){
-				self.rtchttp.get.relayed(function(relayed){
-					if(relayed){
-
-						lazyEach({
-							array : relayed.direct || [],
-							action : function(p){
-								var direct = p.item;
-
-								p.success();
-							},
-
-							all : {
-								success : function(){
-									lazyEach({
-										array : relayed.relay || [],
-										action : function(p){
-											var relay = p.item;
-
-											p.success();
-										},
-
-										all : {
-											success : function(){
-												if (clbk)
-													clbk()
-											}
-										}
-									})
-								}
-							}
-						})
-
-						
-
-					}
-				})
-			},	
 			login : function(clbk){
 				if (user){
 
 					send({ 
 
 				        type: "login", 
-				        device: user.device,
-				        id : user.id,
+				        id: user.id,
 				        address : user.address,
 				        signature : user.signature,
 				        publicKey : user.publicKey,
-				       // deviceModificator : deviceModificator
+				        deviceModificator : deviceModificator
 
 				    });
 

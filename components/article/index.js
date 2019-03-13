@@ -199,7 +199,7 @@ var article = (function(){
 				}
 			},
 			changecaption : function(){
-				var v = $(this).val()
+				var v = $(this).html()
 
 				actions.changecaption(v)
 				
@@ -246,7 +246,7 @@ var article = (function(){
 			
 			art : function(art, clbk){
 
-				el.caption.value(art.caption.value)
+				el.caption.html(art.caption.value)
 
 				
 			}

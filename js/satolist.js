@@ -136,23 +136,6 @@ Platform = function(app){
 		],
 	}
 
-	self.applications = {
-		windows : {
-			text : {
-				name : "Windows",
-				download : 'Download Desktop App - this is the most censorship resistant way to use Pocketnet. Even if websites are shut down, desktop application will still run directly through the nodes.',
-				label : "Download Pocketnet for Windows"
-			},
-
-			icon : '<i class="fab fa-windows"></i>',
-
-			github : {
-				name : "PocketnetSetup.exe",
-				url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest'
-			} 
-		}
-	}
-
 	self.currnetBlock = 0;
 
 	self.errorHandler = function(key, action, akey){
@@ -1973,75 +1956,6 @@ Platform = function(app){
 					}
 
 				})
-			},
-
-			addressByName : function(name, clbk){
-
-
-				var valid = true;
-
-				try{
-					bitcoin.address.fromBase58Check(name)
-				}
-
-				catch (e){
-					valid = false;
-				}
-
-				if (valid){
-					if (clbk)
-						clbk(name)
-				}
-				else
-				{
-
-					console.log('name', name)
-
-					self.app.ajax.rpc({
-						method : 'getuseraddress',
-						parameters : [name],
-						success : function(d){
-
-
-							var r = deep(d, '0.address');
-
-							if (clbk)
-								clbk(r || null)
-						},
-						fail : function(){
-
-							if (clbk){
-						    	clbk(null, 'network')
-						    }
-
-						}
-					})
-				}
-
-			},
-
-			nameExist : function(name, clbk){
-
-				self.app.ajax.rpc({
-					method : 'getuseraddress',
-					parameters : [name],
-					success : function(d){
-
-
-						var r = deep(d, '0.address');
-
-						if (clbk)
-							clbk(r || false)
-					},
-					fail : function(){
-
-						if (clbk){
-					    	clbk(false)
-					    }
-
-					}
-				})
-
 			}
 		},
 		wallet : {
@@ -2991,7 +2905,12 @@ Platform = function(app){
 					self.app.user.isState(function(state){
 
 
-					
+						if(!state){
+							if (clbk)
+								clbk([], 'state', p)
+						}
+						else
+						{
 							p.count || (p.count = '30')
 
 							var storage = self.sdk.node.shares.storage
@@ -3024,6 +2943,7 @@ Platform = function(app){
 
 								}, 'gethotposts')
 							}
+						}
 
 					})
 				},
@@ -4645,7 +4565,7 @@ Platform = function(app){
 				var signature = keyPair.sign(Buffer.from(bitcoin.crypto.hash256(id), 'utf8'));	
 
 				var user = {
-					device : id,
+					id : id,
 					address : address,
 					signature : signature.toString('hex'),
 					publicKey : keyPair.publicKey.toString('hex'),
@@ -4698,8 +4618,6 @@ Platform = function(app){
 							})
 							
 						}
-
-						self.clientrtc.api.getRelayed()
 
 					})
 				})
@@ -7500,29 +7418,19 @@ Platform = function(app){
 	self.nodes = [
 
 		{
-			full : '216.108.237.11:58081',
+			full : '216.108.237.11:38081',
 			host : '216.108.237.11',
-			port : 58081,
+			port : 38081,
 			ws : 8080,
 			path : '',
-			
+			user : 'user',
+			pass : 'secret-password',
 
 			name : 'lasvegas'
 
 		},
 
 		{
-			full : '216.108.237.11:58081',
-			host : '216.108.237.11',
-			port : 58081,
-			ws : 8080,
-			path : '',
-
-			name : 'lasvegas'
-
-		},
-
-		/*{
 			full : '84.52.69.110:48081',
 			host : '84.52.69.110',
 			port : 48081,
@@ -7532,7 +7440,7 @@ Platform = function(app){
 			pass : 'secret-password',
 
 			name : 'spb1'
-		},*/
+		},
 
 
 		/*{
@@ -7547,7 +7455,7 @@ Platform = function(app){
 
 
 
-		/*{
+		{
 			full : '185.148.147.15:38081',
 			host : '185.148.147.15',
 			port : 38081,
@@ -7557,9 +7465,9 @@ Platform = function(app){
 			pass : 'secret-password',
 
 			name : 'pocketnet.app' 
-		},*/
+		},
 
-		/*{
+		{
 			full : '216.108.237.11:38081',
 			host : '216.108.237.11',
 			port : 38081,
@@ -7569,7 +7477,7 @@ Platform = function(app){
 			pass : 'secret-password',
 
 			name : 'pocketnet.app' 
-		},*/
+		},
 
 
 	]
@@ -7661,18 +7569,17 @@ Platform = function(app){
 
 					var href = self.app.nav.get.href()
 
-					if (href != 'registration' && href != 'authorization' && href != 'video'){
+					if (href != 'registration' && href != 'authorization'){
 
-						
+						localStorage['popupsignup'] = 'showed'
 
-						var h = '<div class="dimage" image="img/mainbgsmall.jpg"><div class="ppheader"><div class="table"><div>Go ahead and become a crypto pioneer!</div></div></div></div>';
+						var h = '<div class="ppheader">Go ahead and become a crypto pioneer!</div>';
 
-						var d = dialog({
+						dialog({
 							html : h,
-							class  :'popupsignup',
+							class  :'one popupsignup',
 
-							btn1text : 'Join Pocketnet & Earn Pocketcoin Now',
-							btn2text : 'Watch Video',
+							btn1text : 'Join Pocketnet Now & Network on the Blockchain',
 
 							success : function(){
 								
@@ -7682,17 +7589,8 @@ Platform = function(app){
 									href : 'registration',
 									history : true
 								})
-							},
-
-							fail : function(){
-								self.app.nav.api.load({
-									open : true,
-									href : 'video',
-									history : true
-								})
 							}
 						})
-
 
 					}
 
@@ -7778,19 +7676,17 @@ Platform = function(app){
 		}
 	}
 
-	self.prepareApi = function(clbk, u){
+	self.prepareApi = function(clbk){
 
 		self.rpc = {};
 
 
 		_.each(self.nodes, function(n, i){
 
-			console.log('u', u)
-
 			var config = {
 			    protocol: 'http',
-			    user: u.user,
-			    pass: u.pass,
+			    user: n.user,
+			    pass: n.pass,
 			    host: n.host,
 			    port: n.port,
 			};

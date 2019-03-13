@@ -58,37 +58,6 @@ var registration = (function(){
 		})
 
 		var actions = {
-			download : function(clbk){
-				if (current.os){
-
-					if(current.os.github){
-
-						$.get(current.os.github.url, {}, function(d){
-
-							var assets = deep(d, 'assets') || [];
-
-							var l = _.find(assets, function(a){
-								return a.name == current.os.github.name
-							})
-
-							if (l){
-								var link = document.createElement('a');
-							        link.setAttribute('href', l.browser_download_url);
-							        link.setAttribute('download','download');
-							        link.click();
-
-							    if (clbk)
-									clbk(l.browser_download_url)
-							}
-
-							
-
-						})
-
-					}
-
-				}
-			},
 			validation : function(){
 
 				var v  = trim(keyInput.value)
@@ -282,13 +251,6 @@ var registration = (function(){
 				actions.repeat()
 			},
 
-			download : function(){
-				actions.download(function(link){
-					el.c.find('.osStep').addClass('rundownloading')
-					el.c.find('.skipositem').html('<div class="downloadstart">Continue registration in Application</div>')
-				})
-			}
-
 			 
 			
 		}
@@ -298,35 +260,6 @@ var registration = (function(){
 		}
 
 		var renders = {
-
-			os : function(clbk){
-				var _os = os();
-
-				console.log('os', _os)
-
-				if (_os && self.app.platform.applications[_os] && typeof _Electron == 'undefined' && !window.cordova){
-
-					current.os = self.app.platform.applications[_os]
-
-					renders.step('os', function(p){
-						p.el.find('.downloadOs').on('click', events.download)
-
-						p.el.find('.skip').on('click', function(){
-							if (clbk)
-								clbk()
-						})
-
-						
-					})
-
-				}
-
-				else
-				{
-					clbk();
-				}
-			},
-
 			step : function(name, clbk){
 
 				self.shell({
@@ -632,10 +565,8 @@ var registration = (function(){
 		}
 
 		var make = function(){
-
-			renders.os(function(){
-				renders.tips()
-			})
+			
+			renders.tips()
 
 			
 		}

@@ -77,95 +77,60 @@ var handles = {
 			}
 		},
 
-		relayed : {
-			address : {
-				action : function(connect){
-					var a = connect.parameters.address;
-					var r = connect.relay;
+		relay : {
+			address : function(){
+				var a = connect.parameters.address;
+				var r = connect.relay;
 
-					var result = {
-						direct : [],
-						relay : []
-					}
-
-					if (r[a]){
-						_.each(r[a], function(chats, from){
-
-							if(connect.users[from]){
-
-								var rchats = _.map(chats, function(c, k){
-
-									if(connect.chats[k]){
-										return {
-											chatid : k,
-											addresses : connect.chats[k].allow
-										}
-									}
-									else
-									{
-										return null;
-									}
-
-									
-								})
-
-								rchats = _.filter(rchats, function(r) {return r})
-
-
-								result.direct.push({
-									id : from,
-									address : connect.users[from].address,
-									chats : rchats
-								})
-
-							}
-
-							else
-							{
-								_.each(chats, function(devices, chatid){
-
-									var online = {}
-
-									_.each(devices, function(number, device){
-
-										if(!_.isEmpty(p.connect.devices[device])){
-
-											online[device] = {
-												number : number,
-												id : p.connect.devices[device],
-												address : p.connect.users[p.connect.devices[device]].address
-											}
-										}
-
-									})
-
-									if(!_.isEmpty(online)){
-
-										var candidate = _.max(online, function(d){
-											return d.number
-										})
-
-										candidate.chatid = chatid
-										candidate.from = from
-
-										result.relay.push(candidate)
-
-									}
-
-									
-
-
-									/// connect with candidate
-
-								})
-							}
-
-						})
-					}
-
-					response(null, result, connect)
-					
+				var result = {
+					direct : [],
+					relay : []
 				}
+
+				if (r[a]){
+					_.each(r[a], function(chats, from){
+
+						if(connect.users[from]){
+
+							result.direct.push({
+								id : from,
+								chatid : _.map(chats, function(c, k){
+									return k
+								})
+							})
+
+						}
+
+						else
+						{
+							_.each(chats, function(devices, chatid){
+
+								var online = {}
+
+								_.each(devices, function(number, device){
+
+									if(!_.isEmpty(p.connect.devices[device])){
+										online[device] = {
+											number : number,
+											devices : p.connect.devices[device]
+										}
+									}
+
+								})
+
+								var candidate = _.max(online, function(d){
+									return d.number
+								})
+
+
+								/// connect with candidate
+
+							})
+						}
+
+					})
+				}
+				
 			}
 		}
 

@@ -137,19 +137,19 @@
 
                     } else { 
                         //save user connection on the server 
-                        user = users[data.id] = new User({
+                        user = users[data.id + data.deviceModificator] = new User({
 
                             connection : connection,
                             address :  data.address,
-                            id : data.id,
-                            device : data.device
+                            id : data.id + data.deviceModificator,
+                            device : data.id
 
                         })
 
-                        devices[user.device] || (devices[user.device] = {})
-                        devices[user.device][user.id] = true
+                        devices[data.id] || (devices[data.id] = {})
+                        devices[data.id][user.id] = true
 
-                        user.usersListIndex = usersList.push(user.id) - 1
+                        user.usersListIndex = usersList.push(user.id)
 
                         addresses[data.address] || (addresses[data.address] = new Address({
                             address : data.address
@@ -313,8 +313,7 @@
                                 success: false,
                                 offline : r.offline,
                                 online : online,
-                                chatid : chat.id,
-                                id : data.id
+                                chatid : chat.id
                             }); 
 
                         }
@@ -470,28 +469,15 @@
                             
                             connection.others[data.id] = users[data.id]
 
-                            var message = { 
+                            send.to(conn, { 
                                 success: true,
                                 type: "offer", 
                                 offer: data.offer, 
                                 id: user.id,
                                 address : user.address,
                                 
-                            }
-
-                            if (data.chatid){
-                                message.chatid = data.chatid
-                            }
-
-                            if (data.relay){
-                                message.relay = data.relay                                
-                            }
-
-                            if (data.get){
-                                message.get = data.get
-                            }
-
-                            send.to(conn, message); 
+                                chatid : data.chatid
+                            }); 
                         } 
                     }
                         
@@ -605,18 +591,16 @@
 
                     //remove from online
                     address.devices.remove(connection.id)
-                    
+                 
 
-                console.log('usersList', usersList)
-
-                usersList.splice(user.usersListIndex, 1) 
+                usersList.spice(user.usersListIndex, 1) 
 
                 delete users[connection.id];
                 delete user;
 
-                delete devices[user.device][user.id]
+                delete devices[data.id][user.id]
 
-                if(_.isEmpty(devices[user.device])) delete devices[user.device]
+                if(_.isEmpty(devices[data.id])) delete devices[data.id]
 
                 _.each(connection.others, function(i, id){
 

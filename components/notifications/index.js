@@ -29,24 +29,22 @@ var notifications = (function(){
 
 					seenTimer = slowMade(function(){
 						
-						/*var inv = inView(els, {
+						var inv = inView(els, {
 							inel : inel,
 							offset : 100,
 							mode : 'part',
 							f : f
 						})
 
-						console.log('inv.length', inv.length) */
+						if (inv.length > 0){
 
-						if (els.length > 0){
+							var ids = _.map(inv, function(el){
 
-							var ids = [];
+								var e = $(el)
 
-							els.addClass('seen')
+								e.addClass('seen')
 
-							els.each(function(){
-
-								ids.push($(this).attr('notification'))
+								return e.attr('notification')
 							})
 
 							self.app.platform.sdk.notifications.seen(ids)
