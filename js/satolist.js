@@ -7278,6 +7278,8 @@ Platform = function(app){
 			}
 
 			self.events[roomid] = {}
+
+            if (clbk) clbk();
 		}
 
 		self.destoryAll = function(){
@@ -7305,10 +7307,10 @@ Platform = function(app){
 	self.currentTimeSS = function(){
 		var created = new Date()
 
-		/*if (self.timeDifference){
+		if (self.timeDifference){
 
 			created.addSeconds(self.timeDifference)
-		}*/
+		}
 
 		return dateToStrUTCSS(created)
 	}
@@ -8338,45 +8340,42 @@ Platform = function(app){
 			if(!state && typeof _Electron == 'undefined' && !window.cordova && !localStorage['popupsignup']){
 				setTimeout(function(){
 
-					var href = self.app.nav.get.href();
+					var href = self.app.nav.get.href()
 
-					self.app.user.isState(function(state){
+					if (href != 'registration' && href != 'authorization' && href != 'video'){
 
-						if (!state && href != 'registration' && href != 'authorization' && href != 'video'){
+						
 
-							
+						var h = '<div class="dimage" image="img/mainbgsmall.jpg"><div class="ppheader"><div class="table"><div>Go ahead and become a crypto pioneer!</div></div></div></div>';
 
-							var h = '<div class="dimage" image="img/mainbgsmall.jpg"><div class="ppheader"><div class="table"><div>Go ahead and become a crypto pioneer!</div></div></div></div>';
+						var d = dialog({
+							html : h,
+							class  :'popupsignup',
 
-							var d = dialog({
-								html : h,
-								class  :'popupsignup',
+							btn1text : 'Join Pocketnet & Earn Pocketcoin Now',
+							btn2text : 'Watch Video',
 
-								btn1text : 'Join Pocketnet & Earn Pocketcoin Now',
-								btn2text : 'Watch Video',
+							success : function(){
+								
 
-								success : function(){
-									
+								self.app.nav.api.load({
+									open : true,
+									href : 'registration',
+									history : true
+								})
+							},
 
-									self.app.nav.api.load({
-										open : true,
-										href : 'registration',
-										history : true
-									})
-								},
-
-								fail : function(){
-									self.app.nav.api.load({
-										open : true,
-										href : 'video',
-										history : true
-									})
-								}
-							})
+							fail : function(){
+								self.app.nav.api.load({
+									open : true,
+									href : 'video',
+									history : true
+								})
+							}
+						})
 
 
-						}
-					})
+					}
 
 				}, 90000)
 			}
@@ -8413,9 +8412,7 @@ Platform = function(app){
 
 						self.sdk.user.get(function(u){
 
-							console.log("UUUU", u)
-
-							if(Number(u.postcnt) > 0)
+							if(u.postcnt > 0)
 
 								setTimeout(function(){
 									self.sdk.user.survey()

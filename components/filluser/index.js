@@ -30,15 +30,7 @@ var filluser = (function(){
 
 						clbk()
 						
-						self.sdk.users.requestFreeMoney(function(res, err){
-
-							self.app.platform.sdk.node.transactions.clbks.filluser = function(){
-
-								self.app.platform.sdk.node.transactions.get.allBalance()
-								
-							}
-							
-						})
+						self.sdk.users.requestFreeMoney(function(res, err){})
 					}
 					
 					
@@ -136,7 +128,7 @@ var filluser = (function(){
 						}
 					})
 
-					skip.one('click', function(){
+					skip.on('click', function(){
 
 						self.app.platform.m.log('userwisard_email_skip')
 
@@ -411,7 +403,7 @@ var filluser = (function(){
 			after : steps.money.after
 		}
 
-		var current = -1, nextBlock = false;
+		var current = -1;
 
 		var arrange = ['email', 'money', 'settings', 'welcome', 'network', 'moneym']
 
@@ -421,16 +413,9 @@ var filluser = (function(){
 				actions.makeStep(clbk)
 			},
 			next : function(clbk){
-
-				if(nextBlock) return 
-
 				current++;
 
-				actions.makeStep(function(){
-
-					
-
-				})
+				actions.makeStep(clbk)
 			},
 
 			makeStep : function(clbk){
@@ -442,7 +427,6 @@ var filluser = (function(){
 					step.prev(function(){
 
 						if(!el.c){
-
 							return
 						}
 
@@ -463,9 +447,6 @@ var filluser = (function(){
 
 					})
 
-				}
-				else
-				{
 				}
 
 					
@@ -749,14 +730,14 @@ var filluser = (function(){
 					steps : steps
 				};
 
-				if(!self.app.user.validate()){
+				//if(!self.app.user.validate()){
 
 					self.fastTemplate('panel', function(rendered){
 						
 						clbk(data);
 
 					})
-				}
+				/*}
 				else
 				{
 					self.app.nav.api.load({
@@ -764,7 +745,7 @@ var filluser = (function(){
 						href : 'index',
 						history : true
 					})
-				}
+				}*/
 
 				
 

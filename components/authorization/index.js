@@ -21,8 +21,6 @@ var authorization = (function(){
 			essenseData,
 			initialParameters;
 
-		//var codeReader = new ZXing.BrowserQRCodeReader();
-
 		var stayH = function(){
 
 			console.log('stayH')
@@ -33,8 +31,6 @@ var authorization = (function(){
 			self.app.user.stay = 0;
 
 		}
-
-
 
 		var stay = new Parameter({
 
@@ -204,37 +200,10 @@ var authorization = (function(){
 						
 
 						grayscaleImage(file.base64, function(image){
-							
-							/*var i = new Image()
 
-								i.src = image
-
-								i.onload = function(){
-									try {
-							            
-							            codeReader.decodeFromImage(i).then(function(result){
-							            	console.log('result', result)
-							            });
-
-							            
-
-							        } catch (err) {
-							            console.error(err);
-							        }
-
-
-							        
-								}
-
-
-							return	*/
-
-
-							qrscanner.q.debug = true
 
 							qrscanner.q.callback = function(data){
 
-								console.log(data)
 
 								if(data == 'error decoding QR Code'){
 									sitemessage(self.app.localization.e('filedamaged'))

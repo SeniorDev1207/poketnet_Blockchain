@@ -38,22 +38,6 @@ nModule = function(){
 
 					if(state)
 					{
-						if(!self.user.validate()){
-							var href = deep(self, "map.redirect.validate");
-
-							if (href){
-
-								self.redirect(p, href)
-
-								clbk(false)
-
-								return
-
-							}
-
-						}
-						
-
 						clbk(true)
 					}
 					else
