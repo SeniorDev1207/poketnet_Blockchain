@@ -294,16 +294,7 @@ var test = (function(){
 					tempInfo[parameter.id] = parameter.value
 
 					parameter._onChange = function(value){
-
-						if(id == 'addresses'){
-							tempInfo[parameter.id] = value;
-						}
-						else
-						{
-							tempInfo[parameter.id] = trim(value);
-						}
-
-						
+						tempInfo[parameter.id] = trim(value);
 
 						actions.upanel()
 
