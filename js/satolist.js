@@ -426,6 +426,12 @@ Platform = function(app){
 
 
 	self.parseUrl = function(url){
+
+
+		url = url.replace("http:", "https:").replace("http//", "https://")
+
+		console.log('parseUrl', url)
+
 		var meta = parseVideo(url);
 
 		var _url = null;
@@ -3464,15 +3470,9 @@ Platform = function(app){
 
 					var inputs = [];
 
-					console.log(t)
-
 					_.each(t, function(ts){
 
-						console.log("tsts", ts)
-
 						_.each(ts, function(alias){
-
-							console.log("ALIAS", alias)
 
 							if(alias.inputs){
 
@@ -3556,8 +3556,6 @@ Platform = function(app){
 						
 					
 					})
-
-					console.log('clearUnspents', cleared, amount)
 
 					if(cleared){
 						_.each(s.clbks, function(c){
@@ -3905,9 +3903,32 @@ Platform = function(app){
 
 							}]
 
-							self.sdk.node.transactions.create[obj.type](inputs, obj, clbk, p)
+							self.sdk.node.transactions.create[obj.type](inputs, obj, function(a, er, data){
 
-						}, deep(p, 'address.address'))
+								console.log('a, er, data', a, er, data)
+
+								if(!a){
+									if((er == -26 || er == 16) && !p.update){
+
+										console.log("update", er)
+										
+										p.update = true;
+
+										self.sdk.node.transactions.create.commonFromUnspent(obj, clbk, p)
+
+										return
+									}
+								}
+								
+
+								if (clbk){
+									clbk(a, er, data)
+								}
+								
+
+							}, p)
+
+						}, deep(p, 'address.address'), p.update)
 					},
 
 					wallet : function(inputs, ouputs, _kp){
@@ -4046,9 +4067,6 @@ Platform = function(app){
 
 						    amount = amount * 100000000;
 
-						    console.log('inputs', inputs)
-
-
 							var data = Buffer.from(bitcoin.crypto.hash256(obj.serialize()), 'utf8');
 
 							var opreturnData = [Buffer.from(obj.type, 'utf8'), data];
@@ -4147,8 +4165,8 @@ Platform = function(app){
 
 
 										if (clbk){
-									    	clbk(null, (deep(data, 'data.code') || deep(data, 'data.message') || 'network').toString(), data)
-									    }
+										    clbk(null, (deep(data, 'data.code') || deep(data, 'data.message') || 'network').toString(), data)
+										}
 
 									}
 								})
@@ -5978,7 +5996,12 @@ Platform = function(app){
 				}
 				else
 				{
-					boffset = 60;
+
+					if(typeof _Electron == 'undefined'){
+						boffset = 60;
+					}
+
+					
 				}
 
 				offset = offset + boffset
@@ -7181,6 +7204,7 @@ Platform = function(app){
 
 			sendSyncRequest : function(id, userid){
 
+
 				if(!self.connections[id]) return
 				
 
@@ -7190,20 +7214,20 @@ Platform = function(app){
 			    // Random select `peer`
 			    let _sync_peer_send = userid;
 			    if (_sync_peer_send == null) {
-			        let _peers = self.connections[id].peers.getAllParticipants(self.connections[id].userid, 'connected');
+			        let _peers = self.connections[id].peers.getAllParticipants();
 			        let _sync_peer_current = Math.floor(Math.random() * _peers.length);
-			        _sync_peer_send = _peers[_sync_peer_current];			        
+			        let _sync_peer_send = _peers[_sync_peer_current];			        
 			    }
 
-			    if (self.connections[id] && _sync_peer_send) {
-                    console.log(`${self.connections[id].userid}: sendSyncRequest to ${_sync_peer_send}`);
+			    if (self.connections[id])
 				    self.connections[id].send({
 				        sync_request: 1,
 				        hv: _hv,
 				        tm_f: '',
 				        tm_t: '',
 				    }, _sync_peer_send);
-                }
+
+
 			},
 
 			receiveMessages : function(msgs, id) {
