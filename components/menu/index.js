@@ -165,8 +165,11 @@ var menu = (function(){
 
 						var c = 0;
 
+						console.log('rtchttp.storage', rtchttp.storage)
 
 						_.each(rtchttp.storage.chat, function(info, id){
+
+							console.log(info)
 
 							c = c + info.messages.unreaded 
 						})
@@ -478,6 +481,8 @@ var menu = (function(){
 
 							var add = amount - current;
 
+							console.log('self.app.platform.sdk.node.transactions.tempBalance()', t, current, amount, add, first)
+
 
 							if (first) {
 								add = 0;
@@ -501,6 +506,7 @@ var menu = (function(){
 
 							var t = self.app.platform.sdk.node.transactions.tempBalance()
 
+							console.log('self.app.platform.sdk.node.transactions.tempBalance()2', t)
 
 							setValue(amount - current + t)	
 							

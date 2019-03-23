@@ -1224,7 +1224,7 @@
 
 				ctx.drawImage(imageObj, 0, 0, newWidth, newHeight);
 
-			var url = canvas.toDataURL("image/" + format, 1);
+			var url = canvas.toDataURL("image/" + format, 0.75);
 
 			$(canvas).remove();
 
@@ -6873,11 +6873,7 @@
 
 					p.events.search(value, function(r){
 
-						currentFastId = 0;
-
 						bsActive = false;
-
-						helpers.closeResults();
 
 						if(!fsActive)
 							searchEl.removeClass('searchActive')
@@ -6906,7 +6902,7 @@
 			fastsearch : function(el, e){
 				var value = el.val();
 
-				if (value && p.events.fastsearch &&!bsActive){
+				if (value && p.events.fastsearch){
 
 					searchEl.addClass('searchActive')
 					fsActive = true;
@@ -6917,11 +6913,12 @@
 
 					p.events.fastsearch(value, function(r, revents){
 
-						if(thisSearch != currentFastId || !el.val() || bsActive) return;
+						if(thisSearch != currentFastId || !el.val()) return;
 
 						fsActive = false;
 
-						searchEl.removeClass('searchActive')
+						if(!bsActive)
+							searchEl.removeClass('searchActive')
 
 						if (r){
 
