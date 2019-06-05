@@ -871,8 +871,6 @@ var lenta = (function(){
 
 					d.share = self.app.platform.sdk.node.shares.storage.trx[id]
 
-				console.log(id, d.share)
-
 				self.fastTemplate('metmenu', function(rendered, template){
 
 					self.app.platform.api.tooltip(_el, function(){
@@ -2468,7 +2466,7 @@ var lenta = (function(){
 
 				var addressEl = el.c.find('.shareTable[address="'+address+'"]').closest('.share')
 
-				addressEl.removeClass('blocking');
+				addressEl.addClass('unblocking');
 			}
 			
 		}

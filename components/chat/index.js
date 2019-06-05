@@ -230,9 +230,6 @@ var chat = (function(){
 				}
 			},
 			scrollPx : function(_mode){
-
-				if(!el.c) return
-
 				var _el = null;
 				var innerContent = null;
 				var px = null;
@@ -727,8 +724,6 @@ var chat = (function(){
 
 			messages : function(clbk, messages, saveTempMessages, replace){
 
-				if(!el.c) return
-
 				messages = _.filter(messages, function(m, i){
 
 						
@@ -1039,15 +1034,11 @@ var chat = (function(){
 
 			chat.rtc.clbks.receive.messages.messenger = function(messages){
 
-				
 			
 				newmessageslength++;
 
 
 				self.app.platform.sdk.messenger.load.messages(messages, function(){
-
-					console.log("RECIEVE MESSAGES, RENDER", messages)
-
 					renders.messages(null, messages, true)
 					//renders.safemessages(messages)
 					
@@ -1184,7 +1175,7 @@ var chat = (function(){
 				topcaption = null;
 
 				
-				console.log("DESTROY", chat)
+
 
 				if (chat){
 					chat.rtc.leave()

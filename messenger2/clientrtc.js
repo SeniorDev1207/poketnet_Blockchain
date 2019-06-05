@@ -528,7 +528,7 @@ var platformRTC = function(p){
 						
 						self.psinit(function(){
 
-							console.log("RECONNECT TO CHATS", self.chats)
+							console.log("RECONNECT TO CHATS")
 
 							_.each(self.chats, function(ch){
 								ch.remote.lastmessages()
@@ -616,9 +616,7 @@ var platformRTC = function(p){
 
 						    });
 
-							self.addclbk('leave', makeid(true), clbk)
-							
-							delete self.chats[id]
+						    self.addclbk('leave', makeid(true), clbk)
 						}
 					})
 				}
@@ -920,17 +918,6 @@ var platformRTC = function(p){
 					clbk()
 
 			})
-		}
-
-		self.getchats = function(clbk){
-			_.each(self.chats, function(ch){
-				ch.remote.lastmessages()
-
-				ch.connect()
-			})
-
-			if (clbk)
-				clbk()
 		}
 
 		return self;

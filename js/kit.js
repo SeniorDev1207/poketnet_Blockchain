@@ -38,7 +38,7 @@ SubscribePrivate = function(){
 
 	self.export = function(){
 		return {
-			vsaddress : self.encrypted.v
+			address : self.encrypted.v
 		}
 	}
 	
@@ -68,14 +68,7 @@ Subscribe = function(){
 		return self.address.v
 	}
 
-	self.export = function(alias){
-
-		if(alias){
-			return {
-				vsaddress : self.address.v
-			}
-		}
-
+	self.export = function(){
 		return {
 			address : self.address.v
 		}
@@ -106,14 +99,7 @@ Unsubscribe = function(){
 		return self.address.v
 	}
 
-	self.export = function(alias){
-
-		if(alias){
-			return {
-				vsaddress : self.address.v
-			}
-		}
-
+	self.export = function(){
 		return {
 			address : self.address.v
 		}
@@ -144,14 +130,7 @@ Blocking = function(){
 		return self.address.v
 	}
 
-	self.export = function(alias){
-
-		if(alias){
-			return {
-				vsaddress : self.address.v
-			}
-		}
-
+	self.export = function(){
 		return {
 			address : self.address.v
 		}
@@ -182,14 +161,7 @@ Unblocking = function(){
 		return self.address.v
 	}
 
-	self.export = function(alias){
-
-		if(alias){
-			return {
-				vsaddress : self.address.v
-			}
-		}
-
+	self.export = function(){
 		return {
 			address : self.address.v
 		}
@@ -758,16 +730,10 @@ Share = function(){
 			return 'message'
 		}
 
-		if(self.url.v && self.url.v.length){
+		/*if(!self.url.v){
 
-			var l = self.message.v.length + self.caption.v.length
-
-			if (l - self.url.v.length < 30 && !self.images.v.length){
-				return 'url'
-			}
-
-			
-		}
+			return 'url'
+		}*/
 
 		if(!self.tags.v.length && self.settings.v != 'a'){
 
@@ -857,14 +823,6 @@ Share = function(){
 		return share;
 	}
 
-	self.typeop = function(){
-
-		if(self.aliasid){
-			return 'shareedit'
-		}
-
-		return self.type
-	}
 
 	self.type = 'share'
 

@@ -541,8 +541,7 @@ var share = (function(){
 		var errors = {
 			message : self.app.localization.e('emptymessage'),
 			tags : self.app.localization.e('emptytags'),
-			images : self.app.localization.e('maximages'),
-			url : "Please add a few words to tell Pocketpeople about your link. What is it about? Why is it important? What is your opinion?"		
+			images : self.app.localization.e('maximages')		
 		}
 
 		var events = {
@@ -880,9 +879,6 @@ var share = (function(){
 			all : function(){
 
 				el.eMessage[0].emojioneArea.setText(currentShare.message.v);
-				el.cpt.find('input').val(currentShare.caption.v || "")
-
-				el.cpt.val()
 
 				renders.tags();
 				
@@ -894,8 +890,6 @@ var share = (function(){
 			},
 
 			caption : function(){
-
-				
 
 				if(currentShare.caption.v || currentShare.message.v.length > 100){
 
@@ -1431,8 +1425,6 @@ var share = (function(){
 				if(!essenseData.share){
 					state.load()
 				}
-
-				console.log("currentShare" , currentShare)
 
 				var data = {
 					share : currentShare
