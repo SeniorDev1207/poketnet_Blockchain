@@ -17,11 +17,16 @@ var post = (function(){
 			sharesocial : function(clbk){
 		
 				//var url = 'https://pocketnet.app/'+self.app.nav.get.pathname()+'?s='+share.txid+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address + '&address=' + (parameters().address || "")
-				var url = 'https://pocketnet.app/' + ed.hr + 's='+share.txid+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address + '&address=' + (parameters().address || '')
+				var url = 'https://pocketnet.app/' + ed.hr + 's='+share.txid+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address
 
-				var m = share.caption || share.message;
+				if (parameters().address){
+					url += '&address=' + (parameters().address || '')
+				}
 
-				var nm = trimHtml(m, 20);
+
+				var m = share.message;
+
+				var nm = trimHtml(m, 130).replace(/ &hellip;/g, '...').replace(/&hellip;/g, '...');
 
 				var image = share.images[0];
 
@@ -43,7 +48,8 @@ var post = (function(){
 						url : url,
 						caption : 'Share publication in social',
 						image : image,
-						title : nm
+						title : share.caption || "Pocketnet: " + deep(app, 'platform.sdk.usersl.storage.'+share.address+'.name'),
+						text : nm
 					}
 				})
 			
@@ -130,24 +136,18 @@ var post = (function(){
 				var pels = el.c.find('.js-player, [data-plyr-provider][data-plyr-embed-id]');
 
 				if (pels.length)
-				{
-
-                    var options = {						
-						autoplay : pels.length <= 1,
+				{		
+					var player = new Plyr(pels[0], {						
+						autoplay : true,
 						resetOnEnd : true
-					};
+					})
 
-                    $.each(pels, function(key, el) {
-                        PlyrEx(el, options, function(player) {
-                            player.on('ready', function(){
-    
-                                if (clbk)
-                                    clbk()
-        
-                            })
-                        });
-                    });                    
-					
+					player.on('ready', function(){
+
+						if (clbk)
+							clbk()
+
+					})
 				}
 			},
 
@@ -676,7 +676,7 @@ var post = (function(){
 
 					if (url && !og){
 
-						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute'){
+						if (meta.type == 'youtube' || meta.type == 'vimeo'){
 							if (clbk)
 								clbk()
 						}
