@@ -8206,12 +8206,7 @@
 /* ______________________________ */
 
 /* TEXT */
-	pluralform = function(n, w){
-			
-		if(n <= 1) return w[0]
 
-		return w[1];
-	}
 	videoImage = function(url){
 		var v = url;
 
@@ -8257,7 +8252,7 @@
 
 		var _url = url;
 
-	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/);
+	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/);
 	    var type = null;
 	    var id = null;
 
@@ -8271,7 +8266,11 @@
 
 			    } else if (test[3].indexOf('vimeo') > -1) {
 			        type = 'vimeo';
-			        id = test[2];
+                    id = test[2];
+                    
+			    }  else if (test[3].indexOf('bitchute') > -1) {
+                    type = 'bitchute';
+			        id = test[6];
 			    }
 
 	    	}

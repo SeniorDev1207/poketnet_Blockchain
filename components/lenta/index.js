@@ -240,27 +240,26 @@ var lenta = (function(){
 						s.autoplay = false;
 					}
 
-
-					var player = new Plyr(pels[0], s)
-
-					
-					players[share.txid] || (players[share.txid] = {})
-
-
-					players[share.txid].p = player
-					players[share.txid].initing = true
-					players[share.txid].el = vel
-					players[share.txid].id = vel.attr('pid')
-
-
-					player.on('ready', function(){
-
-						pels.find('iframe').attr('disable-x-frame-options', 'disable-x-frame-options')
-
-						players[share.txid].inited = true
-
-						h = actions.applyheightEl(h, el, 'video')
-					})
+                    $.each(pels, function(key, el) {
+                        PlyrEx(el, s, function(player) {
+                            players[share.txid] || (players[share.txid] = {})
+    
+                            players[share.txid].p = player
+                            players[share.txid].initing = true
+                            players[share.txid].el = vel
+                            players[share.txid].id = vel.attr('pid')
+    
+                            player.on('ready', function(){
+                                pels.find('iframe').attr('disable-x-frame-options', 'disable-x-frame-options')
+    
+                                players[share.txid].inited = true
+                                players[share.txid].inited = true
+    
+                                h = actions.applyheightEl(h, el, 'video')
+                            })
+                        })
+                    });
+                    
 				}
 			},
 			
@@ -358,13 +357,11 @@ var lenta = (function(){
 
 				if (share){
 
-					var url = 'https://pocketnet.app/' + essenseData.hr + 's='+id+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address
+					var url = 'https://pocketnet.app/' + essenseData.hr + 's='+id+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address + '&address=' + (parameters().address || '')
 
-					if (parameters().address) url += '&address=' + (parameters().address || '')
+					var m = share.caption || share.message;
 
-					var m = share.message;
-
-					var nm = trimHtml(m, 130).replace(/ &hellip;/g, '...').replace(/&hellip;/g, '...');
+					var nm = trimHtml(m, 20);
 
 					var image = share.images[0];
 
@@ -374,8 +371,6 @@ var lenta = (function(){
 						if (v){
 							image = v;
 						}
-
-						
 					}
 
 					self.nav.api.load({
@@ -387,9 +382,8 @@ var lenta = (function(){
 						essenseData : {
 							url : url,
 							caption : 'Share publication in social',
-							image : image || deep(app, 'platform.sdk.usersl.storage.'+share.address+'.image'),
-							title : share.caption || "Pocketnet: " + deep(app, 'platform.sdk.usersl.storage.'+share.address+'.name'),
-							text : nm
+							image : image,
+							title : nm
 						}
 					})
 				}
@@ -1975,7 +1969,7 @@ var lenta = (function(){
 
 					if (url && !og){
 
-						if (meta.type == 'youtube' || meta.type == 'vimeo'){
+						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute'){
 							if (clbk)
 								clbk()
 						}

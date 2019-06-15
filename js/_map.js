@@ -80,29 +80,6 @@ __map =  {
 		anonimus : true,
 	},
 
-	applications : {
-		uri : "applications",
-		href : "applications",
-		add : function(settings, p){
-
-			if(p.inWnd)
-
-				return {
-					insert : 'wnd'
-				}
-
-			else
-			{
-				return {
-					el : 'content'
-				}
-			}
-
-		},
-		anonimus : true,
-	},
-
-
 	terms : {
 		uri : "terms",
 		href : "terms",
@@ -310,15 +287,6 @@ __map =  {
 				auth : 'authorization',
 				validate : 'filluser'
 			},
-
-			relations : [
-
-				{src : 'js/vendor/qrcode.min.js',			   f : 'js', require : function(){
-					QRCode = require('./js/vendor/qrcode.min.js')
-				}},
-
-			],
-
 		},
 
 		messenger : {
