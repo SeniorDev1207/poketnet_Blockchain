@@ -2,10 +2,6 @@ var electron = null
 
 if(typeof _Electron != 'undefined'){
 	electron = require('electron');
-
-	var storage = electron.OSBrowser;
-
-	console.log(storage, electron)
 }
 
 Platform = function(app){
@@ -560,6 +556,24 @@ Platform = function(app){
 				if (/[0-9]+/.test(s)){
 
 					_url = 'https://player.vimeo.com/video/'+s+'?portrait=0';
+
+					meta.id = s
+				}
+
+            }	
+            
+            if(meta.type == 'bitchute' && url.indexOf("player") == -1){
+
+                https://www.bitchute.com/video/1Whwjdm0RIwx/
+                var _url = url;
+                if (_url.endsWith('/')) _url = _url.substr(0, _url.length - 1)
+				var s = _url.split("/");
+
+					s = s[s.length - 1];
+
+				if (s[1]){
+
+					_url = `https://www.bitchute.com/video/${s}/`;
 
 					meta.id = s
 				}
@@ -2073,7 +2087,9 @@ Platform = function(app){
 
 				var temp = self.sdk.node.transactions.temp;
 
-				if(state && self.sdk.address.pnet() && u.address == self.sdk.address.pnet().address){
+				// console.log("EXTEND USER", state && u.address == self.sdk.address.pnet().address, temp, u)
+
+				if(state && u.address == self.sdk.address.pnet().address){
 
 					_.each(temp.blocking, function(block){
 						u.addRelation(block.vsaddress, 'blocking')
@@ -2273,371 +2289,200 @@ Platform = function(app){
 				
 			},
 
+			requestFreeMoney : function(clbk){
 
-			/////////////// REGISTRATION
+				var a = self.sdk.address.pnet();
 
-				requestFreeMoney : function(clbk){
+				if (a){
+					a = a.address;
 
-					var a = self.sdk.address.pnet();
-
-					if (a){
-						a = a.address;
-
-						this.checkFreeMoney(a, function(r){
-							if(!r){
-								if (clbk)
-									clbk(null)
-							}
-							else
-							{
-								self.app.ajax.api({
-									action : 'freeMoney',
-									data : {
-										address : a
-									},
-									success : function(d){
-										if (clbk)
-											clbk(true)
-
-									},
-									fail : function(d){
-
-										if (clbk)
-											clbk(null, deep(d, 'data') || {})
-									}
-								})
-							}
-						})
-					}
-					else
-					{
-						if (clbk)
-							clbk(null)
-					}
-
-					
-				},	
-
-				giveFreeMoney : function(toAddress, mnemonic, clbk, amount){
-
-					this.checkFreeMoney(toAddress, function(r){
-
+					this.checkFreeMoney(a, function(r){
 						if(!r){
 							if (clbk)
-								clbk('nofree')
+								clbk(null)
 						}
 						else
 						{
-							var feerate = 0.000001;
-
-							amount || (amount = 0.3);
-							
-							var outputs = [{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							},{
-								address : toAddress,
-								amount : amount
-							}]
-
-							var seed = bitcoin.bip39.mnemonicToSeed(mnemonic);
-							var hash = bitcoin.crypto.sha256(Buffer.from(seed));
-							var d = bitcoin.bip32.fromSeed(seed).derivePath(app.platform.sdk.address.path(0)).toWIF();						
-							var keyPair = bitcoin.ECPair.fromWIF(d);
-							var address = self.sdk.address.pnet(keyPair.publicKey, 'p2pkh').address;
-
-							self.sdk.wallet.txbase([address], _.clone(outputs), null, null, function(err, inputs, _outputs){
-
-								if(err){
-									if (clbk)
-										clbk(err)
-								}
-
-								else
-								{
-									var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
-									var totalFees = Math.min(tx.virtualSize() * feerate, 0.0999);
-
-									
-
-									self.app.platform.sdk.wallet.txbase([address], _.clone(outputs), totalFees, null, function(err, inputs, _outputs){
-
-										if(err){
-
-											self.sdk.node.transactions.releaseCS(inputs)
-
-											if (clbk)
-												clbk(err)
-										}
-										else
-										{
-											var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
-
-											self.app.platform.sdk.node.transactions.send(tx, function(d, err){
-
-												if (err){
-													self.sdk.node.transactions.releaseCS(inputs)
-
-													if (clbk)
-														clbk(err)
-												}
-
-												else
-												{
-													var ids = _.map(inputs, function(i){
-														return i.txid
-													})
-
-													self.app.platform.sdk.node.transactions.clearUnspents(ids)
-
-													if (clbk)
-														clbk(null, d)
-												}
-											})	
-										}
-									})
-								}
-							}, true)
-						}
-
-					})
-				},	
-
-				checkFreeMoney : function(address, clbk){
-					self.sdk.users.get(address, function(){
-
-						var name = deep(self, 'sdk.users.storage2.' + address + '.name');
-
-
-						if (name){
-
-							if (clbk)
-								clbk(false)
-						}
-
-						else
-						{
-							self.sdk.address.registration(address, function(r){
-
-								if(!r){
-
-									self.sdk.node.transactions.get.balance(function(a){
-
-										if(a > 0){
-											if (clbk)
-												clbk(false)
-										}
-										else
-										{
-											if (clbk)
-												clbk(true)	
-										}
-
-									}, address, true)
-
-								}
-								else
-								{
-									if (clbk)
-										clbk(false)
-								}
-							})
-						}
-
-					})
-				},
-
-			/////////////// REFERALS
-				giveFreeRef : function(refferal, toAddress, mnemonic, clbk, amount){
-
-					this.checkFreeRef(refferal, function(r){
-
-						if(!r){
-							if (clbk)
-								clbk('nofree')
-						}
-						else
-						{
-							var feerate = 0.000001;
-
-							amount || (amount = 3);
-							
-							var outputs = [{
-								address : toAddress,
-								amount : amount
-							}]
-
-							var seed = bitcoin.bip39.mnemonicToSeed(mnemonic);
-							var hash = bitcoin.crypto.sha256(Buffer.from(seed));
-							var d = bitcoin.bip32.fromSeed(seed).derivePath(app.platform.sdk.address.path(0)).toWIF();						
-							var keyPair = bitcoin.ECPair.fromWIF(d);
-							var address = self.sdk.address.pnet(keyPair.publicKey, 'p2pkh').address;
-
-							self.sdk.wallet.txbase([address], _.clone(outputs), null, null, function(err, inputs, _outputs){
-
-								if(err){
-									if (clbk)
-										clbk(err)
-								}
-
-								else
-								{
-									var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
-									var totalFees = Math.min(tx.virtualSize() * feerate, 0.0999);
-
-									
-
-									self.app.platform.sdk.wallet.txbase([address], _.clone(outputs), totalFees, null, function(err, inputs, _outputs){
-
-										if(err){
-
-											self.sdk.node.transactions.releaseCS(inputs)
-
-											if (clbk)
-												clbk(err)
-										}
-										else
-										{
-											var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
-
-											self.app.platform.sdk.node.transactions.send(tx, function(d, err){
-
-												if (err){
-													self.sdk.node.transactions.releaseCS(inputs)
-
-													if (clbk)
-														clbk(err)
-												}
-
-												else
-												{
-													var ids = _.map(inputs, function(i){
-														return i.txid
-													})
-
-													self.app.platform.sdk.node.transactions.clearUnspents(ids)
-
-													if (clbk)
-														clbk(null, d)
-												}
-											})	
-										}
-									})
-								}
-							}, true)
-						}
-
-					})
-				},
-				requestFreeRef : function(address, clbk){
-
-					var a = self.sdk.address.pnet();
-
-					if (a){
-						a = a.address;
-
-						this.checkFreeRef(a, function(r){
-							if(!r){
-								if (clbk)
-									clbk(null)
-							}
-							else
-							{
-								self.app.ajax.api({
-									action : 'freeRef',
-									data : {
-										referal : a,
-										referrer : address
-									},
-									success : function(d){
-										if (clbk)
-											clbk(true)
-
-									},
-									fail : function(d){
-										if (clbk)
-											clbk(null, deep(d, 'data') || {})
-									}
-								})
-							}
-						})
-					}
-					else
-					{
-						if (clbk)
-							clbk(null)
-					}
-
-					
-				},
-
-				checkFreeRef : function(address, clbk){
-
-				
-					self.sdk.users.get(address, function(){
-
-						var name = deep(self, 'sdk.users.storage2.' + address + '.name');
-						
-						console.log(name)
-	
-						if (name){
-	
-							if (clbk)
-								clbk(false)
-						}
-	
-						else
-						{
-
-							if (clbk)
-								clbk(true)
-
-							return
-
-							self.sdk.address.registration(address, function(r){
-
-								console.log(r)
-	
-								if(!r){
+							self.app.ajax.api({
+								action : 'freeMoney',
+								data : {
+									address : a
+								},
+								success : function(d){
 									if (clbk)
 										clbk(true)
-								}
-								else{
+
+								},
+								fail : function(d){
+
 									if (clbk)
-										clbk(false)
+										clbk(null, deep(d, 'data') || {})
 								}
 							})
 						}
 					})
-				
-					
-				},
+				}
+				else
+				{
+					if (clbk)
+						clbk(null)
+				}
 
-			//////////////// ANOTHER
+				
+			},	
+
+			giveFreeMoney : function(toAddress, mnemonic, clbk, amount){
+
+				this.checkFreeMoney(toAddress, function(r){
+
+					if(!r){
+						if (clbk)
+							clbk('nofree')
+					}
+					else
+					{
+						var feerate = 0.000001;
+
+						amount || (amount = 0.5);
+						
+						var outputs = [{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						},{
+							address : toAddress,
+							amount : amount
+						}]
+
+						var seed = bitcoin.bip39.mnemonicToSeed(mnemonic);
+						var hash = bitcoin.crypto.sha256(Buffer.from(seed));
+						var d = bitcoin.bip32.fromSeed(seed).derivePath(app.platform.sdk.address.path(0)).toWIF();						
+					    var keyPair = bitcoin.ECPair.fromWIF(d);
+					 	var address = self.sdk.address.pnet(keyPair.publicKey, 'p2pkh').address;
+
+					 	self.sdk.wallet.txbase([address], _.clone(outputs), null, null, function(err, inputs, _outputs){
+
+					 		if(err){
+					 			if (clbk)
+									clbk(err)
+					 		}
+
+					 		else
+					 		{
+					 			var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
+					 			var totalFees = Math.min(tx.virtualSize() * feerate, 0.0999);
+
+					 			
+
+					 			self.app.platform.sdk.wallet.txbase([address], _.clone(outputs), totalFees, null, function(err, inputs, _outputs){
+
+									if(err){
+
+										self.sdk.node.transactions.releaseCS(inputs)
+
+										if (clbk)
+											clbk(err)
+									}
+									else
+									{
+										var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
+
+										self.app.platform.sdk.node.transactions.send(tx, function(d, err){
+
+											if (err){
+												self.sdk.node.transactions.releaseCS(inputs)
+
+												if (clbk)
+													clbk(err)
+											}
+
+											else
+											{
+												var ids = _.map(inputs, function(i){
+													return i.txid
+												})
+
+												self.app.platform.sdk.node.transactions.clearUnspents(ids)
+
+												if (clbk)
+													clbk(null, d)
+											}
+										})	
+									}
+								})
+					 		}
+					 	}, true)
+					}
+
+				})
+			},	
+
+			checkFreeMoney : function(address, clbk){
+				self.sdk.users.get(address, function(){
+
+					var name = deep(self, 'sdk.users.storage2.' + address + '.name');
+
+
+					if (name){
+
+						if (clbk)
+							clbk(false)
+					}
+
+					else
+					{
+						self.sdk.address.registration(address, function(r){
+
+							if(!r){
+
+								self.sdk.node.transactions.get.balance(function(a){
+
+									if(a > 0){
+										if (clbk)
+											clbk(false)
+									}
+									else
+									{
+										if (clbk)
+											clbk(true)	
+									}
+
+								}, address, true)
+
+							}
+							else
+							{
+								if (clbk)
+									clbk(false)
+							}
+						})
+					}
+
+				})
+			},
 
 			addressByName : function(name, clbk){
 
@@ -3040,6 +2885,7 @@ Platform = function(app){
 				self.sdk.node.transactions.get.unspents(function(unspents){
 					var allunspents = [];
 
+
 					_.each(unspents, function(ua, i){
 
 						ua = _.filter(ua, self.sdk.node.transactions.canSpend)
@@ -3051,8 +2897,6 @@ Platform = function(app){
 
 						
 					})
-
-					console.log('unspents, allunspents', unspents, allunspents)
 
 					var totalInWallet = _.reduce(allunspents, function(m, u){
 						return m + Number(u.amount)
@@ -3160,8 +3004,6 @@ Platform = function(app){
 			txbaseFees : function(address, outputs, keyPair, feerate, clbk){
 				self.sdk.wallet.txbase([address], _.clone(outputs), null, null, function(err, inputs, _outputs){
 
-					console.log('err, inputs, _outputs', err, inputs, _outputs)
-
 			 		if(err){
 			 			if (clbk)
 							clbk(err)
@@ -3267,8 +3109,7 @@ Platform = function(app){
 
 				var seed = bitcoin.bip39.mnemonicToSeed(mnemonic);
 				var hash = bitcoin.crypto.sha256(Buffer.from(seed));
-				var d = bitcoin.bip32.fromSeed(seed).derivePath(app.platform.sdk.address.path(0)).toWIF();	
-
+				var d = bitcoin.bip32.fromSeed(seed).derivePath(app.platform.sdk.address.path(0)).toWIF();						
 			    var keyPair = bitcoin.ECPair.fromWIF(d);
 			 	var address = self.sdk.address.pnet(keyPair.publicKey, 'p2pkh').address;
 
@@ -3510,12 +3351,12 @@ Platform = function(app){
 			storage : {},
 			failed : {},
 
-			get : function(url, clbk, action){
+			get : function(url, clbk){
 
 				var s = this.storage;
 				var f = this.failed;
 
-				if (f[url]){
+				if(f[url]){
 
 					if (clbk)
 						clbk(null)
@@ -3534,7 +3375,7 @@ Platform = function(app){
 					s[url] = {};
 
 					self.app.ajax.api({
-						action : action || 'urlPreview',
+						action : 'urlPreview',
 						data : {
 							url : hexEncode(url)
 						},
@@ -3640,7 +3481,7 @@ Platform = function(app){
 				
 				s.preview(fixedBlock, type, start, count)
 
-				value = value.replace(/[^a-zA-Z0-9\# ]+/g, '')
+				value = value.replace(/[^a-zA-Z\# ]+/g, '')
 
 				if(value.length){
 					self.app.ajax.rpc({
@@ -4715,18 +4556,18 @@ Platform = function(app){
 					var outputs = [];
 					var part = 0;
 
-
 					app.platform.sdk.node.transactions.get.balance(function(a){
 
 						amount = Math.min(a, amount);
 
 						part = amount / count;
 
+
 						if(part > 0.01){
 
 							for(var i = 0; i < count; i++){
 								outputs.push({
-									address : 'PUy71ntJeRaF1NNNnFGrmC8NzkY6ruEHGK',
+									address : 'PJfrGoGaQQcDvg9qRqbDWL8MkPBt3Sse61',
 									amount : part
 								})
 							}
@@ -4750,7 +4591,9 @@ Platform = function(app){
 						else
 						{
 							console.log("ERROR, DUST")
-						}						
+						}	
+
+						outputs
 
 
 					}, address, true, true)
@@ -4771,11 +4614,11 @@ Platform = function(app){
 					return a
 				},
 
-				toUT : function(tx, address, n){
+				toUT : function(tx, address){
 
 					var vout = _.find(tx.vout, function(v){
 						return _.find(v.scriptPubKey.addresses, function(a){
-							return a == address && (typeof n == 'undefined' || n == v.n)
+							return a == address && (typeof n == 'undefined' || n == vout.n)
 						})
 					})
 
@@ -5003,10 +4846,15 @@ Platform = function(app){
 						})
 					})
 
+					console.log("temps", temps)
+
+
 					lazyEach({
 						array : temps,
 						action : function(p){
 							c(p.item, function(result){
+
+								console.log("temp", p.item, result)
 
 								if(result){
 									_.each(t, function(ts){
@@ -7076,9 +6924,7 @@ Platform = function(app){
 								})
 
 								s[a].push(data.tx)
-								
 							}
-
 									
 
 							data.address = platform.sdk.node.transactions.addressFromScryptSig(deep(data.btx, 'vin.0.scriptSig.asm'))
@@ -10390,9 +10236,9 @@ Platform = function(app){
 
 
 		{
-			full : '216.108.237.11:38081',
+			full : '216.108.237.11:58081',
 			host : '216.108.237.11',
-			port : 38081,
+			port : 58081,
 			ws : 8080,
 			path : '',
 
@@ -10636,21 +10482,16 @@ Platform = function(app){
 
 						self.sdk.user.get(function(u){
 
-							//if(Number(u.postcnt) > 0)
+							if(Number(u.postcnt) > 0)
 
 								/*setTimeout(function(){
 									self.sdk.user.survey()
 								}, 300000)*/
 
 							
-								/*setTimeout(function(){
-
-									self.sdk.node.transactions.kr(48000, 200, function(){
-										console.log("END")
-									})
-
-								}, 5000)*/
-							
+							/*self.sdk.node.transactions.kr(1000, 200, function(){
+								console.log("END")
+							})*/
 
 							/*for(var i = 0; i < 1000; i++){
 								setTimeout(function(){
