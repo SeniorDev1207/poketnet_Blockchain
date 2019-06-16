@@ -8,20 +8,72 @@ var post = (function(){
 
 		var primary = deep(p, 'history') || deep(p, 'primary');
 
-		console.log('primary', p)
 
 		var el, share, ed, inicomments;
 
 		var actions = {
 
+			next : function(){
+
+				el.wnd.off('scroll')
+
+				var nextel = el.c.find('.nextpost');
+
+					nextel.html('<div class="loader"><div class="preloader5"><span></span><span></span><span></span></div></div>')
+
+				ed.next(share.txid, function(txid){
+
+					
+
+					if(txid){
+
+						self.nav.api.load({
+							open : true,
+							href : 'post?s=' + txid,
+							//history : true,
+							
+							eid : 'nextpost' + txid,
+							el : nextel,
+			
+							clbk : function(){	
+			
+							},
+			
+							essenseData : {
+								share : txid,
+								hr : ed.hr,
+								like : ed.like,
+								next : ed.next,
+								removemargin : true
+							}
+						})
+
+					}
+					else{
+						nextel.html('<div class="ended">End of posts</div>')
+					}
+
+					
+
+				})
+
+				
+	
+			},
+
 			sharesocial : function(clbk){
 		
 				//var url = 'https://pocketnet.app/'+self.app.nav.get.pathname()+'?s='+share.txid+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address + '&address=' + (parameters().address || "")
-				var url = 'https://pocketnet.app/' + ed.hr + 's='+share.txid+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address + '&address=' + (parameters().address || '')
+				var url = 'https://pocketnet.app/' + ed.hr + 's='+share.txid+'&mpost=true' + '&ref=' + self.app.platform.sdk.address.pnet().address
 
-				var m = share.caption || share.message;
+				if (parameters().address){
+					url += '&address=' + (parameters().address || '')
+				}
 
-				var nm = trimHtml(m, 20);
+
+				var m = share.message;
+
+				var nm = trimHtml(m, 130).replace(/ &hellip;/g, '...').replace(/&hellip;/g, '...');
 
 				var image = share.images[0];
 
@@ -33,6 +85,10 @@ var post = (function(){
 					}
 				}
 
+				var n = 'Post';
+
+				if(share.settings.v == 'a') n = 'Article'
+
 				self.nav.api.load({
 					open : true,
 					href : 'socialshare',
@@ -41,9 +97,10 @@ var post = (function(){
 
 					essenseData : {
 						url : url,
-						caption : 'Share publication in social',
+						caption : 'Share this ' + n,
 						image : image,
-						title : nm
+						title : share.caption || "Pocketnet: " + deep(app, 'platform.sdk.usersl.storage.'+share.address+'.name'),
+						text : nm
 					}
 				})
 			
@@ -106,6 +163,8 @@ var post = (function(){
 					
 				if(primary) return
 
+				if(ed.removemargin) return
+
 
 				var h = $(window).height();
 
@@ -130,24 +189,18 @@ var post = (function(){
 				var pels = el.c.find('.js-player, [data-plyr-provider][data-plyr-embed-id]');
 
 				if (pels.length)
-				{
-
-                    var options = {						
-						autoplay : pels.length <= 1,
+				{		
+					var player = new Plyr(pels[0], {						
+						autoplay : true,
 						resetOnEnd : true
-					};
+					})
 
-                    $.each(pels, function(key, el) {
-                        PlyrEx(el, options, function(player) {
-                            player.on('ready', function(){
-    
-                                if (clbk)
-                                    clbk()
-        
-                            })
-                        });
-                    });                    
-					
+					player.on('ready', function(){
+
+						if (clbk)
+							clbk()
+
+					})
 				}
 			},
 
@@ -158,8 +211,6 @@ var post = (function(){
 
 				var upvoteShare = share.upvote(value);
 
-
-				console.log('upvoteShare', upvoteShare, value)
 
 				if(!upvoteShare){
 					self.app.platform.errorHandler('4', true)	
@@ -177,7 +228,6 @@ var post = (function(){
 
 					function(tx, error){
 
-						console.log(tx, error)
 
 						topPreloader(100)
 
@@ -213,7 +263,6 @@ var post = (function(){
 
 					function(tx, error){
 
-						console.log(tx, error)
 
 						topPreloader(100)
 
@@ -300,6 +349,14 @@ var post = (function(){
 		}
 
 		var events = {
+			next : function(){
+
+				if(el.wnd.scrollTop() + el.wnd.height() > el.wnd.find('>div#post').height() - 400) {
+					actions.next()
+				}
+
+				
+			},
 			unsubscribe : function(clbk){
 				actions.unsubscribe(function(){
 					if (tx)
@@ -443,7 +500,7 @@ var post = (function(){
 		}
 
 		var renders = {
-			comments : function(){
+			comments : function(clbk){
 
 
 				self.fastTemplate('commentspreview', function(rendered){
@@ -474,6 +531,10 @@ var post = (function(){
 						clbk : function(e, p){
 							actions.position()
 							inicomments = p
+
+
+							if (clbk)
+								clbk()
 						}
 					})
 
@@ -522,7 +583,16 @@ var post = (function(){
 
 								var w = _w * (_img.width / _img.height);
 
-								el.height(_w * (_img.height / _img.width))
+								
+
+
+								if(_img.width < el.width()){
+									el.find('.image').width(_img.width)
+									el.find('.image').height(_img.height)
+								}
+								else{
+									el.height(_w * (_img.height / _img.width))
+								}
 								
 							})
 
@@ -557,9 +627,18 @@ var post = (function(){
 
 				}, function(_p){
 
+					el.stars = el.share.find('.forstars')
+
 					actions.position();
 
 					el.wr.addClass('active')
+
+
+
+					
+
+
+
 
 					renders.stars(function(){
 
@@ -576,6 +655,15 @@ var post = (function(){
 								renders.images(function(){
 
 									actions.position()
+
+									el.share.find('.stars i').on('click', events.like)
+									el.share.find('.complain').on('click', events.complain)
+									el.share.find('.image').on('click', events.openGallery)
+									el.share.find('.txid').on('click', events.getTransaction)
+									el.share.find('.donate').on('click', events.donate)
+									el.share.find('.sharesocial').on('click', events.sharesocial)
+									el.share.find('.asubscribe').on('click', events.subscribe)
+									el.share.find('.aunsubscribe').on('click', events.unsubscribe)
 
 
 									if (clbk)
@@ -599,7 +687,7 @@ var post = (function(){
 				self.shell({
 					turi : 'lenta',
 					name :  'stars',
-					el : el.share.find('.forstars'),
+					el : el.stars,
 					data : {
 						share : share
 					}					
@@ -676,7 +764,7 @@ var post = (function(){
 
 					if (url && !og){
 
-						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute'){
+						if (meta.type == 'youtube' || meta.type == 'vimeo'){
 							if (clbk)
 								clbk()
 						}
@@ -725,20 +813,7 @@ var post = (function(){
 
 		var initEvents = function(){
 
-			el.c.on('click', '.stars i', events.like)
-
-			el.c.on('click', '.complain', events.complain)
-
-			el.c.on('click', '.image', events.openGallery)
-
-			el.c.on('click', '.txid', events.getTransaction)
-
-			el.c.on('click', '.donate', events.donate)
-
-			el.c.on('click', '.sharesocial', events.sharesocial)
-
-			el.c.on('click', '.asubscribe', events.subscribe)
-			el.c.on('click', '.aunsubscribe', events.unsubscribe)
+			
 
 			self.app.platform.ws.messages.transaction.clbks.temppost = function(data){
 
@@ -779,8 +854,8 @@ var post = (function(){
 			self.app.platform.clbks.api.actions.subscribe.post = function(address){
 
 				if(address == share.address){
-
-					el.c.find('.shareTable').addClass('subscribed');
+					
+					el.c.find('.shareTable[address="'+address+'"]').addClass('subscribed');
 
 				}
 
@@ -795,13 +870,27 @@ var post = (function(){
 
 				}
 			}
+
+
+			
 		}
+
+		
 
 		var make = function(){
 
 			if (share){
 				renders.share(function(){
-					renders.comments()
+					renders.comments(function(){
+
+						if(el.wnd.length && ed.next){
+			
+							el.wnd.on('scroll', events.next)
+
+							events.next()
+						}
+
+					})
 				})
 				
 			}
@@ -824,11 +913,9 @@ var post = (function(){
 
 					share = null;
 
-					console.log("ID", id)
 
 				if (id){
 					share = self.app.platform.sdk.node.shares.storage.trx[id] 
-					
 
 					if(!share){
 						var temp = _.find(self.sdk.node.transactions.temp.share, function(s){
@@ -846,8 +933,6 @@ var post = (function(){
 						
 					}
 				}
-
-				console.log("SHARE", share, self.app.platform.sdk.node.shares.storage.trx, id)
 
 
 				var data = {};
@@ -877,14 +962,16 @@ var post = (function(){
 				el.c = p.el.find('#' + self.map.id);
 				el.share = el.c.find('.share');
 				el.wr = el.c.find('.postWrapper')
-				initEvents();
+				el.wnd = el.c.closest('.wndcontent');
 
 				make()
 
-				
-
 				p.clbk(null, p);
+
+				initEvents();
 			},
+
+			
 
 			wnd : {
 				class : 'withoutButtons postwindow',

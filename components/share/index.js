@@ -542,8 +542,7 @@ var share = (function(){
 			message : self.app.localization.e('emptymessage'),
 			tags : self.app.localization.e('emptytags'),
 			images : self.app.localization.e('maximages'),
-            url : "Please add a few words to tell Pocketpeople about your link. What is it about? Why is it important? What is your opinion?",
-            error_video : 'Your link to video is invalid. Please load valid video URL.'
+			url : "Please add a few words to tell Pocketpeople about your link. What is it about? Why is it important? What is your opinion?"		
 		}
 
 		var events = {
@@ -935,8 +934,8 @@ var share = (function(){
 
 					if(currentShare.url.v && !og){
 
-						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute') {
-                            Plyr.setup('.js-player', function(player) {});
+						if (meta.type == 'youtube' || meta.type == 'vimeo'){
+							var players = Plyr.setup('.js-player');
 						}
 						else
 						{

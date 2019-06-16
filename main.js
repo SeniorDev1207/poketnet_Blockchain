@@ -12,7 +12,8 @@ let win, nwin, badge;
 
 var willquit = false;
 
-const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, nativeImage, dialog, globalShortcut } = require('electron')
+const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, nativeImage, dialog, globalShortcut, OSBrowser } = require('electron')
+
 
 const Badge = require('./js/vendor/electron-windows-badge.js');
 
@@ -169,21 +170,19 @@ function createTray() {
 }
 
 function initApp() {
-    app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
-    
     createWindow();
 
     createBadge();
 
     createTray();
 
-    log.info('First check updates...');
+    /**log.info('First check updates...');
 
     autoUpdater.checkForUpdates();
     
     setInterval(() => {
         autoUpdater.checkForUpdates();
-    }, 10*60*1000);
+    }, 10*60*1000); */
 }
 
 function closeNotification() {
