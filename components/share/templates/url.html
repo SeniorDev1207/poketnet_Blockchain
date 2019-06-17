@@ -5,7 +5,9 @@
 	if(typeof share == 'undefined') share = {};
 
 
-	if(meta.type == 'youtube' || meta.type == 'vimeo'){ 
+	console.log("meta", meta)
+
+	if(meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute'){ 
 
 		if(!app.platform.sdk.usersettings.meta.embedvideo || 
 			app.platform.sdk.usersettings.meta.embedvideo.value) {
