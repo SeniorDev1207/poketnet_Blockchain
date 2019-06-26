@@ -901,7 +901,7 @@ Platform = function(app){
 					electron.ipcRenderer.send('update-badge', _count || null);
 					electron.ipcRenderer.send('update-badge-tray', _count || null);
 					
-
+                    
 				}
 			}
 		},
@@ -1677,11 +1677,11 @@ Platform = function(app){
 
 					}
 
-					/*if (_.toArray(self.sdk.node.transactions.temp['userInfo']).length){
-						if(!wait){
-							wait = 1;
-						}
-					}*/
+					// if (_.toArray(self.sdk.node.transactions.temp['userInfo']).length){
+					// 	if(!wait){
+					// 		wait = 1;
+					// 	}
+					// }
 
 					if (clbk)
 						clbk(wait)
@@ -7344,8 +7344,11 @@ Platform = function(app){
 				return h;
 			},
 
-			star : function(count){
-				return '<div class="messagestar" count="'+count+'">' + count + ' <i class="fas fa-star"></i></div>'
+			star : function(count) {
+                
+                let _star = '<i class="fas fa-star"></i>';
+                if (electron) _star = '★';
+				return '<div class="messagestar" count="'+count+'">' + count + ' ' + _star + '</div>'
 			},
 
 			_user : function(author){
