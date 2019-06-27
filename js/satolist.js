@@ -152,7 +152,8 @@ Platform = function(app){
 
 			github : {
 				name : "PocketnetSetup.exe",
-				url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest'
+                url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
+                page : 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
 			} 
 		},
 
@@ -167,7 +168,8 @@ Platform = function(app){
 
 			github : {
 				name : "Pocketnet_linux.AppImage",
-				url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest'
+                url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
+                page : 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
 			} 
 		}
 	}
@@ -3868,7 +3870,7 @@ Platform = function(app){
 				
 				s.preview(fixedBlock, type, start, count)
 
-				value = value.replace(/[^a-zA-Z0-9\# ]+/g, '')
+				value = trim(value.replace(/[^a-zA-Z0-9\# ]+/g, ''))
 
 				if(value.length){
 					self.app.ajax.rpc({
@@ -4281,7 +4283,13 @@ Platform = function(app){
 							blockps = self.currentBlock - 5000;
 
 							if (t){
-								self.timeDifference = t - Math.floor((new Date().getTime()) / 1000)
+
+								var d = new Date()
+								
+								self.timeDifference = t - Math.floor((d.getTime()) / 1000)
+								self.timeDifferenceTimeZone = t -  Math.floor((d.getTime() + (d.getTimezoneOffset() * 60000)) / 1000) ;
+
+								console.log('self.timeDifference', self.timeDifference)
 							}
 
 							if (clbk)
@@ -5971,7 +5979,9 @@ Platform = function(app){
 
 						    var txb = new bitcoin.TransactionBuilder();
 
-						   		txb.addNTime(self.timeDifference || 0)
+								   txb.addNTime(self.timeDifference || 0)
+
+								  
 
 							var amount = 0;
 
@@ -7556,6 +7566,11 @@ Platform = function(app){
 									share.scnt = '0'
 									share.score = "0"
 									share.myVal = 0
+
+
+								if(!platform.sdk.node.shares.storage.trx)
+									platform.sdk.node.shares.storage.trx = {}
+
 
 								platform.sdk.node.shares.storage.trx[data.txid] = share
 								
@@ -10331,6 +10346,8 @@ Platform = function(app){
         
         var updateAvailable = function() {
             if(!d) {
+                console.log('--- os()', os())
+                console.log('--- self.app.platform.applications[os()]', self.app.platform.applications[os()])
                 if (self.app.platform.applications[os()]) {
                     var _os = self.app.platform.applications[os()]
                     if (_os.github && _os.github.url) {
@@ -10340,7 +10357,7 @@ Platform = function(app){
                             btn2text : "No, later",
             
                             success : function(){
-                                require("electron").shell.openExternal(_os.github.url);
+                                require("electron").shell.openExternal(_os.github.page);
                             },
             
                             fail : function(){
@@ -10364,6 +10381,7 @@ Platform = function(app){
                 }
                 
                 if (data.msg == 'update-available' && is.linux()) {
+                    console.log('--- update-available')
                     updateAvailable()
                 }
 			}
