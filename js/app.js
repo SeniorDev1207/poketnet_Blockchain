@@ -175,16 +175,12 @@ Application = function(p)
 
 		s : {
 			href : 's',
-			childrens : ['author', 'chat', 's', 'share','userpage']
+			childrens : ['author', 'chat', 's']
 		},
 
 		author : {
 			href : 'author',
-			childrens : ['author', 's', 'chat', 'share', 'userpage']
-		},
-		userpage : {
-			href : 'userpage',
-			childrens : ['userpage', 'share', 'author']
+			childrens : ['author', 's', 'chat']
 		}
 
 	}

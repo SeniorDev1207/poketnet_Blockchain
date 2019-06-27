@@ -293,11 +293,6 @@ var userpage = (function(){
 					}
 				})
 			},
-
-			closeReport : function(){
-				el.report.html('')
-			},
-
 			openReport : function(id, addToHistory){
 
 				el.c.find('.openReport').removeClass('active')
@@ -308,18 +303,11 @@ var userpage = (function(){
 
 				renders.report(id);
 
-
 				if (addToHistory){
 
 					self.nav.api.history.addParameters({
 						id : id
-					}, {
-						removefromback : false
 					})
-
-
-					if (self.app.nav.clbks.history.navigation)
-						self.app.nav.clbks.history.navigation()
 
 
 				}
@@ -341,12 +329,6 @@ var userpage = (function(){
 			},
 			openReport : function(){
 				var id = $(this).attr('rid');
-
-				if(isMobile()){
-
-					renders.contents(null, id)
-
-				}
 
 				actions.openReport(id, true);
 			}
@@ -372,48 +354,32 @@ var userpage = (function(){
 				})
 		
 			},
-			contents : function(clbk, id){
+			contents : function(clbk){
 
 				var s = helpers.selector();
 
-				if(id && isMobile()){
+				self.shell({
 
-					el.contents.html('')
+					name :  'contents',
+					el :   el.contents,
+					data : {
+						reports : reports,
+						each : helpers.eachReport,
+
+						selector : s
+					},
+
+				}, function(_p){
+
+					_p.el.find('.groupNamePanelWrapper').on('click', events.closeGroup);
+					//_p.el.find('.groupName').on('click', events.closeGroup);
+					_p.el.find('.openReport').on('click', events.openReport);
+
+					ParametersLive([s], _p.el)
 
 					if (clbk)
 						clbk();
-
-				}
-				else{
-
-					self.shell({
-
-						name :  'contents',
-						el :   el.contents,
-						data : {
-							reports : reports,
-							each : helpers.eachReport,
-	
-							selector : s
-						},
-	
-					}, function(_p){
-	
-						_p.el.find('.groupNamePanelWrapper').on('click', events.closeGroup);
-						//_p.el.find('.groupName').on('click', events.closeGroup);
-						_p.el.find('.openReport').on('click', events.openReport);
-	
-						ParametersLive([s], _p.el)
-
-						_scrollTop(0)
-	
-						if (clbk)
-							clbk();
-					})
-
-				}
-
-				
+				})
 		
 			},
 
@@ -435,6 +401,8 @@ var userpage = (function(){
 
 				}, function(_p){
 
+					
+
 					self.nav.api.load({
 
 						open : true,
@@ -448,8 +416,6 @@ var userpage = (function(){
 						},
 						
 						clbk : function(e, p){
-
-							_scrollTop(0)
 
 							currentExternalEssense = p;
 
@@ -490,30 +456,17 @@ var userpage = (function(){
 		}
 
 		var makerep = function(clbk){
-			var id = parameters().id;
+			var id = parameters().id || 'ustate';
 
-			if(!isMobile()){
-				if(!id) id = 'ustate'
-			}
-			
 			renders.contents(function(){
-
-				//self.app.actions.scrollBMenu()
-
-				if(id){
-					actions.openReport(id)
-				}
-				else{
-					actions.closeReport()
-				}
+				
+				actions.openReport(id)
+			
 
 				if (clbk)
 					clbk();
 
-			}, id);
-			
-
-			
+			});
 
 		}
 
@@ -540,7 +493,6 @@ var userpage = (function(){
 			primary : primary,
 
 			parametersHandler : function(){
-
 				makerep()
 			},
 
@@ -608,7 +560,7 @@ var userpage = (function(){
 
 				make(function(){
 
-					//p.noscroll = self.app.actions.scrollBMenu()
+					p.noscroll = self.app.actions.scrollBMenu()
 					
 					p.clbk(null, p);
 				})
