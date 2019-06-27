@@ -24,37 +24,31 @@ const is = require('electron-is')
 
 var updatesLoading = false;
 
-if (is.linux()) {
-    autoUpdater.autoDownload = false;
-    autoUpdater.autoInstallOnAppQuit = false;
-}
-
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
 autoUpdater.on('checking-for-update', (ev) => {
     win.webContents.send('updater-message', { msg: 'checking-for-update', type : 'info', ev : ev })
 })
-
 autoUpdater.on('update-available', (ev) => {
-    if (!is.linux()) updatesLoading = true
-    win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : ev, linux : is.linux() })
-})
 
+    updatesLoading = true
+
+    win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : ev })
+})
 autoUpdater.on('update-not-available', (ev) => {
     win.webContents.send('updater-message', { msg: 'update-not-available', type : 'info', ev : ev })
 })
-
 autoUpdater.on('error', (err) => {
     win.webContents.send('updater-message', { msg: `${err}`, type : 'error' })
 })
-
 autoUpdater.on('download-progress', (ev) => {
     win.webContents.send('updater-message', { msg: 'update-available', type : 'info', ev : ev })
 })
-
 autoUpdater.on('update-downloaded', (ev) => {
+
     updatesLoading = false
+    
     win.webContents.send('updater-message', { msg : 'update-downloaded', type : 'info', ev : ev })
 });
 //---------------------------------------------------
@@ -305,7 +299,7 @@ function createWindow() {
     });
 
     win.on('close', function(e) {
-        if (!willquit) {
+        if (!willquit && !is.linux()) {
             e.preventDefault();
             win.hide();
             destroyBadge()
