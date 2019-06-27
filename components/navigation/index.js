@@ -20,7 +20,6 @@ var navigation = (function(){
 
 		var renders = {
 			menu : function(href){
-
 				
 				var k = localStorage['lentakey'] || 'index?b=true';
 
@@ -63,8 +62,6 @@ var navigation = (function(){
 		var initEvents = function(){
 			
 			self.app.nav.clbks.history.navigation = function(href){
-
-				console.log("DSDSD")
 
 				renders.menu(self.app.nav.get.pathname())
 

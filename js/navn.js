@@ -124,6 +124,8 @@ Nav = function(app)
 
 		add : function(href, scroll, back){
 
+			console.log('href', href)
+
 			var khref = href.split('?')[0];
 
 			var np = parameters(href, true)
@@ -143,6 +145,8 @@ Nav = function(app)
 				backManager.chain.splice(0, index);
 
 				wb = backManager.chain[0]
+
+				console.log('backManager.chain', backManager.chain, index, href)
 			}
 
 			else{	
@@ -151,12 +155,7 @@ Nav = function(app)
 					backManager.clearAll()
 				}
 				else{
-
-					if(deep(backManager, 'chain.0.href') == href) return
-
-
 					var needadd = this.mapSearch(khref, firstEl(backManager.chain));
-
 	
 					if (needadd){
 	
@@ -191,6 +190,7 @@ Nav = function(app)
 
 			this.save()
 
+			console.log("BAKC", wb)
 
 			return wb;
 		},
@@ -249,8 +249,7 @@ Nav = function(app)
 
 			var href = current.href + collectParameters(currentParameters);
 
-
-			if(typeof _p.removefromback == 'undefined') _p.removefromback = true
+			_p.removefromback = true
 
 			this.add(href, _p);
 		},
@@ -268,7 +267,7 @@ Nav = function(app)
 
 			var href = current.href + collectParameters(currentParameters);
 
-			if(typeof _p.removefromback == 'undefined') _p.removefromback = true
+			_p.removefromback = true
 
 			this.add(href, _p);
 		},
@@ -276,8 +275,6 @@ Nav = function(app)
 
 
 			if(!p) p = {}
-
-			
 
 			if (p.inWnd){
 
@@ -424,8 +421,6 @@ Nav = function(app)
 					if (current.module && current.module.parametersHandler && p.handler){
 						
 						run = false;
-
-						console.log("HANDLER", p)
 
 						historyManager.add(p.completeHref, p);
 

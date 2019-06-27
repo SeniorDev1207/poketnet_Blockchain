@@ -3868,7 +3868,7 @@ Platform = function(app){
 				
 				s.preview(fixedBlock, type, start, count)
 
-				value = trim(value.replace(/[^a-zA-Z0-9\# ]+/g, ''))
+				value = value.replace(/[^a-zA-Z0-9\# ]+/g, '')
 
 				if(value.length){
 					self.app.ajax.rpc({
@@ -4281,13 +4281,7 @@ Platform = function(app){
 							blockps = self.currentBlock - 5000;
 
 							if (t){
-
-								var d = new Date()
-								
-								self.timeDifference = t - Math.floor((d.getTime()) / 1000)
-								self.timeDifferenceTimeZone = t -  Math.floor((d.getTime() + (d.getTimezoneOffset() * 60000)) / 1000) ;
-
-								console.log('self.timeDifference', self.timeDifference)
+								self.timeDifference = t - Math.floor((new Date().getTime()) / 1000)
 							}
 
 							if (clbk)
@@ -5977,9 +5971,7 @@ Platform = function(app){
 
 						    var txb = new bitcoin.TransactionBuilder();
 
-								   txb.addNTime(self.timeDifference || 0)
-
-								  
+						   		txb.addNTime(self.timeDifference || 0)
 
 							var amount = 0;
 
@@ -7564,11 +7556,6 @@ Platform = function(app){
 									share.scnt = '0'
 									share.score = "0"
 									share.myVal = 0
-
-
-								if(!platform.sdk.node.shares.storage.trx)
-									platform.sdk.node.shares.storage.trx = {}
-
 
 								platform.sdk.node.shares.storage.trx[data.txid] = share
 								
@@ -10320,7 +10307,7 @@ Platform = function(app){
 
 		var d = null;
 
-		var updateReady = function(){
+		var updateReady = function() {
 
 			if(!d){
 				d = dialog({
@@ -10331,7 +10318,6 @@ Platform = function(app){
 					success : function(){
 	
 						electron.ipcRenderer.send('quitAndInstall');
-						//electron.remote.autoUpdater.quitAndInstall()
 	
 					},
 	
@@ -10341,8 +10327,31 @@ Platform = function(app){
 					}
 				})
 			}
-			
-		}
+        }
+        
+        var updateAvailable = function() {
+            if(!d) {
+                if (self.app.platform.applications[os()]) {
+                    var _os = self.app.platform.applications[os()]
+                    if (_os.github && _os.github.url) {
+                        d = dialog({
+                            html : "Updates to Pocketnet are available. Go to the page to download the new version?",
+                            btn1text : "Yes",
+                            btn2text : "No, later",
+            
+                            success : function(){
+                                require("electron").shell.openExternal(_os.github.url);
+                            },
+            
+                            fail : function(){
+                                d = null;
+                                setTimeout(updateReady, 86400000)
+                            }
+                        })
+                    }
+                }
+			}
+        }
 
 		electron.ipcRenderer.on('updater-message', function(event, data){
 			if(data.type == 'info'){
@@ -10352,7 +10361,11 @@ Platform = function(app){
 
 				if(data.msg == 'download-progress'){
 					console.log('download-progress', data)
-				}
+                }
+                
+                if (data.msg == 'update-available' && is.linux()) {
+                    updateAvailable()
+                }
 			}
 
 			if(data.type == 'error'){

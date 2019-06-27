@@ -5,35 +5,33 @@
 	<div class="item">
 
 		<% if(back) {   %>
-			
-				<a href="<%- addtouri(back.href, 'back', 'true') %>" fast="fast" handler="true">
+			<div class="item">
+				<a href="<%- addtouri(back.href, 'back', 'true') %>" fast="fast">
 					<div class="iconWrapper">
 						<i class="fas fa-chevron-left"></i>
 					</div>
 				</a>
-			
+			</div>
 		<% } else { %> 
 
 			<% if(href == 'chat') { %>
 
-			<% } else { %> 
-				<% if(href == 'index') { %>
-
-					<a href="userpage?id=wallet" fast="fast">
-						<div class="iconWrapper">
-							<i class="fas fa-wallet"></i>
-						</div>
-					</a>
-
-				<% } else { %> 
-
+				<div class="item">
 					<a href="<%- lentakey %>" fast="fast">
 						<div class="iconWrapper">
-							<span class="pnetsymb">¤</span>
+							<i class="fas fa-chevron-left"></i>
 						</div>
 					</a>
-					
-				<%}%>
+				</div>
+
+
+			<% } else { %> 
+
+				<a href="discussions" fast="fast">
+					<div class="iconWrapper">
+						<i class="fas fa-comments"></i>
+					</div>
+				</a>
 
 			<% } %>
 		
@@ -45,41 +43,45 @@
 		
 	<div class="item">
 
-		<% if(href != 'share') { %>
+		<% if(!back || href == 'userpage') { %>
+
 			<a href="share" fast="fast">
 				<div class="iconWrapper shr">
 					<i class="fas fa-plus-circle"></i>
 				</div>
 			</a>
 
-			<!--<div class="iconWrapper shr">
-				<a href="share" fast="fast">
-					<div class="pilsingshare">
-						<div class="pulsing"></div>
-						<div class="pulsing"></div>
-						<div class="cr"></div>
-					</div>
+		<% } else {%>
 
-				</a>
-			</div>
-
-			-->
+			<a href="discussions" fast="fast">
+				<div class="iconWrapper">
+					<i class="fas fa-comments"></i>
+				</div>
+			</a>
 
 		<% } %>
-		
 	</div>
 
 
 	<div class="item">
 
-		
+		<% if(href != 'userpage' || !back) { %>
 
-		<a href="userpage" fast="fast" handler="true">
-			<div class="iconWrapper">
-					<i class="fas fa-bars"></i>
-			</div>
-		</a>
+			<a href="userpage?id=wallet&report=wallet" fast="fast">
+				<div class="iconWrapper">
+					<i class="fas fa-wallet"></i>
+				</div>
+			</a>
 
+		<% } else {%>
+
+			<a href="discussions" fast="fast">
+				<div class="iconWrapper">
+					<i class="fas fa-comments"></i>
+				</div>
+			</a>
+
+		<% } %>
 	</div>
 
 
