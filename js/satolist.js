@@ -7,7 +7,7 @@ if(typeof _Electron != 'undefined'){
 }
 
 
-Platform = function(app, listofnodes){
+Platform = function(app){
 
 	var self = this;
 
@@ -152,7 +152,8 @@ Platform = function(app, listofnodes){
 
 			github : {
 				name : "PocketnetSetup.exe",
-				url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest'
+                url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
+                page : 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
 			} 
 		},
 
@@ -166,8 +167,9 @@ Platform = function(app, listofnodes){
 			icon : '<i class="fab fa-linux"></i>',
 
 			github : {
-				name : "Pocketnet_linux.AppImage",
-				url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest'
+				name : "Pocketnet_linux_x64.AppImage",
+                url : 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
+                page : 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
 			} 
 		}
 	}
@@ -7047,50 +7049,9 @@ Platform = function(app, listofnodes){
 					return c.type == type
 				})
 			}
-		},
-
-		system : {
-
-			refreshNodes : function(clbk){
-				self.sdk.system.get.nodes(true, clbk)
-			},	
-
-			get : {
-				nodes : function(refresh, clbk){
-
-					if(self.nodes && self.nodes.length && !refresh){
-
-						if (clbk)
-							clbk()
-
-					}
-
-					else{
-						self.app.ajax.api({
-							action : 'nodes',
-							
-							success : function(d){
-
-								if (d.nodes && d.nodes.length){
-									self.nodes = d.nodes
-								}
-
-								if (clbk)
-									clbk(true)
-							},
-							fail : function(d){
-	
-								if (clbk)
-									clbk(false)
-							}
-						})
-					}
-
-					
-
-				}
-			}
 		}
+
+	
 	}
 
 	self.Firebase = function(platform){
@@ -10361,7 +10322,7 @@ Platform = function(app, listofnodes){
 
 		var d = null;
 
-		var updateReady = function(){
+		var updateReady = function() {
 
 			if(!d){
 				d = dialog({
@@ -10371,8 +10332,8 @@ Platform = function(app, listofnodes){
 	
 					success : function(){
 	
-						electron.ipcRenderer.send('quitAndInstall');
-						//electron.remote.autoUpdater.quitAndInstall()
+                        electron.ipcRenderer.send('quitAndInstall');
+                        d = null;
 	
 					},
 	
@@ -10382,8 +10343,32 @@ Platform = function(app, listofnodes){
 					}
 				})
 			}
-			
-		}
+        }
+        
+        var updateAvailable = function() {
+            if(!d) {
+                if (self.app.platform.applications[os()]) {
+                    var _os = self.app.platform.applications[os()]
+                    if (_os.github && _os.github.url) {
+                        d = dialog({
+                            html : "Updates to Pocketnet are available. Go to the page to download the new version?",
+                            btn1text : "Yes",
+                            btn2text : "No, later",
+            
+                            success : function(){
+                                require("electron").shell.openExternal(_os.github.page);
+                                d = null;
+                            },
+            
+                            fail : function(){
+                                d = null;
+                                setTimeout(updateReady, 86400000)
+                            }
+                        })
+                    }
+                }
+			}
+        }
 
 		electron.ipcRenderer.on('updater-message', function(event, data){
 			if(data.type == 'info'){
@@ -10393,7 +10378,11 @@ Platform = function(app, listofnodes){
 
 				if(data.msg == 'download-progress'){
 					console.log('download-progress', data)
-				}
+                }
+                
+                if (data.msg == 'update-available' && data.linux) {
+                    updateAvailable()
+                }
 			}
 
 			if(data.type == 'error'){
@@ -10548,7 +10537,43 @@ Platform = function(app, listofnodes){
 		}*/
 	]
 
-	self.nodes = listofnodes || []
+	self.nodes = [
+
+		/*{
+			full : '84.52.69.110:58081',
+			host : '84.52.69.110',
+			port : 58081,
+			ws : 8080,
+			path : '',
+
+			name : 'spb1'
+		},*/
+
+
+
+		{
+			full : '216.108.237.11:38081',
+			host : '216.108.237.11',
+			port : 38081,
+			ws : 8087,
+			path : '',
+
+			name : 'spb1'
+		},
+
+		
+
+		/*{
+			full : '84.52.69.110:37071',
+			host : '84.52.69.110',
+			port : 37071,
+			ws : 8080,
+			path : '',
+
+			name : 'spbtest'
+		}*/
+
+	]
 
 
 	self.clear = function(){
