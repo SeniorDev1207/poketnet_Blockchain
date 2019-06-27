@@ -65,9 +65,6 @@
         "ws": "^6.1.4"
     },
     "build": {
-        "directories": {
-            "buildResources": "assets"
-        },
         "productName": "Pocketnet",
         "publish": [
             {
