@@ -83,27 +83,6 @@ var userslist = (function(){
 					}
 
 				})
-			},
-			subscribePrivate : function(address, off){
-
-				var f = 'notificationsTurnOn'
-
-				if(off){
-
-					f = 'notificationsTurnOff'
-					
-				}
-
-				self.app.platform.api.actions[f](address, function(tx, err){
-
-					if(tx){
-					}
-					else
-					{
-						self.app.platform.errorHandler(err, true)
-					}
-
-				})
 			}
 		}
 
@@ -134,16 +113,7 @@ var userslist = (function(){
 			subscribe : function(){
 				var address = $(this).closest('.user').attr('address')
 
-				actions.subscribeWithDialog(address)
-			},
-
-			subscribePrivate : function(){
-				var address = $(this).closest('.user').attr('address')
-
-				var off = $(this).hasClass('turnon')
-				
-
-				actions.subscribePrivate(address, off)
+				actions.subscribe(address)
 			}
 		}
 
@@ -229,25 +199,19 @@ var userslist = (function(){
 			
 			self.app.platform.clbks.api.actions.subscribe.userlist = function(address){
 
-				el.c.find('.user[address="'+address+'"] .subscribebuttonstop').addClass('following')
-				el.c.find('.user[address="'+address+'"] .notificationturn').removeClass('turnon')		
-			}
+				console.log("SUC", address)
 
-			self.app.platform.clbks.api.actions.subscribePrivate.userlist = function(address){
-
-				el.c.find('.user[address="'+address+'"] .subscribebuttonstop').addClass('following')	
-				el.c.find('.user[address="'+address+'"] .notificationturn').addClass('turnon')	
+				el.c.find('.user[address="'+address+'"] .subscribebuttonstop').addClass('following')		
 			}
 
 			self.app.platform.clbks.api.actions.unsubscribe.userlist = function(address){
+				console.log("USUC", address)
 
 				el.c.find('.user[address="'+address+'"] .subscribebuttonstop').removeClass('following')
-				el.c.find('.user[address="'+address+'"] .notificationturn').removeClass('turnon')
 			}
 
 			self.app.platform.clbks.api.actions.blocking.userlist = function(address){
-				el.c.find('.user[address="'+address+'"] .subscribebuttonstop').addClass('blocking')		
-				el.c.find('.user[address="'+address+'"] .notificationturn').removeClass('turnon')			
+				el.c.find('.user[address="'+address+'"] .subscribebuttonstop').addClass('blocking')				
 			}
 
 			self.app.platform.clbks.api.actions.unblocking.userlist = function(address){
@@ -259,8 +223,6 @@ var userslist = (function(){
 			el.c.on('click', '.subscribe', events.subscribe)
 			el.c.on('click', '.unsubscribe', events.unsubscribe)
 			el.c.on('click', '.unblocking', events.unsubscribe)
-			el.c.on('click', '.notificationturn', events.subscribePrivate)
-			
 		}
 
 		var make = function(){
@@ -295,7 +257,6 @@ var userslist = (function(){
 				window.removeEventListener('scroll', events.loadmorescroll)
 
 				delete self.app.platform.clbks.api.actions.subscribe.userlist
-				delete self.app.platform.clbks.api.actions.subscribePrivate.userlist
 	
 				delete self.app.platform.clbks.api.actions.unsubscribe.userlist
 	

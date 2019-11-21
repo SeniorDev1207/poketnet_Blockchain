@@ -1599,7 +1599,6 @@ Platform = function(app, listofnodes){
 			actions : {
 				subscribe : {},
 				unsubscribe : {},
-				subscribePrivate : {},
 
 				blocking : {},
 				unblocking : {}
@@ -2112,10 +2111,6 @@ Platform = function(app, listofnodes){
 
 							if (me) {
 
-								me.removeRelation({
-									adddress : address
-								})
-
 								me.addRelation({
 									adddress : address,
 									private : false
@@ -2125,7 +2120,6 @@ Platform = function(app, listofnodes){
 							}
 
 							if (u){
-								u.removeRelation(address, 'subscribers')
 								u.addRelation(address, 'subscribers')
 							}
 
@@ -2196,91 +2190,6 @@ Platform = function(app, listofnodes){
 							if (me) me.removeRelation(address, 'blocking')
 
 							var clbks = deep(self.clbks, 'api.actions.unblocking') || {}
-
-							_.each(clbks, function(c){
-								c(address)
-							})
-						}
-
-						topPreloader(100)
-
-						clbk(tx, error)
-
-					}
-				)	
-			},
-
-			notificationsTurnOff : function(address, clbk){
-				self.api.actions.subscribe(address, clbk)	
-			},
-
-			subscribeWithDialog : function(address, clbk){
-				menuDialog({
-
-					items : [
-
-						{
-							text : "Subscribe and <b>Turn On</b> notifications from this user",
-							class : 'itemmain',
-							action : function(clbk){
-
-								self.api.actions.notificationsTurnOn(address, clbk)	
-								
-							}
-						},
-
-						{
-							text : "Subscribe without notifications",
-							action : function(clbk){
-
-								self.api.actions.subscribe(address, clbk)	
-								
-							}
-						}
-
-
-					]
-				})
-
-			},
-
-			notificationsTurnOn : function(address, clbk){
-				var subscribe = new SubscribePrivate();
-					subscribe.address.set(address);
-
-					topPreloader(10)
-
-				self.sdk.node.transactions.create.commonFromUnspent(
-
-					subscribe,
-
-					function(tx, error){
-
-						if (tx){
-							var me = deep(app, 'platform.sdk.users.storage.' + self.app.user.address.value.toString('hex'))
-
-							var u = self.sdk.users.storage[address];
-
-							if (me) {
-
-								me.removeRelation({
-									adddress : address
-								})
-
-								me.addRelation({
-									adddress : address,
-									private : true
-								})
-
-								me.removeRelation(address, 'recomendedSubscribes')
-							}
-
-							if (u){
-								u.removeRelation(address, 'subscribers')
-								u.addRelation(address, 'subscribers')
-							}
-
-							var clbks = deep(self.clbks, 'api.actions.subscribePrivate') || {}
 
 							_.each(clbks, function(c){
 								c(address)
@@ -4161,7 +4070,7 @@ Platform = function(app, listofnodes){
 				var temp = self.sdk.node.transactions.temp;
 
 
-				if (state && self.sdk.address.pnet() && u.address == self.sdk.address.pnet().address){
+				if(state && self.sdk.address.pnet() && u.address == self.sdk.address.pnet().address){
           
 					_.each(temp.blocking, function(block){
 						u.addRelation(block.vsaddress, 'blocking')
@@ -4172,10 +4081,6 @@ Platform = function(app, listofnodes){
 					})
 
 					_.each(temp.subscribe, function(s){
-
-						u.removeRelation({
-							adddress : s.vsaddress
-						})
 						
 						u.addRelation({
 							adddress : s.vsaddress,
@@ -4183,24 +4088,12 @@ Platform = function(app, listofnodes){
 						})	
 					})
 
-					_.each(temp.subscribePrivate, function(s){
-
-						u.removeRelation({
-							adddress : s.vsaddress
-						})
+					_.each(temp.unsubscribe, function(s){
 						
 						u.addRelation({
 							adddress : s.vsaddress,
-							private : true
+							private : false
 						})	
-					})
-
-					_.each(temp.unsubscribe, function(s){
-						
-						u.removeRelation({
-							adddress : s.vsaddress
-						})
-
 					})
 				}
 			},
@@ -4410,18 +4303,12 @@ Platform = function(app, listofnodes){
 
 				requestFreeMoney : function(clbk){
 
-					console.log('requestFreeMoney1')
-
 					var a = self.sdk.address.pnet();
 
 					if (a){
 						a = a.address;
 
-						console.log('requestFreeMoney2')
-
 						this.checkFreeMoney(a, function(r){
-							console.log('requestFreeMoney3', r)
-
 							if(!r){
 								if (clbk)
 									clbk(null)
@@ -4429,14 +4316,11 @@ Platform = function(app, listofnodes){
 							else
 							{
 
-								console.log('requestFreeMoney4')
-								if (!self.sdk.captcha.done && !_Node){
+								/*if (!self.sdk.captcha.done && !_Node){
 									if (clbk)
 										clbk(null, 'captcha')
 								}
-								else{
-
-									console.log('requestFreeMoney5')
+								else{*/
 
 									var prms = {
 										address : a,
@@ -4448,8 +4332,6 @@ Platform = function(app, listofnodes){
 										action : 'freeMoney',
 										data : prms,
 										success : function(d){
-											console.log('requestFreeMoney6')
-
 											if (clbk)
 												clbk(true)
 	
@@ -4461,7 +4343,7 @@ Platform = function(app, listofnodes){
 										}
 									})
 
-								}
+								//}
 
 								
 							}
@@ -7181,25 +7063,6 @@ Platform = function(app, listofnodes){
 					}
 				},
 
-				default : function(clbk){
-					var address = deep(app, 'user.address.value')
-
-					if (address){
-						var author = deep(self, 'sdk.users.storage.'+address)
-
-						var u = _.map(deep(author, 'subscribes') || [], function(a){
-							return a.adddress
-						})
-
-						if(u.length >= 30){
-
-							return 'sub'
-						}
-					}
-
-					return 'common'
-				},
-
 				getWithTemp : function(id){
 
 					var share = deep(self.app.platform, 'sdk.node.shares.storage.trx.' + id)
@@ -9088,9 +8951,6 @@ Platform = function(app, listofnodes){
 								var tx = txb.build()
 
 								var hex = tx.toHex();
-
-
-								
 								
 								if(p.pseudo){
 									var alias = obj.export(true);
@@ -9102,7 +8962,7 @@ Platform = function(app, listofnodes){
 								else
 								{
 
-									console.log('obj.export()', obj.export())
+									//console.log('obj.export()', obj.export())
 
 									self.app.ajax.rpc({
 										method : 'sendrawtransactionwithmessage',
@@ -9130,7 +8990,7 @@ Platform = function(app, listofnodes){
 											alias.inputs = inputs
 											alias.outputs = outputs
 
-											console.log("temptemptemp", temp)
+											// console.log("temptemptemp", temp)
 
 											self.sdk.node.transactions.saveTemp()
 											
@@ -9232,7 +9092,16 @@ Platform = function(app, listofnodes){
 
 					subscribePrivate : function(inputs, subscribe, clbk, p){
 
-						this.common(inputs, subscribe, TXFEE, clbk, p)
+						var c = this.common
+
+
+						self.cryptography.api.aeswc.pwd.encryption(subscribe.address.v, {}, function(encrypted){
+
+							subscribe.encrypted.set(encrypted)
+
+							c(inputs, subscribe, TXFEE, clbk, p)
+
+						})
 						
 					}
 				}
@@ -11415,14 +11284,18 @@ Platform = function(app, listofnodes){
 			reshare : {
 				loadMore : function(data, clbk, wa){
 						
+					console.log("RESHARELOAD", data.addrFrom)
 					platform.sdk.users.get([data.addrFrom], function(){
 
 						data.user = platform.sdk.users.storage[data.addrFrom] || {}
 
 						data.user.address = data.addrFrom
+
+						console.log(data)
 					
 						platform.sdk.node.shares.getbyid([data.txid, data.txidRepost], function(s, fromcashe){
 
+							console.log('s', s)
 
 							s || (s = []);
 
@@ -11515,124 +11388,7 @@ Platform = function(app, listofnodes){
 				clbks : {
 				}
 			},
-			postfromprivate : {
-				loadMore : function(data, clbk, wa){
-						
-					if (data.addrFrom){
-						
-						platform.sdk.users.get([data.addrFrom], function(){
 
-							data.user = platform.sdk.users.storage[data.addrFrom] || {}
-
-							data.user.address =  data.addrFrom
-
-							if(data.txids && !data.txid) data.txid = data.txids
-						
-							platform.sdk.node.shares.getbyid(data.txid, function(s, fromcashe){
-
-								s || (s = []);
-
-								if (s[0]){
-									data.share = s[0];
-								}
-
-								clbk()
-							})
-
-						})
-
-						return
-					}
-
-					clbk()
-				},
-				
-				refs : {
-
-				},
-				audio : {
-					unfocus : 'water_droplet',
-					if : function(data){
-
-						if(data.share){
-							return true
-						}
-
-						return false;
-					}
-				},
-
-				notificationData : function(data){
-					var n = {};
-
-					if(data.user && data.share){
-						n.caption = self.tempates._user(data.user) + " made post:"
-						n.text = self.tempates._share(data.share, 100)
-					}
-
-					if(_.isEmpty(n)) 
-						return null;
-
-					return n
-				},
-				
-				fastMessage : function(data){	
-			
-					var text = '';
-					var html = '';
-
-					text = self.tempates.share(data.share, null, true)
-					
-					if(text){
-
-
-						if(data.postsCnt > 1){
-							
-							var c = data.postsCnt - 1
-
-							//text = text + '<div class="moreshares">And more ' + c + " " + pluralform(c, ['post', 'posts']) + '</div>'
-							
-						}
-
-						
-
-						html += self.tempates.user(data.user, text, true, " made post:", null, data.time)
-					}
-
-
-					return html;
-					
-				},
-				
-				fastMessageEvents : function(data, message){
-
-					message.el.find('.sharepreview').on('click', function(){
-
-						platform.sdk.node.shares.getbyid(data.txid, function(s, err, p, fromcashe){
-
-							platform.app.nav.api.load({
-								open : true,
-								href : 'post?s=' + data.txid,
-								inWnd : true,
-								//history : true,
-								clbk : function(d, p){									
-									app.nav.wnds['post'] = p
-								},
-
-								essenseData : {
-									share : data.txid
-								}
-							})
-						
-						})
-
-					})
-
-				},
-				
-				clbks : {
-				}
-			},
 			sharepocketnet : {
 				loadMore : function(data, clbk, wa){
 

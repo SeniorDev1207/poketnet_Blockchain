@@ -266,82 +266,46 @@ var main = (function(){
 				if(!p) p = {};
 
 				renders.addpanel();
+			
+				self.nav.api.load({
 
-				self.app.user.isState(function(state){
+					open : true,
+					id : 'lenta',
+					el : el.lenta,
+					animation : false,
 
-					var r = null;
+					mid : 'main',
 
-					/*if(state){
+					essenseData : {
+						hr : 'index?',
+						goback : p.goback,
 
-						var address = deep(self, 'app.user.address.value')
+						renderclbk : function(){
+							
+							if (hsready)
 
-						if (address){
-							var author = deep(self, 'sdk.users.storage.'+address)
-
-							var u = _.map(deep(author, 'subscribes') || [], function(a){
-								return a.adddress
-							})
-
-							if(u.length >= 30){
-								if (currentMode == 'common'){
-									r = 'sub'
-								}
-
-								if(currentMode == 'sub'){
-									r = false
-								}
-							}
-
+								el.panel.hcSticky('refresh');
+	
 						}
-
-						
-					}*/
-
+					},
 					
+					clbk : function(e, p){
+
+						if(!upbutton)
+							upbutton = self.app.platform.api.upbutton(el.up, {
+								top : function(){
 				
-					self.nav.api.load({
+									return '65px'
+								},
+								rightEl : el.c.find('.lentacell')
+							})		
 
-						open : true,
-						id : 'lenta',
-						el : el.lenta,
-						animation : false,
+						lenta = p
 
-						mid : 'main',
+						if (clbk)
+							clbk()
 
-						essenseData : {
-							hr : 'index?',
-							goback : p.goback,
-
-							r : r,
-
-							renderclbk : function(){
-								
-								if (hsready)
-
-									el.panel.hcSticky('refresh');
-		
-							}
-						},
-						
-						clbk : function(e, p){
-
-							if(!upbutton)
-								upbutton = self.app.platform.api.upbutton(el.up, {
-									top : function(){
-					
-										return '65px'
-									},
-									rightEl : el.c.find('.lentacell')
-								})		
-
-							lenta = p
-
-							if (clbk)
-								clbk()
-
-						}
-
-					})
+					}
 
 				})
 			}
@@ -550,6 +514,9 @@ var main = (function(){
 			
 		
 				clbk(data);
+				
+
+				
 				
 
 			},
