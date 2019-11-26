@@ -313,6 +313,48 @@ Comment = function(txid){
 
 	
 
+	self.export = function(extend){
+		var r = {
+			postid : self.txid,
+			answerid : self.answerid || "",
+			parentid : self.parentid || ""
+		}
+
+		if(!self.delete){
+			r.msg = JSON.stringify({
+				message : encodeURIComponent(self.message.v),
+				url : encodeURIComponent(self.url.v),
+				images : _.map(self.images.v, function(i){
+					return encodeURIComponent(i)
+				}),
+			})
+		}
+
+		if(self.id){
+			r.id = self.id
+		}
+
+		return r
+	}
+
+	self.import = function(v){
+
+		self.txid = v.postid;
+		self.answerid = v.answerid;
+		self.parentid = v.parentid;
+
+		v.msgparsed = JSON.parse(v.msg)
+
+		self.url.set(decodeURIComponent(v.msgparsed.url))
+		self.message.set(decodeURIComponent(v.msgparsed.message))
+		self.images.set(_.map(v.msgparsed.images, function(i){
+			return decodeURIComponent(i)
+		}))
+
+		if (v.txid || v.id)
+			self.id = v.txid || v.id
+	}
+
 	self.uploadImages = function(app, clbk){
 
 
@@ -948,7 +990,7 @@ Share = function(){
 
 	self.validation = function(){
 
-		if(!self.message.v && !self.caption.v){
+		if(!self.message.v && !self.caption.v && !self.repost.v){
 			return 'message'
 		}
 
@@ -959,7 +1001,6 @@ Share = function(){
 			if (l < 30 && !self.images.v.length){
 				return 'url'
 			}
-
 			
 		}
 
@@ -1491,6 +1532,11 @@ pShare = function(){
 		v : '',
 		videos : [],
 		image : ''
+	}
+
+	self.isEmpty = function(){
+
+		return !self.message && !self.caption && (self.tags.length == 0) && (self.images.length == 0) && !self.url
 	}
 	
 	self.findComment = function(id){
