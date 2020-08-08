@@ -227,7 +227,6 @@ ____loclib.whatsnew = "Что нового?";
 ____loclib.saddlink = "Добавить ссылку на сайт или на видео";
 ____loclib.saddimages = "Прикрепить изображения";
 ____loclib.sarticle = "Написать статью";
-____loclib.stelegram = "Отправить в телеграм"
 ____loclib.snothing = "Ничего";
 ____loclib.sposttime = "Опубликовать по времени";
 ____loclib.spostnow = "Опубликовать сейчас";
