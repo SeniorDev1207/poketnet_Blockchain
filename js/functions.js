@@ -1,4 +1,4 @@
-1/* PDF */
+/* PDF */
 
 	var tableAlignmentCenter = function(obj){
 
@@ -2732,7 +2732,7 @@
 					return
 				}
 
-				if (parameter.type == 'image' || parameter.type == 'file'){
+				if (parameter.type == 'image'){
 
 
 					var uploadElement = _el.find('.addImage'),
@@ -3847,11 +3847,6 @@
 			if(self.type == 'number' || self.type == 'cash')
 			{
 				value = Number(value).toFixed(deep(self, 'format.Precision') || 0)
-            }
-            
-            if(self.type == 'label')
-			{
-				return true;
 			}
 
 			if(self.type == 'hours')
@@ -3988,10 +3983,7 @@
 				daterange : ['', ''],
 				email : '',
 				stringany : '',
-				nickname : '',
-				image : '',
-				password : '',
-				file : ''
+				nickname : ''
 			}
 
 			if(typeof self.defaultValue != 'undefined') return self.defaultValue;	
@@ -4040,8 +4032,6 @@
 		}
 		self.mask = function(tohtml){
 
-			var f = self.format || {}
-
 			var masked = false;
 
 			var mask = {
@@ -4055,7 +4045,7 @@
 			if(self.type == 'number' || self.type == 'cash')
 			{
 				mask.alias = 'numeric';
-				mask.groupSeparator = typeof f.groupSeparator != 'undefined' ? f.groupSeparator : ',';
+				mask.groupSeparator = ',';
 				mask.radixPoint =  '.';
 				mask.digits = deep(self, 'format.Precision');
 				mask.digitsOptional = !1;
@@ -4199,7 +4189,7 @@
 
 			var m = self.mask(true);
 
-			if (self.type == 'image' || self.type == 'file') {
+			if (self.type == 'image') {
 
 				if(self.uploadTemplate && self.upload && self.previewTemplate){
 
@@ -4694,7 +4684,9 @@
 					input += '</div>'
 
 				return input;
-			}			
+			}
+
+			
 
 			if(self.type == 'color'){
 				var input = '<input notmasked="notmasked" pid="'+self.id+'" class="simpleColor input" value="' + self.value + '">';
@@ -4751,17 +4743,6 @@
 
 
 				return input
-			}
-
-			if(self.type == 'password'){
-				var input = '<input '+__disabled+' pid="'+self.id+'" class="' + self.type + ' input" placeholder="'+(self.placeholder || "")+'" value="' + self.render(true) + '" type="password">';
-
-				return input; 
-
-            }
-            
-            if(self.type == 'label'){
-				return '<div pid="'+self.id+'" class="simpleColor inpLabel">' + self.value + '</div>';
 			}
 
 			var input = '<input '+__disabled+' ' + m + ' pid="'+self.id+'" class="' + self.type + ' input" placeholder="'+(self.placeholder || "")+'" value="' + self.render(true) + '" type="text">';
@@ -4941,9 +4922,9 @@
 
 			return self.value;
 
-        }
+		}
 
-            if(self.type == 'valuesmultitree'){
+		if(self.type == 'valuesmultitree'){
 
 			self.clear = function(){
 				_.each(self.treemap, function(m){
@@ -7495,8 +7476,7 @@
 				else{
 
 					if (p.fail)
-						p.fail(null, 'nodedirect')	
-						 
+				 		p.fail(null, 'nodedirect')	
 				}       	
 				
 
