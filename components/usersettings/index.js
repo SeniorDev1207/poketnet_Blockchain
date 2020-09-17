@@ -1,4 +1,3 @@
-
 var usersettings = (function(){
 
 	var self = new nModule();
@@ -9,7 +8,8 @@ var usersettings = (function(){
 
 		var primary = deep(p, 'history');
 
-		var el, composed, controlller;
+		var el, composed;
+
 
 
 		var actions = {
@@ -48,13 +48,8 @@ var usersettings = (function(){
 						e.addClass('active')
 
 						self.app.platform.sdk.theme.set(t)
-						
 					})
-
-					// const bot = (JSON.parse(localStorage.getItem('telegrambot')) && JSON.parse(localStorage.getItem('telegrambot')).token) || "no z"
-					// self.app.platform.sdk.system.get.telegramGetMe(bot);
-				})
-				
+				})	
 			}
 		}
 
@@ -68,33 +63,12 @@ var usersettings = (function(){
 		}
 
 		var initEvents = function(){
+			
 
-			const rerender = () => {
-
-				console.log('rerender???');
-				renders.options();
-
-			}
-
-			console.log(self.app.user.features, 'features')
-
-			if (self.app.user.features.telegram){
-
-				controller = self.app.platform.sdk.system.get.telegramUpdateAbort;
-
-				controller.abort(); 
-				self.app.platform.sdk.system.get.telegramUpdateAbort = new AbortController();
-
-				console.log('controller', self.app.platform.sdk.system.get.telegramUpdateAbort)
-				
-				self.app.platform.sdk.system.get.telegramUpdates(null, rerender);
-
-			}
 		}
 
 		var make = function(){
 			renders.options()
-
 		}
 
 		return {
@@ -103,6 +77,7 @@ var usersettings = (function(){
 			getdata : function(clbk){
 
 				composed = self.app.platform.sdk.usersettings.compose()
+
 				var data = {};
 
 				clbk(data);
@@ -111,15 +86,6 @@ var usersettings = (function(){
 
 			destroy : function(){
 				el = {};
-
-				if (self.app.user.features.telegram){
-
-					console.log('destroyed?');
-					controller.abort(); 
-					controller = new AbortController();
-					self.app.platform.sdk.system.get.telegramUpdates();
-
-				}
 			},
 			
 			init : function(p){
@@ -136,7 +102,6 @@ var usersettings = (function(){
 				make()
 
 				p.clbk(null, p);
-
 			}
 		}
 	};

@@ -1,4 +1,4 @@
-/* PDF */
+1/* PDF */
 
 	var tableAlignmentCenter = function(obj){
 
@@ -2732,7 +2732,7 @@
 					return
 				}
 
-				if (parameter.type == 'image'){
+				if (parameter.type == 'image' || parameter.type == 'file'){
 
 
 					var uploadElement = _el.find('.addImage'),
@@ -3199,12 +3199,11 @@
 							open()
 						})
 					}
+
 					_el.find('.vc_value').on('click', function(){
 						bkp = null;
 
 						var value = $(this).attr('value');
-
-							console.log('this', this, $(this));
 
 							input.val(value);
 							input.change();
@@ -3848,6 +3847,11 @@
 			if(self.type == 'number' || self.type == 'cash')
 			{
 				value = Number(value).toFixed(deep(self, 'format.Precision') || 0)
+            }
+            
+            if(self.type == 'label')
+			{
+				return true;
 			}
 
 			if(self.type == 'hours')
@@ -3984,7 +3988,10 @@
 				daterange : ['', ''],
 				email : '',
 				stringany : '',
-				nickname : ''
+				nickname : '',
+				image : '',
+				password : '',
+				file : ''
 			}
 
 			if(typeof self.defaultValue != 'undefined') return self.defaultValue;	
@@ -4033,6 +4040,8 @@
 		}
 		self.mask = function(tohtml){
 
+			var f = self.format || {}
+
 			var masked = false;
 
 			var mask = {
@@ -4046,7 +4055,7 @@
 			if(self.type == 'number' || self.type == 'cash')
 			{
 				mask.alias = 'numeric';
-				mask.groupSeparator = ',';
+				mask.groupSeparator = typeof f.groupSeparator != 'undefined' ? f.groupSeparator : ',';
 				mask.radixPoint =  '.';
 				mask.digits = deep(self, 'format.Precision');
 				mask.digitsOptional = !1;
@@ -4190,7 +4199,7 @@
 
 			var m = self.mask(true);
 
-			if (self.type == 'image') {
+			if (self.type == 'image' || self.type == 'file') {
 
 				if(self.uploadTemplate && self.upload && self.previewTemplate){
 
@@ -4685,9 +4694,7 @@
 					input += '</div>'
 
 				return input;
-			}
-
-			
+			}			
 
 			if(self.type == 'color'){
 				var input = '<input notmasked="notmasked" pid="'+self.id+'" class="simpleColor input" value="' + self.value + '">';
@@ -4744,6 +4751,17 @@
 
 
 				return input
+			}
+
+			if(self.type == 'password'){
+				var input = '<input '+__disabled+' pid="'+self.id+'" class="' + self.type + ' input" placeholder="'+(self.placeholder || "")+'" value="' + self.render(true) + '" type="password">';
+
+				return input; 
+
+            }
+            
+            if(self.type == 'label'){
+				return '<div pid="'+self.id+'" class="simpleColor inpLabel">' + self.value + '</div>';
 			}
 
 			var input = '<input '+__disabled+' ' + m + ' pid="'+self.id+'" class="' + self.type + ' input" placeholder="'+(self.placeholder || "")+'" value="' + self.render(true) + '" type="text">';
@@ -4923,9 +4941,9 @@
 
 			return self.value;
 
-		}
+        }
 
-		if(self.type == 'valuesmultitree'){
+            if(self.type == 'valuesmultitree'){
 
 			self.clear = function(){
 				_.each(self.treemap, function(m){
@@ -5161,13 +5179,13 @@
 
 		self.collectValues = function(){
 			var value = {};
-			
+
 			_.each(self.content, function(p, index){
 				if(p.value){
 					value[index] = p.value;
 				}
 			})
-			console.log('InOnChange', value)
+
 			self.set(value)
 		}
 
@@ -7477,7 +7495,8 @@
 				else{
 
 					if (p.fail)
-				 		p.fail(null, 'nodedirect')	
+						p.fail(null, 'nodedirect')	
+						 
 				}       	
 				
 
@@ -9494,7 +9513,7 @@
 	}
 
 	parseVideo = function(url) {
-		console.log('url', url);
+
 		var _url = url;
 
 	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/);
@@ -9522,7 +9541,7 @@
 
 	    	}
 	    }
-		
+
 	    return {
 	        type: type,
 	        url : url,
