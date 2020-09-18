@@ -38849,7 +38849,6 @@ TransactionBuilder.prototype.__addInputUnsafe = function (txHash, vout, options)
     input.prevOutType = prevOutType || classify.output(options.prevOutScript)
   }
 
-
   const vin = this.__tx.addInput(txHash, vout, options.sequence, options.scriptSig)
   this.__inputs[vin] = input
   this.__prevTxSet[prevTxOut] = true

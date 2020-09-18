@@ -5,7 +5,6 @@ if (setupEvents.handleSquirrelEvent()) {
   return;
 }*/
 
-var proxyInterface = require('./proxy/mainserver.js')
 
 const electronLocalshortcut = require('electron-localshortcut');
 
@@ -156,16 +155,12 @@ function createTray() {
 
     win.on('show', () => {
         if (!tray) return;
-        try {
-            tray.setHighlightMode('always')
-        } catch {}
+        tray.setHighlightMode('always')
     })
 
     win.on('hide', () => {
         if (!tray) return;
-        try {
-            tray.setHighlightMode('never')
-        } catch {}
+        tray.setHighlightMode('never')
     })
 }
 
@@ -200,6 +195,7 @@ function createBadgeOS() {
 }
 
 function initApp() {
+
     app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
     
     createWindow();
@@ -277,11 +273,7 @@ function notification(nhtml) {
         movable: false,
         backgroundColor: '#020E1B',
         alwaysOnTop: true,
-        show: false,
-
-        webPreferences: {
-            nodeIntegration: true
-        }
+        show: false
     })
 
     nwin.loadFile('notifications.html', {
@@ -300,7 +292,6 @@ function notification(nhtml) {
 }
 
 function createWindow() {
-
     const screen = require('electron').screen;
     const mainScreen = screen.getPrimaryDisplay();
 
@@ -312,10 +303,6 @@ function createWindow() {
         webSecurity : false,
 
         icon: defaultIcon,
-
-        webPreferences: {
-            nodeIntegration: true
-        }
     });
 
     win.maximize();
@@ -349,7 +336,7 @@ function createWindow() {
         }
     });
 
-    win.webContents.session.webRequest.onHeadersReceived({urls:[]}, (detail, callback) => {
+    win.webContents.session.webRequest.onHeadersReceived({}, (detail, callback) => {
         const xFrameOriginKey = Object.keys(detail.responseHeaders).find(header => String(header).match(/^x-frame-options$/i));
         
         if (xFrameOriginKey) {
@@ -399,8 +386,8 @@ function createWindow() {
     })
 
 
-    var pi = new proxyInterface(ipcMain, win.webContents)
-    pi.init()
+   
+
     // Вызывается, когда окно будет закрыто.
     return win
 }
