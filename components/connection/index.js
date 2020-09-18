@@ -544,7 +544,7 @@ var connection = (function(){
 						name : "RPC login",
 						id : 'rpcuser',
 						placeholder : "Login for PRC authorization",
-						defaultValue : _node.rpcuser || '',
+						defaultValue : _node.rpcuser ||'', /*'pocketbot',*/
 						require : true
 					
 					}),

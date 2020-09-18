@@ -337,6 +337,12 @@ __map =  {
 				auth : 'authorization',
 				//validate : 'filluser'
 			},
+			relations : [
+
+				{src : 'js/vendor/jquery.inputmask.bundle.min.js',			   f : 'js'}
+
+			],
+
 		},
 
 		test : {
@@ -596,20 +602,6 @@ __map =  {
 				el : 'content'
 			},
 			anonimus : true,
-		},
-
-
-		esystem : {
-			uri : "esystem",
-			href : "esystem",
-			add : {
-				el : 'content'
-			},
-			anonimus : true,
-
-			relations : [
-				{src : 'js/vendor/jquery.inputmask.bundle.min.js',			   f : 'js'},	
-			],
 		},
 
 		connection : {

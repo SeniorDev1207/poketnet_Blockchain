@@ -8,7 +8,7 @@ var applications = (function(){
 
 		var primary = deep(p, 'history');
 
-		var el, ed;
+		var el;
 
 		var actions = {
 
@@ -46,20 +46,20 @@ var applications = (function(){
 				}
 			},
 
-			os : function(clbk){
+			os : function(){
 				var _os = os();
 
 				self.app.platform.m.log('registration_application')
 
-				if (_os && self.app.platform.applications[ed.key][_os] && (typeof _Electron == 'undefined' && ed.key != 'ui') && !window.cordova){
+				if (_os && self.app.platform.applications[_os] && typeof _Electron == 'undefined' && !window.cordova){
 
-					renders.os(self.app.platform.applications[ed.key][_os], clbk)
+					renders.os(self.app.platform.applications[_os])
 
 				}
 
 				else
 				{
-					clbk(clbk);
+					clbk();
 				}
 			}
 
@@ -114,11 +114,7 @@ var applications = (function(){
 		return {
 			primary : primary,
 
-			getdata : function(clbk, p){
-
-				ed = deep(p, 'settings.essenseData') || {}
-
-				ed.key ||(ed.key = 'ui')
+			getdata : function(clbk){
 
 				var data = {};
 
