@@ -932,11 +932,11 @@ Platform = function (app, listofnodes) {
 
                             var points = _.clone(this.points) || [];
 
-                            /*_.each(series, function(s){
+                            /*_.each(series, function (s){
 
                                 if(s.name.indexOf("Navigator") > -1) return;
 
-                                var p = _.find(s.data || s, function(p){
+                                var p = _.find(s.data || s, function (p){
 
                                     if (p)
 
@@ -2759,7 +2759,7 @@ Platform = function (app, listofnodes) {
 
                 var a1 = self.sdk.relayTransactions.get()[key] || []
 
-                /*a1 = _.filter(a1, function(o){
+                /*a1 = _.filter(a1, function (o){
                     return !o.sending
                 })*/
 
@@ -7821,6 +7821,7 @@ Platform = function (app, listofnodes) {
                                 clbk()
                             }
                         }
+
                     })
                 },
 
@@ -10825,9 +10826,9 @@ Platform = function (app, listofnodes) {
                 self.clientrtctemp.init(function () {
 
 
-                    /*self.clientrtctemp.clbks.message.messenger = function(p, rtc){
+                    /*self.clientrtctemp.clbks.message.messenger = function (p, rtc){
 
-                        _.each(self.sdk.tempmessenger.clbks || {}, function(c){
+                        _.each(self.sdk.tempmessenger.clbks || {}, function (c){
                             c('message', rtc)
                         })
                         
@@ -13568,9 +13569,9 @@ Platform = function (app, listofnodes) {
                     }
                 },
                 clbks: {
-                    /*transactions : function(data){
+                    /*transactions : function (data){
 
-                        _.each(platform.sdk.node.transactions.clbks, function(c){
+                        _.each(platform.sdk.node.transactions.clbks, function (c){
                             c(data.tx.amount)
                         })
 
@@ -14244,10 +14245,10 @@ Platform = function (app, listofnodes) {
             })
         }
 
-        /*var initOnlineListener = function(){
+        /*var initOnlineListener = function (){
             if(self.onlineCheck && !_Node){
 
-                onlinetnterval = retry(function(){
+                onlinetnterval = retry(function (){
 
                     var online = deep(window, 'navigator.onLine');
 
@@ -14260,7 +14261,7 @@ Platform = function (app, listofnodes) {
                     }
                     
 
-                }, function(){
+                }, function (){
 
                     if(!self.online){
 
@@ -16297,7 +16298,7 @@ Platform = function (app, listofnodes) {
         }
 
         self.ab = {
-            /*send : function(testid, result){
+            /*send : function (testid, result){
 
                 platform.app.ajax.run({
                     data : {
@@ -16308,14 +16309,14 @@ Platform = function (app, listofnodes) {
                         Device : device()
                     },
 
-                    success : function(data){
+                    success : function (data){
                                             
                         if (clbk)
                             clbk()
 
                     },
 
-                    fail : function(){
+                    fail : function (){
 
                         if (clbk)
                             clbk()
@@ -16550,7 +16551,7 @@ Platform = function (app, listofnodes) {
     self.prepare = function (clbk, state) {
 
 
-        /*setInterval(function(){
+        /*setInterval(function (){
             
             
             console.log('self.sdk.relayTransactions.storage', self.sdk.relayTransactions.storage)
@@ -16672,7 +16673,7 @@ Platform = function (app, listofnodes) {
                                         btn1text : 'Join Pocketnet & Earn Pocketcoin Now',
                                         btn2text : 'Watch Video',
 
-                                        success : function(){
+                                        success : function (){
                                             
 
                                             self.app.nav.api.load({
@@ -16682,7 +16683,7 @@ Platform = function (app, listofnodes) {
                                             })
                                         },
 
-                                        fail : function(){
+                                        fail : function (){
                                             self.app.nav.api.load({
                                                 open : true,
                                                 href : 'video',
@@ -16826,9 +16827,9 @@ Platform = function (app, listofnodes) {
 
             /*if ( (time > 3600 && (electron || window.cordova)) || resume){
 
-                self.app.platform.restart(function(){
+                self.app.platform.restart(function (){
 
-                    app.reload(function(){
+                    app.reload(function (){
 
                     })
 
