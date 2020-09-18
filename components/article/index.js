@@ -51,17 +51,12 @@ var article = (function(){
 			},
 
 			trx : function(share, clbk){
+				el.c.addClass('loading')
 
-				console.log('trx', share, clbk, p)
-
-				if (el.c){
-					el.c.addClass('loading')
-				}
 
 				if (ed.share){
 					share.aliasid = ed.share.aliasid
 				}
-
 				self.sdk.node.transactions.create.commonFromUnspent(
 
 					share,
@@ -70,9 +65,7 @@ var article = (function(){
 
 						topPreloader(100)
 
-						if (el.c){
-							el.c.removeClass('loading')
-						}
+						el.c.removeClass('loading')
 
 						if(!_alias){
 							
@@ -96,7 +89,6 @@ var article = (function(){
 							try{
 
 								var alias = new pShare();
-									console.log("_import alias", _alias)
 									alias._import(_alias, true)
 									alias.temp = true;
 									alias.address = _alias.address
@@ -106,8 +98,6 @@ var article = (function(){
 								self.app.platform.sdk.node.shares.add(alias)
 
 								console.log('alias', alias)
-								console.log('_alias',  _alias)
-								console.log("art.", art)
 
 								art.txid = alias.txid;
 								art.ptime = Math.floor((new Date().getTime()) / 1000)
@@ -140,26 +130,22 @@ var article = (function(){
 			},	
 
 			add : function(){
-
 				var share = new Share();
-				
+
 				var text = self.app.platform.sdk.articles.echo(art)
-				var date = new Date().getTime()
-				console.log('art', art, 'text', text, date)
 
-				share.message.set(text)
-				share.caption.set(art.caption.value)
+					share.message.set(text)
+					share.caption.set(art.caption.value)
 
-				share.images.set(self.app.platform.sdk.articles.getImages(text))
+					share.images.set(self.app.platform.sdk.articles.getImages(text))
 
-				var tags = actions.tagsFromText(text)
-				share.tags.set(tags) 
+					//share.images.set(art.images) 
 
-				share.settings.v = 'a'
-				share.settings.videos = self.app.platform.sdk.articles.getVideos(text)
+					share.tags.set(actions.tagsFromText(text)) 
 
+					share.settings.v = 'a'
+					share.settings.videos = self.app.platform.sdk.articles.getVideos(text)
 
-				console.log('article share share share', share)
 
 				var error = share.validation()
 
@@ -207,20 +193,15 @@ var article = (function(){
 									strong : [],
 									picture : ['img-type'],
 									source : ['srcset', 'type'],
-									strike: []
 								}
 							});
 
 							share.message.set(text)
-
-							console.log('init', share, text)			
-
 							actions.trx(share)
-
-							
 						}
 					})
 
+					
 					
 				}
 				else
@@ -281,11 +262,7 @@ var article = (function(){
 			change : function(){
 				t = slowMade(function(){
 
-
-					console.log('editor', editor);
-					console.log('serilize', editor.serialize());
 					var cnt = self.app.platform.sdk.articles.lightVideo(editor.serialize())
-					console.log('cnt', cnt)
 
 
 					actions.change(cnt);
@@ -340,7 +317,8 @@ var article = (function(){
 		}
 
 		var initEvents = function(){
-						
+			
+			
 			el.back.on('click', events.close)
 			el.caption.on('keyup', events.changecaption)
 			el.add.on('click', events.add)
@@ -379,7 +357,7 @@ var article = (function(){
 			        hideOnClick : false
 			    }
 			});
-			
+
 			$(function () {
 			    $('.edt').mediumInsert({
 			        editor: editor,
