@@ -11744,6 +11744,7 @@ Platform = function (app, listofnodes) {
                 }
             },
 
+            // node control settings
             node: {
                 settings: {
                     meta: {
@@ -11758,34 +11759,58 @@ Platform = function (app, listofnodes) {
                         BinPath: {
                             name: 'Binary path',
                             id: 'binPath',
-                            type: "FILE",
+                            type: "FILE_SELECT",
                             upload: {},
                             value: '',
                             dbId: 'BinPath'
                         },
-                        ConfigPath: {
+                        ConfPath: {
                             name: 'Config path',
-                            id: 'configPath',
-                            type: "FILE",
+                            id: 'confPath',
+                            type: "FILE_SELECT",
                             upload: {},
                             value: '',
-                            dbId: 'ConfigPath'
+                            dbId: 'ConfPath'
                         },
                         DataPath: {
                             name: 'Data path',
                             id: 'dataPath',
-                            type: "FILE",
+                            type: "FILE_SELECT",
                             upload: {},
                             value: '',
                             dbId: 'DataPath'
                         },
+                        SetPrivateKey: {
+                            name: 'Staking Address',
+                            id: 'setPrivateKey',
+                            type: "BUTTON",
+                            value: '#link_to_wallets',
+                            text: 'Import the account address to the node for stacking',
+                            dbId: 'SetPrivateKey'
+                        },
 
                         state: {
                             name: 'State',
-                            id: '_state',
+                            id: 'state',
                             type: "LABEL",
                             value: '',
                             dbId: 'control.state'
+                        },
+
+                        addresses: {
+                            name: 'Staking addresses',
+                            id: 'addresses',
+                            type: "LABEL",
+                            value: '',
+                            dbId: 'control.addresses'
+                        },
+
+                        lastBlock: {
+                            name: 'Last Block',
+                            id: 'lastBlock',
+                            type: "LABEL",
+                            value: '-',
+                            dbId: 'control.lastBlock'
                         }
                     },
 
@@ -11832,6 +11857,8 @@ Platform = function (app, listofnodes) {
                                 options: {
 
                                     state: options.state,
+                                    lastBlock: options.lastBlock,
+                                    addresses: options.addresses,
 
                                 }
                             },
@@ -11841,9 +11868,8 @@ Platform = function (app, listofnodes) {
                                 options: {
 
                                     Enable: options.Enable,
-                                    BinPath: options.BinPath,
-                                    ConfigPath: options.ConfigPath,
                                     DataPath: options.DataPath,
+                                    SetPrivateKey: options.SetPrivateKey,
 
                                 }
                             },
@@ -17789,7 +17815,6 @@ Platform = function (app, listofnodes) {
 
 
         self.init = function () {
-
             inited = true;
 
             if (window.cordova) {
