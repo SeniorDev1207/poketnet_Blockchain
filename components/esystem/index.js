@@ -177,7 +177,7 @@ var esystem = (function() {
             self.sdk.esystem.clbks.tick.esystem = function(settings, changed) {
                 if (changed) {
                     renders.proxyOptions()
-                    renders.nodeControl()
+                    // renders.nodeControl()
                 }
             }
 
