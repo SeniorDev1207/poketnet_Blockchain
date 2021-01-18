@@ -122,7 +122,6 @@ var embeding20 = (function(){
 			url : function(url, clbk){
 
 				var meta = self.app.platform.parseUrl(url);
-				console.log('METATYPE', meta)
 
 				var og = self.app.platform.sdk.remote.storage[url];
 
@@ -142,7 +141,7 @@ var embeding20 = (function(){
 
 					if(url && !og){
 
-						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){
+						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute'){
 							Plyr.setup('.js-player', function(player) { });
 						}
 						else

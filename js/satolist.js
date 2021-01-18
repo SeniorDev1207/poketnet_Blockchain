@@ -725,9 +725,10 @@ Platform = function (app, listofnodes) {
 
 
     self.parseUrl = function (url) {
-        
+
+
         url = url.replace("http:", "https:").replace("http//", "https://")
-        
+
         var meta = parseVideo(url);
 
         var _url = null;
@@ -735,9 +736,8 @@ Platform = function (app, listofnodes) {
         if (meta.type) {
 
             _url = url;
-            //domainname
+
             if (meta.type == 'peertube') {
-                
                 _url = `https://peer.tube/videos/embed/${meta.id}`
             }
 
