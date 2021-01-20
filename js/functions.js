@@ -3199,13 +3199,11 @@
 						})
 					}
 
-					console.log('_el',_el);
+
 					_el.find('.vc_value').on('click', function(){
 						bkp = null;
 
 						var value = $(this).attr('value');
-
-							console.log('this', this, $(this));
 
 							input.val(value);
 							input.change();
@@ -5200,7 +5198,7 @@
 					value[index] = p.value;
 				}
 			})
-			console.log('InOnChange', value)
+			
 			self.set(value)
 		}
 
@@ -5760,8 +5758,6 @@
 							if (window.galleryRefresh){
 
 								window.galleryRefresh.refresh(myFileUrl, function (msg) {
-
-									console.log('scanmedia success')
 									
 								}, function (err) {
 
@@ -9528,15 +9524,11 @@
 	}
 
 	parseVideo = function(url) {
-
 		var _url = url;
 
 	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(peer\.tube|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/);
 	    var type = null;
 		var id = null;
-
-
-		console.log('test', url,  test)
 		
 
 	    if(test && url.indexOf('channel') == -1 && url.indexOf("user") == -1){
@@ -9553,7 +9545,8 @@
                     
 			    }  else if (test[3].indexOf('bitchute') > -1) {
                     type = 'bitchute';
-			        id = test[6];
+					id = test[6];
+					
 			    }	else if (test[3].indexOf('peer.tube') > -1) {
                     type = 'peertube';
 			        id = test[8];

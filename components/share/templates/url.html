@@ -1,8 +1,7 @@
 <% if(url){ 
 
 	var meta = app.platform.parseUrl(url);
-
-	console.log('VIDEOMETA', url, meta)
+	console.log('META PLAYER', meta)
 
 	if(typeof share == 'undefined') share = {};
 
@@ -11,7 +10,6 @@
 
 		if(!app.platform.sdk.usersettings.meta.embedvideo || 
 			app.platform.sdk.usersettings.meta.embedvideo.value) {
-
 	%>
 		<div class="videoWrapper" pid="<%- makeid() %>">
 			<div class="js-player" data-plyr-provider="<%-meta.type%>" data-plyr-embed-id="<%-meta.url%>">
