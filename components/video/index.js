@@ -202,10 +202,6 @@ var video = (function(){
             
             if(info.source == 'bitchute'){
                 code = '<iframe width="560" height="315" scrolling="no" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="https://www.bitchute.com/embed/'+info.id+'/"></iframe>'
-			}
-			
-			if(info.source == 'peertube'){
-                code = '<iframe width="560" height="315" scrolling="no" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen src="https://peer.tube/videos/embed/'+info.id+'/"></iframe>'
             }
             
 			

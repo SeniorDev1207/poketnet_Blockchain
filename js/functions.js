@@ -1,4 +1,4 @@
-1/* PDF */
+/* PDF */
 
 	var tableAlignmentCenter = function(obj){
 
@@ -7450,14 +7450,14 @@
 			p.rpc = true
 
 		
-			/*if(typeof p.nodeFix == 'undefined' && app.platform.nodeid != 'undefined'){
+			if(typeof p.nodeFix == 'undefined' && app.platform.nodeid != 'undefined'){
 
 				var fail = p.fail || function(){}
 
 				p.nodeFix = app.platform.nodeid;
 				p.fail = function(r){
 
-					if(r && r.statusCode == 500 && (!r.data || _.isEmpty(r.data))){
+					if(r && (r.statusCode == 500 || r.statusCode == 521) && (!r.data || _.isEmpty(r.data))){
 						app.platform.autochange()
 
 
@@ -7475,7 +7475,7 @@
 					}
 					
 				}
-			}*/	
+			}	
 
         	if(app.platform.dontuseapiproxy){
 
@@ -7523,6 +7523,7 @@
 					method : p.method,
 					parameters : hexEncode(JSON.stringify(p.parameters || ""))
 				}
+
 
 				if(app.platform.nodeid){
 
@@ -9524,9 +9525,10 @@
 	}
 
 	parseVideo = function(url) {
+
 		var _url = url;
 
-	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(peer\.tube|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/);
+	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/);
 	    var type = null;
 		var id = null;
 		
@@ -9545,11 +9547,7 @@
                     
 			    }  else if (test[3].indexOf('bitchute') > -1) {
                     type = 'bitchute';
-					id = test[6];
-					
-			    }	else if (test[3].indexOf('peer.tube') > -1) {
-                    type = 'peertube';
-			        id = test[8];
+			        id = test[6];
 			    }
 
 	    	}
