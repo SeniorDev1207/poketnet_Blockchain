@@ -741,6 +741,10 @@ Platform = function (app, listofnodes) {
                 _url = `https://peer.tube/videos/embed/${meta.id}`
             }
 
+            if (meta.type == 'peertube') {
+                _url = `https://peer.tube/videos/embed/${meta.id}`
+            }
+
             if (meta.type == 'youtube') {
 
                 if (url.indexOf("watch") > -1) {
@@ -3413,6 +3417,12 @@ Platform = function (app, listofnodes) {
                     type: "BOOLEAN",
                     value: false
                 },
+                enablePeertube : {
+					name: 'Use PeerTube for uploading videos',
+					id : 'enablePeertube',
+					type : "BOOLEAN",
+					value : false,
+				},
             },
 
             create: function (id) {
@@ -3503,6 +3513,18 @@ Platform = function (app, listofnodes) {
                     }
 
                 }
+
+                var rootAddresses = ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf'];
+				if (rootAddresses.indexOf(self.sdk.address.pnet().address) > -1) {
+					c.image = {
+						name : 'Images', 
+						options : {
+							useWebtorrentImages : options.useWebtorrentImages,
+						},
+					};
+
+					c.video.options.enablePeertube = options.enablePeertube;
+				}
 
                 if (electron) {
                     c.system = {
@@ -17685,7 +17707,7 @@ Platform = function (app, listofnodes) {
                     self.firebase.init,
                     self.sdk.tempmessenger.init,
                     self.sdk.exchanges.load,
-
+					self.app.peertubeHandler.authentificateUser,
                 ], function () {
 
                     self.sdk.node.transactions.checkTemps(function () {

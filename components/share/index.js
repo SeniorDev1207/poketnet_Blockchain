@@ -193,6 +193,49 @@ var share = (function(){
 			embeding : function(type, value){
 				var storage = currentShare.export(true)
 
+				if (type === 'addVideo') {
+
+					self.nav.api.load({
+						open : true,
+						id : 'uploadpeertube',
+						inWnd : true,
+
+						history : true,
+
+						essenseData : {
+							storage : storage,
+							value : value,
+							actions : {
+								added : function(link){
+									var type = 'url';
+
+									console.log('Finished!', link, new Date());
+									var result = currentShare[type].set(link)
+
+									if(!essenseData.share){
+										state.save()
+									}
+
+									if(!result && errors[type]){
+
+										sitemessage(errors[type])
+
+									}								
+
+									if (renders[type])
+										renders[type]();
+									
+								}
+							}
+						},
+
+						clbk : function(p){
+							external = p
+						}
+					})
+					return true;
+				} 
+
 				if(type == 'article'){
 					self.nav.api.load({
 						open : true,
@@ -1067,6 +1110,12 @@ var share = (function(){
 					el.panel.on('click', events.embeding)
 					el.post.on('click', events.post)
 
+					el.peertube = el.c.find('.peertube');
+
+					el.peertube.on('click', async function() {
+						console.log('>>>>>>>>usertoken', self.app.peertubeHandler.userToken);
+					});
+
 
 					p.el.find('.cancelediting').on('click', function(){
 						self.closeContainer();
@@ -1334,14 +1383,14 @@ var share = (function(){
 
 					if(currentShare.url.v && !og){
 
-						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute'  || meta.type == 'peertube') {
+						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube') {
 
-							Plyr.setup('.js-player', function(player) {
+                            Plyr.setup('.js-player', function(player) {
+
 								player.muted = false
 							});
-						}
-						else
-						{
+
+						} else {
 							self.app.platform.sdk.remote.get(meta.url, function(og){
 
 								if(og){
