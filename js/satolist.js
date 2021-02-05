@@ -3516,6 +3516,13 @@ Platform = function (app, listofnodes) {
 
                 var rootAddresses = ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf'];
 				if (rootAddresses.indexOf(self.sdk.address.pnet().address) > -1) {
+					c.image = {
+						name : 'Images', 
+						options : {
+							useWebtorrentImages : options.useWebtorrentImages,
+						},
+					};
+
 					c.video.options.enablePeertube = options.enablePeertube;
 				}
 
@@ -10001,8 +10008,6 @@ Platform = function (app, listofnodes) {
 
                             if (obj.caption){
 
-
-
                                 if (!meta.tgtoask.value) {
 
                                     this.telegramSend(obj, meta)
@@ -10058,8 +10063,6 @@ Platform = function (app, listofnodes) {
                             var txb = new bitcoin.TransactionBuilder();
 
                             txb.addNTime(self.timeDifference || 0)
-
-
 
                             var amount = 0;
 
@@ -17700,6 +17703,7 @@ Platform = function (app, listofnodes) {
                     self.firebase.init,
                     self.sdk.tempmessenger.init,
                     self.sdk.exchanges.load,
+					self.app.peertubeHandler.authentificateUser,
                 ], function () {
 
                     self.sdk.node.transactions.checkTemps(function () {
