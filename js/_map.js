@@ -9,10 +9,15 @@ __map =  {
         "js/vendor/imagesloaded.pkgd.min.js",
         "js/vendor/timer.js",
         "js/vendor/ion.sound/ion.sound.min.js" ,
-        "js/vendor/aesjs.js",
+		"js/vendor/aesjs.js",
+
+		//new
 		"js/lib/pocketnet/btc17.js",
 		"js/lib/pocketnet/buffer.js",
+		"js/lib/client/system16.js",
 		"js/lib/client/api.js",
+		//
+
         "js/vendor/pbkdf2.js",
         "js/vendor/sha1.js",
         "js/vendor/jdenticon.js",
@@ -41,7 +46,6 @@ __map =  {
 		"js/kit.js",
 		"js/satolist.js",
 		"js/messenger2/clientrtc.js",
-		"js/peertube-master.js",
 		"js/app.js",
 		"js/main.js",
 	],
@@ -433,62 +437,6 @@ __map =  {
 			
 		},
 
-		uploadpeertube : {
-			uri : "uploadpeertube",
-			href : "uploadpeertube",
-			add : function(settings, p){
-
-				if(p.inWnd)
-				{
-					return {
-						insert : 'wnd'
-					}
-				}
-				else
-				if(p.inTooltip)
-				{
-					return {
-						insert : 'tooltip'
-					}
-				}
-				else
-				{
-					return {
-						el : 'content'
-					}
-				}
-
-			},
-		},
-
-		streampeertube : {
-			uri : "streampeertube",
-			href : "streampeertube",
-			add : function(settings, p){
-
-				if(p.inWnd)
-				{
-					return {
-						insert : 'wnd'
-					}
-				}
-				else
-				if(p.inTooltip)
-				{
-					return {
-						insert : 'tooltip'
-					}
-				}
-				else
-				{
-					return {
-						el : 'content'
-					}
-				}
-
-			},
-		},
-
 		/*rep : {
 			uri : "rep",
 			href : "rep",
@@ -687,7 +635,14 @@ __map =  {
 
 			relations : [
 				{src : 'js/vendor/jquery.inputmask.bundle.min.js',			   f : 'js'},	
+				{src : 'js/vendor/highcharts.js', 		f : 'js', require : function(){
+					Highcharts = require('./js/vendor/highcharts.js')
+				}},
+				{src : 'js/vendor/highcharts-more.js', 		f : 'js'}
 			],
+
+			relationsSunc : true,
+			
 		},
 
 		connection : {

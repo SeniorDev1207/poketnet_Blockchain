@@ -11,14 +11,6 @@
             <div class="item images tooltip" embeding="images" title="<%=e('saddimages')%>">
                 <i class="fas fa-camera"></i> <span class="mobiledevice"><%=e('saddimages')%></span>
             </div>
-            <% if (app.user.usePeertube) {%>
-                <div class="item peertube tooltip" embeding="addVideo" title="<%=e('peertubeAddVideo')%>">
-                    <i class="fas fa-video"></i> <span class="mobiledevice"><%=e('peertubeAddVideo')%></span>
-                </div>
-                <div class="item peertubeLiveStream tooltip" embeding="addStream" title="<%=e('peertubeAddStream')%>">
-                    <i class="fas fa-dot-circle"></i> <span class="mobiledevice"><%=e('peertubeAddStream')%></span>
-                </div>
-            <%} %>
 
             <% if(!share.aliasid && !share.repost.v) {%>
             
@@ -27,10 +19,6 @@
                 </div>
 
             <% } %>
-
-            <div class="item poll tooltip" embeding="poll" title="<%=e('poll')%>">
-                <i class="fas fa-poll"></i> <span class="mobiledevice"><%=e('poll')%></span>
-            </div>
 
             <div class="item language tooltip" embeding="language" title="<%=e('e14001')%>">
                 <img src="img/localization/small/<%-share.language.v || ''%>.png"> <span class="mobiledevice"><%=e('e14001')%></span>

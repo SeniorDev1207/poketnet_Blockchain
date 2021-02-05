@@ -291,6 +291,15 @@
 		return d.getUTCFullYear() + "" + MM + "" + dd + "" + hh + "" + mm;
 	}
 
+	utcnow = function(date){
+		var now = date ||(new Date);
+		var UTCseconds = (now.getTime() + now.getTimezoneOffset()*60*1000);
+		var d = new Date(UTCseconds);
+			d.toString();	
+	
+		return d
+	}
+
 	randomString = function (l) {
 		if (!l)
 			l = 8;
@@ -537,7 +546,7 @@
 				if(p.leftbg) 
 					h+='<div class="leftbg"><div>'+p.leftbg+'</div></div>';
 
-				h+=	 '<div class="wndcontent content">'+content+'</div>';
+				h+=	 '<div class="wndcontent">'+content+'</div>';
 
 				if(p.header) 
 				{
@@ -700,18 +709,7 @@
 
 				
 				$('#habla_beta_container_do_not_rely_on_div_classes_or_names').css('display', "block");
-			},
-
-			hide : function(cl, key) {
-				// wnd.find('.wndback').css('display', 'none');
-				wnd.find('.buttons').addClass('hidden');
-				wnd.addClass('hiddenState');
-				wnd.find('.wndcontent > div').addClass('rolledUp');
-
-				if(!nooverflow) {
-					app.actions.onScroll();
-				}
-			},
+			}
 		}
 
 		self.buttonState = function(index, state){
@@ -775,7 +773,6 @@
 		self.find = find;
 		self.close = actions.close;
 		self.el = wnd;
-		self.hide = actions.hide;
 
 		return self;
 	}
@@ -1120,26 +1117,6 @@
 				html+= '<div class="header"><div class="text">'+p.header+'</div></div>';
 			}
 
-			if (p.poll){
-				
-				var poll = '<div class="poll">';
-
-				poll += '<div class="question description">Question</div>'
-
-				poll += '<div class="title"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>'
-
-				poll += '<div class="options description">Poll options</div>';
-
-				for (var i = 0; i < 5; i++){
-					poll += `<div class="poll-item" id="poll-item-${i + 1}"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>`;
-				}
-
-				poll += "</div>";
-
-				html += poll ;
-				
-			}
-
 			if(p.html)
 			{
 				html += '<div class="body"><div class="text">'+(p.html || "")+'</div></div>';
@@ -1159,33 +1136,9 @@
 			$('body').append($el);
 			if(p.class) $el.addClass(p.class);
 
-			$el.find
-
 			$el.find('.btn1').on('click', function(){ response(p.success)});
 			$el.find('.btn2').on('click', function(){ response(p.fail, true)});
 			$el.find('._close').on('click', function(){ response(p.close, true)});
-
-			
-			var title = $el.find('.poll .title');
-				
-			title.find('i').on('click', function(){
-
-				title.find('.input').val('');
-			})
-
-			for (var i = 0; i < 5; i++){
-				
-				let item = $el.find(`#poll-item-${i + 1}`);
-
-				item.find('i').on('click', function(){
-
-					console.log('input', item.find('.input'));
-
-					item.find('.input').val('');
-				})
-
-			}
-
 
 			if(p.clbk) p.clbk($el, self);
 
@@ -2474,9 +2427,26 @@
 	}
 
 	deep = function(obj, key){
-		var  _key = key.split(".");
 
-		var tkey = _key[0];
+		var tkey = ''
+		var _key = []
+
+		if (key[0] == "'"){
+
+			key = key.substr(1)
+			_key = key.split("'")
+			tkey = _key[0]
+
+			if(_key[1]) _key[1] =  _key[1].substr(1)
+
+
+		}
+		else{	
+			_key = key.split(".");
+			tkey = _key[0];
+		}
+
+		
 
 		if(typeof obj == 'undefined' || !obj) return undefined;
 
@@ -2671,7 +2641,7 @@
 
 		_.each(parameters, function(parameter){
 
-			if(!parameter || !parameter.type) return
+			if(!parameter.type) return
 
 
 			var _el = el.find('[pid="'+parameter.id+'"]')
@@ -5285,7 +5255,6 @@
 
 					valid = valid && pv;
 
-				if(!pv) console.log("ADDERROR", p)
 
 				if(!pv && pv.type != 'composite' && adderror && p.require){
 
@@ -6075,9 +6044,7 @@
 			var _all = offsetTop >= range.top && 
 				bottom <= range.bottom 
 
-				if(p.debug){
-					console.log('range.top, range.bottom, offsetTop, bottom', range.top, range.bottom, offsetTop, bottom)
-				}
+				
 
 			if (p.mode == 'line'){
 
@@ -9234,6 +9201,14 @@
 		return interval;
 	}
 
+	pretry = function(_function, time, totaltime){
+		return new Promise((resolve, reject) => {
+	
+			retry(_function, resolve, time, totaltime)
+	
+		})
+	}
+
 	retryLazy = function(_function, clbk, time){
 		if(!time) time = 200;
 
@@ -9583,7 +9558,7 @@
 	parseVideo = function(url) {
 		var _url = url;
 
-	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(pocketnetpeertube1\.nohost\.me|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/);
+	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(peer\.tube|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/);
 	    var type = null;
 		var id = null;
 		
@@ -9604,7 +9579,7 @@
                     type = 'bitchute';
 					id = test[6];
 					
-			    }	else if (test[3].indexOf('pocketnetpeertube1.nohost.me') > -1) {
+			    }	else if (test[3].indexOf('peer.tube') > -1) {
                     type = 'peertube';
 			        id = test[8];
 			    }

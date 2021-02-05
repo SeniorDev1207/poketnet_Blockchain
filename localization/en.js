@@ -517,7 +517,6 @@ ____loclib.e13108 = "There isn't connection with Electron proxy interface"
 
 ____loclib.e13109 = "Please enter the words in the picture to receive Pocketcoin and continue registration"
 ____loclib.e13110 = "Enter words"
-____loclib.poll = "Create poll"
 ____loclib.next = "Next"
 ____loclib.refresh = "Refresh"
 ____loclib.e13111 = "Add your email to get the latest Pocketnet updates"
@@ -930,7 +929,3 @@ ____loclib.e14105 = 'Videos'
 ____loclib.e14106 = 'Applications'
 ____loclib.e14107 = 'Check for updates'
 ____loclib.e14108 = 'Share answer'
-
-
-____loclib.peertubeAddVideo = 'Add video to post'
-____loclib.peertubeAddStream = 'Add live stream to post'
