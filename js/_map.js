@@ -9,15 +9,10 @@ __map =  {
         "js/vendor/imagesloaded.pkgd.min.js",
         "js/vendor/timer.js",
         "js/vendor/ion.sound/ion.sound.min.js" ,
-		"js/vendor/aesjs.js",
-
-		//new
+        "js/vendor/aesjs.js",
 		"js/lib/pocketnet/btc17.js",
 		"js/lib/pocketnet/buffer.js",
-		"js/lib/client/system16.js",
 		"js/lib/client/api.js",
-		//
-
         "js/vendor/pbkdf2.js",
         "js/vendor/sha1.js",
         "js/vendor/jdenticon.js",
@@ -692,14 +687,7 @@ __map =  {
 
 			relations : [
 				{src : 'js/vendor/jquery.inputmask.bundle.min.js',			   f : 'js'},	
-				{src : 'js/vendor/highcharts.js', 		f : 'js', require : function(){
-					Highcharts = require('./js/vendor/highcharts.js')
-				}},
-				{src : 'js/vendor/highcharts-more.js', 		f : 'js'}
 			],
-
-			relationsSunc : true,
-			
 		},
 
 		connection : {

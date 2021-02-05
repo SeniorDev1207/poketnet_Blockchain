@@ -38,8 +38,7 @@ var notifications = (function(){
 							f : f
 						})
 
-						
-						*/
+						console.log('inv.length', inv.length) */
 
 						if (els.length > 0){
 
@@ -89,6 +88,7 @@ var notifications = (function(){
 			
 			notifications : function(p, clbk){
 
+				//console.log('self.app.platform.sdk.notifications.storage.notifications', self.app.platform.sdk.notifications.storage.notifications)
 
 				if(!p) p = {};
 
@@ -96,6 +96,7 @@ var notifications = (function(){
 				var rnow = false;
 				
 
+				console.log('_notifications', _notifications)
 
 				p.el = el.new;
 

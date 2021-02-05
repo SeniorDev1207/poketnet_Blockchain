@@ -439,6 +439,7 @@ Nav = function(app)
 
 						deleted.push(id)
 
+						console.log(';removeWindows', 'auto')
 
 						c('auto')
 					}

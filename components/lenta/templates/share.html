@@ -31,6 +31,7 @@ var name = app.platform.api.name(share.address)
 var emptywithrepost = share.isEmpty() && share.repost
 
 
+
 var metadisplay = function(){ %>
 
 <div class="meta">
@@ -257,8 +258,9 @@ var metadisplay = function(){ %>
 		<% } %>
 	<% },
 
-	u : function(){ %> 
+	u : function(){	%> 
 		<% if(share.url) {
+
 
 			var h = ''
 			
@@ -272,6 +274,46 @@ var metadisplay = function(){ %>
 			</div>
 
 		<% } %>
+	<% },
+
+	p : function(){ %> 
+
+		<% if(share.poll && share.poll.list) { %>
+
+			<div class="pollWrapper">
+				<div class="title">
+					<%=share.poll.title %>
+				</div>
+				<div class="list">
+					<%= share.poll.list %>
+				</div>
+			</div>
+
+		<% } %>
+
+		<%
+			var poll = {
+				list: ['first answer', 'second answer', 'third answer'],
+				title: 'My question!!!????'
+			}
+		%>
+
+		<div class="pollWrapper">
+			<div class="title">
+				<b>
+					<%= poll.title %> 
+				</b>
+			</div>
+			<div class="list">
+
+				<% _.each(poll.list, function(key, i){ %> 
+					<div class="item">
+						<input class="checkbox nolabel" type="checkbox" id="poll-item-<%-i %>">
+						<label for="poll-item-<%-i %>"> <%= key %> </label>
+					</div>
+				<% }) %> 
+			</div>
+		</div>
 	<% }
 
 } %>

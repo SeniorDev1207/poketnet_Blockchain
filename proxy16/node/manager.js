@@ -9,7 +9,6 @@ var Nodemanager = function(p){
 
 
     var self = this;
-    var inited = false;
 
     self.nodes = [];
     self.nodesmap = {};
@@ -195,20 +194,13 @@ var Nodemanager = function(p){
 
     self.getnodes = function(){
 
-        var nodes = {}
-
-        _.each(self.nodes, function(node){
-            nodes[node.key] = {
+        return _.map(self.nodes, function(node){
+            return {
                 node : node.exportsafe(),
                 statistic : node.statistic.get(),
-                status : node.chainStatus(),
-                rating : node.statistic.rating(),
-                probability : node.statistic.probability()
+                status : node.chainStatus()
             }
-            
         })
-
-        return nodes
 
     }
 
@@ -230,8 +222,6 @@ var Nodemanager = function(p){
 
     self.init = function(){
 
-        inited = false
-
         return new Promise((resolve, reject) => {
             db.loadDatabase(err => {
 
@@ -251,9 +241,6 @@ var Nodemanager = function(p){
                     findInterval = setInterval(function(){
                         self.find()
                     }, 3000)
-
-
-                    inited = true
 
                     resolve()
 
@@ -287,24 +274,6 @@ var Nodemanager = function(p){
         }
     }
 
-    self.selectProbability = function(){
-
-        var np = _.map(self.nodes, function(node){
-            return {
-                node : node,
-                probability : node.statistic.probability()
-            }
-        })
-
-        var r = f.randmap(np)
-
-        if (r){
-            return r.node
-        }
-
-        return null
-    }
-
     self.selectbest = function(){
 
         var canuse = _.filter(self.nodes, function(node) { return node.export().canuse })
@@ -312,7 +281,8 @@ var Nodemanager = function(p){
         var best = _.max(canuse, function(node){
             return node.statistic.rating()
         })
-        
+
+
         if(!best || !best.statistic.rating()){
             best = _.find(self.nodes, function(node){
                 return node.stable
@@ -341,22 +311,14 @@ var Nodemanager = function(p){
     }
 
     self.request = function(method, parameters){
-
-        return f.pretry(()=>{
-            return inited
-        }).then(() => {
    
-            var node = self.selectbest() || self.select()
-    
-            if(!node) return Promise.reject('node')
-
-            return node.rpcs(method, parameters)
-        })
-
-       
+        var node = self.selectbest()
 
 
-       
+        if(!node) return Promise.reject('node')
+
+
+        return node.rpcs(method, parameters)
     }
     
     self.api = {

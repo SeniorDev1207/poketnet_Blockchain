@@ -1,4 +1,6 @@
 var Path = require('path');
+const electron = require('electron')
+const { dialog } = require('electron')
 const fs = require('fs');
 const child_process = require('child_process');
 const { EOL } = require('os');
@@ -64,6 +66,7 @@ var Control = function(settings) {
     self.init = function(){
         // change global settings
 
+        console.log('self.helpers.sbin_folder()', self.helpers.sbin_folder(), settings.dataPath)
 
        // return
 
@@ -223,57 +226,33 @@ var Control = function(settings) {
 
             node.hasbin = self.kit.hasbin();
 
-            if (state.status == 'stopped'){
-                return Promise.resolve(false)
-            }
-
             return self.request.getNodeInfo().then(data => {
 
-                //console.log("CHECKED")
+                console.log('height', data.lastblock.height)
 
-                //self.kit.enable(true)
-
-                //enabled = true//
 
                 state.info = data
-                state.status = 'launched'    
+                state.status = 'running'    
                 delete state.error
 
                 return Promise.resolve(true)
 
             }).catch(e => {
 
-                //console.log('e', e)
-
                 var stopped = e.code == 408
 
                 if (stopped){
                     state.status = 'stopped'
-
-                    return Promise.resolve(false)
                 }
-
-                if(e.code == -28){
-                    state.status = 'running'
-
+                else{
+                    state.status = 'error'
                     state.error = {
-                        code : e.code,
-                        message : e.message
+                        code : e.code
                     }
-
-                    return Promise.resolve(true)
-                }
-
-        
-                state.status = 'error'
-                state.error = {
-                    code : e.code,
-                    message : e.message
-                }
-        
+                }  
 
 
-                return Promise.resolve(true)
+                return Promise.resolve(!stopped)
 
             })
         
@@ -282,8 +261,9 @@ var Control = function(settings) {
         autorun: function() {
             
             return self.kit.check().then(running => {
-
-                
+              
+                //console.log('running', running)
+    
                 if (enabled === true && running === false) return self.kit.start()
                 if (enabled === false && running === true) return self.kit.stop()
     
@@ -331,10 +311,8 @@ var Control = function(settings) {
 
                         if (code !== 0) {
 
-
                             state.error = {
-                                code : code,
-                                message : "Instance closed"
+                                code : code
                             }
 
                             state.status = 'error'
@@ -347,6 +325,7 @@ var Control = function(settings) {
 
                     node.instance.on('error', function(code) {
 
+                        //console.log("ERROR", code)
 
                         state.status = 'error'
                         state.error = {
@@ -409,16 +388,14 @@ var Control = function(settings) {
             })
         },
 
-        enable: function(v) {
-
-            enabled = v;
+        enable: function(data) {
+            enabled = data.v;
 
             _.each(self.clbks.enabled, function(c){
                 c(enabled, state)
             })
 
             state.timestamp = new Date()
-
         },
 
         rpc : function(method, parameters){
