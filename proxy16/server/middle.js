@@ -16,7 +16,7 @@ var Middle = function(){
 			ip : ip,
 			s : status,
 			pn : pathname,
-			date : f.now()
+			date : new Date()
 		})
 
 		var d = logs.length - countlogs
@@ -25,28 +25,17 @@ var Middle = function(){
 			logs = logs.slice(d)
 		}
     }
-
-    self.clear = function(){
-        logs = []
-    }
     
-    self.info = function(compact){
+    self.info = function(){
         
         var requestsIp = _.toArray(f.group(logs, function(l){
             return l.ip
         })).length
 
-        var data = {
-            requestsIp : requestsIp
+        return {
+            requestsIp : requestsIp,
+            logs : logs
         }
-
-        if(!compact) data.logs = logs
-
-        return data
-    }
-
-    self.getlogs = function(){
-        return logs
     }
 
   
@@ -66,8 +55,10 @@ var Middle = function(){
             if(!code) code = 200
 
             result.status(code).jsonp({
-                result : 'success',
-                data : data
+                wai : {
+                    result : 'success',
+                    data : data
+                }
             })
 
             addLogs(request.data, request.clientIP, code, request.baseUrl + request.path)
@@ -78,12 +69,7 @@ var Middle = function(){
 
             if(!code) code = 500
 
-            if(code < 100) code = 500
-
-            result.status(code).jsonp({
-                error : error,
-                code : code
-            })
+            result.status(code).jsonp(errorHandler.db(error))
 
             addLogs(request.data, request.clientIP, code, request.baseUrl + request.path)
     
@@ -95,8 +81,9 @@ var Middle = function(){
     }
     
     self.data = function(request, result, next){
+
         request.data = _.merge(request.query, request.body)
-        
+
         _.each(request.data, function(v, key){
     
             if(v && v[0] && (v[0] == "{" || v[0] == "[")){
@@ -108,12 +95,6 @@ var Middle = function(){
                 }
             }
         })
-
-        request.data.ip = request.clientIP
-        request.data.ua = request.clientUA
-        delete request.data.U
-        delete request.data.A
-
         if (next)
             next(null)
     }
@@ -153,11 +134,10 @@ var Middle = function(){
     
     self.prepare = function(request, result, next){
 
-
         self.headers(request, result)
-        self.uainfo(request, result)
         self.data(request, result)
         self.extend(request, result)
+        self.uainfo(request, result)
         self.bearer(request, result)
     
         if (next) 

@@ -374,6 +374,7 @@ var faq = (function(){
 
 			share : function(id){
 
+				console.log(mp, id)
 
 				var question = mp[id]
 
@@ -500,6 +501,7 @@ var faq = (function(){
 
 			destroy : function(){
 
+				console.log("DESTROY")
 
 
 				window.removeEventListener('scroll', actions.inview);

@@ -165,6 +165,7 @@ var usersettings = (function(){
 
 				if (self.app.user.features.telegram){
 
+					console.log('destroyed?');
 					controller.abort(); 
 					controller = new AbortController();
 					self.app.platform.sdk.system.get.telegramUpdates();

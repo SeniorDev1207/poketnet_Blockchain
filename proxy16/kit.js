@@ -20,7 +20,7 @@ var settings = {};
 var nodes = [
 
 	{
-		host : '216.108.231.40',
+		host : '188.187.45.218',
 		port : 38081,
 		ws : 8087,
 		nodename : 'Cryptoserver',
@@ -28,16 +28,18 @@ var nodes = [
 		rpcuser : 'pocketbot',
 		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
+
 	{
-		host : '64.235.45.119',
+		host : '64.235.45.204',
 		port : 38081,
 		ws : 8087,
-		nodename : 'CryptoserverSP',
+		nodename : 'CryptoserverSP3',
 		stable : true,
 		rpcuser : 'pocketbot',
 		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
-
+	
+	
 	{
 		host : '64.235.35.173',
 		port : 38081,
@@ -55,22 +57,12 @@ var nodes = [
 		stable : true,
 		rpcuser : 'pocketbot',
 		rpcpass : 'pFxcRujDHBkg7kcc',
-	},
-	
-	{
-		host : '188.187.45.218',
-		port : 38081,
-		ws : 8087,
-		nodename : 'Cryptoserver',
-		stable : true,
-		rpcuser : 'pocketbot',
-		rpcpass : 'pFxcRujDHBkg7kcc',
 	}
 ]
 
 var defaultSettings = {
 
-	admins : ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82'],
+	admins : [],
 	
 	nodes : {
 		dbpath : 'data/nodes'
@@ -109,7 +101,7 @@ var defaultSettings = {
 		dbpath : 'data/wallet',
 		addresses : {
 			registration : {
-				privatekey : "",
+				privatekey : "5x312CEgigqmcAyjamTZCxXgSMUJ8LFGxC3Byv1ZEWcauZ9cNirY",
 				amount : 0.0002,
 				outs : 10,
 				check : 'uniqAddress'
@@ -121,9 +113,7 @@ var defaultSettings = {
 		dbpath : 'data/node',
         enabled: true,
         binPath: '',
-		dataPath: '',
-
-		stacking : []
+		dataPath: ''
     },
 	
 }
@@ -131,43 +121,26 @@ var defaultSettings = {
 
 var state = {
 
-	export : function(view){
+	export : function(){
 
 		var exporting = {
 			server : settings.server,
 			firebase : {
-				key : settings.firebase.key || "",
-				id : settings.firebase.id
+				key : settings.firebase.key || ""
 			},
 			wallet : {
-				addresses : settings.wallet.addresses
+				addresses : settings.wallet.addresses || {}
 			},
 			node : {
 				enabled : settings.node.enabled,
 				binPath : settings.node.binPath,
 				dataPath: settings.node.dataPath,
-				stacking : settings.node.stacking
 			},
 			admins : settings.admins
 		}
 
-		exporting = cloneDeep(exporting)
-
-		if(view) {
-			if (exporting.server.ssl.passphrase)
-				exporting.server.ssl.passphrase = "*"
-
-			if (exporting.firebase.key)
-				exporting.firebase.key = "*"
-
-			if (exporting.wallet.addresses.registration.privatekey)
-				exporting.wallet.addresses.registration.privatekey = "*"
-		}
-
 		return exporting
 	},
-
-	
 
 	apply : function(cds){
 		settings = cds
@@ -208,10 +181,7 @@ var state = {
 	savedb : function(){
         return new Promise((resolve, reject) => {
 
-			var saving = state.export()
-				saving.nedbkey = nedbkey
-
-            db.insert(saving, function (err, newDoc) {
+            db.insert(state.export(), function (err, newDoc) {
                 if(err){
                     reject(err)
                 }
@@ -400,20 +370,13 @@ var kit = {
 	
 			node : {
 	
-				enabled : function({enabled}){
-
-
-					if(settings.node.enabled == enabled) return Promise.resolve()
-
-					settings.node.enabled = enabled ? true : false
+				enabled : function(v){
+					if(settings.node.enabled == v) return Promise.resolve()
 	
 					return state.saverp().then(proxy => {
-
-						proxy.nodeControl.enable(settings.node.enabled)
-
-						return Promise.resolve(settings.node.enabled)
-
-						
+						return proxy.nodeControl.destroy().then(() => {
+							return proxy.nodeControl.stop()
+						})
 					})
 					
 				},
@@ -465,11 +428,11 @@ var kit = {
 	
 		get : {
 			settings : function(){
-				return Promise.resolve(state.export(true))
+				return Promise.resolve(settings)
 			},
-			state : function(compact){
+			state : function(){
 				return kit.proxy().then(proxy => {
-					return proxy.kit.info(compact)
+					return proxy.kit.info()
 				})
 			}
 		},
@@ -515,25 +478,6 @@ var kit = {
 			}
 		}
 	},
-
-	gateway : function(message){
-		return this.proxy().then(proxy => {
-			var api = proxy.apibypath(message.path)
-
-			if(!api) return Promise.reject('api')
-
-			proxy.authorization[api.authorization || 'dummy'](message.data)
-
-			message.data.U = true //// IPC CONNECTION BACKDOOR
-
-			if(!message.data.A) message.data.A = 'ipcconnection'
-
-			return api.action(message.data).then(r => {
-				return Promise.resolve(r.data)
-			})
-
-		})
-	},
 	
 	startproxy : function(){
 
@@ -553,14 +497,12 @@ var kit = {
 		return Promise.reject('proxynull')
 	},
 
-	init : function(environmentDefaultSettings, hck){
+	init : function(environmentDefaultSettings){
 
 		var settings = defaultSettings;
 
 		if(!environmentDefaultSettings) 
 			environmentDefaultSettings = {}
-
-		if(!hck) hck = {}
 
 		settings = state.expand(environmentDefaultSettings, settings)
 
@@ -571,26 +513,13 @@ var kit = {
 			var start = function(){
 
 				kit.startproxy().then(r => {
-
-					return kit.proxy()
-
-					
-				}).then(proxy => {
-
-					if (hck.wssdummy){
-						proxy.wss.wssdummy(hck.wssdummy)
-					}
-
 					resolve()
-
 				}).catch(e => {
 					reject(e)
 				})
 			}
 
 			db.loadDatabase(function(err) {   
-
-				console.log('err', err)
 		
 				if(!err){
 					db.find({ nedbkey : nedbkey }).exec(function (err, docs) {

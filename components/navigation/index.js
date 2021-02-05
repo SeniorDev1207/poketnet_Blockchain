@@ -27,6 +27,7 @@ var navigation = (function(){
 
 			toup : function(){
 
+				console.log('asdsadsadasd')
 				_scrollTop(0, null, 0)
 			}
 		}
@@ -65,12 +66,14 @@ var navigation = (function(){
 			},
 
 			hide : function(){
+				console.log("INIEVC1")
 
 				if (el.c)
 					el.c.closest('#navigationWrapper').addClass('hidden')
 			},
 
 			show : function(){
+				console.log("INIEVC2")
 
 				if (el.c)
 					el.c.closest('#navigationWrapper').removeClass('hidden')
@@ -99,6 +102,7 @@ var navigation = (function(){
 
 			if(window.cordova){
 
+				console.log("INIEVC")
 				
 				window.addEventListener('keyboardWillShow', renders.hide);
 				window.addEventListener('keyboardWillHide', renders.show);

@@ -27,6 +27,7 @@ var applications = (function(){
 
 							if (l){
 
+								self.app.platform.m.log('registration_application_download', os.github.name)
 
 								var link = document.createElement('a');
 							        link.setAttribute('href', l.browser_download_url);
@@ -48,6 +49,7 @@ var applications = (function(){
 			os : function(clbk){
 				var _os = os();
 
+				self.app.platform.m.log('registration_application')
 
 				if (_os && self.app.platform.applications[ed.key][_os] && (typeof _Electron == 'undefined' ) && !window.cordova){
 

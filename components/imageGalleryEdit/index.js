@@ -754,12 +754,14 @@ var imageGalleryEdit = (function(){
 
 				$(window).off('resize', helpers.resize)
 
+				console.log("ASDSADDSA")
 
 				el = {};
 			},
 			
 			init : function(p){
 
+				console.log("ASDSADDS122121A")
 
 				editMode = null;
 

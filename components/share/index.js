@@ -196,6 +196,7 @@ var share = (function(){
 				if (type === 'addVideo') {
 
 					el.peertube.addClass('disabledShare');
+					el.peertubeLiveStream .addClass('disabledShare');
 
 					self.nav.api.load({
 						open : true,
@@ -225,14 +226,14 @@ var share = (function(){
 									}								
 
 									if (renders[type])
-										renders[type]();
-									
-									el.peertube.removeClass('disabledShare');
+										renders[type]();									
 								}
 							},
 
 							closeClbk : function() {
-								el.peertube.removeClass('disabledShare');
+								if (!currentShare.url.v.includes(self.app.peertubeHandler.peertubeId)) {
+									el.peertube.removeClass('disabledShare');
+								}
 							}
 						},
 
@@ -246,17 +247,19 @@ var share = (function(){
 				if (type === 'addStream') {
 
 					el.peertubeLiveStream .addClass('disabledShare');
+					el.peertube.addClass('disabledShare');
 
 					self.nav.api.load({
 						open : true,
 						id : 'streampeertube',
 						inWnd : true,
 
-						history : true,
+						history : false,
 
 						essenseData : {
 							storage : storage,
 							value : value,
+							currentLink : currentShare.url ? currentShare.url.v : '',
 							actions : {
 								added : function(link){
 									var type = 'url';
@@ -276,8 +279,6 @@ var share = (function(){
 
 									if (renders[type])
 										renders[type]();
-									
-									el.peertubeLiveStream.removeClass('disabledShare');
 								}
 							},
 
@@ -528,8 +529,10 @@ var share = (function(){
 
 				var l = currentShare.url.v
 
-				if (l.includes('pocketnetpeertube')) {
+				if (l.includes(self.app.peertubeHandler.peertubeId)) {
 					self.app.peertubeHandler.removeVideo(l);
+					el.peertube.removeClass('disabledShare');
+					el.peertubeLiveStream.removeClass('disabledShare');
 				}
 
 
@@ -572,6 +575,7 @@ var share = (function(){
 
 			linksFromText : function(text){
 
+				console.log(text, 'text');
 
 				if(!currentShare.url.v){
 					var r = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%|_\+.~#/?&//=]*)?/gi; 
@@ -595,6 +599,7 @@ var share = (function(){
 							else
 							{
 								if(currentShare.url.v) return;
+								console.log('preparedUrl', url);
 								currentShare.url.set(url)
 
 								renders['url']()
@@ -642,6 +647,7 @@ var share = (function(){
 
 			post : function(clbk, p){
 
+				console.log('into post', currentShare)
 
 
 				el.postWrapper.removeClass('showError');
@@ -804,6 +810,7 @@ var share = (function(){
 			},
 
 			eTextChange : function(c){
+				console.log('c text', c)
 				var text = c.getText();
 
 				actions.tagsFromText(text);
@@ -1172,8 +1179,13 @@ var share = (function(){
 					el.peertubeLiveStream = el.c.find('.peertubeLiveStream');
 
 					el.peertube.on('click', async function() {
-						console.log('>>>>>>>>usertoken', self.app.peertubeHandler.userToken);
+						console.log('>>>>>>>>usertoken', self.app.peertubeHandler.userName, self.app.peertubeHandler.password);
 					});
+
+					if (currentShare.url.v.includes(self.app.peertubeHandler.peertubeId)) {
+						el.peertube.addClass('disabledShare');
+						el.peertubeLiveStream.addClass('disabledShare');
+					}
 
 
 					p.el.find('.cancelediting').on('click', function(){
@@ -1705,8 +1717,6 @@ var share = (function(){
 
 		var initEvents = function(){
 
-					
-
 			el.changeAddress.on('change', events.changeAddress)			
 
 
@@ -1773,6 +1783,7 @@ var share = (function(){
 			
 						el.c.find('.emojionearea-editor').pastableContenteditable();
 
+						console.log('pastable');
 
 						el.c.find('.emojionearea-editor').on('pasteImage', function (ev, data){
 

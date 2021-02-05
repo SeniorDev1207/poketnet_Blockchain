@@ -41644,10 +41644,11 @@
         bufferWriter.writeVarSlice(output.script);
         hashOutputs = bcrypto.hash256(tbuffer);
       }
-      tbuffer = Buffer.allocUnsafe(156 + varSliceSize(prevOutScript));
+      tbuffer = Buffer.allocUnsafe(160 + varSliceSize(prevOutScript));
       bufferWriter = new bufferutils_1.BufferWriter(tbuffer, 0);
       const input = this.ins[inIndex];
       bufferWriter.writeUInt32(this.version);
+      bufferWriter.writeUInt32(this.nTime)
       bufferWriter.writeSlice(hashPrevouts);
       bufferWriter.writeSlice(hashSequence);
       bufferWriter.writeSlice(input.hash);
@@ -42727,6 +42728,7 @@
       
       input.signatures[i] = bscript.signature.encode(signature, hashType);
 
+      console.log('input.signatures[i]', input.signatures[i], hashType)
 
       signed = true;
     }

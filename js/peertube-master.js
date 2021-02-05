@@ -1,22 +1,28 @@
 PeerTubeHandler = function (app) {
-  const baseUrl = 'https://pocketnetpeertube1.nohost.me/api/v1/';
+  const baseUrl = 'https://pocketnetpeertube2.nohost.me/api/v1/';
 
-  const watchUrl = 'https://pocketnetpeertube1.nohost.me/videos/watch/';
+  const watchUrl = 'https://pocketnetpeertube2.nohost.me/videos/watch/';
+
+  this.peertubeId = 'peertube';
 
   const apiHandler = {
     upload({ method, parameters }) {
       $.ajax({
         url: `${baseUrl}${method}`,
         ...parameters,
-      });
+      })
+        .done((res) => {
+          parameters.success(res);
+        })
+        .fail((res) => parameters.fail(res));
     },
 
     run({ method, parameters }) {
-      return fetch(`${baseUrl}${method}`, parameters).catch((err) => {
-        console.log(err);
-
-        return err;
-      });
+      return fetch(`${baseUrl}${method}`, parameters)
+        .then((res) => res.json())
+        .catch((err) => {
+          return { error: err };
+        });
     },
   };
 
@@ -140,7 +146,7 @@ PeerTubeHandler = function (app) {
 
               if (clbk) clbk();
 
-              return res.json();
+              return res;
             });
 
           return retryAuth;
@@ -157,8 +163,7 @@ PeerTubeHandler = function (app) {
     return apiHandler
       .run({
         method: `video-channels/${this.userName}_channel`,
-      })
-      .then((res) => res.json());
+      });
   };
 
   this.uploadVideo = async (parameters) => {
@@ -218,6 +223,10 @@ PeerTubeHandler = function (app) {
 
           parameters.successFunction(`${watchUrl}${json.video.uuid}`);
         },
+
+        fail: () => {
+          return parameters.successFunction('error');
+        },
       },
     });
   };
@@ -234,5 +243,94 @@ PeerTubeHandler = function (app) {
         },
       },
     });
+  };
+
+  this.startLive = async (parameters) => {
+    const channelInfo = await this.getChannel();
+
+    const bodyOfQuery = {
+      privacy: 1,
+      'scheduleUpdate[updateAt]': new Date().toISOString(),
+      channelId: channelInfo.id,
+      name: parameters.name || `${this.userName}:${new Date().toISOString()}`,
+    };
+
+    if (parameters.image) {
+      bodyOfQuery.previewfile = parameters.image;
+      bodyOfQuery.thumbnailfile = parameters.image;
+    }
+
+    const formData = new FormData();
+
+    Object.keys(bodyOfQuery).map((key) =>
+      formData.append(key, bodyOfQuery[key]),
+    );
+
+    apiHandler.upload({
+      method: 'videos/live',
+      parameters: {
+        type: 'POST',
+        method: 'POST',
+        contentType: false,
+        processData: false,
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${this.userToken}`,
+        },
+
+        // xhr: () => {
+        //   const xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
+        //   xhr.upload.addEventListener(
+        //     'progress',
+        //     function (evt) {
+        //       // добавляем обработчик события progress (onprogress)
+        //       if (evt.lengthComputable) {
+        //         const percentComplete = (evt.loaded / evt.total) * 100;
+
+        //         this.uploadProgress = percentComplete;
+        //         parameters.uploadFunction(percentComplete);
+        //       }
+        //     },
+        //     false,
+        //   );
+        //   return xhr;
+        // },
+
+        success: (json) => {
+          if (!json.video) return parameters.successFunction('error');
+
+          return this.getLiveInfo(json.video.uuid, {
+            successFunction: parameters.successFunction,
+          });
+        },
+
+        fail: (res) => {
+          return parameters.successFunction({ error: res });
+        },
+      },
+    });
+  };
+
+  this.getLiveInfo = async (id, parameters) => {
+    apiHandler
+      .run({
+        method: `videos/live/${id}`,
+        parameters: {
+          type: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.userToken}`,
+          },
+        },
+      })
+      .then((res) => {
+        if (res.error) {
+          return parameters.successFunction(res);
+        }
+
+        return parameters.successFunction({
+          video: `${watchUrl}${id}`,
+          ...res,
+        });
+      });
   };
 };
