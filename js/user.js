@@ -50,20 +50,14 @@ User = function(app, p) {
 
 		var signature = keyPair.sign(Buffer.from(nonce))		
 
-		var sobj = {
+		var sobj = JSON.stringify({
 
 			nonce : nonce,
 			signature : signature.toString('hex'),
 			pubkey : keyPair.publicKey.toString('hex'),
 			address : self.address.value
 			
-		}
-
-		//var __keyPair = bitcoin.ECPair.fromPublicKey(Buffer.from(sobj.pubkey, 'hex'))
-		//var __hash = Buffer.from(sobj.nonce, 'utf8')
-
-		//var verify = __keyPair.verify(__hash, Buffer.from(sobj.signature, 'hex'));
-
+		})
 
 		return sobj
 	}
@@ -198,10 +192,7 @@ User = function(app, p) {
 
 		app.platform.clear(true);
 
-
 		app.platform.prepareUser(function(){
-
-
 			if (clbk)
 				clbk(state)	
 		})
@@ -307,9 +298,7 @@ User = function(app, p) {
 			app.platform.firebase.destroy(clbk);
 	}
 
-	self.getstate = function(){
-		return state
-	}
+
 	self.isState = function(clbk){
 
 		if(!p) p = {};
@@ -402,10 +391,10 @@ User = function(app, p) {
 
 	self.validate = function(){
 
-
 		if(!self.address.value) return false;
 
 		var me = deep(app, 'platform.sdk.user.storage.me');
+
 
 		if (me && me.relay){
 
@@ -427,9 +416,11 @@ User = function(app, p) {
 
 	self.keysFromMnemo = function(mnemonic){
 
+		console.log('mnemonicmnemonic', mnemonic)
 
 		var seed = bitcoin.bip39.mnemonicToSeedSync(mnemonic)
 
+		console.log('seed', seed)
 
 		return self.keysFromSeed(seed)
 
@@ -477,6 +468,7 @@ User = function(app, p) {
 		}
 		catch (e){
 
+			console.log('er', e, private)
 
 			try{
 				keyPair = bitcoin.ECPair.fromWIF(private)
@@ -508,6 +500,7 @@ User = function(app, p) {
 	self.setKeys = function(mnemonic, clbk){
 		var keyPair =  self.keysFromMnemo(mnemonic)  
 		
+		console.log('keyPair', keyPair)
 
 	    self.setKeysPair(keyPair, clbk)
     	

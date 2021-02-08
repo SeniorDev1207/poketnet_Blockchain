@@ -747,6 +747,7 @@ var platformRTC = function(p){
 						else
 						{
 							if (data.error){
+								//console.log("Error: ", data.error)
 							}
 						}
 					}

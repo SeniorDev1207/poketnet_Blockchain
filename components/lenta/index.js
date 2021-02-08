@@ -1517,6 +1517,7 @@ var lenta = (function(){
 			sharesocial : function(){
 				var shareId = $(this).closest('.shareinlenta').attr('id');
 
+					self.app.platform.m.log('sharing_opened_button', shareId)
 
 					actions.sharesocial(shareId)
 			},
@@ -2773,6 +2774,8 @@ var lenta = (function(){
 
 			if(!essenseData.txids){
 				self.app.platform.sdk.node.shares.clbks.added.lenta = function(share){
+
+					console.log('share', share);
 
 					if (share.txidEdit){		
 												

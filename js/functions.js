@@ -291,15 +291,6 @@
 		return d.getUTCFullYear() + "" + MM + "" + dd + "" + hh + "" + mm;
 	}
 
-	utcnow = function(date){
-		var now = date ||(new Date);
-		var UTCseconds = (now.getTime() + now.getTimezoneOffset()*60*1000);
-		var d = new Date(UTCseconds);
-			d.toString();	
-	
-		return d
-	}
-
 	randomString = function (l) {
 		if (!l)
 			l = 8;
@@ -546,7 +537,7 @@
 				if(p.leftbg) 
 					h+='<div class="leftbg"><div>'+p.leftbg+'</div></div>';
 
-				h+=	 '<div class="wndcontent">'+content+'</div>';
+				h+=	 '<div class="wndcontent content">'+content+'</div>';
 
 				if(p.header) 
 				{
@@ -1129,6 +1120,26 @@
 				html+= '<div class="header"><div class="text">'+p.header+'</div></div>';
 			}
 
+			if (p.poll){
+				
+				var poll = '<div class="poll">';
+
+				poll += '<div class="question description">Question</div>'
+
+				poll += '<div class="title"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>'
+
+				poll += '<div class="options description">Poll options</div>';
+
+				for (var i = 0; i < 5; i++){
+					poll += `<div class="poll-item" id="poll-item-${i + 1}"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>`;
+				}
+
+				poll += "</div>";
+
+				html += poll ;
+				
+			}
+
 			if(p.html)
 			{
 				html += '<div class="body"><div class="text">'+(p.html || "")+'</div></div>';
@@ -1148,9 +1159,33 @@
 			$('body').append($el);
 			if(p.class) $el.addClass(p.class);
 
+			$el.find
+
 			$el.find('.btn1').on('click', function(){ response(p.success)});
 			$el.find('.btn2').on('click', function(){ response(p.fail, true)});
 			$el.find('._close').on('click', function(){ response(p.close, true)});
+
+			
+			var title = $el.find('.poll .title');
+				
+			title.find('i').on('click', function(){
+
+				title.find('.input').val('');
+			})
+
+			for (var i = 0; i < 5; i++){
+				
+				let item = $el.find(`#poll-item-${i + 1}`);
+
+				item.find('i').on('click', function(){
+
+					console.log('input', item.find('.input'));
+
+					item.find('.input').val('');
+				})
+
+			}
+
 
 			if(p.clbk) p.clbk($el, self);
 
@@ -2382,19 +2417,6 @@
 
 	}
 
-	lastelements = function(arr, length, eq){
-		if(!length) length = 100
-		if(!eq) eq = 0
-	
-		var d = arr.length - length
-	
-		if (d > eq){
-			arr = arr.splice(0, d)
-		}
-	
-		return arr
-	}
-
 	firstEls = function(array, l){
 		var length = array.length
 
@@ -2452,26 +2474,9 @@
 	}
 
 	deep = function(obj, key){
+		var  _key = key.split(".");
 
-		var tkey = ''
-		var _key = []
-
-		if (key[0] == "'"){
-
-			key = key.substr(1)
-			_key = key.split("'")
-			tkey = _key[0]
-
-			if(_key[1]) _key[1] =  _key[1].substr(1)
-
-
-		}
-		else{	
-			_key = key.split(".");
-			tkey = _key[0];
-		}
-
-		
+		var tkey = _key[0];
 
 		if(typeof obj == 'undefined' || !obj) return undefined;
 
@@ -2666,7 +2671,7 @@
 
 		_.each(parameters, function(parameter){
 
-			if(!parameter.type) return
+			if(!parameter || !parameter.type) return
 
 
 			var _el = el.find('[pid="'+parameter.id+'"]')
@@ -5280,6 +5285,7 @@
 
 					valid = valid && pv;
 
+				if(!pv) console.log("ADDERROR", p)
 
 				if(!pv && pv.type != 'composite' && adderror && p.require){
 
@@ -6069,7 +6075,9 @@
 			var _all = offsetTop >= range.top && 
 				bottom <= range.bottom 
 
-				
+				if(p.debug){
+					console.log('range.top, range.bottom, offsetTop, bottom', range.top, range.bottom, offsetTop, bottom)
+				}
 
 			if (p.mode == 'line'){
 
@@ -9101,15 +9109,19 @@
 		}
 
 		var takeData = function(uri){
-			if(typeof localStorage != 'undefined' && localStorage[prefix+uri])
+			if(typeof localStorage != 'undefined' && localStorage[prefix+uri]){
 				data[uri] = JSON.parse(localStorage[prefix+uri]);
-			else 
+				console.log('takedata', uri, data[uri]);
+			} 
+			else {
 				data[uri] = {};
+			}
 
 			return this;
 		}
 
 		var putData = function(uri){
+
 			if(typeof localStorage != 'undefined' && data[uri]){
 
 				try{
@@ -9224,14 +9236,6 @@
 		}, time);
 
 		return interval;
-	}
-
-	pretry = function(_function, time, totaltime){
-		return new Promise((resolve, reject) => {
-	
-			retry(_function, resolve, time, totaltime)
-	
-		})
 	}
 
 	retryLazy = function(_function, clbk, time){

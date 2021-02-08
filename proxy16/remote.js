@@ -3,11 +3,9 @@ require('events').EventEmitter.defaultMaxListeners = 0
 var f = require('./functions');
 var request = require('request');
 var jsdom  	= require('jsdom');
-var _ = require('underscore')
 
 var path = require("path");
 var jquery = path.resolve(__dirname, "lib/jquery-1.11.3.min.js")
-
 
 //const phantom = require('phantom');
 var iconv = require('iconv-lite');
@@ -133,7 +131,7 @@ var Remote = function(app){
 
 						if (html){
 							if (clbk)
-								clbk(html, true)	
+								clbk(html)	
 						}
 						else
 						{
@@ -191,34 +189,36 @@ var Remote = function(app){
 		var charset = window.$('meta[charset]').attr('charset');
 
 		if (clbk)
-			clbk(window, html)
+				clbk(window, html)
 
-		
+		return
 	}
 
 	self.jsdom = function(html, clbk){
 		try{
+			jsdom.env({
+			    html: html,
+			    src: [
+			      	jquery
+			    ],
+			    done: function(errors, window) {
 
-			jsdom.env(html, [jquery], function(errors, window) {
+			    	if(!window)
+			   		{
+			   			if (clbk)
+							clbk(null)
+			   		}
+			   		else
+			   		{
+			   			clbk(window, html);
+			   		}
+			    	
 
-
-				if(!window)
-				{
-					if (clbk)
-						clbk(null)
-				}
-				else
-				{
-					clbk(window, html);
-				}
-				
-
-			
+			    }
 			})
 		}
 
 		catch (e){
-
 
 			if (clbk)
 				clbk(null)
@@ -227,22 +227,16 @@ var Remote = function(app){
 
 	self.get = function(url, clbk){
 
-		load.all(url, function(html, fromcache){
-
+		load.all(url, function(html){
 
 			if(html){
 
-				if(!fromcache){
-					cache = _.last(cache, 3000)
+				cache = lastEls(cache, 3000);
 
-					cache.push({
-						url : url,
-						html : html
-					})
-				}
-				
-
-				console.log("JSDOV")
+				cache.push({
+					url : url,
+					html : html
+				})
 
 				self.jsdom(html, clbk)
 			}
@@ -263,6 +257,8 @@ var Remote = function(app){
 	}
 
 	self.og = function($){
+
+		var charset = $('meta[charset]').attr('charset');
 
 		var og = {}		
 
@@ -338,27 +334,38 @@ var Remote = function(app){
 	}
 
 	self.make = function(url, clbk){
+		var meta = app.platform.parseUrl(url);
 
 		self.get(url, function(window, html){
 
-		
+			var err = null;
+
 			if(html && window.$){
-				if(window.$){
-					var og = self.og(window.$)
 
-					var result = {
-						og : og
-					};
+				self.charset(window, html, function(){
 
-					if (clbk)
-						clbk(null, result, html, window.$)
-				}
+					if(window.$){
+						var og = self.og(window.$)
 
-				else
-				{
-					if (clbk)
-						clbk('Remote content Fail', {})
-				}
+						var result = {
+							og : og
+						};
+
+						if (clbk)
+							clbk(null, result, html, window.$)
+					}
+
+					else
+					{
+						if (clbk)
+							clbk('Remote content Fail', {})
+					}
+
+					
+
+				})
+
+				
 			}
 			else
 			{

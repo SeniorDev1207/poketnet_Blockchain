@@ -21,7 +21,7 @@ var Wallet = function(p){
                 return obj.ip == queueobj.ip
             })
 
-            if (allips.length > 5 && f.now(allips[allips.length - 1].date) > f.addSeconds(f.now(), -10 * 24 * 60 * 60)){
+            if (allips.length > 5 && new Date(allips[allips.length - 1].date) > f.addSeconds(new Date, -10 * 24 * 60 * 60)){
                 return Promise.reject('iplimit')
             }
 
@@ -193,9 +193,9 @@ var Wallet = function(p){
         },
 
         total : function(unspents){
-            return Number(_.reduce(unspents || [], (m, u) => {
+            return _.reduce(unspents || [], (m, u) => {
                 return m + Number(u.amount)
-            }, 0).toFixed(9))
+            }, 0)
         },
 
         available: function(unspents){
@@ -311,7 +311,7 @@ var Wallet = function(p){
                 id : f.makeid(),
                 executed : '-',
                 ip : ip || '',
-                date : f.now()
+                date : new Date()
             } 
 
             return self.checking(object).then(r => {
@@ -371,7 +371,7 @@ var Wallet = function(p){
                     return true
                 })
 
-                var date = f.now()
+                var date = new Date()
 
                 var promises = _.map(queue, function(object){
 
@@ -567,19 +567,14 @@ var Wallet = function(p){
     }
 
     self.info = function(){
-
-        var info = {}
-
-        _.each(addresses, function(r){
-            info[r.key] = {
+        return _.map(addresses, function(r){
+            return {
                 key : r.key,
                 unspents : r.unspents ? r.unspents.length : 0,
                 balance : self.unspents.total(r.unspents),
                 queue : r.queue.length
             }
         })
-
-        return info
     }
 
     self.stats = function(){

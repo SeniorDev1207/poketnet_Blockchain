@@ -128,6 +128,7 @@ var help = (function(){
 
 				this.page(page, function(_el){
 
+					console.log("PAGE", page)
 
 					
 				})
@@ -138,6 +139,7 @@ var help = (function(){
 
 				this.page(page, function(_el){
 
+					console.log("PAGE", page)
 
 					self.nav.api.load({
 
@@ -146,6 +148,7 @@ var help = (function(){
 						el : _el.find('.faqWrapper'),
 						clbk : function(e, p){
 
+							console.log("EXTERNAL", p)
 
 							external = p
 
@@ -303,6 +306,7 @@ var help = (function(){
 
 			destroy : function(){
 
+				console.log('help')
 
 				if (external){
 

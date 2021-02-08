@@ -1,9 +1,8 @@
 const https       = require('https');
 const WebSocket   = require('ws');
 var f = require('../functions');
-var _ = require('underscore')
 
-var WSS = function(admins, manage){
+var WSS = function(){
     var self = this;
 
         self.listening = false;
@@ -14,10 +13,6 @@ var WSS = function(admins, manage){
 
     var create = {
         user : function(address){
-
-            var admin = _.indexOf(admins, address) > -1
-
-
             var user = {
     
                 devices : {
@@ -29,10 +24,7 @@ var WSS = function(admins, manage){
                 firebase : {},
     
                 clients: {},
-                nodes : {},
-                ticks : {},
-
-                admin
+                nodes : {}
             }
     
             return user
@@ -44,28 +36,11 @@ var WSS = function(admins, manage){
             var auto = true
 
             if (p){
-
-                if(_.isObject(p)){
-                    node = self.nodeManager.temp(p)
-                }
-                else
-                {
-                    node = self.nodeManager.nodesmap[p]
-                }
-
-                
+                node = self.nodeManager.temp(p)
                 auto = false
             }
             else{
-                 // || self.nodeManager.select(0)
-            }
-
-            if(!node){
-
-                console.log("CANT FIND NODE")
-
-                node = self.nodeManager.selectProbability()
-                auto = true
+                node = self.nodeManager.selectbest()
             }
 
 
@@ -96,46 +71,17 @@ var WSS = function(admins, manage){
             connectNode(user, node)
         })
 
-        ws.on('changenode', (data) => {
+        ws.on('block') = (data) => {
+            if (self.server.cache){
+                self.server.cache.block(data)    
+            }
+        }
 
-            _.each(node.ini, function(client){
-
-                if (client.type == 'firebase'){
-
-                    disconnectNode(user)
-
-                    node = create.node(data.node)
-
-                    connectNode(user, node)
-
-                }
-                else{
-
-                    sendMessage({
-
-                        type : 'changenode',
-                        data : data
-
-                    }, client.ws)
-
-                }
-
-            })
-
-        })
-
-
-        ws.on('message', (data) => {
+        ws.on('message') = (data) => {
            
             var fbdata = {}; 
 
             _.each(data, (d, k) => { fbdata[k] = d.toString() })
-
-            if(data.msg == 'new block'){
-                if (self.server.cache){
-                    self.server.cache.block(data)    
-                }
-            }   
                       
             _.each(node.ini, function(client){
 
@@ -149,16 +95,17 @@ var WSS = function(admins, manage){
 
                 }
                 else{
+
                     sendMessage(data, client.ws)
                 }
 
             })
             
-        });
+        };
 
-        ws.on('error', (e) => {
+        ws.on('error') = (e) => {
             console.log(e)
-        })
+        }
 
     }
 
@@ -169,7 +116,7 @@ var WSS = function(admins, manage){
 
             if (_.isEmpty(node.ini)){
 
-                node.instance.wss.disconnect(user)
+                node.instance.ws.disconnect(user)
                 clearNodes.push(key)
 
             }
@@ -186,16 +133,12 @@ var WSS = function(admins, manage){
             return user.clients[ws.id]
         })
         
+        
         var clearUsers = []
 
         _.each(wsusers, function(user){
             delete user.clients[ws.id]
             delete user.devices.ws[ws.id]
-
-            if (user.ticks[ws.id]){
-                clearInterval(user.ticks[ws.id])
-                delete user.ticks[ws.id]
-            }
 
             _.each(user.nodes, function(node, key){
                 delete node.ini[ws.id]
@@ -228,42 +171,17 @@ var WSS = function(admins, manage){
        
     }
 
-    var tick = function(ws) {
-
-		manage.get.settings().then(settings => {
-
-            manage.get.state(true).then(state => {
-
-                sendMessage({
-                    type : 'proxy-message-tick',
-                    data : {
-                        state : state,
-                        settings : settings
-                    }
-                }, ws)
-    
-            })
-			
-		})
-
-		
-        
-	}
-
     var messages = {
-        signout : function(message, ws){
-            disconnectClient(ws)
-        },
         registration : function(message, ws){
             
-            var address = message.address;
-            var signature = message.signature;
-            var device = message.device;
-            var block = message.block || 0;
+            var address = message.addr;
+            var signature = message.sgn;
+            var device = message.id;
 
             if(!address || !device) return
 
             var user = null
+
       
             var authorized = self.pocketnet.kit.authorization.signature(signature, address)
 
@@ -271,8 +189,8 @@ var WSS = function(admins, manage){
                 return false
             }
 
-            if(!users[address]) 
-                users[address] = create.user(address)
+
+            if(!users[address]) users[address] = create.user(address)
 
             user = users[address]
 
@@ -281,15 +199,13 @@ var WSS = function(admins, manage){
 
             var node = create.node(message.node)
 
-            if(!node) return
-
             sendMessage({
                 msg : node ? "registered" : 'registererror',
                 addr : user.addr,
                 node : node.instance.export()
             }, ws)
 
-            user.nodes[node.key] || (user.nodes[node.key] = node)
+            if(!node) return
 
             user.nodes[node.key].ini[ws.id] = {
                 type : 'ws',
@@ -297,11 +213,9 @@ var WSS = function(admins, manage){
                 ip : ws.ip
             }
 
-            if (user.admin){
-                user.ticks[ws.id] = setInterval(() => {tick(ws)}, 2500)
-            }
-
-            connectNode(user, user.nodes[node.key]);
+            //if(!user.nodes[node.key].ws){
+                connectNode(user, node);
+            //}
         }
     }
 
@@ -313,31 +227,12 @@ var WSS = function(admins, manage){
             message = JSON.parse(msg)
         } catch(e){}
 
-
         if(!message.action) {
             messages.registration(message, ws)
         }
     }
 
-    self.newconnection = function(ws){
-        ws.id = f.makeid();
-
-        ws.on('message', (msg) => {
-            handleMessage(msg, ws)
-        })
-
-        ws.on('close', (code, reason) => {
-            disconnectClient(ws)
-        });
-
-        ws.on('error', (err) => {
-            disconnectClient(ws)
-        });
-    }
-
-    self.wssdummy = function(wssdummy){
-        self.newconnection(wssdummy)
-    }
+    
 
     self.init = function(settings){
         
@@ -353,14 +248,26 @@ var WSS = function(admins, manage){
                 });
 
                 wss.on('connection', (ws, req) => {
+
+                    ws.id = f.makeid();
                     ws.ip = req.connection.remoteAddress
-                    
-                    self.newconnection(ws)
+
+                    ws.on('message', (msg) => {
+                        handleMessage(msg, ws)
+                    })
+
+                    ws.on('close', (code, reason) => {
+                        disconnectClient(ws)
+                    });
+            
+                    ws.on('error', (err) => {
+                        disconnectClient(ws)
+                    });
                 })
 
                 wss.on('listening',function(){
 
-                    self.listening = settings.port || 8088
+                    self.listening = true
 
                     resolve()
                 });
@@ -467,7 +374,9 @@ var WSS = function(admins, manage){
                     device : p.device
                 }
 
-                connectNode(user, node);
+                //if(!user.nodes[node.key].ws){
+                    connectNode(user, node);
+                //}
                 
 
             },
@@ -476,34 +385,26 @@ var WSS = function(admins, manage){
         }
     }
 
-    self.info = function(compact){
+    self.info = function(){
+        return {
 
+            listening : self.listening,
+            users : _.map(users, function(user){
 
-        var data = {
-            listening : self.listening
-        }
-
-        if(!compact) data.users = _.map(users, function(user){
-
-            return {
-                devices : {
-                    ws :    _.toArray(user.devices.ws).length,
-                    fb :    _.toArray(user.devices.fb).length,
-                },
-                address :   user.address,
-                firebase :  _.toArray(user.firebase).length,
-                clients :   _.toArray(user.clients).length,
-                nodes :     _.toArray(user.nodes).length
-                //ip : user.ip || ''
-            }
-
-        }) 
-
-        else{
-            data.users = _.toArray(users).length
-        }
-
-        return data
+                return {
+                    devices : {
+                        ws :    _.toArray(user.devices.ws).length,
+                        fb :    _.toArray(user.devices.fb).length,
+                    },
+                    address :   user.address,
+                    firebase :  _.toArray(user.firebase).length,
+                    clients :   _.toArray(user.clients).length,
+                    nodes :     _.toArray(user.nodes).length
+                    //ip : user.ip || ''
+                }
+    
+            }) 
+        } 
     }
 
     self.users = users;

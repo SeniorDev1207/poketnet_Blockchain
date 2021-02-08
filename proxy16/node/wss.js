@@ -18,6 +18,7 @@ var Wss = function(node, service){
         if(!user){
             user = {
                 address : 'PSmGDYWzcPrrhvqFnGVxnhPbpsTK6LCZYd',
+                
             }
         }
 
@@ -56,8 +57,6 @@ var Wss = function(node, service){
             action(data)
         })
     }
-
-    self.emit = emit
 
     self.send = function(message){
 
