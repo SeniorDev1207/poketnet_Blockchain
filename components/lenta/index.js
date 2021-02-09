@@ -268,8 +268,6 @@ var lenta = (function(){
 						if (self.app.errors.connectionRs()){
 							self.iclbks.lenta = actions.loadmore
 						}
-
-						
 	
 						return;
 					}
@@ -277,7 +275,7 @@ var lenta = (function(){
 					el.c.removeClass('networkError')
 
 					if(!shares){
-						
+						console.log("IM HERE")
 					}
 					else
 					{
@@ -1517,7 +1515,6 @@ var lenta = (function(){
 			sharesocial : function(){
 				var shareId = $(this).closest('.shareinlenta').attr('id');
 
-					self.app.platform.m.log('sharing_opened_button', shareId)
 
 					actions.sharesocial(shareId)
 			},
@@ -2774,8 +2771,6 @@ var lenta = (function(){
 
 			if(!essenseData.txids){
 				self.app.platform.sdk.node.shares.clbks.added.lenta = function(share){
-
-					console.log('share', share);
 
 					if (share.txidEdit){		
 												

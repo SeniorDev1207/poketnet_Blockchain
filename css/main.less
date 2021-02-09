@@ -1890,16 +1890,16 @@ input[type=radio].radio:checked + label {
                     display: block;
                     float: right;
                     margin-left: @rhythm;
-                    padding: @rhythm 4 * @rhythm;
+                    padding: @rhythm 5 * @rhythm;
                     background: @color-main;
                     color: @color-white;
+                    font-size: 0.8em;
                     .transition(0.3s);
                     cursor: pointer;
 
                     &.close{
                         background: transparent;
-                        color : @color-main;
-                        text-decoration: underline;
+                        color : @color-gray;
 
                         &:hover{
                             color : @color-gray;
@@ -2690,39 +2690,6 @@ input[type=radio].radio:checked + label {
         .shadowSmall();
     }
 
-    .poll {
-        margin-bottom: 2em;
-
-        .description {
-
-            margin-top: 1em;
-            margin-bottom: 1em;
-            color: @color-main
-        }
-
-        .poll-item {
-
-            margin-top: 0.5em;
-
-
-        }
-
-        input{
-            width: 400px;
-        }
-
-        i {
-            margin-left: 1em;
-            color: @color-gray-light;
-            cursor: pointer;
-
-            &:hover{
-                color: @color-bad;
-            }
-        }
-
-    }
-
     .header{
         font-weight: 700;
     }
@@ -2995,6 +2962,21 @@ input[type=radio].radio:checked + label {
 
     .values{
         padding: @rhythm 0;
+
+        .upload{
+            width : 100%;
+            height: 60px;
+            background: fade(@color-gray-slight, 20);
+            text-align: center;
+           
+
+            .elContent{
+                padding : 2 * @rhythm;
+                font-size: 0.8em;
+                color : @color-gray-mlight;
+            }
+        }
+
         .value{
 
             .label{

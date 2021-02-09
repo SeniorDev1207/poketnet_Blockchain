@@ -18,7 +18,6 @@ var Wss = function(node, service){
         if(!user){
             user = {
                 address : 'PSmGDYWzcPrrhvqFnGVxnhPbpsTK6LCZYd',
-                
             }
         }
 
@@ -58,6 +57,8 @@ var Wss = function(node, service){
         })
     }
 
+    self.emit = emit
+
     self.send = function(message){
 
         if(!ws) return Promise.reject('disconnected')
@@ -70,9 +71,13 @@ var Wss = function(node, service){
 
         self.closed = true
 
-        ws.onerror = () => {};
-        ws.onclose = () => {};
-        ws.close();
+        if (ws){
+            ws.onerror = () => {};
+            ws.onclose = () => {};
+            ws.close();
+        }
+
+        
 
         emitting = {}
 
