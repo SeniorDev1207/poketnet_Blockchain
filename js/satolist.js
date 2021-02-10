@@ -1393,10 +1393,9 @@ Platform = function (app, listofnodes) {
 
                     var l = serie.data.length;
 
-                    if (l > count) {
+                    if (l > count * 3) {
 
-                        var difference = l - count;
-                        var c = 1 / (count / l);
+                        var c = l / count;
                         var newData = [serie.data[0]];
 
                         for (var i = 1; i < l - 1; i++) {
@@ -4942,7 +4941,6 @@ Platform = function (app, listofnodes) {
                 }
             },
             get: function (addresses, clbk, light) {
-                console.log('addresses', addresses)
                 if (!_.isArray(addresses)) addresses = [addresses]
 
                 var ia = addresses
@@ -5050,7 +5048,7 @@ Platform = function (app, listofnodes) {
                                 captcha: self.sdk.captcha.done
                             }
 
-                            self.app.api.fetch('freeMoney', prms).then(d => {
+                            self.app.api.fetch('free/registration', prms).then(d => {
                                 if (clbk)
                                         clbk(true)
 
@@ -5526,23 +5524,25 @@ Platform = function (app, listofnodes) {
                 self.app.api.fetch('captcha', {
                     captcha: this.done || this.current || null
                 }).then(d => {
-                    self.sdk.captcha.current = d.data.id
 
-                    if (d.data.id != self.sdk.captcha.done) {
+
+                    self.sdk.captcha.current = d.id
+
+                    if (d.id != self.sdk.captcha.done) {
                         self.sdk.captcha.done = null
                     }
 
                     self.sdk.captcha.save()
 
-                    if (d.data.result && !d.data.done) {
-                        self.sdk.captcha.make(d.data.result, function (err) {
+                    if (d.result && !d.done) {
+                        self.sdk.captcha.make(d.result, function (err) {
 
                             if (!err) {
 
-                                d.data.done = true
+                                d.done = true
 
                                 if (clbk)
-                                    clbk(d.data)
+                                    clbk(d)
 
                             }
                             else {
@@ -5553,7 +5553,7 @@ Platform = function (app, listofnodes) {
                     }
                     else {
                         if (clbk)
-                            clbk(d.data)
+                            clbk(d)
                     }
 
                 }).catch(e => {
@@ -5570,12 +5570,12 @@ Platform = function (app, listofnodes) {
                     captcha: this.current || null,
                     text: text
                 }).then(d => {
-                    self.sdk.captcha.done = d.data.id
+                    self.sdk.captcha.done = d.id
 
                     self.sdk.captcha.save()
 
                     if (clbk)
-                        clbk(null, d.data)
+                        clbk(null, d)
 
                 }).catch(e => {
                     if (clbk)
@@ -15578,20 +15578,22 @@ Platform = function (app, listofnodes) {
         }
 
         var reconnect = function () {
+
+            console.log("reconnectreconnect")
+
             if (closing) {
                 return;
             }
 
             closing = false;
-
-            socket = null;
-
             //lost = platform.currentBlock;
 
             self.close();
 
             initconnection();
         }
+
+        self.reconnect = reconnect
 
         var initconnection = function (clbk) {
 
@@ -15628,13 +15630,24 @@ Platform = function (app, listofnodes) {
 
                             if (wss.proxy.changeNode(jm.data.node)){
 
-                                console.log("NODECHANGING")
-
                                 reconnect()
                             }
 
                             return
 
+                        }
+
+                        if (jm.type == 'proxy-settings-changed'){
+
+                            var r = wss.proxy.changed(jm.data)
+
+                            console.log('wsrecon', r)
+
+                            /*if (r){
+                                reconnect()
+                            }*/
+
+                            return
                         }
 
 
@@ -15663,8 +15676,24 @@ Platform = function (app, listofnodes) {
                         clbk()
                 }
 
+                wss.proxy.clbks.changed.wss = function(){
+
+                    console.log("CHANGEDRECONNECT")
+
+                    reconnect()
+                }
+
+                socket.onclose = function(){
+                    delete wss.proxy.clbks.changed.wss
+                }
+
                 if(socket.init) socket.init()
                 
+            }).catch(e => {
+
+                if (clbk)
+                    clbk(e)
+
             })
 
             //var ws = 'wss://' + platform.apiproxy.host + ":" + platform.apiproxy.ws

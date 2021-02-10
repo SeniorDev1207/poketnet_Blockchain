@@ -7,7 +7,10 @@ var Wallet = function(p){
 
     var addresses = {}
 
-    var processInterval = null
+    var processInterval = null,
+        unspentsInterval = null
+
+    var inited = false
 
     self.kit = {
         
@@ -66,19 +69,44 @@ var Wallet = function(p){
 
     var db = new Datastore(f.path(p.dbpath));
 
-
     var initProcess = function(){
+
+        var mk = function(){
+            console.log("MK")
+            _.each(addresses, function(a, k){
+                self.kit.makequeueE(k)
+            })
+        }
+
+        var us = function(){
+            _.each(addresses, function(a, k){
+                self.unspents.getc(a, true).catch(e => {})
+            })
+        }
 
         if(!processInterval)
             processInterval = setInterval(function(){
-                _.each(addresses, function(a, k){
-                    self.kit.makequeueE(k)
-                })
+
+                mk();
+
             }, 10000)
+
+        if(!unspentsInterval)
+            unspentsInterval = setInterval(function(){
+
+                us();
+
+            }, 100000)
+            
     }
 
     self.destroy = function(){
         addresses = {}
+
+        if (unspentsInterval){
+            clearInterval(unspentsInterval)
+            unspentsInterval = null
+        }
 
         if (processInterval){
             clearInterval(processInterval)
@@ -92,40 +120,46 @@ var Wallet = function(p){
      
         _.each(p.addresses, function(options, key){
 
-            var kp = self.pocketnet.kit.keyPair(options.privatekey)
-
-            if (kp) {
-
-                addresses[key] = {
-                    amount : options.amount || 0.002,
-                    outs : options.outs || 1,
-                    keys : kp,
-                    address : self.pocketnet.kit.addressByPublicKey(kp.publicKey),
-                    unspents : null,
-                    queue : [],
-                    all : [],
-                    key : key
-                }
-
-                self.unspents.getc(addresses[key]).catch(e => {
-                    console.log("UNSPENTERROR", e)
-                })
-
+            var kp = null
+            
+            try{
+                kp = self.pocketnet.kit.keyPair(options.privatekey)
+            }
+            catch(e){
+                
+            }
+          
+            addresses[key] = {
+                amount : options.amount || 0.002,
+                outs : options.outs || 1,
+                keys : kp,
+                address : kp ? self.pocketnet.kit.addressByPublicKey(kp.publicKey) : null,
+                unspents : null,
+                queue : [],
+                all : [],
+                key : key
             }
 
-            else{
-
+            if(!kp){
                 _.each(self.clbks.error.ini, function(c){
                     c('privatekey', {
                         key : key
                     })
                 })
-                
             }
+            else{
+                self.unspents.getc(addresses[key]).catch(e => {
+                    console.log("UNSPENTERROR", e)
+                })
+            }
+
+                
+                
 
         })
 
         initProcess()
+        inited = true
 
         return new Promise((resolve, reject) => {
 
@@ -183,13 +217,14 @@ var Wallet = function(p){
         },
 
         release : function (unspents) {
+            console.log("RELEASE")
             _.each(unspents, function (unspent) {
                 delete unspent.cantspend
             })
         },
 
         canSpend: function (unspent) {
-            return !unspent.cantspend && !self.sdk.node.unspents.waitSpend(unspent) && unspent.amount
+            return !unspent.cantspend && !self.unspents.waitSpend(unspent) && unspent.amount
         },
 
         total : function(unspents){
@@ -208,8 +243,11 @@ var Wallet = function(p){
             return self.nodeManager.request('txunspent', [[address], 1, 9999999])
         },
 
-        getc : function(addressobj){
-            if(!addressobj.unspents){
+        getc : function(addressobj, upd){
+
+            if(!addressobj.address) return Promise.resolve([])
+
+            if(!addressobj.unspents || upd){
     
                 return self.unspents.get(addressobj.address).then(r => {
                 
@@ -264,11 +302,13 @@ var Wallet = function(p){
             var outputs = self.helpers.outputs.tos(key, tos)
             var meta = null
 
-            self.unspents.getc(addresses[key]).then(unspents => {
+            return self.unspents.getc(addresses[key]).then(unspents => {
                 return self.transactions.txfees(unspents, outputs)
             }).then(_meta => {
 
                 meta = _meta
+
+                console.log('meta', meta)
 
                 _.each(meta.inputs, function(input){
                     input.cantspend = true
@@ -278,10 +318,10 @@ var Wallet = function(p){
                 
             }).catch(e => {
 
-                if (meta)
-                    _.each(meta.inputs, function(input){
-                        delete input.cantspend
-                    })
+                if (meta){
+                    self.unspents.release(meta.inputs)
+                }
+                   
 
                 if((e == -26 || e == -25 || e == 16)){
                     return Promise.reject('sync')
@@ -334,11 +374,7 @@ var Wallet = function(p){
         makequeueE : function(key){
             return self.kit.makequeue(key).catch(e => {
 
-                _.each(self.clbks.error.queue, function(c){
-                    c(e, {
-                        key : key
-                    })
-                })
+                console.log("E", e)
 
                 return Promise.reject(e)
             })
@@ -351,7 +387,13 @@ var Wallet = function(p){
                 return !object.executing
             })
 
+            console.log('queue', queue)
+
             if(!queue.length) return Promise.resolve()
+
+            if(!addresses[key].keys){
+                return Promise.reject('privateKeyMissed')
+            }
             
             var executingId = f.makeid()
 
@@ -362,13 +404,16 @@ var Wallet = function(p){
                 return object.address
             })
 
+
+            console.log('key, tos', key, tos)
+
             return self.kit.send(key, tos).then(r => {
 
                 addresses[key].queue = _.filter(addresses[key].queue, function(object){
 
                     if (object.executing != executingId) return true
 
-                    return true
+                    return false
                 })
 
                 var date = f.now()
@@ -394,8 +439,10 @@ var Wallet = function(p){
                 var catchederror = false
 
                 _.each(addresses[key].queue, function(object){
-                    if (object.executing != executingId) delete object.executing
+                    if (object.executing && (object.executing == executingId)) delete object.executing
                 })
+
+                console.log("CLEARED", addresses[key].queue)
 
                 if(e == 'sync'){
                     addresses[key].unspents = null
@@ -403,16 +450,56 @@ var Wallet = function(p){
                 }
 
                 if(!catchederror){
+
                     _.each(self.clbks.error.queue, function(c){
                         c(e, {
                             key : key
                         })
                     })
+
                 }
 
 
                 return Promise.reject(e)
             })
+        },
+
+        removeKey : function(key){
+            if(!addresses[key]) return Promise.reject('fail')
+
+
+            delete addresses[key].keys
+            delete addresses[key].address
+
+            addresses[key].unspents = null
+            return Promise.resolve()
+        },
+
+        setPrivateKey : function(key, private){
+
+            var kp = null
+            
+            try{
+                kp = self.pocketnet.kit.keyPair(private)
+            }
+            catch(e){
+                
+            }
+
+            if(!kp || !addresses[key]){
+                
+                return Promise.reject('fail')
+
+            }
+            else{
+
+
+                addresses[key].keys = kp
+                addresses[key].address = self.pocketnet.kit.addressByPublicKey(kp.publicKey) 
+
+                return self.unspents.getc(addresses[key])
+            }
+        
         }
     }
 
@@ -478,14 +565,15 @@ var Wallet = function(p){
                 }
             }
 
-            return {
+            return Promise.resolve({
                 inputs : inputs,
                 outputs : outputs
-            }
+            })
         },
         txfees : function(unspents, outputs, feeMode){
 
             var inputs = []
+            var feerate = 0.000001;
 
             return self.transactions.txbase(unspents, outputs, 0, feeMode).then(r => {
 
@@ -536,7 +624,7 @@ var Wallet = function(p){
                 })
 
                 if (keyPair){
-                    txb.sign(inputindex, keyPair);
+                    txb.sign(inputindex, keyPair.keys);
                 }
 
             })
@@ -553,7 +641,7 @@ var Wallet = function(p){
             return tx;
         },
         send : function(tx){
-            return self.nodeManager.request('sendrawtransaction', [tx.hex()])
+            return self.nodeManager.request('sendrawtransaction', [tx.toHex()])
         }
     }
 
@@ -568,18 +656,27 @@ var Wallet = function(p){
 
     self.info = function(){
 
-        var info = {}
+        var info = {
+            inited : inited,
+            addresses : {}
+        }
 
         _.each(addresses, function(r){
-            info[r.key] = {
+            info.addresses[r.key] = {
                 key : r.key,
                 unspents : r.unspents ? r.unspents.length : 0,
                 balance : self.unspents.total(r.unspents),
-                queue : r.queue.length
+                queue : r.queue.length,
+                ready : r.keys ? true : false,
+                address : r.address || null
             }
         })
 
         return info
+    }
+
+    self.inited = function(){
+        return inited
     }
 
     self.stats = function(){
