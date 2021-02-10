@@ -223,7 +223,17 @@ var Control = function(settings) {
 
             node.hasbin = self.kit.hasbin();
 
+            if (state.status == 'stopped'){
+                return Promise.resolve(false)
+            }
+
             return self.request.getNodeInfo().then(data => {
+
+                //console.log("CHECKED")
+
+                //self.kit.enable(true)
+
+                //enabled = true//
 
                 state.info = data
                 state.status = 'launched'    
@@ -232,6 +242,8 @@ var Control = function(settings) {
                 return Promise.resolve(true)
 
             }).catch(e => {
+
+                //console.log('e', e)
 
                 var stopped = e.code == 408
 
@@ -270,6 +282,7 @@ var Control = function(settings) {
         autorun: function() {
             
             return self.kit.check().then(running => {
+
                 
                 if (enabled === true && running === false) return self.kit.start()
                 if (enabled === false && running === true) return self.kit.stop()
@@ -285,6 +298,7 @@ var Control = function(settings) {
 
         detach : function(){
             node.instance = null
+
             return Promise.resolve()
         },
 
@@ -295,7 +309,6 @@ var Control = function(settings) {
                 if(!r && !node.instance){
 
                     state.status = 'starting'
-                    
                 
                     var binPath = self.helpers.complete_bin_path()
 
@@ -325,7 +338,7 @@ var Control = function(settings) {
                             }
 
                             state.status = 'error'
-                            state.timestamp = f.now()
+                            state.timestamp = new Date()
 
                             self.kit.enable(false)
                         }
@@ -342,10 +355,9 @@ var Control = function(settings) {
 
                     });
 
-                    
+                    state.timestamp = new Date()
                 }
 
-                state.timestamp = f.now()
             })
 
 
@@ -372,7 +384,6 @@ var Control = function(settings) {
             return self.kit.rpc('stop').then(r => {
 
                 state.status = 'stopped'
-                state.timestamp = f.now()
 
                 return Promise.resolve()
 

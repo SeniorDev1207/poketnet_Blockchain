@@ -241,17 +241,7 @@ var Nodemanager = function(p){
 
                     self.nodes = []
 
-                    _.each([
-                        /*{
-
-                            host : '127.0.0.1',
-                            port : 38081,
-                            ws : 8087,
-                            name : 'Local Proxy Pocketnet Node',
-                            local : true
-
-                        }*/
-                    ].concat(p.stable, docs || []) , function(options){
+                    _.each([].concat(p.stable, docs || []) , function(options){
 
                         var node = new Node(options, self)
 
@@ -362,9 +352,16 @@ var Nodemanager = function(p){
 
             return node.rpcs(method, parameters)
         })
+
+       
+
+
+       
     }
     
     self.api = {
+
+
         ///
         connected : function(nodes){
             var connected = []
@@ -388,7 +385,7 @@ var Nodemanager = function(p){
 
             var last = self.askedpeers[node.key]
 
-            if(!last || f.date.addseconds(last, 5 * 30) < new Date()){
+            if(!last || f.date.addseconds(last, 5 * 60) < new Date()){
                 return self.api.peernodes(node).then(r => {
 
                     self.askedpeers[node.key] = new Date()
@@ -406,19 +403,12 @@ var Nodemanager = function(p){
             return node.peers().then(nodes => {
 
                 nodes = _.filter(nodes, function(n){
-
-                    console.log('n.key', n.key)
-
                     return !self.nodesmap[n.key]
                 })
-
-                console.log('nodes', nodes.length)
 
                 return self.api.connected(nodes)
                 
             }).then(connected => {
-
-                console.log('connected', connected.length)
 
                 _.each(connected, function(node){
                     self.add(node)

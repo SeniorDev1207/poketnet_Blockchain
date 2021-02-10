@@ -268,6 +268,8 @@ var lenta = (function(){
 						if (self.app.errors.connectionRs()){
 							self.iclbks.lenta = actions.loadmore
 						}
+
+						
 	
 						return;
 					}
@@ -275,7 +277,7 @@ var lenta = (function(){
 					el.c.removeClass('networkError')
 
 					if(!shares){
-						console.log("IM HERE")
+						
 					}
 					else
 					{

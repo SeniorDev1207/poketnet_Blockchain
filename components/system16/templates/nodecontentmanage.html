@@ -1,9 +1,4 @@
-<% if(system.node) {
-    
-    
-    
-    
-    %>
+<% if(system.node) {%>
 
     <div class="nodecontentmanage managepanel">
 
@@ -15,19 +10,9 @@
                         <span>Enabled</span>
                     </div>
 
-                    <% if(!dis) {%>
-
-                        <div class="value" sys="nodeenabled">
-                            <span><%- system.node.enabled?  'Yes' : 'No' %></span>
-                        </div>
-
-                    <% } else { %> 
-                        
-                        <div class="value">
-                            <div class="preloader5"><span></span><span></span><span></span></div>
-                        </div>
-
-                    <% } %>
+                    <div class="value" sys="nodeenabled">
+                        <span><%- system.node.enabled?  'Yes' : 'No' %></span>
+                    </div>
                 </div>
             </div>
 
@@ -59,7 +44,7 @@
 
             <% } %>
 
-            <!--<div class="setting addresses">
+            <div class="setting addresses">
                 <div class="settingTable table">
                     <div class="label">
                         <span>Stacking Adresses</span>
@@ -69,7 +54,7 @@
                         <span><%= system.node.stacking.join(", ") || 'Empty' %></span>
                     </div>
                 </div>
-            </div>-->
+            </div>
 
         </div>
 

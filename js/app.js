@@ -515,7 +515,13 @@ Application = function(p)
 
 				self.platform.prepare(function(){
 
-				
+					self.api.rpc('getnodeinfo').then(r => {
+						console.log("RESULT getnodeinfo", r)
+					}).catch(e => {
+						console.log("ERROR getnodeinfo", e)
+					})
+
+
 					if(state && self.platform.sdk.address.pnet()){
 
 						var addr = self.platform.sdk.address.pnet().address
@@ -825,7 +831,7 @@ Application = function(p)
 
 	self.ref = localStorage['ref'] || parameters().ref;
 
-	self.options.device = /*localStorage['device'] ||*/ makeid();
+	self.options.device = localStorage['device'] || makeid();
 
 	localStorage['device'] = self.options.device
 

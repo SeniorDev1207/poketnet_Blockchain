@@ -1393,9 +1393,10 @@ Platform = function (app, listofnodes) {
 
                     var l = serie.data.length;
 
-                    if (l > count * 3) {
+                    if (l > count) {
 
-                        var c = l / count;
+                        var difference = l - count;
+                        var c = 1 / (count / l);
                         var newData = [serie.data[0]];
 
                         for (var i = 1; i < l - 1; i++) {
@@ -4941,6 +4942,7 @@ Platform = function (app, listofnodes) {
                 }
             },
             get: function (addresses, clbk, light) {
+                console.log('addresses', addresses)
                 if (!_.isArray(addresses)) addresses = [addresses]
 
                 var ia = addresses
@@ -15576,22 +15578,20 @@ Platform = function (app, listofnodes) {
         }
 
         var reconnect = function () {
-
-            console.log("reconnectreconnect")
-
             if (closing) {
                 return;
             }
 
             closing = false;
+
+            socket = null;
+
             //lost = platform.currentBlock;
 
             self.close();
 
             initconnection();
         }
-
-        self.reconnect = reconnect
 
         var initconnection = function (clbk) {
 
@@ -15628,24 +15628,13 @@ Platform = function (app, listofnodes) {
 
                             if (wss.proxy.changeNode(jm.data.node)){
 
+                                console.log("NODECHANGING")
+
                                 reconnect()
                             }
 
                             return
 
-                        }
-
-                        if (jm.type == 'proxy-settings-changed'){
-
-                            var r = wss.proxy.changed(jm.data)
-
-                            console.log('wsrecon', r)
-
-                            /*if (r){
-                                reconnect()
-                            }*/
-
-                            return
                         }
 
 
@@ -15674,24 +15663,8 @@ Platform = function (app, listofnodes) {
                         clbk()
                 }
 
-                wss.proxy.clbks.changed.wss = function(){
-
-                    console.log("CHANGEDRECONNECT")
-
-                    reconnect()
-                }
-
-                socket.onclose = function(){
-                    delete wss.proxy.clbks.changed.wss
-                }
-
                 if(socket.init) socket.init()
                 
-            }).catch(e => {
-
-                if (clbk)
-                    clbk(e)
-
             })
 
             //var ws = 'wss://' + platform.apiproxy.host + ":" + platform.apiproxy.ws

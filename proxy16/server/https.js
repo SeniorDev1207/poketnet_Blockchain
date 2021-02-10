@@ -79,6 +79,9 @@ var Server = function(settings, admins, manage){
         });
 
         app.options("/*", function(req, res, next){
+            //result.setHeader('Access-Control-Allow-Origin', '*');
+            //result.setHeader("Access-Control-Allow-Methods", "GET, POST");
+            //result.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
             res.sendStatus(200)
         });
 
@@ -106,8 +109,6 @@ var Server = function(settings, admins, manage){
 
             }
             catch(e) {
-
-                console.log("ERROR", e)
           
                 reject(e)
             }
@@ -163,15 +164,7 @@ var Server = function(settings, admins, manage){
             _.each(self.proxy.api, function(pack){
                 _.each(pack, function(meta){
 
-                    
-
                     app.all(meta.path, self.authorization[meta.authorization || 'dummy'], function(request, result){
-
-                        if(!self.listening){
-                            result._fail('stopped', 500)
-    
-                            return
-                        }
 
                         meta.action(request.data).then(d => {
                             result._success(d.data, d.code)
