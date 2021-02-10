@@ -11,16 +11,12 @@ var Nodemanager = function(p){
     var self = this;
     var inited = false;
 
-
-    self.tempnodes = {};
     self.nodes = [];
     self.nodesmap = {};
 
     self.askedpeers = {}
 
     var findInterval = null
-    var peernodesCheckTime = 5000000
-    var usersfornode = 100
 
     var db = new Datastore(f.path(p.dbpath));
    
@@ -113,25 +109,6 @@ var Nodemanager = function(p){
         
     }
 
-    self.addIfNeed =  function(node){
-
-        var workingNodes = _.filter(self.nodes, function(n){
-            var s = n.statistic.get()
-
-            if (s.success > 0 && s.time < 2000){
-                return true
-            }
-        })
-
-        if (self.proxy.users() / usersfornode >= workingNodes.length){
-            self.add(node)
-        }
-        else{
-            self.tempnodes[node.key] = node
-        }
-        
-    }
-
     self.add = function(node){
         if(!self.nodesmap[node.key]){
             self.nodes.push(node);
@@ -143,8 +120,6 @@ var Nodemanager = function(p){
     }
     
     self.create = function(p){
-
-        //// n/u
 
         if(!p.addedby) return Promise.reject('unathorized')
 
@@ -240,7 +215,7 @@ var Nodemanager = function(p){
     self.info = function(){
         var stats = {
             count : self.nodes.length,
-            inited : inited,
+
             countuse : _.filter(self.nodes, function(node){
                 return node.export().canuse
             }).length,
@@ -266,30 +241,16 @@ var Nodemanager = function(p){
 
                     self.nodes = []
 
-                    var haslocal = self.nodeControl.kit.hasbin()
-
-                    var c = []
-
-                    if (haslocal) c = [{
-                        host : '127.0.0.1',
-                        port : 38081,
-                        ws : 8087,
-                        name : 'Local Proxy Pocketnet Node',
-                        local : true
-                    }]
-
-                    _.each(c.concat(p.stable, docs || []) , function(options){
+                    _.each([].concat(p.stable, docs || []) , function(options){
 
                         var node = new Node(options, self)
 
                         self.add(node)
                     })
 
-                    self.find()
-
                     findInterval = setInterval(function(){
                         self.find()
-                    }, 1000)
+                    }, 3000)
 
 
                     inited = true
@@ -304,21 +265,10 @@ var Nodemanager = function(p){
 
     self.find = function(){
 
-
-        _.each(self.tempnodes, function(node){
-            self.addIfNeed(node)
-        })
-
         _.each(self.nodes, function(node){
             self.api.peernodesTime(node).catch(e => {})
         })
 
-    }
-
-    self.waitbest = function(timeout){
-        return f.pretry(function(){
-            return self.selectbest()
-        }, 50, timeout)
     }
 
     self.destroy = function(){
@@ -402,9 +352,16 @@ var Nodemanager = function(p){
 
             return node.rpcs(method, parameters)
         })
+
+       
+
+
+       
     }
     
     self.api = {
+
+
         ///
         connected : function(nodes){
             var connected = []
@@ -428,9 +385,7 @@ var Nodemanager = function(p){
 
             var last = self.askedpeers[node.key]
 
-            if(!last || f.date.addseconds(last, peernodesCheckTime / 1000) < new Date()){
-
-                
+            if(!last || f.date.addseconds(last, 5 * 60) < new Date()){
                 return self.api.peernodes(node).then(r => {
 
                     self.askedpeers[node.key] = new Date()
@@ -438,6 +393,7 @@ var Nodemanager = function(p){
                     return Promise.resolve()
                 })
             }   
+            
 
             return Promise.resolve()
         },
@@ -453,8 +409,9 @@ var Nodemanager = function(p){
                 return self.api.connected(nodes)
                 
             }).then(connected => {
+
                 _.each(connected, function(node){
-                    self.addIfNeed(node)
+                    self.add(node)
                 })
 
                 self.remap()

@@ -11,7 +11,6 @@ var WSS = function(admins, manage){
     var wss = null, server = null;
 
     var users = {}
-    var allwss = {}
 
     var create = {
         user : function(address){
@@ -63,6 +62,7 @@ var WSS = function(admins, manage){
 
             if(!node){
 
+                console.log("CANT FIND NODE")
 
                 node = self.nodeManager.selectProbability()
                 auto = true
@@ -84,8 +84,6 @@ var WSS = function(admins, manage){
     var connectNode = function(user, node) {
 
         var ws = node.instance.wss.add(user)
-
-        if(!ws) return
 
         ws.on('open', () => {})
         ws.on('disconnected', () => {
@@ -126,13 +124,12 @@ var WSS = function(admins, manage){
 
         })
 
+
         ws.on('message', (data) => {
            
             var fbdata = {}; 
 
-            data.node = node.instance.ckey
-
-            _.each(data, (d, k) => { fbdata[k] = (d || "").toString() })
+            _.each(data, (d, k) => { fbdata[k] = d.toString() })
 
             if(data.msg == 'new block'){
                 if (self.server.cache){
@@ -185,8 +182,6 @@ var WSS = function(admins, manage){
 
     var disconnectClient = function(ws) {
 
-        delete allwss[ws.id]
-
         var wsusers = _.filter(users, function(user){
             return user.clients[ws.id]
         })
@@ -218,15 +213,6 @@ var WSS = function(admins, manage){
             delete users[key] 
         })
 
-    }
-
-
-    self.sendtoall = function(message){
-        _.each(allwss, function(ws){
-            sendMessage(message, ws).catch(e => {})
-        })
-
-        return Promise.resolve()
     }
 
     var sendMessage = function(message, ws){
@@ -269,14 +255,11 @@ var WSS = function(admins, manage){
             disconnectClient(ws)
         },
         registration : function(message, ws){
-
-            
             
             var address = message.address;
             var signature = message.signature;
             var device = message.device;
             var block = message.block || 0;
-
 
             if(!address || !device) return
 
@@ -315,7 +298,7 @@ var WSS = function(admins, manage){
             }
 
             if (user.admin){
-                user.ticks[ws.id] = setInterval(() => {tick(ws)}, 5000)
+                user.ticks[ws.id] = setInterval(() => {tick(ws)}, 2500)
             }
 
             connectNode(user, user.nodes[node.key]);
@@ -350,8 +333,6 @@ var WSS = function(admins, manage){
         ws.on('error', (err) => {
             disconnectClient(ws)
         });
-
-        allwss[ws.id] = ws
     }
 
     self.wssdummy = function(wssdummy){
@@ -381,8 +362,6 @@ var WSS = function(admins, manage){
 
                     self.listening = settings.port || 8088
 
-                    console.log("WSS", self.listening)
-
                     resolve()
                 });
 
@@ -402,20 +381,18 @@ var WSS = function(admins, manage){
     }
 
     self.destroy = function(){
-        if (wss.clients)
-            wss.clients.forEach((socket) => {
-                socket.close();
-            });
+        wss.clients.forEach((socket) => {
+            socket.close();
+        });
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
 
-                if (wss.clients)
-                    wss.clients.forEach((socket) => {
-                        if ([socket.OPEN, socket.CLOSING].includes(socket.readyState)) {
-                            socket.terminate();
-                        }
-                    });
+                wss.clients.forEach((socket) => {
+                    if ([socket.OPEN, socket.CLOSING].includes(socket.readyState)) {
+                        socket.terminate();
+                    }
+                });
 
                 server.close(function(){
                     resolve()
