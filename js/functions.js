@@ -555,7 +555,7 @@
 				if(p.leftbg) 
 					h+='<div class="leftbg"><div>'+p.leftbg+'</div></div>';
 
-				h+=	 '<div class="wndcontent content">'+content+'</div>';
+				h+=	 '<div class="wndcontent">'+content+'</div>';
 
 				if(p.header) 
 				{
@@ -1280,26 +1280,6 @@
 				html+= '<div class="header"><div class="text">'+p.header+'</div></div>';
 			}
 
-			if (p.poll){
-				
-				var poll = '<div class="poll">';
-
-				poll += '<div class="question description">Question</div>'
-
-				poll += '<div class="title"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>'
-
-				poll += '<div class="options description">Poll options</div>';
-
-				for (var i = 0; i < 5; i++){
-					poll += `<div class="poll-item" id="poll-item-${i + 1}"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>`;
-				}
-
-				poll += "</div>";
-
-				html += poll ;
-				
-			}
-
 			if(p.html)
 			{
 				html += '<div class="body"><div class="text">'+(p.html || "")+'</div></div>';
@@ -1319,33 +1299,9 @@
 			$('body').append($el);
 			if(p.class) $el.addClass(p.class);
 
-			$el.find
-
 			$el.find('.btn1').on('click', function(){ response(p.success)});
 			$el.find('.btn2').on('click', function(){ response(p.fail, true)});
 			$el.find('._close').on('click', function(){ response(p.close, true)});
-
-			
-			var title = $el.find('.poll .title');
-				
-			title.find('i').on('click', function(){
-
-				title.find('.input').val('');
-			})
-
-			for (var i = 0; i < 5; i++){
-				
-				let item = $el.find(`#poll-item-${i + 1}`);
-
-				item.find('i').on('click', function(){
-
-					console.log('input', item.find('.input'));
-
-					item.find('.input').val('');
-				})
-
-			}
-
 
 			if(p.clbk) p.clbk($el, self);
 
@@ -2862,7 +2818,7 @@
 
 		_.each(parameters, function(parameter){
 
-			if(!parameter || !parameter.type) return
+			if(!parameter.type) return
 
 
 			var _el = el.find('[pid="'+parameter.id+'"]')
@@ -8108,7 +8064,7 @@
 
 	var copyText = function(el) {
 
-		var text = trim(el.text());
+		var text = trim(el.attr('text') || el.text());
 
 	    if (window.clipboardData && window.clipboardData.setData) {
 	        // IE specific code path to prevent textarea being shown while dialog is visible.
@@ -9297,19 +9253,15 @@
 		}
 
 		var takeData = function(uri){
-			if(typeof localStorage != 'undefined' && localStorage[prefix+uri]){
+			if(typeof localStorage != 'undefined' && localStorage[prefix+uri])
 				data[uri] = JSON.parse(localStorage[prefix+uri]);
-				console.log('takedata', uri, data[uri]);
-			} 
-			else {
+			else 
 				data[uri] = {};
-			}
 
 			return this;
 		}
 
 		var putData = function(uri){
-
 			if(typeof localStorage != 'undefined' && data[uri]){
 
 				try{

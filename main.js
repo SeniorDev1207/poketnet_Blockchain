@@ -22,8 +22,7 @@ const Badge = require('./js/vendor/electron-windows-badge.js');
 // AutoUpdate --------------------------------------
 const { autoUpdater } = require("electron-updater");
 const log = require('electron-log');
-const is = require('electron-is');
-
+const is = require('electron-is')
 
 var updatesLoading = false;
 

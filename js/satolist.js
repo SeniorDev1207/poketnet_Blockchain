@@ -6,7 +6,6 @@ if (typeof _Electron != 'undefined') {
     var storage = electron.OSBrowser; //?
 }
 
-
 Platform = function (app, listofnodes) {
 
     var self = this;
@@ -19,7 +18,7 @@ Platform = function (app, listofnodes) {
     self.avblocktime = 45;
 
     var onlinetnterval;
-    var blockps = 900000;
+    var blockps = 1000000;
     var nshowed = false;
     var TXFEE = 1;
 
@@ -118,7 +117,7 @@ Platform = function (app, listofnodes) {
         ],
     }
 
-    var sm = {};
+    //var sm = {};
 
 
     self.__applications = function(){
@@ -3595,6 +3594,8 @@ Platform = function (app, listofnodes) {
 
                 _.each(values, function (v, i) {
 
+                    if(!m[i]) return
+
                     if (typeof v === "object") {
                         m[i].value = v.value;
                         m[i].possibleValues = v.possibleValues && v.possibleValues.map(i => String(i));
@@ -3668,8 +3669,6 @@ Platform = function (app, listofnodes) {
             storage: {
             },
 
-           
-
             extendMe: function (me) {
                 var subscribe = deep(self, 'sdk.node.transactions.temp.subscribe')
             },
@@ -3679,15 +3678,15 @@ Platform = function (app, listofnodes) {
             },
 
             get: function (clbk, update) {
+                var storage = self.sdk.user.storage
 
+                self.sdk.user._get(function (info, temp) {
 
-                var storage = this.storage
-
-                this._get(function (info, temp) {
 
                     if (!temp && self.sdk.address.pnet()) {
 
                         var a = self.sdk.address.pnet().address;
+
 
                         if (!_.isEmpty(info)) {
                             self.app.settings.set(a, 'last_user', JSON.stringify(info))
@@ -3704,7 +3703,13 @@ Platform = function (app, listofnodes) {
                                 u.regdate = new Date();
                                 u.regdate.setTime(info.regdate * 1000);
 
-                                storage.me = self.sdk.users.storage[a] = self.sdk.usersl.storage[a] = info = u;
+
+                                info = u
+                                self.sdk.usersl.storage[a] = u
+                                self.sdk.users.storage[a] = u
+                                storage.me = u
+
+
 
                             }
                         }
@@ -3722,10 +3727,11 @@ Platform = function (app, listofnodes) {
 
             _get: function (clbk, update) {
 
-                var storage = this.storage
+                var storage = self.sdk.user.storage
 
 
                 if (!storage.me || update) {
+
                     storage.me = {};
 
                     var temp = false;
@@ -3756,6 +3762,7 @@ Platform = function (app, listofnodes) {
 
 
                             var relays = deep(self.sdk.relayTransactions.storage, a + '.userInfo');
+
 
 
                             if (relays && relays.length) {
@@ -3807,7 +3814,6 @@ Platform = function (app, listofnodes) {
 
             waitActions: function (clbk) {
 
-                var storage = this.storage
 
                 self.sdk.node.transactions.get.unspent(function (utxo) {
 
@@ -3992,6 +3998,12 @@ Platform = function (app, listofnodes) {
 
                 var s = this.storage;
 
+                if (clbk)
+                    clbk(null)
+
+
+                return
+
                 if (s.p) {
                     if (clbk)
                         clbk(s.p)
@@ -4029,6 +4041,11 @@ Platform = function (app, listofnodes) {
             },
 
             gifts: function (clbk) {
+
+                if (clbk)
+                    clbk(null)
+
+                return
 
                 self.app.api.fetch('checkgift', {
                     address: self.sdk.address.pnet().address
@@ -4410,6 +4427,8 @@ Platform = function (app, listofnodes) {
             },
 
             init: function (clbk) {
+
+
 
                 this.inited = false;
                 this.loading = true;
@@ -4873,8 +4892,8 @@ Platform = function (app, listofnodes) {
             },
 
             getone: function (address, clbk, light, reload) {
-                var s = this.storage;
-                var l = this.loading;
+                var s = self.sdk.users.storage;
+                var l = self.sdk.users.loading;
 
                 if ((!address || s[address]) && !reload) {
                     if (clbk)
@@ -4946,7 +4965,7 @@ Platform = function (app, listofnodes) {
 
                 var ia = addresses
 
-                var s = this.storage;
+                var s = self.sdk.users.storage;
 
                 if (light) {
                     s = self.sdk.usersl.storage
@@ -5049,7 +5068,7 @@ Platform = function (app, listofnodes) {
                                 captcha: self.sdk.captcha.done
                             }
 
-                            self.app.api.fetch('freeMoney', prms).then(d => {
+                            self.app.api.fetch('free/registration', prms).then(d => {
                                 if (clbk)
                                         clbk(true)
 
@@ -5525,23 +5544,25 @@ Platform = function (app, listofnodes) {
                 self.app.api.fetch('captcha', {
                     captcha: this.done || this.current || null
                 }).then(d => {
-                    self.sdk.captcha.current = d.data.id
 
-                    if (d.data.id != self.sdk.captcha.done) {
+
+                    self.sdk.captcha.current = d.id
+
+                    if (d.id != self.sdk.captcha.done) {
                         self.sdk.captcha.done = null
                     }
 
                     self.sdk.captcha.save()
 
-                    if (d.data.result && !d.data.done) {
-                        self.sdk.captcha.make(d.data.result, function (err) {
+                    if (d.result && !d.done) {
+                        self.sdk.captcha.make(d.result, function (err) {
 
                             if (!err) {
 
-                                d.data.done = true
+                                d.done = true
 
                                 if (clbk)
-                                    clbk(d.data)
+                                    clbk(d)
 
                             }
                             else {
@@ -5552,7 +5573,7 @@ Platform = function (app, listofnodes) {
                     }
                     else {
                         if (clbk)
-                            clbk(d.data)
+                            clbk(d)
                     }
 
                 }).catch(e => {
@@ -5569,12 +5590,12 @@ Platform = function (app, listofnodes) {
                     captcha: this.current || null,
                     text: text
                 }).then(d => {
-                    self.sdk.captcha.done = d.data.id
+                    self.sdk.captcha.done = d.id
 
                     self.sdk.captcha.save()
 
                     if (clbk)
-                        clbk(null, d.data)
+                        clbk(null, d)
 
                 }).catch(e => {
                     if (clbk)
@@ -6505,7 +6526,7 @@ Platform = function (app, listofnodes) {
                 if (block) parameters.push(block.toString())
                 else parameters.push('')
 
-                parameters.push(self.app.localization.key)
+                //parameters.push(self.app.localization.key)
 
                 self.app.api.rpc('gettags', parameters).then(d => {
 
@@ -7332,7 +7353,7 @@ Platform = function (app, listofnodes) {
 
                 if (ao) address = ao.address
 
-                self.app.api.rpc('getlastcomments', ['7', address, self.app.localization.key]).then(d => {
+                self.app.api.rpc('getlastcomments', ['7', address/*, self.app.localization.key*/]).then(d => {
 
                     d = _.filter(d, function (d) {
                         return !d.deleted
@@ -7725,7 +7746,7 @@ Platform = function (app, listofnodes) {
 
                 var ini = this.ini
 
-                self.app.api.rpc('getlastcomments', ['5', self.app.localization.key]).then(d => {
+                self.app.api.rpc('getlastcomments', ['5'/*, self.app.localization.key*/]).then(d => {
 
                     if (clbk)
                         clbk(ini(d))
@@ -8453,7 +8474,6 @@ Platform = function (app, listofnodes) {
                 },
 
                 transform: function (d, state) {
-
                     var storage = this.storage;
 
                     storage.trx || (storage.trx = {})
@@ -8570,7 +8590,7 @@ Platform = function (app, listofnodes) {
 
                         }
                         else {
-                            var parameters = [p.count, '259200', self.app.localization.key];
+                            var parameters = [p.count, '259200'/*, self.app.localization.key*/];
 
                             if (p.address) parameters.push("" /*p.address*/)
 
@@ -8671,7 +8691,7 @@ Platform = function (app, listofnodes) {
 
                             if (p.author == '1') adr = p.address
 
-                            var parameters = [adr, p.author || "", p.txid || "", p.count, p.author ? "" : self.app.localization.key];
+                            var parameters = [adr, p.author || "", p.txid || "", p.count/*, p.author ? "" : self.app.localization.key*/];
 
                             s.get(parameters, function (shares, error) {
 
@@ -9860,20 +9880,6 @@ Platform = function (app, listofnodes) {
 
                         var k = 100000000;
 
-                        self.sdk.node.transactions.get.tx('7cc0d9b90f62765c8f5b0867b90297f0e6a7ea686dd9fd52da2b9deff6fce615', function(data){
-                            console.log('7cc0d9b90f62765c8f5b0867b90297f0e6a7ea686dd9fd52da2b9deff6fce615', data)
-                        })
-
-                        /*self.sdk.node.transactions.get.tx('c6f4060756896551a199b8bcf04bed0a74ba0fafeb34bb674f80a9b9c28338d8', function(data){
-                            console.log('c6f4060756896551a199b8bcf04bed0a74ba0fafeb34bb674f80a9b9c28338d8', data)
-                        })
-
-                        self.sdk.node.transactions.get.tx('57d021ab8ef81d12b69c5201b015c39dc3f7e73bb94ed210b9ff19c1c225034b', function(data){
-                            console.log('57d021ab8ef81d12b69c5201b015c39dc3f7e73bb94ed210b9ff19c1c225034b', data)
-                        })*/
-
-
-                        
 
                         _.each(inputs, function (i) {
 
@@ -9932,29 +9938,6 @@ Platform = function (app, listofnodes) {
 
                                     var dumped = self.sdk.address.dumpKeys(index)
                                     
-                                    console.log('dumped.privateKey', p2sh, dumped)
-                                    console.log('dumped.publicKey', dumped.toWIF())
-
-                                    //var pubkey = dumped.publicKey;
-
-                                    //inputindex, dumped, p2sh.redeem.output, null, Number((k * i.amount).toFixed(0))
-
-                                    /*var pubKey = dumped.publicKey
-                                    var pubKeyHash = bitcoin.crypto.hash160(pubKey)
-
-                                    console.log('bitcoin.script', bitcoin, p2sh.redeem)
-
-                                    console.log('bitcoin.script',p2sh.redeem.output)
-                                    console.log('bitcoin.script',p2sh.redeem.output.toString('hex'))
-                                   */
-                                    
-                                    /*var redeemScript = Buffer.from('0014' + pubKeyHash.toString('hex'), 'hex')
-                                    console.log('redeemScript', redeemScript)*/
-                                    /*var a = bitcoin.payments['p2wpkh']({ pubkey: pubkey })
-                                    var p2sh = bitcoin.payments.p2sh({ redeem: a })*/
-
-                                    console.log('p2sh.redeem.output', p2sh.redeem.output)
-                                    debugger
                                     txb.sign({
                                         prevOutScriptType: 'p2sh-p2wpkh',
                                         redeemScript : p2sh.redeem.output,
@@ -9977,26 +9960,7 @@ Platform = function (app, listofnodes) {
 
                         var tx = txb.build()
 
-                        console.log('tx', tx)
-
-                        //console.log(tx.toHex())
-
                         
-
-
-                        /*_.each(tx.ins, function(input){
-                            var asm = bitcoin.script.fromASM(input.script.toString('hex'))
-
-                            //console.log('asm', asm, bitcoin.script.toASM(bitcoin.script.decompile(input.script)))
-
-                            if(input.witness)
-                            _.each(input.witness, function(witness, i){
-                                console.log('witness',i, witness.toString('hex'))
-
-                            })
-
-                            
-                        })*/
 
                         return tx;
 
@@ -10013,6 +9977,8 @@ Platform = function (app, listofnodes) {
                             } = self.sdk.usersettings;
 
                             if (obj.caption){
+
+
 
                                 if (!meta.tgtoask.value) {
 
@@ -10069,6 +10035,8 @@ Platform = function (app, listofnodes) {
                             var txb = new bitcoin.TransactionBuilder();
 
                             txb.addNTime(self.timeDifference || 0)
+
+
 
                             var amount = 0;
 
@@ -15575,7 +15543,6 @@ Platform = function (app, listofnodes) {
 
         var reconnect = function () {
 
-            console.log("reconnectreconnect")
 
             if (closing) {
                 return;
@@ -15637,11 +15604,7 @@ Platform = function (app, listofnodes) {
 
                             var r = wss.proxy.changed(jm.data)
 
-                            console.log('wsrecon', r)
 
-                            /*if (r){
-                                reconnect()
-                            }*/
 
                             return
                         }
@@ -15674,7 +15637,6 @@ Platform = function (app, listofnodes) {
 
                 wss.proxy.clbks.changed.wss = function(){
 
-                    console.log("CHANGEDRECONNECT")
 
                     reconnect()
                 }
@@ -17177,7 +17139,6 @@ Platform = function (app, listofnodes) {
     }
 
     self.clear = function (fast) {
-
         self.app.nav.addParameters = null;
 
         self.sdk.articles.storage = []
@@ -17221,17 +17182,19 @@ Platform = function (app, listofnodes) {
         self.clear();
 
         app.user.isState(function (state) {
+
+
             self.prepare(clbk, state)
         })
     }
 
     self.update = function (clbk) {
 
+        console.log("@clisda")
+
         if (self.updating || self.preparingUser || self.preparing) return;
 
         self.updating = makeid()
-
-
 
         //// ?
         setTimeout(function () {
@@ -17272,16 +17235,20 @@ Platform = function (app, listofnodes) {
 
         if (self.loadingWithErrors && _.isEmpty(self.app.errors.state)) {
 
-            self.loadingWithErrors = false;
 
+            self.loadingWithErrors = false;
             self.restart(function () {
-                self.app.reload(function () {
+                self.prepareUserData(function(){
+                    self.app.reload(function () {
+                    })
                 })
+               
             })
         }
     }
 
     self.prepare = function (clbk, state) {
+
         self.preparing = true;
 
         self.sdk.registrations.load();
@@ -17305,13 +17272,13 @@ Platform = function (app, listofnodes) {
 
         //self.sdk.proxy.info()
 
-        self.app.api.init().then(r => {
+
+        self.app.api.initIf().then(r => {
             return self.app.api.wait.ready()
         })
 
         .then(r => {
 
-            console.log("READY")
 
             self.ws = new self.WSn(self);
 
@@ -17331,19 +17298,39 @@ Platform = function (app, listofnodes) {
             self.sdk.captcha.load()
             self.sdk.tags.getfastsearch()
 
+
             self.sdk.node.get.time(function () {
+
 
                 self.preparing = false;
 
                 self.prepareUser(clbk, state);
 
             })
+        }).catch(e => {
+            console.log("ERROR", e)
         })
 
         /*self.sdk.system.get.nodes(false, function () {
 
         })*/
 
+    }
+
+    self.prepareUserData = function(clbk){
+
+
+        lazyActions([
+
+            self.sdk.node.transactions.loadTemp,
+            self.sdk.ustate.meUpdate,
+            self.firebase.init,
+            self.sdk.tempmessenger.init,
+            self.sdk.exchanges.load,
+            self.sdk.user.meUpdate
+        ], function () {
+            if(clbk) clbk()
+        })
     }
 
     self.prepareUser = function (clbk) {
@@ -17390,8 +17377,6 @@ Platform = function (app, listofnodes) {
                     self.sdk.node.transactions.checkTemps(function () {
 
                         self.sdk.relayTransactions.send()
-
-
 
                         self.sdk.user.get(function (u) {
 

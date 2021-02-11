@@ -216,7 +216,7 @@ ____loclib.shares = "SHARES";
 ____loclib.uposts = "POSTS";
 ____loclib.myuposts = "MY POSTS";
 ____loclib.followers = "FOLLOWERS";
-____loclib.following = "FOLLOWING";
+____loclib.following = "Following";
 ____loclib.settings = "MANAGE";
 ____loclib.anofollowers = "This user has no followers";
 ____loclib.aynofollowers = "You have no followers";
@@ -517,7 +517,6 @@ ____loclib.e13108 = "There isn't connection with Electron proxy interface"
 
 ____loclib.e13109 = "Please enter the words in the picture to receive Pocketcoin and continue registration"
 ____loclib.e13110 = "Enter words"
-____loclib.poll = "Create poll"
 ____loclib.next = "Next"
 ____loclib.refresh = "Refresh"
 ____loclib.e13111 = "Add your email to get the latest Pocketnet updates"
@@ -934,3 +933,10 @@ ____loclib.e14108 = 'Share answer'
 
 ____loclib.peertubeAddVideo = 'Add video to post'
 ____loclib.peertubeAddStream = 'Add live stream to post'
+
+
+____loclib.system16 = {
+    charts : {
+
+    }
+}
