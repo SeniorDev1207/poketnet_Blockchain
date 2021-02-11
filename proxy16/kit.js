@@ -24,55 +24,65 @@ var pocketnet = new Pocketnet()
 
 var nodes = [
 
-	/*{
+	{
 		host : '216.108.231.40',
 		port : 38081,
 		ws : 8087,
 		nodename : 'Cryptoserver',
-		stable : true
-	},*/
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
+	},
 	{
 		host : '64.235.45.119',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP',
-		stable : true
+		nodename : 'CryptoserverSP',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 
 	{
 		host : '64.235.35.173',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP4',
-		stable : true
+		nodename : 'CryptoserverSP4',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	{
 		host : '64.235.33.85',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP5',
-		stable : true
+		nodename : 'CryptoserverSP5',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	
 	{
-		host : '185.148.147.15',
+		host : '188.187.45.218',
 		port : 38081,
 		ws : 8087,
-		name : 'Cryptoserver',
-		stable : true
+		nodename : 'Cryptoserver',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	}
 ]
 
 var defaultSettings = {
 
-	admins : [],
+	admins : ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82'],
 	
 	nodes : {
 		dbpath : 'data/nodes'
 	},
 
 	server : {
-		enabled : false,
+		enabled : true,
 
 		captcha : true,
 		
@@ -375,8 +385,6 @@ var kit = {
 				},
 	
 				enabled : function(v){
-
-					console.log('settings.server.enabled', settings.server.enabled, v)
 	
 					if (settings.server.enabled == v) return Promise.resolve() 
 						settings.server.enabled = v

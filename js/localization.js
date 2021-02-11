@@ -11,7 +11,7 @@ Localization = function(app){
 	}
 
 
-	self.key = 'en'
+	
 
 	self.available = {
 

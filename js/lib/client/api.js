@@ -25,8 +25,6 @@ var ProxyRequest = function(app = {}){
         if(!data) 
             data = {}
 
-        var er = false
-
         return fetch(url, {
 
             method: 'POST',
@@ -38,21 +36,9 @@ var ProxyRequest = function(app = {}){
             body: JSON.stringify(sign(data))
 
         }).then(r => {
-
-            if(!r.ok){
-                er = true
-            }
-
             return r.json()
 
         }).then(result => {
-
-            if (er){
-
-
-                return Promise.reject(result.error)
-            }
-
             return Promise.resolve(result.data || {})
         }).catch(e => {
             return Promise.reject(e)
@@ -182,7 +168,7 @@ var Proxy16 = function(meta, app){
             app.api.editinsaved(lastid, self)
 
             if (currentapi == lastid){
-                app.api.set.current(self.id, reconnectws)
+                app.api.set.current(self.id)
             }
         }
 
@@ -267,7 +253,7 @@ var Proxy16 = function(meta, app){
 
         var promise = null
 
-        if (self.direct){
+        if (self.direct && !self.valid()){
             promise = self.system.rpc(method, parameters, options)
         }
         else{
@@ -281,7 +267,7 @@ var Proxy16 = function(meta, app){
 
     self.fetch = function(path, data){
 
-        if(self.direct){
+        if(self.direct && !self.valid()){
             promise = self.system.fetch(path, data)
         }
         else{
@@ -324,9 +310,6 @@ var Proxy16 = function(meta, app){
 
         self.system.clbks.tick.proxy = function(settings, proxystate){
 
-            if(!proxystate) return
-
-
             var hash = bitcoin.crypto.hash256(JSON.stringify(proxystate))
 
             var change = (hash.join('') !== state.hash.join(''))
@@ -338,10 +321,6 @@ var Proxy16 = function(meta, app){
 
         }
 
-        return self.refreshNodes()
-    }
-
-    self.refreshNodes = function(){
         return self.api.nodes.get().then(r => {
 
             return self.api.nodes.select()
@@ -374,7 +353,6 @@ var Api = function(app){
 
     var current = null // 'localhost:8888:8088' //null;///'pocketnet.app:8899:8099'
     var useproxy = true;
-    var inited = false
 
     var getproxyas = function(key){
 
@@ -500,7 +478,7 @@ var Api = function(app){
 
                         var oldc = localStorage['currentproxy']
 
-                        if (oldc){
+                        if(oldc){
                             return self.set.current(oldc)
                         }
 
@@ -513,10 +491,8 @@ var Api = function(app){
                     }).then(() => {
 
                         if(!current && proxies.length){
-                            current = 'pocketnet.app:8899:8099' //proxies[0].id
+                            current = proxies[0].id
                         }
-
-                        inited = true
 
                         return Promise.resolve()
 
@@ -589,36 +565,13 @@ var Api = function(app){
         if(!options) 
             options = {}
 
-
         return getproxy(options.proxy).then(proxy => {
 
             return proxy.rpc(method, parameters, options.rpc)
 
-        }).then(r => {
-
-            console.log("RRRRR", r)
-
-            app.apiHandlers.success({
-                rpc : true
-            })
-
-            return Promise.resolve(r)
-
-        }).catch(e => {
-
-            console.log("E", e, e.code)
-
-            if(e == 'TypeError: Failed to fetch' || (e.code == 408 || e.code == -28)){
-                console.log("IMHERE", app.apiHandlers)
-
-                app.apiHandlers.error({
-                    rpc : true
-                })
-            }
-
-
-            return Promise.reject(e)
         })
+
+
     }
 
     self.fetch = function(path, data, options){
@@ -628,43 +581,19 @@ var Api = function(app){
         if(!options) 
             options = {}
 
-            console.log("gofetch")
-
         return getproxy(options.proxy).then(proxy => {
 
             return proxy.fetch(path, data)
 
-        }).then(r => {
-
-            app.apiHandlers.success({
-                api : true
-            })
-
-            return Promise.resolve(r)
-
-        }).catch(e => {
-
-            console.log("E", e)
-
-            if (e == 'TypeError: Failed to fetch'){
-                console.log("FAIL")
-                app.apiHandlers.error({
-                    api : true
-                })
-            }
-
-            return Promise.reject(e)
         })
     }
 
     self.ready = {
         proxies : () => {
-            console.log('11')
-            return _.filter(proxies, proxy => { return proxy.ping })
+            return _.filter(proxies, proxy => { return proxy.ping})
         },
 
         use : () => {
-            console.log('22')
             return useproxy ? _.filter(proxies, proxy => { return proxy.ping && proxy.get.nodes().length }) : false
         },
     }
@@ -679,26 +608,15 @@ var Api = function(app){
     }
 
     self.set = {
-        current : function(ncurrent, reconnectws){
+        current : function(ncurrent){
 
-            var proxy = self.get.byid(ncurrent)
-
-            if(!proxy) return Promise.reject('hasnt')
+            if(!self.get.byid(ncurrent)) return Promise.reject('hasnt')
 
             current = ncurrent
 
             localStorage['currentproxy'] = current
 
-            if (reconnectws)
-                app.platform.ws.reconnect()
-
-            return Promise.resolve()
-
-            if(r.refresh){
-                return proxy.refreshNodes()
-            }
-            else
-                return Promise.resolve()
+            app.platform.ws.reconnect()
         }
     }
 
@@ -738,24 +656,19 @@ var Api = function(app){
     }
 
     self.init = function(){
-        return internal.proxy.manage.init().then(r => {
 
+        return internal.proxy.manage.init().then(r => {
             internal.proxy.api.ping(proxies);
 
             return Promise.resolve()
         })
-    }
 
-    self.initIf = function(){
-
-        if(inited) return Promise.resolve()
-        else return self.init()
+        
 
     }
 
     self.destroy = function(){
         proxies = []
-        inited = false
     }
 
     

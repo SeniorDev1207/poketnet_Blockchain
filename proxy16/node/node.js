@@ -23,16 +23,11 @@ var Node = function(options, manager){
     self.addedby = options.addedby || ''
     //self.currentBlock = 0
     self.peer = options.peer || false
-    self.local = options.local || false
+
     self.testing = false
 
     var statisticInterval = null
     var changeNodeUsersInterval = null
-
-
-    var notactualevents = 600000 //mult
-    var checkEventsLength = 100
-    var getinfointervaltime = 60000
 
     var test = new Test(self)
 
@@ -203,7 +198,7 @@ var Node = function(options, manager){
 
             var push = _.clone(p)
 
-                push.time = f.now()
+                push.time = new Date()
 
             self.events.push(push)
 
@@ -294,7 +289,7 @@ var Node = function(options, manager){
         },
 
         rate : function(){
-            var s = f.date.addseconds(f.now(), -10)
+            var s = f.date.addseconds(null, -10)
             var l = self.events.length
             var c = 0
 
@@ -349,13 +344,11 @@ var Node = function(options, manager){
 
                 statisticInterval = setInterval(function(){
 
-                    self.statistic.clearOld()
-
-                    if (self.events.length < 1 + checkEventsLength){
+                    if (self.events.length < 1000){
                         self.info().catch(e => {})
                     }
 
-                }, getinfointervaltime)
+                }, 60000)
             }
         },
 
@@ -364,19 +357,6 @@ var Node = function(options, manager){
                 clearInterval(statisticInterval)
                 statisticInterval = null
             }
-        },
-
-        clearOld : function(){
-
-            var timecheck = f.date.addseconds(f.now(), -notactualevents / 1000)
-
-            self.events = _.filter(self.events, function(e){
-                if(e.time < timecheck) return false
-
-                return true
-            })
-
-            self.eventsCount = self.events.length
         }
     }
 
@@ -551,9 +531,7 @@ var Node = function(options, manager){
             key : self.key,
             testing : self.testing,
             stable : self.stable,
-            canuse : (s.success > 0 && lastblock.height) ? true : false,
-            local : self.local || false,
-            peer : self.peer
+            canuse : (s.success > 0 && lastblock.height) ? true : false
         }
     }
 

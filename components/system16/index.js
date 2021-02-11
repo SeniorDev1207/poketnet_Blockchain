@@ -25,7 +25,7 @@ var system16 = (function(){
 					type : 'rating'
 				},
 				server : {
-					type : 'responses'
+					type : 'connections'
 				},
 				wallets : {
 					type : 'distribution'
@@ -158,10 +158,7 @@ var system16 = (function(){
 							return proxy.system.request('set.node.enabled', {enabled : false}).then(r => {
 								clbk()
 
-								actions.refresh().then(r => {
-									actions.refreshsystem()
-								})
-								
+								actions.refresh()
 							})
 						}
 					}]
@@ -173,27 +170,10 @@ var system16 = (function(){
 				}
 				else{
 
-					var items = [{
-						text : "Enable Pocketnet Node",
-						action : function (clbk) {
-
-							return proxy.system.request('set.node.enabled', {enabled : true}).then(r => {
-								actions.refresh().then(r => {
-									actions.refreshsystem()
-								})
-
-								clbk()
-							})
-
-						
-						}
-					}]
-
-					menuDialog({
-						items: items
+					return proxy.system.request('set.node.enabled', {enabled : true}).then(r => {
+						actions.refresh()
+						//renders.allsettings()
 					})
-
-					
 
 				}
 			}
@@ -266,25 +246,11 @@ var system16 = (function(){
 				}
 			},
 
-			refreshsystem : function(){
-				return proxy.system.api.get.settings().then(s => {
-
-
-					system = s
-
-					if (el.c){
-						renders.allsettings()
-					}
-				})
-				
-			
-			},
-
 			refresh : function(){
-				return proxy.get.info().then(r => {
+				proxy.get.info().then(r => {
+
 					this.tick(r.info)
 
-					return Promise.resolve()
 				})
 			},
 
@@ -638,8 +604,10 @@ var system16 = (function(){
 			proxy : {
 				selectWatch : function(){
 
+					topPreloader(70)
 					windows.proxieslist(proxy, "Watch Proxy", function(selected){
 
+						topPreloader(100)
 						make(selected)
 					})
 				},
@@ -648,12 +616,14 @@ var system16 = (function(){
 
 					var use = api.get.current()
 
+					topPreloader(70)
 
 					windows.proxieslist(use, "Select Proxy that using Interface", function(selected){
+						topPreloader(100)
 
-						api.set.current(selected.id, true).then(r => {
-							make(api.get.current())
-						})
+						api.set.current(selected.id)
+
+						make(api.get.current())
 
 					})
 				},
@@ -775,20 +745,6 @@ var system16 = (function(){
 					]
 				},
 
-				responses : {
-					caption : "Responses",
-					objects : 'server.middle.responses',
-					series : [
-						{
-							path : 'length',
-							namePath : 'code',
-							name : "Code",
-							id : 'count'
-						}
-					]
-					//method : 'fromarray'
-				},
-
 				cache : {
 					caption : "Cache Size",
 					objects : 'server.cache.meta',
@@ -808,13 +764,13 @@ var system16 = (function(){
 
 					series : [
 						{
-							path : 'wallet.addresses.registration.queue',
+							path : 'wallet.registration.queue',
 							name : "Users Queue Size",
 							id : 'queue'
 						},
 	
 						{
-							path : 'wallet.addresses.registration.unspents',
+							path : 'wallet.registration.unspents',
 							name : "Unspents Count",
 							id : 'unspents'
 						},
@@ -826,7 +782,7 @@ var system16 = (function(){
 
 					series : [
 						{
-							path : 'wallet.addresses.registration.balance',
+							path : 'wallet.registration.balance',
 							name : "Address Balance",
 							id : 'balance'
 						}
@@ -864,8 +820,6 @@ var system16 = (function(){
 					if(meta.objects) ekey = meta.objects + '.' + ekey
 
 					_.each(meta.series, function(smeta){
-
-						
 						series[smeta.id + key] = {
 
 							name : smeta.name + ": " + key,
@@ -1071,7 +1025,7 @@ var system16 = (function(){
 
 						_.each(cpsub[type], function(s, key){
 							items.push({
-								text : s.caption,
+								text : key,
 								action : function (clbk) {
 
 									settings.charts[type].type = key
@@ -1637,10 +1591,6 @@ var system16 = (function(){
 
 				},
 				function(p){
-
-					p.el.find('.refreshpage').on('click', function(){
-						make(proxy)
-					})
 
 					if (clbk)
 						clbk()
@@ -2224,8 +2174,6 @@ var system16 = (function(){
 
 					p.el.find('.name').on('click', function(){
 
-						return
-
 						var key = $(this).closest('.node').attr('node')
 
 
@@ -2296,18 +2244,6 @@ var system16 = (function(){
 				if(actions.admin()){
 
 
-					var timestamp = deep(info,'nodeControl.state.timestamp')
-					var dis = false
-
-
-					if (timestamp){
-						dis = (new Date()) < fromutc(new Date(timestamp)).addSeconds(60)
-
-
-					console.log('timestamp', fromutc(new Date(timestamp)), fromutc(new Date(timestamp)).addSeconds(60), new Date())
-
-					}
-
 					self.shell({
 						inner : html,
 						name : 'nodecontentmanage',
@@ -2317,8 +2253,7 @@ var system16 = (function(){
 							nodestate : info.nodeControl.state,
 							proxy : proxy,
 							admin : actions.admin(),
-							system : system,
-							dis : dis
+							system : system
 						},
 
 						el : elc.find('.localnodeWrapper .manage')
@@ -2512,15 +2447,6 @@ var system16 = (function(){
 
 			destroy : function(){
 				el = {};
-
-				/*self.app.errors.clbks.system16 = function(){
-
-					if(!self.app.errors.state)
-
-					if(!_.isEmpty(self.app.errors.state)){
-
-					}
-				}*/
 			},
 			
 			init : function(p){
@@ -2537,15 +2463,6 @@ var system16 = (function(){
 				make(api.get.current());
 
 				p.clbk(null, p);
-
-				self.app.errors.clbks.system16 = function(){
-
-					if(!info && !self.app.errors.state.proxy && proxy){
-						make(proxy);
-					}
-
-				
-				}
 			}
 		}
 	};

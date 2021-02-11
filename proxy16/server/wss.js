@@ -315,7 +315,7 @@ var WSS = function(admins, manage){
             }
 
             if (user.admin){
-                user.ticks[ws.id] = setInterval(() => {tick(ws)}, 5000)
+                user.ticks[ws.id] = setInterval(() => {tick(ws)}, 10000)
             }
 
             connectNode(user, user.nodes[node.key]);
@@ -365,12 +365,6 @@ var WSS = function(admins, manage){
 
             try{
             
-                if (_.isEmpty(settings.ssl)){
-                    reject('sslerror')
-
-                    return
-                }
-
                 server = new https.createServer(settings.ssl);
 
                 wss = new WebSocket.Server({
@@ -408,20 +402,18 @@ var WSS = function(admins, manage){
     }
 
     self.destroy = function(){
-        if (wss.clients)
-            wss.clients.forEach((socket) => {
-                socket.close();
-            });
+        wss.clients.forEach((socket) => {
+            socket.close();
+        });
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
 
-                if (wss.clients)
-                    wss.clients.forEach((socket) => {
-                        if ([socket.OPEN, socket.CLOSING].includes(socket.readyState)) {
-                            socket.terminate();
-                        }
-                    });
+                wss.clients.forEach((socket) => {
+                    if ([socket.OPEN, socket.CLOSING].includes(socket.readyState)) {
+                        socket.terminate();
+                    }
+                });
 
                 server.close(function(){
                     resolve()
