@@ -50,11 +50,6 @@ function rpca(request, obj){
     })
 }
 
-var posts = {
-    sendrawtransaction : true,
-    sendrawtransactionwithmessage : true
-}
-
 var publics = {
     getcontents: true,
     getlastcomments: true,
@@ -64,7 +59,6 @@ var publics = {
     getuserprofile:true,
     getuserstate: true,
     getaddressregistration: true,
-    
     signrawtransactionwithkey: true,
     getrecommendedposts: true,
     gettime: true,
@@ -101,7 +95,6 @@ function rpc(request, callback, obj) {
     var m = request.method
 
     var pbl = publics[request.method]
-    var pst = posts[request.method]
 
     var self = obj;
     request = JSON.stringify(request);
@@ -109,10 +102,9 @@ function rpc(request, callback, obj) {
 
     //console.log("REQUEST", request, self.host, self.port)
 
-
     var options = {
         host: self.host,
-        path: pst ? '/post/' : (pbl ? '/public/' : '/'),
+        path: pbl ? '/public/' : '/',
         method: 'POST',
         port: self.port,
         //rejectUnauthorized: self.rejectUnauthorized,
@@ -144,6 +136,7 @@ function rpc(request, callback, obj) {
             }
             called = true;
 
+            //console.log('res.statusCode', res.statusCode)
 
             if (res.statusCode === 401) {
 

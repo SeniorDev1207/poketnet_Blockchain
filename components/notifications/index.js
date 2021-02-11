@@ -95,6 +95,8 @@ var notifications = (function(){
 				var _notifications = p.notifications || self.app.platform.sdk.notifications.storage.notifications;
 				var rnow = false;
 				
+
+
 				p.el = el.new;
 
 				if(!p.el) return
@@ -367,20 +369,7 @@ var notifications = (function(){
 
 				var data = {};
 
-				var _notifications = p.notifications || self.app.platform.sdk.notifications.storage.notifications;
-
-				console.log('_notifications', _notifications)
-
-				if(!_notifications){
-					self.app.platform.sdk.notifications.init(function(){
-						clbk(data);
-					})
-				}
-				else{
-					clbk(data);
-				}
-
-			
+				clbk(data);
 
 			},
 

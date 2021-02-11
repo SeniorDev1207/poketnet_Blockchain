@@ -651,9 +651,9 @@ var system16 = (function(){
 
 					windows.proxieslist(use, "Select Proxy that using Interface", function(selected){
 
-						api.set.current(selected.id, true).then(r => {
-							make(api.get.current())
-						})
+						api.set.current(selected.id)
+
+						make(api.get.current())
 
 					})
 				},
@@ -794,13 +794,13 @@ var system16 = (function(){
 
 					series : [
 						{
-							path : 'wallet.addresses.registration.queue',
+							path : 'wallet.registration.queue',
 							name : "Users Queue Size",
 							id : 'queue'
 						},
 	
 						{
-							path : 'wallet.addresses.registration.unspents',
+							path : 'wallet.registration.unspents',
 							name : "Unspents Count",
 							id : 'unspents'
 						},
@@ -812,7 +812,7 @@ var system16 = (function(){
 
 					series : [
 						{
-							path : 'wallet.addresses.registration.balance',
+							path : 'wallet.registration.balance',
 							name : "Address Balance",
 							id : 'balance'
 						}
@@ -2204,8 +2204,6 @@ var system16 = (function(){
 
 					p.el.find('.name').on('click', function(){
 
-						return
-
 						var key = $(this).closest('.node').attr('node')
 
 
@@ -2492,15 +2490,6 @@ var system16 = (function(){
 
 			destroy : function(){
 				el = {};
-
-				/*self.app.errors.clbks.system16 = function(){
-
-					if(!self.app.errors.state)
-
-					if(!_.isEmpty(self.app.errors.state)){
-
-					}
-				}*/
 			},
 			
 			init : function(p){
@@ -2517,15 +2506,6 @@ var system16 = (function(){
 				make(api.get.current());
 
 				p.clbk(null, p);
-
-				self.app.errors.clbks.system16 = function(){
-
-					if(!info && !self.app.errors.state.proxy && proxy){
-						make(proxy);
-					}
-
-				
-				}
 			}
 		}
 	};
