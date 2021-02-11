@@ -7,11 +7,8 @@ var tcpPortUsed = require('tcp-port-used');
 _ = 	require("underscore");
 var fs = require('fs');
 
-var Pocketnet = require('./pocketnet.js');
-const { base64encode, base64decode } = require('nodejs-base64');
 ////
 var f = require('./functions');
-const { deep } = require("./functions");
 ////
 var db = null;
 var proxy = null;
@@ -20,46 +17,54 @@ var settingsPath = 'data/settings'
 ////
 var settings = {};
 
-var pocketnet = new Pocketnet()
-
 var nodes = [
 
-	/*{
+	{
 		host : '216.108.231.40',
 		port : 38081,
 		ws : 8087,
 		nodename : 'Cryptoserver',
-		stable : true
-	},*/
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
+	},
 	{
 		host : '64.235.45.119',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP',
-		stable : true
+		nodename : 'CryptoserverSP',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 
 	{
 		host : '64.235.35.173',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP4',
-		stable : true
+		nodename : 'CryptoserverSP4',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	{
 		host : '64.235.33.85',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP5',
-		stable : true
+		nodename : 'CryptoserverSP5',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	
 	{
-		host : '185.148.147.15',
+		host : '188.187.45.218',
 		port : 38081,
 		ws : 8087,
-		name : 'Cryptoserver',
-		stable : true
+		nodename : 'Cryptoserver',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	}
 ]
 
@@ -83,12 +88,11 @@ var defaultSettings = {
 		},
 		
 		ports : {
-			https : 8888,
-			wss : 8088
+			https : 8899,
+			wss : 8099
 		},
 		
 		ssl : {
-			name : "Default",
 			key : 'cert/key.pem',
 			cert : 'cert/cert.pem',
 			passphrase: 'password'
@@ -115,7 +119,7 @@ var defaultSettings = {
 
     node: {
 		dbpath : 'data/node',
-        enabled: false,
+        enabled: true,
         binPath: '',
 		dataPath: '',
 
@@ -237,100 +241,32 @@ var kit = {
 		set : {
 
 			server : {
-				
-				settings : function({
-					settings = {}
-				}){
-
-					var ctx = kit.manage.set.server
-					var notification = {}
-
-					if(settings.ports) notification.ports = settings.ports
-					if(typeof settings.enabled) notification.enabled = settings.enabled
-					if(deep(settings, 'firebase.id')) notification.firebase = deep(settings, 'firebase.id')
-					if(settings.ssl) notification.ssl = true
-
-					return kit.proxy().then(proxy => {
-
-						return proxy.wss.sendtoall({
-							type : 'proxy-settings-changed',
-							data : notification
-						}).catch(e => {
-							return Promise.resolve()
-						})
-
-					}).then(() => {
-						var promises = []
-
-						if (settings.firebase && settings.firebase.id) 
-							promises.push(ctx.firebase.id(settings.firebase.id).catch(e => {
-								console.error(e)
-
-								return Promise.resolve('firebase.id error')
-							}))
-
-						if (settings.firebase && settings.firebase.key) 
-							promises.push(ctx.firebase.key(settings.firebase.id).catch(e => {
-								console.error(e)
-
-								return Promise.resolve('firebase.key error')
-							}))
-
-						if (settings.ssl) 
-							promises.push(ctx.ssl(settings.ssl).catch(e => {
-								console.error(e)
-
-								return Promise.resolve('ssl error')
-							}))
-
-						if (settings.ports) 
-							promises.push(ctx.ports(settings.ports).catch(e => {
-								console.error(e)
-
-								return Promise.resolve('ports error')
-							}))
-
-						if (typeof settings.enabled != 'undefined')  
-							promises.push(ctx.enabled(settings.enabled).catch(e => {
-								console.error(e)
-
-								return Promise.resolve('enabled error')
-							}))
-
-						if(!promises.length) 
-							return Promise.reject('nothingchanged')
-
-						return Promise.all(promises)
-					})
-
-					
-
-				},
 				ports : function(httpsws){
 	
 					var ch = {
 						https : false,
 						wss : false
 					}
-
-					console.log('httpsws', httpsws)
-
-					if(!httpsws.https) httpsws.https = settings.server.ports.https
-					if(!httpsws.wss) httpsws.wss = settings.server.ports.wss
 		
-					return tcpPortUsed.check(Number(httpsws.https), '127.0.0.1').then(function(inUse) {
+					return tcpPortUsed.check(httpsws.https, '127.0.0.1')
+		
+					.then(function(inUse) {
 		
 						ch.https = inUse
 		
-						return tcpPortUsed.check(Number(httpsws.wss), '127.0.0.1')
+						return tcpPortUsed.check(httpsws.wss, '127.0.0.1')
 		
-					}).then(function(inUse) {
+					})
+		
+					.then(function(inUse) {
 		
 						ch.wss = inUse
 		
 						return Promise.resolve()
 		
-					}).then(function(){
+					})
+		
+					.then(function(){
 						if(!ch.https && !ch.wss){
 		
 							if(settings.server.ports.https == httpsws.https && settings.server.ports.wss == httpsws.wss){
@@ -375,8 +311,6 @@ var kit = {
 				},
 	
 				enabled : function(v){
-
-					console.log('settings.server.enabled', settings.server.enabled, v)
 	
 					if (settings.server.enabled == v) return Promise.resolve() 
 						settings.server.enabled = v
@@ -386,49 +320,22 @@ var kit = {
 						})
 					
 				},
-
-				defaultssl : function(){
-					settings.server.ssl = defaultSettings.server.ssl
-
-					return kit.proxy().then(proxy => {
-
-						return proxy.wss.sendtoall({
-							type : 'proxy-settings-changed',
-							data : {
-								ssl : true
-							}
-						})
-
-					}).then(r => {
-						return state.saverp()
-					}).then(proxy => {
-						return proxy.server.rews()
-					})
-
-					
-
-				},
 	
 				ssl : function(sslobj){
 	
 					if(sslobj.key && sslobj.cert && sslobj.passphrase){
 		
 						var d = {
-							passphrase : sslobj.passphrase,
-							name : sslobj.name || 'Default'
+							passphrase : sslobj.passphrase
 						}
 	
 						var keypath = 'cert/keyl.pem'
 						var certpath = 'cert/certl.pem'
-
-						sslobj.key = sslobj.key.split(',')[1]
-						sslobj.cert = sslobj.cert.split(',')[1]
 		
-						return f.saveFile(keypath, Buffer.from(base64decode(sslobj.key), 'utf8')).then(() => {
+						return f.saveFile(keypath, sslobj.key).then(() => {
 							d.keypath = keypath
 		
-							return f.saveFile(certpath, Buffer.from(base64decode(sslobj.cert), 'utf8'))
-
+							return f.saveFile(certpath, sslobj.cert)
 						}).then(() => {
 							d.certpath = certpath
 		
@@ -456,22 +363,14 @@ var kit = {
 					id : function(id){
 	
 						settings.firebase.id = id
-
-						return state.saverp().then(proxy => {
-							return proxy.firebase.re()
-						})
+						return state.save()
 						
 					},
-
 					key : function(fbkjsonfile){
-
-						if(!fbkjsonfile) return Promise.reject('empty')
 	
 						var path = 'private/pocketnet-firebase-adminsdk.json'
-
-						fbkjsonfile = fbkjsonfile.split(',')[1]
 			
-						return f.saveFile(path, Buffer.from(base64decode(fbkjsonfile), 'utf8')).then(() => {
+						return f.saveFile(path, fbkjsonfile).then(() => {
 			
 							settings.firebase.key = path
 			
@@ -486,30 +385,17 @@ var kit = {
 			},
 	
 			wallet : {
-				removeKey: function({key, privatekey}){
-
-					if(!settings.wallet.addresses[key]) return Promise.reject('key')
-
-					settings.wallet.addresses[key].privatekey = ''
+				addresses : function(addresses){
+	
+					if(f.hash(settings.addresses.addresses) == f.hash(addresses)) return Promise.resolve()
+	
+					settings.addresses.addresses = addresses
+	
 					return state.saverp().then(proxy => {
-						return proxy.wallet.removeKey(key)
+						return proxy.wallet.re()
 					})
-
-				},
-				setkey : function({key, privatekey}){
-
-					if(!settings.wallet.addresses[key]) return Promise.reject('key')
-
-					if(settings.wallet.addresses[key].privatekey == privatekey) return Promise.resolve()
-
-					settings.wallet.addresses[key].privatekey = privatekey
-
-					return state.saverp().then(proxy => {
-						return proxy.wallet.setPrivateKey(key, privatekey)
-					})
-
+					
 				}
-
 			},
 	
 			node : {
@@ -554,29 +440,19 @@ var kit = {
 			},
 	
 			admins : {
-				add : function({
-					address
-				}){
-
-					if(!address) return Promise.reject("address")
-
-					if(!pocketnet.kit.address.validation(address)) return Promise.reject("notvalidaddress")
-
-
-					if(_.indexOf(settings.admins, address) > -1){
+				add : function(v){
+					if(_.indexOf(settings.admins, v) > -1){
 						return Promise.resolve()
 					}
 	
-					settings.admins.push(address)
+					settings.admins.push(v)
 	
 					return state.save()
 				},
 	
-				remove : function({
-					address
-				}){
+				remove : function(v){
 	
-					var i = _.indexOf(settings.admins, address)
+					var i = _.indexOf(settings.admins, v)
 	
 					if (i == -1) return Promise.resolve()
 	
@@ -714,6 +590,7 @@ var kit = {
 
 			db.loadDatabase(function(err) {   
 
+				console.log('err', err)
 		
 				if(!err){
 					db.find({ nedbkey : nedbkey }).exec(function (err, docs) {

@@ -330,7 +330,7 @@ f.processArrayWithDelay = function(array, t, fn) {
         return p.then(function() {
             return fn(item).then(function(data) {
                 results.push(data);
-                return f.delay(t, results);
+                return delay(t, results);
             });
         });
     }, Promise.resolve());

@@ -652,10 +652,9 @@ var comments = (function(){
 
 					delete currentstate.levels[id]
 
-					if (self.app.platform.sdk.comments.storage[txid])
-						_.each(self.app.platform.sdk.comments.storage[txid][id], function(c){
-							delete rendered[c.id]
-						})
+					_.each(self.app.platform.sdk.comments.storage[txid][id], function(c){
+						delete rendered[c.id]
+					})
 
 					c.removeClass('showedreplies')
 
