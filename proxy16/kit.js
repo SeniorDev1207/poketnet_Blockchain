@@ -550,7 +550,6 @@ var kit = {
 					})
 					
 				},
-				
 	
 			},
 	
@@ -600,43 +599,20 @@ var kit = {
 		},
 
 		node : {
-			install : function(message){
-				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.install()
-				}).then(r => {
-
-					console.log("DONE", r)
-
-					return Promise.resolve(r)
-				})
-			},
-
-			delete : function({all}){
-				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.delete(all)
-				}).then(r => {
-
-					return Promise.resolve(r)
-				})
-			},
-
-
-			//// ?
 			update : function(message){
 				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.update()
-				}).then(r => {
-
-					return Promise.resolve(r)
+					return proxy.nodeControl.kit.update().then(data => {
+						send(message.id, null, data)
+					})
 				})
 			},
-			/*checkupdate : function(message){
+			checkupdate : function(message){
 				return kit.proxy().then(proxy => {
 					return proxy.nodeControl.kit.checkupdate().then(update => {
 						send(message.id, null, update)
 					})
 				})
-			},*/
+			},
 			request : function(message){
 				
 				return kit.proxy().then(proxy => {

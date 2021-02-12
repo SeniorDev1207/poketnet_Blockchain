@@ -415,8 +415,7 @@ var WSS = function(admins, manage){
 
         if (wss && wss.clients)
             wss.clients.forEach((socket) => {
-                if (socket)
-                    socket.close();
+                socket.close();
             });
 
         return new Promise((resolve, reject) => {
@@ -429,10 +428,11 @@ var WSS = function(admins, manage){
                         }
                     });
 
-                if (server)
-                    server.close(function(){
-                        resolve()
-                    })
+                server.close(function(){
+                    resolve()
+                })
+    
+               
     
             }, 3000);
         })

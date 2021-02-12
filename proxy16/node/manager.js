@@ -123,11 +123,6 @@ var Nodemanager = function(p){
             }
         })
 
-        if(!usersfornode){
-            self.add(node)
-            return
-        }
-
         if (self.proxy.users() / usersfornode >= workingNodes.length){
             self.add(node)
         }

@@ -270,13 +270,9 @@ var menu = (function(){
 
 						self.app.platform.api.electron.notifications(l, 'notifications')
 
-
-						console.log("INITNOTIFICATIONS")
-
 						if(!isMobile())
 
 							self.nav.api.load({
-								eid : 'menu',
 								open : true,
 								id : 'notifications',
 								el : el,
