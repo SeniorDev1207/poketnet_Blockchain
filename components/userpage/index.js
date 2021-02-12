@@ -517,11 +517,8 @@ var userpage = (function(){
 						},
 	
 					}, function(_p){
-						console.log(_p.el)
 						_p.el.find('.copyaddress').on('click', function(){
 							copyText($(this))
-
-							sitemessage(self.app.localization.e('successcopied'))
 						})
 					})
 
