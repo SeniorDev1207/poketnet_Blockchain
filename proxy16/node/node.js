@@ -30,7 +30,7 @@ var Node = function(options, manager){
     var changeNodeUsersInterval = null
 
 
-    var notactualevents = 600000 //mult
+    var notactualevents = 3600000 //mult
     var checkEventsLength = 100
     var getinfointervaltime = 60000
 
@@ -380,7 +380,7 @@ var Node = function(options, manager){
         }
     }
 
-    var needToChange = function(){
+    self.needToChange = function(){
         var betterNodes = self.statistic.better()
 
         //console.log('betterNodes.length', betterNodes.length, self.ckey)
@@ -413,8 +413,8 @@ var Node = function(options, manager){
         return np
     }
 
-    var changeNodeUser = function(address, np){
-        //if(wss.changing[address]) return null
+    self.changeNodeUser = function(address, np){
+        //if(address && wss.changing[address]) return null
 
         var r = f.randmap(np)
 
@@ -426,14 +426,14 @@ var Node = function(options, manager){
     }
 
     var changeNodeUsers = function(){
-        var np = needToChange()
+        var np = self.needToChange()
 
         if(!np) return 
 
         //console.log('users', _.toArray(wss.users).length, self.ckey)
 
         _.each(wss.users, function(user, address){
-            var change = changeNodeUser(address, np)
+            var change = self.changeNodeUser(address, np)
 
             //console.log('change', change, address)
 

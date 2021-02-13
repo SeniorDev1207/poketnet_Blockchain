@@ -20,12 +20,51 @@ var ProxyRequest = function(app = {}){
         return data
     }
 
+    
+
+    var timeout = function (ms, promise, controller) {
+
+        var cancelled = false
+        
+
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                if (controller){
+                    controller.abort()
+                }
+            }, ms)
+      
+            promise.then(value => {
+
+                clearTimeout(timer)
+                resolve(value)
+
+            }).catch(reason => {
+
+                
+
+                clearTimeout(timer)
+
+                reject(reason)
+
+            })
+        })
+    }
+
     var direct = function(url, data){
+        var controller = (new AbortController())
+
+        return timeout(3000, directclear(url, data, controller.signal), controller)
+    }
+
+    var directclear = function(url, data, signal){
 
         if(!data) 
             data = {}
 
         var er = false
+
+        
 
         return fetch(url, {
 
@@ -35,6 +74,7 @@ var ProxyRequest = function(app = {}){
                 'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=utf-8'
             },
+            signal : signal,
             body: JSON.stringify(sign(data))
 
         }).then(r => {
@@ -48,18 +88,26 @@ var ProxyRequest = function(app = {}){
         }).then(result => {
 
             if (er){
-
-
                 return Promise.reject(result.error)
             }
 
             return Promise.resolve(result.data || {})
         }).catch(e => {
+
+
+            if (e.code == 20){
+                return Promise.reject({
+                    code : 408
+                })
+                
+            }
+
             return Promise.reject(e)
         })
     }
 
     self.rpc = function(url, method, parameters, options){
+
 
         if(!method) return Promise.reject('method')
 
@@ -135,8 +183,14 @@ var Proxy16 = function(meta, app){
 
     self.changeNode = function(node){
 
-        if (node){
+        if (node && self.current.key != node.key){
             self.current = node
+
+            app.platform.ws.reconnect()
+
+            _.each(self.clbks.changednode, function(c){
+                c()
+            })
 
             return true
         }
@@ -177,7 +231,6 @@ var Proxy16 = function(meta, app){
 
             var currentapi = app.api.get.currentstring()
 
-            console.log('editinsaved, ', lastid)
 
             app.api.editinsaved(lastid, self)
 
@@ -216,6 +269,14 @@ var Proxy16 = function(meta, app){
             })
         },
         nodes : {
+
+            canchange : function(node){
+                return self.fetch('nodes/canchange',{node}, 'wait').then(r => {
+                    return Promise.resolve(self.changeNode(r.node))
+                }).catch(e => {
+                    return Promise.resolve(false)
+                })
+            },
 
             select : function(){
                 return self.fetch('nodes/select').then(r => {
@@ -257,7 +318,12 @@ var Proxy16 = function(meta, app){
         wss : () => {return "wss://" + self.host + ":" + self.wss}
     }
 
-    self.rpc = function(method, parameters, options){
+
+    self.rpc = function(method, parameters, options, trying){
+
+
+        if(!trying) trying = 0
+
 
         if(!options) options = {}
 
@@ -276,10 +342,43 @@ var Proxy16 = function(meta, app){
 
         return promise.then(r => {
             return Promise.resolve(r)
+        }).catch(e => {
+
+            if (e.code == 408 && options.node && trying < 3){
+
+                return self.api.nodes.canchange(options.node).then(r => {
+
+                    if (r){
+                        return self.rpc(method, parameters, options, trying + 1)
+                    }
+
+                    return Promise.reject(e)
+                })
+            }
+
+            return Promise.reject(e)
+
         })
     }
 
-    self.fetch = function(path, data){
+    var wait = {}
+
+    self.fetch = function(path, data, waiting){
+
+        /*if (waiting){
+
+        }
+
+        if (waiting){
+
+            if(wait[path]){
+
+            }
+
+            wait[path] = true
+
+        }*/
+           
 
         if(self.direct){
             promise = self.system.fetch(path, data)
@@ -360,7 +459,8 @@ var Proxy16 = function(meta, app){
 
     self.clbks = {
         tick : {},
-        changed : {}
+        changed : {},
+        changednode : {}
     }
 
     return self
@@ -596,7 +696,6 @@ var Api = function(app){
 
         }).then(r => {
 
-            console.log("RRRRR", r)
 
             app.apiHandlers.success({
                 rpc : true
@@ -606,10 +705,8 @@ var Api = function(app){
 
         }).catch(e => {
 
-            console.log("E", e, e.code)
 
             if(e == 'TypeError: Failed to fetch' || (e.code == 408 || e.code == -28)){
-                console.log("IMHERE", app.apiHandlers)
 
                 app.apiHandlers.error({
                     rpc : true
@@ -628,7 +725,6 @@ var Api = function(app){
         if(!options) 
             options = {}
 
-            console.log("gofetch")
 
         return getproxy(options.proxy).then(proxy => {
 
@@ -644,10 +740,8 @@ var Api = function(app){
 
         }).catch(e => {
 
-            console.log("E", e)
 
             if (e == 'TypeError: Failed to fetch'){
-                console.log("FAIL")
                 app.apiHandlers.error({
                     api : true
                 })
@@ -659,12 +753,10 @@ var Api = function(app){
 
     self.ready = {
         proxies : () => {
-            console.log('11')
             return _.filter(proxies, proxy => { return proxy.ping })
         },
 
         use : () => {
-            console.log('22')
             return useproxy ? _.filter(proxies, proxy => { return proxy.ping && proxy.get.nodes().length }) : false
         },
     }

@@ -83,8 +83,8 @@ var defaultSettings = {
 		},
 		
 		ports : {
-			https : 8888,
-			wss : 8088
+			https : 8899,
+			wss : 8099
 		},
 		
 		ssl : {
@@ -550,6 +550,7 @@ var kit = {
 					})
 					
 				},
+				
 	
 			},
 	
@@ -599,20 +600,43 @@ var kit = {
 		},
 
 		node : {
-			update : function(message){
+			install : function(message){
 				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.update().then(data => {
-						send(message.id, null, data)
-					})
+					return proxy.nodeControl.kit.install()
+				}).then(r => {
+
+					console.log("DONE", r)
+
+					return Promise.resolve(r)
 				})
 			},
-			checkupdate : function(message){
+
+			delete : function({all}){
+				return kit.proxy().then(proxy => {
+					return proxy.nodeControl.kit.delete(all)
+				}).then(r => {
+
+					return Promise.resolve(r)
+				})
+			},
+
+
+			//// ?
+			update : function(message){
+				return kit.proxy().then(proxy => {
+					return proxy.nodeControl.kit.update()
+				}).then(r => {
+
+					return Promise.resolve(r)
+				})
+			},
+			/*checkupdate : function(message){
 				return kit.proxy().then(proxy => {
 					return proxy.nodeControl.kit.checkupdate().then(update => {
 						send(message.id, null, update)
 					})
 				})
-			},
+			},*/
 			request : function(message){
 				
 				return kit.proxy().then(proxy => {
