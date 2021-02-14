@@ -77,6 +77,8 @@ var notifications = (function(){
 					open : true
 				})
 
+				console.log('showAll', self)
+
 				self.closeContainer();
 			},
 
@@ -95,8 +97,6 @@ var notifications = (function(){
 				var _notifications = p.notifications || self.app.platform.sdk.notifications.storage.notifications;
 				var rnow = false;
 				
-
-
 				p.el = el.new;
 
 				if(!p.el) return
@@ -248,9 +248,11 @@ var notifications = (function(){
 
 			inel.addEventListener('scroll', events.seen);
 
-
+			console.log("INITEEVEV", el.c)
 			
 			el.c.find('.closecontainer').on('click', function(){
+
+				console.log('closeContainer')
 				self.closeContainer()
 			})
 
@@ -369,7 +371,19 @@ var notifications = (function(){
 
 				var data = {};
 
-				clbk(data);
+				var _notifications = p.notifications || self.app.platform.sdk.notifications.storage.notifications;
+
+
+				if(!_notifications){
+					self.app.platform.sdk.notifications.init(function(){
+						clbk(data);
+					})
+				}
+				else{
+					clbk(data);
+				}
+
+			
 
 			},
 
@@ -448,7 +462,7 @@ var notifications = (function(){
 					triggerClose : {
 					}
 				},
-				event : 'click'
+				//event : 'click'
 			}
 
 		}

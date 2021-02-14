@@ -174,6 +174,10 @@ var menu = (function(){
 
 							if(!state) k = 'index'
 
+							if(self.app.curation()){
+								k = 'userpage'
+							}
+
 							self.nav.api.go({
 								href : k,
 								history : true,
@@ -270,9 +274,13 @@ var menu = (function(){
 
 						self.app.platform.api.electron.notifications(l, 'notifications')
 
+
+						console.log("INITNOTIFICATIONS")
+
 						if(!isMobile())
 
 							self.nav.api.load({
+								eid : 'menu',
 								open : true,
 								id : 'notifications',
 								el : el,

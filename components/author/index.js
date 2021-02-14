@@ -200,7 +200,7 @@ var author = (function(){
 
 		var reports = {
 			shares : {
-				name : self.app.localization.e('uposts'),
+				name : self.app.localization.e('uposts').toUpperCase(),
 				mobile : '<i class="fas fa-align-justify"></i>',
 				id : 'shares',
 				render : 'lenta',
@@ -222,7 +222,7 @@ var author = (function(){
 			},
 
 			followers : {
-				name : self.app.localization.e('followers'),
+				name : self.app.localization.e('followers').toUpperCase(),
 				mobile : '<i class="fas fa-users"></i>',
 				id : 'followers',
 				render : 'followers',
@@ -235,7 +235,7 @@ var author = (function(){
 			},
 
 			following : {
-				name : self.app.localization.e('following'),
+				name : self.app.localization.e('following').toUpperCase(),
 				id : 'following',
 				mobile : '<i class="fas fa-user-plus"></i>',
 				render : 'following',
@@ -270,7 +270,7 @@ var author = (function(){
 			},
 
 			settings : {
-				name : self.app.localization.e('settings') + ' <i class="fas fa-cog"></i>',
+				name : self.app.localization.e('settings').toUpperCase() + ' <i class="fas fa-cog"></i>',
 				mobile : '<i class="fas fa-cog"></i>',
 				id : 'settings',
 				href : function(){
@@ -1162,6 +1162,16 @@ var author = (function(){
 
 								if(!self.app.platform.sdk.address.pnet() || author.address != self.app.platform.sdk.address.pnet().address){
 									reports.shares.name = self.app.localization.e('uposts')
+
+									if(self.app.curation()){
+										self.nav.api.load({
+											open : true,
+											href : 'userpage',
+											history : true
+										})
+					
+										return
+									}
 								}
 								else
 								{

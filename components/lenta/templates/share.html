@@ -30,9 +30,6 @@ var name = app.platform.api.name(share.address)
 
 var emptywithrepost = share.isEmpty() && share.repost
 
-var value = Number(share.score)
-
-console.log('my', value, share.scnt);
 
 var metadisplay = function(){ %>
 
@@ -54,7 +51,7 @@ var metadisplay = function(){ %>
 
 							
 							
-								<b><span><%-name || share.address %></span></b><% if(reputation) {%><sup><%-compressedNumber(reputation, 1)%></sup><% } %>
+								<b><span class="adr"><%-name || share.address %></span></b><% if(reputation) {%><sup class="spsp"><%-compressedNumber(reputation, 1)%></sup><% } %>
 
 							</a>
 
@@ -236,7 +233,7 @@ var metadisplay = function(){ %>
 						<% _.each(share.images, function(image){ %>
 
 							<div class="imagesWrapper">
-								<div class="image imageOpen" image="<%-image%>" i="<%-image%>">
+								<div class="image imageOpen imagePostOpent" image="<%-image%>" i="<%-image%>">
 								</div>
 							</div>
 
@@ -260,9 +257,8 @@ var metadisplay = function(){ %>
 		<% } %>
 	<% },
 
-	u : function(){	%> 
+	u : function(){ %> 
 		<% if(share.url) {
-
 
 			var h = ''
 			
@@ -276,8 +272,7 @@ var metadisplay = function(){ %>
 			</div>
 
 		<% } %>
-	<% },
-
+	<% }
 
 } %>
 
@@ -441,8 +436,12 @@ var metadisplay = function(){ %>
 
 												<span><%=e('postWaitConf')%></span>
 											</div>
-										</div>	
+										</div>
+
+										
+										
 									</div>
+
 								</div>
 								<div class="clearfix"></div>
 							</div>
