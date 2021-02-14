@@ -22,8 +22,6 @@ var userpage = (function(){
 		var init = function(){
 			reports = []
 
-			console.log("self.app.user.validate()self.app.user.validate()self.app.user.validate()", self.app.user.validate())
-
 			if(!self.app.user.validate()){
 
 				var h = self.app.localization.e('e13184');
@@ -517,12 +515,7 @@ var userpage = (function(){
 						},
 	
 					}, function(_p){
-						console.log(_p.el)
-						_p.el.find('.copyaddress').on('click', function(){
-							copyText($(this))
-
-							sitemessage(self.app.localization.e('successcopied'))
-						})
+	
 					})
 
 					

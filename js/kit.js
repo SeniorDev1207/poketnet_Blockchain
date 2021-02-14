@@ -286,7 +286,7 @@ Comment = function(txid){
 
 					if(!images) return
 
-					if(this.v.length > 9){
+					if(this.v.images > 9){
 						return false;
 					}
 
@@ -394,16 +394,6 @@ Comment = function(txid){
 								
 								p.success();
 
-							},
-
-							fail : function(d){
-
-								self.images.v[index] = 'https://i.imgur.com/Sa2cJVT.jpg'
-								
-
-								index++;
-
-								p.success();
 							}
 						})
 
@@ -470,8 +460,6 @@ Comment = function(txid){
 			})
 		}
 
-		console.log('self.images.v', self.images.v)
-
 		if(self.id){
 			r.id = self.id
 		}
@@ -493,8 +481,6 @@ Comment = function(txid){
 			return decodeURIComponent(i)
 		}))
 
-		console.log("v.msgparsed", v.msgparsed)
-
 		if (v.txid || v.id)
 			self.id = v.txid || v.id
 	}
@@ -503,11 +489,8 @@ Comment = function(txid){
 		var comment = new pComment();
 			comment.import(self.export())
 
-
 			comment.id = id
 			comment.txid = self.txid
-
-
 
 		return comment;
 	}
@@ -759,6 +742,7 @@ Share = function(lang){
 		self.caption.set()
 		self.repost.set()
 		self.language.set()
+		self.poll.set();
 
 		_.each(self.settings, function(s, k){
 			self.settings[k] = null;
@@ -847,6 +831,43 @@ Share = function(lang){
 
 		},
 		v : ''
+	};
+
+	self.poll = {
+		set : function(_v){
+
+			if(!_v){
+				this.v = {}
+			}
+			else
+			{
+				this.v = _v
+			}
+			
+			_.each(self.on.change || {}, function(f){
+				console.log('poll', f);
+				f('poll', this.v)
+			})
+
+		},
+		remove : function(poll){
+			if(!poll){
+				this.v = {}
+			}
+			else
+			{
+				removeEqual(this.v, poll)
+			}
+
+			_.each(self.on.change || {}, function(f){
+				f('poll', this.v)
+			})
+		},
+		get : function(){
+			return this.v;
+		},
+		v : {},
+		drag : true
 	};
 
 	self.ustate = function(){
@@ -1024,17 +1045,17 @@ Share = function(lang){
 	}
 
 	self.default = {
-		a : ['cm', 'r', 'i', 'u'],
+		a : ['cm', 'r', 'i', 'u', 'p'],
 		v : 'p',
 		videos : [],
-		image : 'a'
+		image : 'a',
 	}
 
 	self.settings = {
 		a : '',
 		v : '',
 		videos : [],
-		image : ''
+		image : '',
 	}
 
 
@@ -1151,7 +1172,8 @@ Share = function(lang){
 				settings : _.clone(self.settings),
 				language : self.language.v,
 				txidEdit : self.aliasid || "",
-				txidRepost : self.repost.v || ""
+				txidRepost : self.repost.v || "",
+				poll : self.poll.v || {}
 			} 
 		}
 
@@ -1159,6 +1181,7 @@ Share = function(lang){
 			c : encodeURIComponent(self.caption.v),
 			m : encodeURIComponent(self.message.v),
 			u : encodeURIComponent(self.url.v),
+			p : _.clone(self.poll.v),
 			t : _.map(self.tags.v, function(t){ return encodeURIComponent(t) }),
 			i : self.images.v,
 			s : _.clone(self.settings),
@@ -1177,6 +1200,7 @@ Share = function(lang){
 		self.images.set(v.i || v.images)
 		self.repost.set(v.r || v.txidRepost || v.repost)
 		self.language.set(v.l|| v.language || 'en')
+		self.poll.set(v.p || v.poll || {})
 
 		if (v.txidEdit) self.aliasid = v.txidEdit
 
@@ -1404,10 +1428,6 @@ UserInfo = function(){
 						if (clbk)
 							clbk();
 
-					},
-					fail : function(d){
-						if (clbk)
-							clbk(d);
 					}
 				})
 
@@ -1626,7 +1646,8 @@ pShare = function(){
 	self.txid = '';
 	self.time = null;
 	self.repost = '';
-	self.language = ''
+	self.language = '';
+	self.poll = {};
 
 	self.comments = 0;
 	self.lastComment = null;
@@ -1638,17 +1659,17 @@ pShare = function(){
 	}
 
 	self.default = {
-		a : ['cm', 'i', 'u'],
+		a : ['cm', 'i', 'u', 'p'],
 		v : 'p',
 		videos : [],
-		image : 'a'
+		image : 'a',
 	}
 
 	self.settings = {
 		a : '',
 		v : '',
 		videos : [],
-		image : ''
+		image : '',
 	}
 
 	self.isEmpty = function(){
@@ -1673,6 +1694,7 @@ pShare = function(){
 			self.caption = v.c || v.caption || ""
 			self.tags = v.t || v.tags || []
 			self.url = v.u || v.url || '';
+			self.poll = v.p || v.poll || {}
 			
 		}
 		else
@@ -1681,6 +1703,7 @@ pShare = function(){
 			self.message = decodeURIComponent((v.m || v.message || "").replace(/\+/g, " "))
 			self.caption = decodeURIComponent((v.c || v.caption || "").replace(/\+/g, " "))
 			self.tags = _.map(v.t || v.tags || [], function(t){ return decodeURIComponent(t) })
+			self.poll = v.p || v.poll || {}
 
 		}
 
@@ -1742,6 +1765,7 @@ pShare = function(){
 		v._time = self._time;
 		v.s = _.clone(self.settings)
 		v.l = self.language
+		v.p = self.poll
 
 		return v
 	}

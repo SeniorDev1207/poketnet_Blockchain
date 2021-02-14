@@ -24,55 +24,65 @@ var pocketnet = new Pocketnet()
 
 var nodes = [
 
-	/*{
+	{
 		host : '216.108.231.40',
 		port : 38081,
 		ws : 8087,
 		nodename : 'Cryptoserver',
-		stable : true
-	},*/
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
+	},
 	{
 		host : '64.235.45.119',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP',
-		stable : true
+		nodename : 'CryptoserverSP',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 
 	{
 		host : '64.235.35.173',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP4',
-		stable : true
+		nodename : 'CryptoserverSP4',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	{
 		host : '64.235.33.85',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP5',
-		stable : true
+		nodename : 'CryptoserverSP5',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	
 	{
-		host : '185.148.147.15',
+		host : '188.187.45.218',
 		port : 38081,
 		ws : 8087,
-		name : 'Cryptoserver',
-		stable : true
+		nodename : 'Cryptoserver',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	}
 ]
 
 var defaultSettings = {
 
-	admins : [],
+	admins : ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82'],
 	
 	nodes : {
 		dbpath : 'data/nodes'
 	},
 
 	server : {
-		enabled : false,
+		enabled : true,
 
 		captcha : true,
 		
@@ -83,8 +93,8 @@ var defaultSettings = {
 		},
 		
 		ports : {
-			https : 8899,
-			wss : 8099
+			https : 8888,
+			wss : 8088
 		},
 		
 		ssl : {
@@ -256,14 +266,11 @@ var kit = {
 							type : 'proxy-settings-changed',
 							data : notification
 						}).catch(e => {
-							console.log("E", e)
 							return Promise.resolve()
 						})
 
 					}).then(() => {
 						var promises = []
-
-						console.log("settings", settings)
 
 						if (settings.firebase && settings.firebase.id) 
 							promises.push(ctx.firebase.id(settings.firebase.id).catch(e => {
@@ -273,7 +280,7 @@ var kit = {
 							}))
 
 						if (settings.firebase && settings.firebase.key) 
-							promises.push(ctx.firebase.key(settings.firebase.key).catch(e => {
+							promises.push(ctx.firebase.key(settings.firebase.id).catch(e => {
 								console.error(e)
 
 								return Promise.resolve('firebase.key error')
@@ -378,8 +385,6 @@ var kit = {
 				},
 	
 				enabled : function(v){
-
-					console.log('settings.server.enabled', settings.server.enabled, v)
 	
 					if (settings.server.enabled == v) return Promise.resolve() 
 						settings.server.enabled = v
@@ -470,7 +475,7 @@ var kit = {
 
 						if(!fbkjsonfile) return Promise.reject('empty')
 	
-						var path = 'data/pocketnet-firebase-adminsdk.json'
+						var path = 'private/pocketnet-firebase-adminsdk.json'
 
 						fbkjsonfile = fbkjsonfile.split(',')[1]
 			
@@ -553,7 +558,6 @@ var kit = {
 					})
 					
 				},
-				
 	
 			},
 	
@@ -603,43 +607,20 @@ var kit = {
 		},
 
 		node : {
-			install : function(message){
-				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.install()
-				}).then(r => {
-
-					console.log("DONE", r)
-
-					return Promise.resolve(r)
-				})
-			},
-
-			delete : function({all}){
-				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.delete(all)
-				}).then(r => {
-
-					return Promise.resolve(r)
-				})
-			},
-
-
-			//// ?
 			update : function(message){
 				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.update()
-				}).then(r => {
-
-					return Promise.resolve(r)
+					return proxy.nodeControl.kit.update().then(data => {
+						send(message.id, null, data)
+					})
 				})
 			},
-			/*checkupdate : function(message){
+			checkupdate : function(message){
 				return kit.proxy().then(proxy => {
 					return proxy.nodeControl.kit.checkupdate().then(update => {
 						send(message.id, null, update)
 					})
 				})
-			},*/
+			},
 			request : function(message){
 				
 				return kit.proxy().then(proxy => {

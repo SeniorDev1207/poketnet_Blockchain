@@ -23,17 +23,11 @@ var Node = function(options, manager){
     self.addedby = options.addedby || ''
     //self.currentBlock = 0
     self.peer = options.peer || false
-    self.local = options.local || false
+
     self.testing = false
 
     var statisticInterval = null
     var changeNodeUsersInterval = null
-
-
-    var notactualevents = 3600000 //mult
-    var checkEventsLength = 100
-    var getinfointervaltime = 60000
-    var lastinfoTime = f.now()
 
     var test = new Test(self)
 
@@ -204,7 +198,7 @@ var Node = function(options, manager){
 
             var push = _.clone(p)
 
-                push.time = f.now()
+                push.time = new Date()
 
             self.events.push(push)
 
@@ -295,7 +289,7 @@ var Node = function(options, manager){
         },
 
         rate : function(){
-            var s = f.date.addseconds(f.now(), -10)
+            var s = f.date.addseconds(null, -10)
             var l = self.events.length
             var c = 0
 
@@ -350,13 +344,11 @@ var Node = function(options, manager){
 
                 statisticInterval = setInterval(function(){
 
-                    self.statistic.clearOld()
-
-                    if (self.events.length < 1 + checkEventsLength || f.date.addseconds(lastinfoTime, notactualevents / 1000) < f.now()){
+                    if (self.events.length < 1000){
                         self.info().catch(e => {})
                     }
 
-                }, getinfointervaltime)
+                }, 60000)
             }
         },
 
@@ -365,23 +357,10 @@ var Node = function(options, manager){
                 clearInterval(statisticInterval)
                 statisticInterval = null
             }
-        },
-
-        clearOld : function(){
-
-            var timecheck = f.date.addseconds(f.now(), -notactualevents / 1000)
-
-            self.events = _.filter(self.events, function(e){
-                if(e.time < timecheck) return false
-
-                return true
-            })
-
-            self.eventsCount = self.events.length
         }
     }
 
-    self.needToChange = function(){
+    var needToChange = function(){
         var betterNodes = self.statistic.better()
 
         //console.log('betterNodes.length', betterNodes.length, self.ckey)
@@ -414,8 +393,8 @@ var Node = function(options, manager){
         return np
     }
 
-    self.changeNodeUser = function(address, np){
-        //if(address && wss.changing[address]) return null
+    var changeNodeUser = function(address, np){
+        //if(wss.changing[address]) return null
 
         var r = f.randmap(np)
 
@@ -427,14 +406,14 @@ var Node = function(options, manager){
     }
 
     var changeNodeUsers = function(){
-        var np = self.needToChange()
+        var np = needToChange()
 
         if(!np) return 
 
         //console.log('users', _.toArray(wss.users).length, self.ckey)
 
         _.each(wss.users, function(user, address){
-            var change = self.changeNodeUser(address, np)
+            var change = changeNodeUser(address, np)
 
             //console.log('change', change, address)
 
@@ -511,7 +490,6 @@ var Node = function(options, manager){
         return self.rpcs('getnodeinfo').then(info => {
 
             lastinfo = info
-            lastinfoTime = f.now()
 
             self.addblock(info.lastblock)
             
@@ -553,9 +531,7 @@ var Node = function(options, manager){
             key : self.key,
             testing : self.testing,
             stable : self.stable,
-            canuse : (s.success > 0 && lastblock.height) ? true : false,
-            local : self.local || false,
-            peer : self.peer
+            canuse : (s.success > 0 && lastblock.height) ? true : false
         }
     }
 
@@ -620,9 +596,7 @@ var Node = function(options, manager){
     }
 
     self.wss = {
-        count : function(){
-            return _.toArray(wss.users).length
-        },
+
         add : function(user){
             var old = wss.users[user.address]
 
@@ -640,6 +614,12 @@ var Node = function(options, manager){
 
                 return wss.users[user.address]
             }
+
+            
+
+                
+            
+
             
         },
 

@@ -768,7 +768,6 @@ var lenta = (function(){
 					return
 				}
 
-				console.log("UPVOTER")
 			
 				self.sdk.node.transactions.create.commonFromUnspent(
 
@@ -1498,7 +1497,15 @@ var lenta = (function(){
 
 				var islink = deep(e, 'target.href')
 
-				if (islink) return		
+				if (islink) return
+
+				/*if (essenseData.authAction) {
+
+					essenseData.authAction('like')
+
+					return
+
+				}	*/			
 
 				var shareId = $(this).closest('.shareinlenta').attr('id');
 
@@ -2464,11 +2471,9 @@ var lenta = (function(){
 								}
 	
 							}
-
-							console.log("PRCOUNT", pr.count, shares.length)
 	
 							////// SHIT
-							if (!shares.length || shares.length < pr.count && (recommended || author || essenseData.search))
+							if (shares.length < pr.count && (recommended || author  || essenseData.search))
 	
 								ended = true
 						}
@@ -2715,8 +2720,8 @@ var lenta = (function(){
 			el.c.on('click', '.txid', events.getTransaction)
 
 			if(!isMobile()){
-				//el.c.on('click', '.sharecaption', events.openPost)
-				//el.c.on('click', '.message', events.openPost)
+				el.c.on('click', '.sharecaption', events.openPost)
+				el.c.on('click', '.message', events.openPost)
 			}
 			
 			el.c.on('click', '.showMore', events.openPost)
@@ -2766,6 +2771,8 @@ var lenta = (function(){
 
 			if(!essenseData.txids){
 				self.app.platform.sdk.node.shares.clbks.added.lenta = function(share){
+
+					console.log('share', share);
 
 					if (share.txidEdit){		
 												
