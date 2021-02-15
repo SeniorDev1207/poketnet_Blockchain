@@ -5,10 +5,6 @@ if (setupEvents.handleSquirrelEvent()) {
   return;
 }*/
 
-
-const {protocol} = require('electron');
-
-console.log('protocol', protocol);
 //const ProxyInterface = require('./proxy/mainserver.js')
 
 const ProxyInterface = require('./proxy16/ipc.js')
@@ -26,8 +22,7 @@ const Badge = require('./js/vendor/electron-windows-badge.js');
 // AutoUpdate --------------------------------------
 const { autoUpdater } = require("electron-updater");
 const log = require('electron-log');
-const is = require('electron-is');
-
+const is = require('electron-is')
 
 var updatesLoading = false;
 
@@ -256,7 +251,6 @@ function initApp() {
         win.webContents.send('resume-message', { msg: 'resume', type: 'info' })
 
     })
-
 }
 
 function closeNotification() {
@@ -475,17 +469,7 @@ if (!r) {
         }
     })
 
-    // If we are running a non-packaged version of the app && on windows
-    if( process.platform === 'win32') {
-    // Set the path of electron.exe and your app.
-    // These two additional parameters are only available on windows.
-        app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);        
-        
-    } else {
-
-        app.setAsDefaultProtocolClient('pocketnet');
-
-    }
+    app.setAsDefaultProtocolClient('pocketnet')
 
     // Этот метод будет вызываться, когда Electron закончит 
     // инициализацию и готов к созданию окон браузера.

@@ -93,6 +93,10 @@
 		return result.join(":")
  	}
 
+	isios = function () {
+		return window.cordova && window.device && deep(window, 'device.platform') == 'iOS'
+	}
+
  
 	currentYear = function(){
 		var mdate = new Date(); 
@@ -555,7 +559,7 @@
 				if(p.leftbg) 
 					h+='<div class="leftbg"><div>'+p.leftbg+'</div></div>';
 
-				h+=	 '<div class="wndcontent content">'+content+'</div>';
+				h+=	 '<div class="wndcontent">'+content+'</div>';
 
 				if(p.header) 
 				{
@@ -1280,26 +1284,6 @@
 				html+= '<div class="header"><div class="text">'+p.header+'</div></div>';
 			}
 
-			if (p.poll){
-				
-				var poll = '<div class="poll">';
-
-				poll += '<div class="question description">Question</div>'
-
-				poll += '<div class="title"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>'
-
-				poll += '<div class="options description">Poll options</div>';
-
-				for (var i = 0; i < 5; i++){
-					poll += `<div class="poll-item" id="poll-item-${i + 1}"><input class="input" type="text"><i class="fas fa-times-circle"></i></div>`;
-				}
-
-				poll += "</div>";
-
-				html += poll ;
-				
-			}
-
 			if(p.html)
 			{
 				html += '<div class="body"><div class="text">'+(p.html || "")+'</div></div>';
@@ -1319,33 +1303,9 @@
 			$('body').append($el);
 			if(p.class) $el.addClass(p.class);
 
-			$el.find
-
 			$el.find('.btn1').on('click', function(){ response(p.success)});
 			$el.find('.btn2').on('click', function(){ response(p.fail, true)});
 			$el.find('._close').on('click', function(){ response(p.close, true)});
-
-			
-			var title = $el.find('.poll .title');
-				
-			title.find('i').on('click', function(){
-
-				title.find('.input').val('');
-			})
-
-			for (var i = 0; i < 5; i++){
-				
-				let item = $el.find(`#poll-item-${i + 1}`);
-
-				item.find('i').on('click', function(){
-
-					console.log('input', item.find('.input'));
-
-					item.find('.input').val('');
-				})
-
-			}
-
 
 			if(p.clbk) p.clbk($el, self);
 
@@ -1515,6 +1475,7 @@
 		}
 
 		self.close = function(){
+			console.log("CLOSE TOOLTIP", self)
 			if (self.instance)
 				self.instance.close();
 		}
@@ -2862,7 +2823,7 @@
 
 		_.each(parameters, function(parameter){
 
-			if(!parameter || !parameter.type) return
+			if(!parameter.type) return
 
 
 			var _el = el.find('[pid="'+parameter.id+'"]')
@@ -8108,7 +8069,7 @@
 
 	var copyText = function(el) {
 
-		var text = trim(el.text());
+		var text = trim(el.attr('text') || el.text());
 
 	    if (window.clipboardData && window.clipboardData.setData) {
 	        // IE specific code path to prevent textarea being shown while dialog is visible.
@@ -9297,19 +9258,15 @@
 		}
 
 		var takeData = function(uri){
-			if(typeof localStorage != 'undefined' && localStorage[prefix+uri]){
+			if(typeof localStorage != 'undefined' && localStorage[prefix+uri])
 				data[uri] = JSON.parse(localStorage[prefix+uri]);
-				console.log('takedata', uri, data[uri]);
-			} 
-			else {
+			else 
 				data[uri] = {};
-			}
 
 			return this;
 		}
 
 		var putData = function(uri){
-
 			if(typeof localStorage != 'undefined' && data[uri]){
 
 				try{
@@ -9781,41 +9738,42 @@
 	}
 
 	parseVideo = function(url) {
+		// console.log('WWW', url.indexOf('channel'))
 		var _url = url;
 
-	    var test = _url.match(/(http:\/\/|https:\/\/|)(player.|www.)?(pocketnetpeertube1\.nohost\.me|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/);
-	    var type = null;
-		var id = null;
-		
+	    var test = _url.match(/(peertube:\/\/)?(http:\/\/|https:\/\/|)?(player.|www.)?(pocketnetpeertube[0-9]*\.nohost\.me|peer\.tube|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/);
+	    var type = null
+		var id = null
+		var host_name = null
 
-	    if(test && url.indexOf('channel') == -1 && url.indexOf("user") == -1){
-	    	if(test[3]){
+	    // if(test && url.indexOf('channel') == -1 && url.indexOf("user") == -1){}
 
+	    	if(test && test[2]){
 
-	    		if (test[3].indexOf('youtu') > -1) {
-			        type = 'youtube';
-			        id = test[6];
-
-			    } else if (test[3].indexOf('vimeo') > -1) {
-			        type = 'vimeo';
-                    id = test[2];
-                    
-			    }  else if (test[3].indexOf('bitchute') > -1) {
-                    type = 'bitchute';
-					id = test[6];
-					
-			    }	else if (test[3].indexOf('pocketnetpeertube1.nohost.me') > -1) {
-                    type = 'peertube';
-			        id = test[8];
+				if (test.indexOf('youtube.com') || test.indexOf('youtu.be') > -1) {
+					type = 'youtube'
+			        id = test[9]
 			    }
-
-	    	}
-	    }
-		
+				if (test.indexOf('vimeo.com') > -1) {
+					type = 'vimeo'
+                    id = test[9]
+			    }
+				if (test.indexOf('bitchute.com') > -1) {
+					type = 'bitchute'
+					id = test[9]	
+			    }
+				if (/pocketnetpeertube[0-9]*\.nohost\.me/i.test(test)) {
+					type = 'peertube'
+			        id = test[9]
+					host_name = test[4]
+			    }
+			}
+			
 	    return {
 	        type: type,
 	        url : url,
-	        id : id
+	        id : id,
+			host_name : host_name
 	    };
 	}
 	nl2br = function(str){	
