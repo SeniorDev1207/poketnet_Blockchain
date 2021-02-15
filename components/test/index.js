@@ -245,8 +245,6 @@ var test = (function(){
 
 					self.app.platform.sdk.users.nameExist(userInfo.name.v, function(exist){
 
-						console.log("IMHERE")
-
 						if(!exist || (self.app.platform.sdk.address.pnet() && exist == self.app.platform.sdk.address.pnet().address)){
 
 							topPreloader(50)
@@ -258,18 +256,7 @@ var test = (function(){
 								topPreloader(70)
 								
 
-								userInfo.uploadImage(function(err){
-
-									if (err){
-										topPreloader(100)
-										el.upanel.removeClass('loading')
-
-										el.c.find('.userPanel').removeClass('loading')
-
-										sitemessage("An error occurred while loading images")
-
-										return 
-									}
+								userInfo.uploadImage(function(){
 
 									if (ed.makeuser){
 

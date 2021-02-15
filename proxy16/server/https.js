@@ -89,20 +89,11 @@ var Server = function(settings, admins, manage){
         return new Promise((resolve, reject) => {
             try{
 
-                if (_.isEmpty(settings.ssl)){
-                    reject('sslerror')
-
-                    return
-                }
-
-
                 server = https.createServer(settings.ssl, app)
 
                 server.on('listening',function(){
 
-                    console.log("LISTENING")
-
-                    self.listening = settings.port || 8899
+                    self.listening = settings.port || 8888
 
                     resolve()
                 });
@@ -111,7 +102,7 @@ var Server = function(settings, admins, manage){
                     reject(e) 
                 });
 
-                server.listen(settings.port || 8899);
+                server.listen(settings.port || 8888);
 
             }
             catch(e) {
@@ -172,15 +163,7 @@ var Server = function(settings, admins, manage){
             _.each(self.proxy.api, function(pack){
                 _.each(pack, function(meta){
 
-                    
-
                     app.all(meta.path, self.authorization[meta.authorization || 'dummy'], function(request, result){
-
-                        if(!self.listening){
-                            result._fail('stopped', 500)
-    
-                            return
-                        }
 
                         meta.action(request.data).then(d => {
                             result._success(d.data, d.code)

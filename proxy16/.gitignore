@@ -1,7 +1,6 @@
 **/node_modules
 **/data
-**/cert/keyl.pem
-**/cert/certl.pem
+**/cert
 **/downloads
 **/pocketcoind
 **/pocketcoin

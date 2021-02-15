@@ -537,16 +537,6 @@ var main = (function(){
 					
 				}*/
 
-				if(self.app.curation()){
-					self.nav.api.load({
-						open : true,
-						href : 'userpage',
-						history : true
-					})
-
-					return
-				}
-
 
 				if(p.state && primary && !self.app.user.validate()){
 
