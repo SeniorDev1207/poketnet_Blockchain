@@ -45,7 +45,6 @@
 				width: auto;
 				height: 100%;
 				margin : 0 auto;
-				min-width: 360px;
 
 				>div{
 					vertical-align: middle;
@@ -54,7 +53,6 @@
 					color : @color-gray-mlight;
 					.transition(0.3s);
 					font-weight: 400;
-					text-align: center;
 
 					/*&:nth-child(1){
 						border-right : 1px solid @color-gray-mlight;
@@ -65,9 +63,9 @@
 					}*/
 
 					.pcenterLabel{
-						.transition(0.3s);
+						padding : 0 6 * @rhythm;
 						height: 100%;
-						//line-height: 45px;
+						line-height: 45px;
 
 						&:hover,
 						&.active{
@@ -90,7 +88,7 @@
 html.stblack{
 	#toppanel{
 
-		background: #00081b;
+		background: @color-gray3;
 
 	
 		.panelitems{
@@ -105,7 +103,7 @@ html.stblack{
 				.centerTable{
 	
 					>div{
-						color : @color-gray-mlight;
+						color : @color-gray;
 						
 	
 						.pcenterLabel{

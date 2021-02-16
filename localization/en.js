@@ -59,7 +59,6 @@ ____loclib.keysnotmatch = 'Private login key does not match'
 ____loclib.confirmkey = 'Type Your Private Login Key or Upload QR Code From Previous Step'
 ____loclib.successfullycopied = "Key was successfully copied"
 ____loclib.urlsuccesscopied = "Link was successfully copied"
-____loclib.successcopied = "Text was successfully copied"
 
 ____loclib.confirmkeyLabel = "Please Confirm Your Private Key. Type Key in form or <b>upload QR code</b>"
 ____loclib.repeatetocreate = "Repeat to create private key again"
@@ -217,7 +216,7 @@ ____loclib.shares = "SHARES";
 ____loclib.uposts = "POSTS";
 ____loclib.myuposts = "MY POSTS";
 ____loclib.followers = "FOLLOWERS";
-____loclib.following = "Following";
+____loclib.following = "FOLLOWING";
 ____loclib.settings = "MANAGE";
 ____loclib.anofollowers = "This user has no followers";
 ____loclib.aynofollowers = "You have no followers";
@@ -518,6 +517,7 @@ ____loclib.e13108 = "There isn't connection with Electron proxy interface"
 
 ____loclib.e13109 = "Please enter the words in the picture to receive Pocketcoin and continue registration"
 ____loclib.e13110 = "Enter words"
+____loclib.poll = "Create poll"
 ____loclib.next = "Next"
 ____loclib.refresh = "Refresh"
 ____loclib.e13111 = "Add your email to get the latest Pocketnet updates"
@@ -934,11 +934,3 @@ ____loclib.e14108 = 'Share answer'
 
 ____loclib.peertubeAddVideo = 'Add video to post'
 ____loclib.peertubeAddStream = 'Add live stream to post'
-
-____loclib.e14111 = "There was a problem with loading images"
-____loclib.editcomment = "Edit Comment"
-____loclib.system16 = {
-    charts : {
-
-    }
-}

@@ -174,10 +174,6 @@ var menu = (function(){
 
 							if(!state) k = 'index'
 
-							if(self.app.curation()){
-								k = 'userpage'
-							}
-
 							self.nav.api.go({
 								href : k,
 								history : true,
@@ -260,6 +256,8 @@ var menu = (function(){
 					if(typeof cordova != 'undefined'){
 						cordovabadge = deep(cordova, 'plugins.notification.badge')
 					}
+					
+
 
 					self.app.platform.sdk.notifications.init(function(){
 						var l = unseen().length;
@@ -272,17 +270,16 @@ var menu = (function(){
 
 						self.app.platform.api.electron.notifications(l, 'notifications')
 
+						if(!isMobile())
+
+							self.nav.api.load({
+								open : true,
+								id : 'notifications',
+								el : el,
+								inTooltip : true
+							})
+
 					})
-
-					if(!isMobile())
-
-						self.nav.api.load({
-							eid : 'menu',
-							open : true,
-							id : 'notifications',
-							el : el,
-							inTooltip : true
-						})
 
 					self.app.platform.sdk.notifications.clbks.added.menu =
 					self.app.platform.sdk.notifications.clbks.seen.menu = function(){

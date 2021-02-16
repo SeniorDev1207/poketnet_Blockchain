@@ -163,7 +163,6 @@ var registration = (function(){
 									else
 									{
 
-										console.log('essenseData.nav', essenseData.nav)
 
 										essenseData.nav || (essenseData.nav = {})
 										essenseData.nav.history = true

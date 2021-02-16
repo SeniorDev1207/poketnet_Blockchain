@@ -493,8 +493,6 @@ var discussions = (function(){
 
 			discussion : function(discussion, clbk){
 
-				if(!el.list) return
-
 				var _el = el.list.find('[chat="'+discussion.chat.id+'"]');
 
 				if(discussion.share && discussion.author){

@@ -2194,7 +2194,6 @@ var wallet = (function(){
 
 								send.parameters.amount.value = Number(_p.amount.replace(/,/g,''))
 								send.parameters.reciever.value = _p.address
-								send.parameters.message.value = _p.message || ""
 
 								send.parameters.amount._onChange();
 

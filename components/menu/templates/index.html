@@ -61,7 +61,7 @@
 						</div>
 
 					</div>
-					<% if(!app.curation()) {%>
+					
 						<div class="items searchWrapper">
 
 							<div class="item table right" events="searchinit">
@@ -73,7 +73,6 @@
 							</div>
 
 						</div>
-						
 					
 						<div class="items searchIcons">
 
@@ -87,7 +86,7 @@
 						</div>
 					
 
-					<% } %>
+				
 
 					<% if(state) { %>
 
@@ -177,14 +176,13 @@
 
 
 						<div class="items">
-							<div class="item table right state onlyicon" events="state">
-								
-									<div class="icon"><a href="userpage?id=system16">	
-										<div class="icn">
-											<i class="fas fa-wifi"></i>
-										</div></a>
+							<div class="item table right state onlyicon" events="state" title="There are some problems with the connection">
+
+								<div class="icon">
+									<div class="icn">
+										<i class="fas fa-wifi"></i>
 									</div>
-								
+								</div>
 
 							</div>
 						</div>					
@@ -209,9 +207,9 @@
 										</div>
 									</a>
 
-									<!--<div class="localizationicon">
+									<div class="localizationicon">
 										<img src="img/localization/small/<%-lkey.key || ''%>.png">
-									</div>-->
+									</div>
 								</div>
 
 							</div>
@@ -256,7 +254,7 @@
 							<img src="img/logo20.png">
 						</div>
 						<div class="label">
-							<div>POCKETNET<% if(!window.cordova && !isMobile()) {%> beta<% } %></div>
+							<div>POCKETNET beta</div>
 						</div>						
 
 					</div>

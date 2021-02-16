@@ -745,10 +745,8 @@ nModule = function(){
 
 
 	self.closeContainer = function(key){
-
-		console.log("CLOSECONTAINER", self)
-
 		var close = deep(self, 'container.close')
+
 
 		if (close){
 
