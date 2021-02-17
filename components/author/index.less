@@ -24,7 +24,11 @@
 		}
 	}
 
-
+	.copyaddress{
+		cursor: pointer;
+		font-size: 0.7em;
+	}
+	
 	.authorlentawrappermain{
 		position: relative;
 
@@ -359,7 +363,13 @@
 		margin-bottom : 0;
 
 		
-		
+		.adr{
+			max-width: 500px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			vertical-align: bottom;
+			display: inline-block;
+		}
 		.create{
 			min-width: 250px;
 		}
@@ -794,8 +804,8 @@ html.stblack{
 			background: #20232A;			
 		}
 		.bgCaption{
-			background: fade(@color-bright, 20);
-			color : fade(@color-gray-slight, 60);
+			background: fade(@color-bright, 15);
+			color : fade(@color-gray-slight, 70);
 	
 			&.blocking{
 				background: rgb(41, 3, 24);	

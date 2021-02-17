@@ -5,10 +5,6 @@ if (setupEvents.handleSquirrelEvent()) {
   return;
 }*/
 
-
-const {protocol} = require('electron');
-
-console.log('protocol', protocol);
 //const ProxyInterface = require('./proxy/mainserver.js')
 
 const ProxyInterface = require('./proxy16/ipc.js')
@@ -26,8 +22,7 @@ const Badge = require('./js/vendor/electron-windows-badge.js');
 // AutoUpdate --------------------------------------
 const { autoUpdater } = require("electron-updater");
 const log = require('electron-log');
-const is = require('electron-is');
-
+const is = require('electron-is')
 
 var updatesLoading = false;
 
@@ -256,7 +251,6 @@ function initApp() {
         win.webContents.send('resume-message', { msg: 'resume', type: 'info' })
 
     })
-
 }
 
 function closeNotification() {
@@ -441,7 +435,10 @@ function createWindow() {
     ipcMain.on('quitAndInstall', function(e) {
 
         willquit = true
-        autoUpdater.quitAndInstall(true, true)
+
+        proxyInterface.destroy().then(r => {
+            autoUpdater.quitAndInstall(true, true)
+        })
 
     })
 
@@ -466,7 +463,6 @@ if (!r) {
     app.quit()
 } else {
     app.on('second-instance', function(event, argv, cwd) {
-        console.log('second', event, argv, cwd)
         if (win) {
 
             if (win.isMinimized()) win.restore();
@@ -476,12 +472,7 @@ if (!r) {
         }
     })
 
-    console.log('process.execPath', process.execPath, [path.resolve(process.argv[1])])
-    // If we are running a non-packaged version of the app && on windows
-
-
-    app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);        
-
+    app.setAsDefaultProtocolClient('pocketnet')
 
     // Этот метод будет вызываться, когда Electron закончит 
     // инициализацию и готов к созданию окон браузера.
@@ -496,7 +487,6 @@ if (!r) {
             app.quit()
         }
     })
-
 
     app.on('activate', () => {
         // На MacOS обычно пересоздают окно в приложении,

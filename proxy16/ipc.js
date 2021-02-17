@@ -97,6 +97,9 @@ var IPC = function(ipc, wc){
 		promise.then(data => {
 			send(message.id, null, data)
 		}).catch(e => {
+
+			
+
 			send(message.id, e)
 		})
 
@@ -210,7 +213,7 @@ var IPC = function(ipc, wc){
 			tickInterval = null
 		}
 
-		return kit.destroy()
+		return kit.destroyhard()
 	}
 
 	var isDevelopment = process.argv.find(function(el) { return el == '--development'; })
