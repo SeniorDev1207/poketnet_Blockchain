@@ -145,7 +145,7 @@ Platform = function (app, listofnodes) {
                     }
                 },
 
-                macos: {
+                /*macos: {
                     hidden : true,
                     appname: "Pocketnet",
                     text: {
@@ -161,7 +161,7 @@ Platform = function (app, listofnodes) {
                         url: 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
                         page: 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
                     }
-                },
+                },*/
         
                 linux: {
                     appname: "Pocketnet",
@@ -17318,7 +17318,7 @@ Platform = function (app, listofnodes) {
                 if (data.msg == 'download-progress') {
                 }
 
-                if (data.msg == 'update-available' && (data.linux || data.macos)) {
+                if (data.msg == 'update-available' && data.linux) {
                     updateAvailable()
                 }
             }
