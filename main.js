@@ -244,7 +244,7 @@ function initApp() {
     var isDevelopment = process.argv.find(function(el) { return el == '--development'; })
 
     if (isDevelopment) {
-        win.toggleDevTools();
+        //win.toggleDevTools();
     } else {
 
         log.info('First check updates...');
@@ -404,7 +404,16 @@ function createWindow() {
 
     win.on('close', function(e) {
         if (!willquit) {
+
             e.preventDefault();
+            
+            if (is.macOS()){
+                if (win.isFullScreen()){
+                    win.setFullScreen(false)
+                }
+            }
+
+            
             win.hide();
             destroyBadge()
         } else {
