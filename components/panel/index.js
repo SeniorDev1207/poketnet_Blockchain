@@ -355,11 +355,8 @@ var panel = (function(){
 			if (self.app.platform.sdk.usersettings.meta.vidgetlastcomments.value)
 				renders.lastcomments()
 
-			if (
-				deep(self.app.platform,'released.vidgets.staking') && 
-				deep(self.app.platform.sdk, 'usersettings.meta.vidgetstacking.value')
-			)
-				renders.stacking()
+			/*if (deep(self.app.platform.sdk, 'usersettings.meta.vidgetstacking.value'))
+				renders.stacking()*/
 
 			/*
 				load.recomendation(function(users){

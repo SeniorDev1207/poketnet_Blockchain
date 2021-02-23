@@ -192,16 +192,12 @@ var Proxy = function (settings, manage) {
 
         rews : function(){
             return self.server.re().then(r => {
-                console.log("R", r)
                 return self.wss.re()
             }).then(r => {
-
-                console.log("R2", r)
                 return self.firebase.re()
-
             }).catch(e => {
-
                 console.error(e)
+
                 return Promise.reject(e)
             })
         },
@@ -288,7 +284,6 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
-                console.log("R3", r)
                 this.init()
             })
         },
@@ -393,7 +388,6 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
-                console.log("R4", r)
                 this.init()
             })
         },
