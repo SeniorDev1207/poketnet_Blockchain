@@ -410,7 +410,6 @@ function createWindow() {
             if (is.macOS()){
                 if (win.isFullScreen()){
                     win.setFullScreen(false)
-                    return
                 }
             }
 
