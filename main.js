@@ -404,16 +404,7 @@ function createWindow() {
 
     win.on('close', function(e) {
         if (!willquit) {
-
             e.preventDefault();
-            
-            if (is.macOS()){
-                if (win.isFullScreen()){
-                    win.setFullScreen(false)
-                }
-            }
-
-            
             win.hide();
             destroyBadge()
         } else {
