@@ -10,8 +10,5 @@
   },
   "author": "Max Grishkov",
   "license": "ISC",
-  "dependencies": {
-    "nodejs-base64": "^1.0.3",
-    "string": "^3.3.3"
-  }
+  "dependencies": {}
 }
