@@ -38,14 +38,7 @@
 									<b><%=e('pnetAddress')%>:</b>
 								</div>
 								<div class="addressseparate">
-									<span class="copyaddress">
-										<%- user.address.value.toString('hex') %>
-									</span>
-
-
-									<a external='external' href="https://pocketnet.app/blockexplorer/address/<%- user.address.value.toString('hex') %>"> <i class="fas fa-th"></i></a>
-
-									
+									<a external='external' href="https://pocketnet.app/blockexplorer/address/<%- user.address.value.toString('hex') %>"><%- user.address.value.toString('hex') %> <i class="fas fa-th"></i></a>
 								</div>
 							</div>
 

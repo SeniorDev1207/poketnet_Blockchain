@@ -13,6 +13,8 @@ var destroy = function(repeat){
 
         if(!repeat){
 
+            console.log("AUTODETACH CLI")
+
             return kit.manage.proxy.detach().then(r => {
                 return destroy(true)
             })

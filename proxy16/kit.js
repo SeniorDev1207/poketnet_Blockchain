@@ -24,67 +24,68 @@ var pocketnet = new Pocketnet()
 
 var nodes = [
 
-	/*{
-		host : '192.168.0.33',
-		port : 37071,
+	{
+		host : '216.108.231.40',
+		port : 38081,
 		ws : 8087,
 		nodename : 'Cryptoserver',
-		stable : true
-	},*/
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
+	},
 	{
 		host : '64.235.45.119',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP',
-		stable : true
-	},
-
-	/*{
-		host : '216.108.231.40',
-		port : 38081,
-		ws : 8087,
-		name : 'CryptoserverSP5',
-		stable : true
-	},*/
-
-	{
-		host : '64.235.35.173',
-		port : 38081,
-		ws : 8087,
-		name : 'CryptoserverSP4',
-		stable : true
+		nodename : 'CryptoserverSP',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 
 	{
 		host : '64.235.35.173',
 		port : 38081,
 		ws : 8087,
-		name : 'CryptoserverSP4',
-		stable : true
+		nodename : 'CryptoserverSP4',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
+	},
+	{
+		host : '64.235.33.85',
+		port : 38081,
+		ws : 8087,
+		nodename : 'CryptoserverSP5',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	},
 	
 	{
-		host : '185.148.147.15',
+		host : '188.187.45.218',
 		port : 38081,
 		ws : 8087,
-		name : 'Cryptoserver',
-		stable : true
+		nodename : 'Cryptoserver',
+		stable : true,
+		rpcuser : 'pocketbot',
+		rpcpass : 'pFxcRujDHBkg7kcc',
 	}
 ]
 
 var defaultSettings = {
 
-	admins : [],
+	admins : ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82'],
 	
 	nodes : {
 		dbpath : 'data/nodes'
 	},
 
 	server : {
-		enabled : false,
+		enabled : true,
 
 		captcha : true,
-		host : '',
+		
 		iplimiter : {
 			interval : 30000,
 			count  : 500,
@@ -92,8 +93,8 @@ var defaultSettings = {
 		},
 		
 		ports : {
-			https : 8899,
-			wss : 8099
+			https : 8888,
+			wss : 8088
 		},
 		
 		ssl : {
@@ -118,13 +119,7 @@ var defaultSettings = {
 				amount : 0.0002,
 				outs : 10,
 				check : 'uniqAddress'
-			},
-
-			/*compensation : {
-				privatekey : "",
-				check : 'uniqAddress',
-				source : 'compensation'
-			},*/
+			}
 		}
 	},
 
@@ -132,20 +127,11 @@ var defaultSettings = {
 		dbpath : 'data/node',
         enabled: false,
         binPath: '',
-		dataPath: '', //// deleted
-		ndataPath : ''
+		dataPath: '',
+
+		stacking : []
     },
 	
-
-	proxies : {
-		dbpath : 'data/proxies',
-		explore : true
-	}
-
-	/*rsa : {
-		private : '',
-		public : ''
-	}*/
 }
 
 
@@ -165,14 +151,10 @@ var state = {
 			node : {
 				enabled : settings.node.enabled,
 				binPath : settings.node.binPath,
-				ndataPath: settings.node.ndataPath,
 				dataPath: settings.node.dataPath,
+				stacking : settings.node.stacking
 			},
-			admins : settings.admins,
-			proxies : {
-				explore : settings.proxies.explore
-			}
-			//rsa : settings.rsa
+			admins : settings.admins
 		}
 
 		exporting = cloneDeep(exporting)
@@ -273,7 +255,6 @@ var kit = {
 					var ctx = kit.manage.set.server
 					var notification = {}
 
-					if(typeof settings.domain != 'undefined') notification.domain = settings.domain
 					if(settings.ports) notification.ports = settings.ports
 					if(typeof settings.enabled) notification.enabled = settings.enabled
 					if(deep(settings, 'firebase.id')) notification.firebase = deep(settings, 'firebase.id')
@@ -285,13 +266,11 @@ var kit = {
 							type : 'proxy-settings-changed',
 							data : notification
 						}).catch(e => {
-							console.log("E", e)
 							return Promise.resolve()
 						})
 
 					}).then(() => {
 						var promises = []
-
 
 						if (settings.firebase && settings.firebase.id) 
 							promises.push(ctx.firebase.id(settings.firebase.id).catch(e => {
@@ -301,7 +280,7 @@ var kit = {
 							}))
 
 						if (settings.firebase && settings.firebase.key) 
-							promises.push(ctx.firebase.key(settings.firebase.key).catch(e => {
+							promises.push(ctx.firebase.key(settings.firebase.id).catch(e => {
 								console.error(e)
 
 								return Promise.resolve('firebase.key error')
@@ -321,13 +300,6 @@ var kit = {
 								return Promise.resolve('ports error')
 							}))
 
-						if (typeof settings.domain != 'undefined') 
-							promises.push(ctx.domain(settings.domain).catch(e => {
-								console.error(e)
-
-								return Promise.resolve('domain error')
-							}))
-
 						if (typeof settings.enabled != 'undefined')  
 							promises.push(ctx.enabled(settings.enabled).catch(e => {
 								console.error(e)
@@ -344,27 +316,6 @@ var kit = {
 					
 
 				},
-				domain : function(domain){
-					if (settings.server.domain != 'domain'){
-						settings.server.domain = domain
-
-						var prx = null
-
-						return state.saverp().then(proxy => {
-							
-							prx = proxy
-							return proxy.server.rews()
-
-						}).then(r => {
-
-							prx.nodeManager.reservice().catch(e => {})
-
-							return Promise.resolve(r)
-						})
-					}
-
-					return Promise.reject('nothingchanged') 
-				},
 				ports : function(httpsws){
 	
 					var ch = {
@@ -372,6 +323,7 @@ var kit = {
 						wss : false
 					}
 
+					console.log('httpsws', httpsws)
 
 					if(!httpsws.https) httpsws.https = settings.server.ports.https
 					if(!httpsws.wss) httpsws.wss = settings.server.ports.wss
@@ -400,18 +352,8 @@ var kit = {
 								wss  : httpsws.wss
 							}
 		
-							var prx = null
-
 							return state.saverp().then(proxy => {
-
-								prx = proxy
-
 								return proxy.server.rews()
-							}).then(r => {
-
-								prx.nodeManager.reservice().catch(e => {})
-
-								return Promise.resolve(r)
 							})
 						}
 						
@@ -443,7 +385,6 @@ var kit = {
 				},
 	
 				enabled : function(v){
-
 	
 					if (settings.server.enabled == v) return Promise.resolve() 
 						settings.server.enabled = v
@@ -534,7 +475,7 @@ var kit = {
 
 						if(!fbkjsonfile) return Promise.reject('empty')
 	
-						var path = 'data/pocketnet-firebase-adminsdk.json'
+						var path = 'private/pocketnet-firebase-adminsdk.json'
 
 						fbkjsonfile = fbkjsonfile.split(',')[1]
 			
@@ -598,21 +539,9 @@ var kit = {
 					})
 					
 				},
-				defaultPaths : function({}){
-					settings.node.binPath = ''
-					settings.node.ndataPath = ''
-					settings.node.enabled = false
-
-					return state.saverp().then(proxy => {
-						return proxy.nodeControl.re()
-					})
-				},
-				binPath : function({binPath}){
-
-					if(settings.node.binPath == binPath) return Promise.resolve()
-
-					settings.node.binPath = binPath
-					settings.node.enabled = false
+	
+				binPath : function(v){
+					if(settings.node.binPath == v) return Promise.resolve()
 	
 					return state.saverp().then(proxy => {
 	
@@ -621,53 +550,15 @@ var kit = {
 					
 				},
 	
-				ndataPath : function({ndataPath}){
-					if(settings.node.ndataPath == ndataPath) return Promise.resolve()
-
-					settings.node.ndataPath = ndataPath
-					settings.node.enabled = false
+				dataPath : function(v){
+					if(settings.node.dataPath == v) return Promise.resolve()
 	
 					return state.saverp().then(proxy => {
 						return proxy.nodeControl.re()
 					})
 					
 				},
-				
-				stacking : {
-
-					import : function({privatekey}){
-
-						var r = null
-
-						return kit.proxy().then(proxy => {
-
-							r = proxy.nodeControl.request
-
-							return proxy.nodeControl.request.getNodeAddresses()
-
-						}).then(addresses => {
-
-
-							return r.importPrivKey(privatekey)
-						}).catch(e => {
-							console.log(e)
-
-							return Promise.reject(e)
-						})
-
-					},
-
-					addresses : function(){
-
-						return kit.proxy().then(proxy => {
-							return proxy.nodeControl.request.getNodeAddresses()
-						}).then(addresses => {
-							return Promise.resolve(addresses)
-						})
-
-					}
-
-				}
+	
 			},
 	
 			admins : {
@@ -716,42 +607,20 @@ var kit = {
 		},
 
 		node : {
-			install : function(message){
-				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.install()
-				}).then(r => {
-
-
-					return Promise.resolve(r)
-				})
-			},
-
-			delete : function({all}){
-				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.delete(all)
-				}).then(r => {
-
-					return Promise.resolve(r)
-				})
-			},
-
-
-			//// ?
 			update : function(message){
 				return kit.proxy().then(proxy => {
-					return proxy.nodeControl.kit.update()
-				}).then(r => {
-
-					return Promise.resolve(r)
+					return proxy.nodeControl.kit.update().then(data => {
+						send(message.id, null, data)
+					})
 				})
 			},
-			/*checkupdate : function(message){
+			checkupdate : function(message){
 				return kit.proxy().then(proxy => {
 					return proxy.nodeControl.kit.checkupdate().then(update => {
 						send(message.id, null, update)
 					})
 				})
-			},*/
+			},
 			request : function(message){
 				
 				return kit.proxy().then(proxy => {
@@ -798,14 +667,10 @@ var kit = {
 		})
 	},
 	
-	startproxy : function(hck){
+	startproxy : function(){
 
 		if(!proxy){
 			proxy = new Proxy(settings, kit.manage)
-
-			if (hck.userDataPath){
-				proxy.userDataPath = hck.userDataPath
-			}
 			
 			return proxy.kit.init()
 		}
@@ -837,17 +702,16 @@ var kit = {
 
 			var start = function(){
 
-				kit.startproxy(hck).then(r => {
+				kit.startproxy().then(r => {
 
 					return kit.proxy()
+
 					
 				}).then(proxy => {
 
 					if (hck.wssdummy){
 						proxy.wss.wssdummy(hck.wssdummy)
 					}
-
-					
 
 					resolve()
 
@@ -901,14 +765,6 @@ var kit = {
 			return Promise.resolve()
 			//process.exit(0)
 		})
-	},
-
-	destroyhard : function(){
-
-		return kit.manage.proxy.detach().then(r => {
-			return this.destroy()
-		})
-		
 	},
 
 	candestroy : function(){

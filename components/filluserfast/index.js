@@ -61,8 +61,6 @@ var filluserfast = (function(){
 						{
 							self.sdk.captcha.get(function(captcha, error){
 
-								console.log("errorerrorerror", error)
-
 
 								if (error){
 
@@ -77,6 +75,8 @@ var filluserfast = (function(){
 									balance.request(function(r){
 
 										if(r){
+											
+
 											actions.next()
 										}
 
@@ -158,6 +158,8 @@ var filluserfast = (function(){
 									balance.request(function(r){
 
 										if(r){
+											
+
 											actions.next()
 										}
 
@@ -182,7 +184,7 @@ var filluserfast = (function(){
 
 				prev : function(clbk){
 
-					//self.app.platform.sdk.theme.set('black')
+					self.app.platform.sdk.theme.set('black')
 
 					if (essenseData.welcomepart)
 						essenseData.welcomepart()
@@ -196,11 +198,17 @@ var filluserfast = (function(){
 
 					var clbk = function(){
 						if (deep(essenseData, 'successHref') == '_this'){
+
+
 							var close = deep(initialParameters, 'container.close')
+
 							if (close)
 								close();
+								
 							if (essenseData.signInClbk)
 								essenseData.signInClbk();
+					
+
 						}
 						else
 						{
@@ -213,10 +221,7 @@ var filluserfast = (function(){
 
 						}
 
-
-						
 						self.app.platform.ui.showmykeyfast()
-						
 					}
 
 					setTimeout(function(){
@@ -284,16 +289,6 @@ var filluserfast = (function(){
 					}
 					
 					b()
-
-					el.find('.tryagain').on('click', function(){
-						balance.request(function(r){
-
-							if(r){
-								actions.next()
-							}
-
-						})
-					})
 	
 					el.find('.check').on('click', function(){
 	
@@ -354,8 +349,6 @@ var filluserfast = (function(){
 
 				self.sdk.users.requestFreeMoney(function(res, err){
 
-					console.log('res, err', res, err)
-
 					var address = self.sdk.address.pnet().address;
 
 					var requested = self.app.settings.get(address, 'request') || "";
@@ -372,9 +365,7 @@ var filluserfast = (function(){
 
 						}
 
-						console.log('err', err)
-
-						if (err == 'error' || err == 'iplimit'){
+						if (err == 'error'){
 
 							gliperror = true
 
@@ -382,10 +373,6 @@ var filluserfast = (function(){
 								actions.to('moneyfail')
 							}
 
-						}
-
-						if(_.isEmpty(err)){
-							actions.to('moneyfail')
 						}
 
 						if (clbk)

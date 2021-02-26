@@ -70,9 +70,6 @@ var applications = (function(){
 
 		var renders = {
 			os : function(os){
-
-				if(os.hidden) return
-
 				self.shell({
 					turi : 'registration',
 					name :  'os',
@@ -88,7 +85,7 @@ var applications = (function(){
 							el.c.find('.os').addClass('rundownloading')
 							el.c.find('.skipositem').html('<div class="downloadstart">'+self.app.localization.e('e13011')+'</div>'+
 								'<div><a href="'+link+'"><b>'+self.app.localization.e('e13012')+'</b></a></div>')
-					
+					sa
 						})
 					})
 				})

@@ -34,14 +34,12 @@ var navigation = (function(){
 		var renders = {
 			menu : function(href){
 
-
-				var indexkey = self.app.nav.api.backChainIndex()
 				
-				var k = localStorage['lentakey'] || indexkey + '?b=true';
+				var k = localStorage['lentakey'] || 'index?b=true';
 
-				if (k == indexkey) k = indexkey + '?b=true'
+				if (k == 'index') k = 'index?b=true'
 
-				if (k.indexOf('?') == -1) k = indexkey + '?r=' + k
+				if (k.indexOf('?') == -1) k = 'index?r=' + k
 
 
 				var back = self.app.nav.api.backChainGet()
@@ -55,8 +53,7 @@ var navigation = (function(){
 					data : {
 						back : back,
 						href : href,
-						lentakey : k,
-						indexkey : indexkey
+						lentakey : k
 					}
 					
 

@@ -1,17 +1,14 @@
 @import "../../css/__cssvar";
 
 #lastcomments{
-
-    .wrp{
-       
-    }
+    margin-bottom : 10px;
+    background: #FAFAFA;
 
     .rcptwrp{
-        background: #FFF;
     }
 
     .commentgroup{
-        border-bottom : 5px solid @color-black2;
+        border-bottom : 1px solid @color-gray-mlight;
 
         &:nth-last-child(1){
             border-bottom : 0;
@@ -31,7 +28,6 @@
 
     .sharepreview{
         padding : 0 @rhythm;
-        padding-left: 0;
         opacity: 0.7;
         .transition(0.3s);
     }
@@ -42,7 +38,6 @@
 
     .comment{
         padding : 0 @rhythm;
-        padding-left: 0;
         padding-top : @rhythm;
         border-bottom : 1px solid @color-gray-slight;
        
@@ -183,10 +178,7 @@
 
                 .usericon{
                     position: relative;
-                    margin : 0 auto;
-
-                    width: 24px;
-                    height: 24px;
+                    /*margin : 0 auto;*/
                 }
             }
 
@@ -233,7 +225,7 @@
 
                 &.forimage{
                     width: 45px;
-                    padding-right: 0;
+                    padding-right: @rhythm;
                     padding-left: 0;
 
                     .img{
@@ -308,22 +300,19 @@
     }
 
     .rcaption{
-        padding :  2 * @rhythm 2 * @rhythm;
+        padding :  @rhythm @rhythm;
+        padding-top:  @rhythm ;
         border-bottom : 1px solid @color-gray-slight;
         span{
-            font-size: 0.8em;
-            font-weight: 700;
+            font-size: 2em;
+            font-weight: 100;
         }
     }
 }
 
 html.stblack{
     #lastcomments{
-        
-
-        .rcptwrp{
-            background: @color-black;
-        }
+        background: @color-black;
     
         .commentgroup{
             border-bottom : 1px solid fade(@color-main, 40);

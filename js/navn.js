@@ -74,27 +74,17 @@ Nav = function(app)
 		}
 	}
 
-	var indexpage = 'index'
-
-	if (app.curation()){
-		indexpage = 'userpage'
-	}
-
 	var backManager = {
 
-		getindex : function(){
-			return indexpage
-		},
-
 		chain : [{
-			href : indexpage,
+			href : 'index',
 			scroll : 0
 		}],
 
 		clearAll : function(){
 			
 			var nchain = [{
-				href : indexpage,
+				href : 'index',
 				scroll : 0
 			}]
 
@@ -106,7 +96,7 @@ Nav = function(app)
 		clear : function(){
 			
 			var nchain = [{
-				href : indexpage,
+				href : 'index',
 				scroll : 0
 			}]
 
@@ -158,7 +148,7 @@ Nav = function(app)
 
 			else{	
 
-				if (khref == indexpage){
+				if (khref == 'index'){
 					backManager.clearAll()
 				}
 				else{
@@ -355,7 +345,6 @@ Nav = function(app)
 				if (self.addParameters){
 					href = self.addParameters(href)
 				}
-
 
 				history.pushState({
 
@@ -1164,16 +1153,8 @@ Nav = function(app)
 					options.navPrefix = '/android_asset/www/';
 				}
 				else
-				if (window.cordova)
 				{
-					var arr = pathname.split("/");
-					arr.splice(arr.length-1, 1);
-
-					options.navPrefix = arr.join("/") + "/";
-
-				}
-				else {
-					options.navPrefix = pathname;
+					options.navPrefix = pathname
 				}
 			},
 
@@ -1240,9 +1221,7 @@ Nav = function(app)
 		links : core.links,
 		go : core.go,
 		ini : core.openInitialModules,
-		backChainIndex : function(){
-			return backManager.getindex()
-		},
+
 		backChainGet : function(){
 			return backManager.get()
 		},

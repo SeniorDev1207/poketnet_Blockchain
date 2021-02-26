@@ -97,9 +97,6 @@ var IPC = function(ipc, wc){
 		promise.then(data => {
 			send(message.id, null, data)
 		}).catch(e => {
-
-			
-
 			send(message.id, e)
 		})
 
@@ -118,63 +115,47 @@ var IPC = function(ipc, wc){
 
 	var helpers = {
 		dialog : function(options){
-			return dialog.showOpenDialog(options).then(res => {
-				if (!res.canceled && (res.filePaths && res.filePaths.length > 0)) {
-					return Promise.resolve(res.filePaths)
-				}
+            return new Promise((resolve, reject) => {
+                dialog.showOpenDialog(options, function(res) {
+                    if (!res.canceled && res.length > 0) {
+                        return resolve(res)
+                    }
 
-				return Promise.reject()
-			})
-
-          
+                    return reject()
+                })
+            })
         }
 	}
 
 	var middles = {
-		set : {
-			node : {
-				ndataPath : function(message){
-					return helpers.dialog({
-						properties: ['openDirectory']
-					}).then(res => {
+		node : {
+			dataPath : function(message){
+				return helpers.dialog({
+					properties: ['openDirectory']
+				}).then(res => {
 	
-						message.data = {
-							ndataPath : res[0]
-						}
+					message.data = res[0]
+					return Promise.resolve()
 
-						console.log('res[0]', res[0])
-		
-						return Promise.resolve()
-	
-					})
-				},
-				binPath : function(message){
-					return helpers.dialog({
-						properties: ['openDirectory'],
-						/*filters: [
-							{ name: 'Pocketcoin Executable', extensions: ['exe'] },
-							{ name: 'All Files', extensions: ['*'] }
-						]*/
-					}).then(res => {
+				})
+			},
+			binPath : function(message){
+				return helpers.dialog({
+					filters: [
+						{ name: 'Pocketcoin Executable', extensions: ['exe'] },
+						{ name: 'All Files', extensions: ['*'] }
+					]
+				}).then(res => {
 
-						console.log('res[0]', res[0])
-	
-						message.data = {
-							binPath : res[0]
-						}
-	
-						return Promise.resolve()
-	
-					}) 
-				}
+					message.data = res[0]
+					return Promise.resolve()
+
+				}) 
 			}
 		}
-		
 	}
 
 	var middle = function(message){
-
-
 		if(f.deep(middles, message.action)){
 			return f.deep(middles, message.action)(message)
 		}
@@ -229,14 +210,16 @@ var IPC = function(ipc, wc){
 			tickInterval = null
 		}
 
-		return kit.destroyhard()
+		return kit.destroy()
 	}
 
-	//var isDevelopment = process.argv.find(function(el) { return el == '--development'; })
-
-	//isDevelopment ? f.path('pocketcoin') : Path.join(electron.app.getPath('userData'), 'pocketcoin')
+	var isDevelopment = process.argv.find(function(el) { return el == '--development'; })
 	
-    kit.init({}, { wssdummy, userDataPath : electron.app.getPath('userData')})
+    kit.init({
+		node : {
+			dataPath : isDevelopment? f.path('pocketcoin') : Path.join(electron.app.getPath('userData'), 'pocketcoin')
+		}
+	}, { wssdummy })
 
 	return self
 }

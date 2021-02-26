@@ -20,8 +20,6 @@ var NodeManager = require('./node/manager.js');
 var Pocketnet = require('./pocketnet.js');
 var Wallet = require('./wallet/wallet.js');
 var Remote = require('./remote.js');
-var Proxies = require('./proxies.js');
-var Exchanges = require('./exchanges.js');
 //////////////
 
 
@@ -37,15 +35,10 @@ var Proxy = function (settings, manage) {
     var firebase = new Firebase(settings.firebase);
     var wallet = new Wallet(settings.wallet);
     var remote = new Remote();
-    var proxies = new Proxies(settings.proxies)
-    var exchanges = new Exchanges() 
-
-    self.userDataPath = null    
 
     f.mix({ 
         wss, server, pocketnet, nodeControl, 
         remote, firebase, nodeManager, wallet,
-        proxies, exchanges,
 
         proxy : self
     })
@@ -77,12 +70,7 @@ var Proxy = function (settings, manage) {
 		}
     }
     
-    var getStats = function(n){
-
-        if (n){
-            return f.lastelements(stats, 500)
-        }
-
+    var getStats = function(){
         return stats
     }
 
@@ -97,6 +85,7 @@ var Proxy = function (settings, manage) {
 
             var options = {};
 
+            console.log('sslsettings', sslsettings)
 
             if(!sslsettings.key || !sslsettings.cert || !sslsettings.passphrase) return {
 
@@ -104,8 +93,8 @@ var Proxy = function (settings, manage) {
 
             try {
                 options = {
-                    key: fs.readFileSync(f.path(sslsettings.key)),
-                    cert: fs.readFileSync(f.path(sslsettings.cert)),
+                    key: fs.readFileSync(path.resolve(__dirname, sslsettings.key)),
+                    cert: fs.readFileSync(path.resolve(__dirname, sslsettings.cert)),
                     passphrase: sslsettings.passphrase
                 }
             }
@@ -126,9 +115,6 @@ var Proxy = function (settings, manage) {
 
         signature : function(data){
 
-            delete data.A
-            delete data.U
-
             if (data.signature){
                 var authorized = self.pocketnet.kit.authorization.signature(data.signature)
 
@@ -148,26 +134,10 @@ var Proxy = function (settings, manage) {
         }
     }
 
-
-    self.users = function(){
-
-        var i = self.kit.info()
-
-        var count = Math.max(f.deep(i, 'wss.users.length') || 1, f.deep(i, 'server.middle.requestsIp') || 1)
-
-        if (count < 1) count = 1
-
-        return count
-
-    }
-
     self.server = {
 
         init: function () {
-
-
             if (settings.server.enabled) {
-
 
                 return server.init({
                     ssl : ini.ssl(),
@@ -192,16 +162,12 @@ var Proxy = function (settings, manage) {
 
         rews : function(){
             return self.server.re().then(r => {
-                console.log("R", r)
                 return self.wss.re()
             }).then(r => {
-
-                console.log("R2", r)
                 return self.firebase.re()
-
             }).catch(e => {
-
                 console.error(e)
+
                 return Promise.reject(e)
             })
         },
@@ -220,26 +186,17 @@ var Proxy = function (settings, manage) {
 
         events : function(){
             wallet.clbks.error.queue.main = function(e, p){
-                //console.log("ERROR QUEUE", e, p)
+                console.log("ERROR QUEUE", e, p)
             }
 
             wallet.clbks.error.ini.main = function(e, p){
-                //console.log("ERROR INI", e, p)
+                console.log("ERROR INI", e, p)
             }
         },
 
         init: function () {
             return wallet.init()
         },
-
-        inited : function(){
-            return wallet.init()
-        },
-
-        addqueue : function(key, address, ip){
-            return wallet.kit.addqueue(key, address, ip)
-        },
-        
 
         destroy: function () {
             return wallet.destroy()
@@ -263,7 +220,6 @@ var Proxy = function (settings, manage) {
     }
 
     self.wss = {
-        
         init: function () {
 
             if (settings.server.enabled) {
@@ -288,7 +244,6 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
-                console.log("R3", r)
                 this.init()
             })
         },
@@ -336,7 +291,11 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
+                return this.stop()
+            }).then(r => {
                 return this.init()
+            }).then(r => {
+                return this.start()
             })
         },
 
@@ -350,8 +309,7 @@ var Proxy = function (settings, manage) {
 
         info : function(){
             return nodeControl.info()
-        },
-
+        }
 
     }
     ///
@@ -360,17 +318,9 @@ var Proxy = function (settings, manage) {
             return nodeManager.init()
         },
 
-        inited : function(){
-            return nodeManager.info().inited
-        },
-
         destroy : function () {
             return nodeManager.destroy()
         },
-
-        reservice : function(){
-            return nodeManager.reservice()
-        },  
 
         re : function(){
             return this.destroy().then(r => {
@@ -393,7 +343,6 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
-                console.log("R4", r)
                 this.init()
             })
         },
@@ -403,56 +352,11 @@ var Proxy = function (settings, manage) {
         }
     }
 
-    self.exchanges = {
-        init: function () {
-            return exchanges.init()
-        },
-
-        destroy: function () {
-            return exchanges.destroy()
-        },
-
-        re : function(){
-            return this.destroy().then(r => {
-                this.init()
-            })
-        },
-
-        get kit(){
-            return exchanges.kit
-        },
-    }
-
     self.kit = {
-        service : function(){
-            var w = self.wss.info(true)
-            var s = self.server.info(true)
-
-            var service = {
-                addr : 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq',
-            }
-
-            /*if (s.listening && w.listening && settings.server.domain){ 
-                service.mainport = Number(s.listening)
-                service.wssport = Number(w.listening)
-                service.service = true
-                service.addr = settings.server.domain
-
-            }*/
-
-            return service
-        },
-        stats : function(n){
-            return getStats(n)
+        stats : function(){
+            return getStats()
         },
         info : function(compact){
-
-            var mem = process.memoryUsage()
-
-            _.each(mem, function(v, i){
-                mem[i] = v / (1024 * 1024)
-            })
-
             return {
                 status: status,
 
@@ -468,53 +372,32 @@ var Proxy = function (settings, manage) {
                 captcha : {
                     ip : _.toArray(captchaip).length,
                     all : _.toArray(captchas).length
-                },
-
-                memory : mem
-            }
-        },
-
-        initlist : function(list){
-            var catchError = function(key){
-                return (e) => {
-
-                    return Promise.resolve()
                 }
-            }
-
-            var promises = _.map(list, (i) => {
-                return self[i].init().catch(catchError(i)).then(() => {
-                    return Promise.resolve()
-                })
-            })
-
-            return Promise.all(promises)
-        },
-
-        sinit : function(){
-            var wrks = []
-
-            if(!self.nodeManager.inited()) wrks.push('nodeManager')
-            if(!self.wallet.inited()) wrks.push('wallet')
-
-            if(!wrks.length){
-                return Promise.resolve({})
-            }
-            else{
-                return self.kit.initlist(wrks).then(r => {
-                    
-                    return Promise.resolve({
-                        refresh : true
-                    })
-                })
             }
         },
 
         init: function () {
 
+            var catchError = function(key){
+                return (e) => {
+
+                    /*if (key == 'nodeControl'){
+                        
+                    }*/
+
+                    return Promise.resolve()
+                }
+            }
+
             status = 1
 
-            return this.initlist(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges']).then(r => {
+            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl'], (i) => {
+                return self[i].init().catch(catchError(i)).then(() => {
+                    return Promise.resolve()
+                })
+            })
+
+            return Promise.all(promises).then(r => {
 
                 status = 2
 
@@ -523,6 +406,7 @@ var Proxy = function (settings, manage) {
 
                 return Promise.resolve()
             })
+
 
         },
 
@@ -557,7 +441,7 @@ var Proxy = function (settings, manage) {
                 }
             }
 
-            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges'], (i) => {
+            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl'], (i) => {
                 return self[i].destroy().catch(catchError(i)).then(() => {
                     return Promise.resolve()
                 })
@@ -602,6 +486,7 @@ var Proxy = function (settings, manage) {
                 return Promise.resolve()
             })
         }
+
     }
 
     self.apibypath = function(path){
@@ -644,70 +529,55 @@ var Proxy = function (settings, manage) {
                     if(!parameters) parameters = []
         
                     var node = null;
-
-                    return new Promise((resolve, reject) => {
-
-                        server.cache.wait(method, parameters, function(waitstatus){
-                            resolve(waitstatus)
-                        })
-
-                    }).then(waitstatus => {
-                  
-
-                        var cached = server.cache.get(method, parameters)
         
-                        if (cached){
-                            return Promise.resolve({
-                                data : cached,
-                                code : 208
-                            })
-                        }
-
-                        //var cachwaitng = server.cache.waitng(method, parameters)
-            
-                        /// ????
-                        if (options.locally && options.meta){
-                            node = nodeManager.temp(options.meta)
-                        }
-            
-                        if (options.node){
-                            node = nodeManager.nodesmap[options.node]
-
-                        }
-            
-                        if(!node || options.auto) 
-                            node = nodeManager.selectProbability() //nodeManager.selectbest()
-            
-
-                            
-                        if(!node) {
-                            return Promise.reject({
-                                error : "node",
-                                code : 502
-                            })
-                        }
-
-                        return node.checkParameters().then(r => {
-                            return node.rpcs(method, parameters)
-
-                        }).then(data => {
+                    var cached = server.cache.get(method, parameters)
         
-                            server.cache.set(method, parameters, data, node.height())
-            
-                            return Promise.resolve({
-                                data : data,
-                                code : 200,
-                                node : node.exportsafe()
-                            })
-            
+                    if (cached){
+                        return Promise.resolve({
+                            data : cached,
+                            code : 208
                         })
+                    }
+        
+                    /// ????
+                    if (options.locally && options.meta){
+                        node = nodeManager.temp(options.meta)
+                    }
+        
+                    if (options.node){
+                        node = nodeManager.nodesmap[options.node]
 
+                    }
+        
+                    if(!node || options.auto) node = nodeManager.selectProbability() //nodeManager.selectbest()
+          
+                    if(!node) {
+                        return Promise.reject({
+                            error : "node",
+                            code : 502
+                        })
+                    }
+        
+                    return node.checkParameters().then(r => {
+        
+                        return node.rpcs(method, parameters)
+        
+                    }).then(data => {
+        
+                        server.cache.set(method, parameters, data, node.height())
+        
+                        return Promise.resolve({
+                            data : data,
+                            code : 200,
+                            node : node.exportsafe()
+                        })
+        
                     }).catch(e => {
-
+        
                         return Promise.reject({
                             error : e,
                             code : e.code,
-                            node : node ? node.export() : null
+                            node : node.export()
                         })
                     })
                 }
@@ -753,52 +623,20 @@ var Proxy = function (settings, manage) {
                 }
             },
 
-            canchange: {
-                path : '/nodes/canchange',
-                action : function({node}){
-
-                    var _node = nodeManager.nodesmap[node]
-
-                    if(!_node){
-                        var nnode = nodeManager.selectProbability()
-
-                        if (nnode) return Promise.resolve({
-                            node : nnode.exportsafe()
-                        })
-
-                        else return Promise.reject('none')
-                    }
-
-                    var nnode = _node.changeNodeUser(null, _node.needToChange())
-
-                    if(!nnode){
-                        return Promise.resolve({})
-                    }
-
-                    return Promise.resolve({data : {
-                        node : nnode.exportsafe()
-                    }})
-
-                }
-            },
-
             select : {
                 path : '/nodes/select',
                 action : function(){
 
-                    return nodeManager.waitbest(3000).then(r => {
-                        var node = nodeManager.selectProbability() || nodeManager.selectbest() || nodeManager.select()
+                    var node = nodeManager.selectProbability() || nodeManager.selectbest()
 
-                        if(!node){
-                            return Promise.reject('cantselect')
-                        }
 
-                        return Promise.resolve({data : {
-                            node : node.exportsafe()
-                        }})
-                    })
+                    if(!node){
+                        return Promise.reject('cantselect')
+                    }
 
-                    
+                    return Promise.resolve({data : {
+                        node : node.exportsafe()
+                    }})
 
                 }
             },
@@ -806,11 +644,7 @@ var Proxy = function (settings, manage) {
             test : {
                 path : '/nodes/test',
                 authorization : 'signature',
-                action : function({node, scenario, A}){
-
-                    return Promise.reject('err')
-
-                    if(!A) return Promise.reject()
+                action : function({node, scenario}){
 
                     var _node = nodeManager.nodesmap[node]
 
@@ -916,14 +750,11 @@ var Proxy = function (settings, manage) {
                 path : '/urlPreview',
                 action : function({url}){
                     return new Promise((resolve, reject) => {
-                        remote.nmake(url, function(err, data){
+                        remote.make(url, function(err, data, html){
         
                             if(!err){
-                                resolve({
-                                    data : {
-                                        og : data
-                                    }
-                                })
+                                data.html = html
+                                resolve({data})
                             }
                             else
                             {
@@ -937,12 +768,6 @@ var Proxy = function (settings, manage) {
         },
 
         common : {
-            /*use : {
-                path : '/use',
-                action : function(){
-                    return self.kit.sinit()
-                }
-            },*/
             info : {
                 path : '/info',
                 action : function(){
@@ -972,7 +797,7 @@ var Proxy = function (settings, manage) {
                 action : function(){
                     
                     return Promise.resolve({data : {
-                        stats : self.kit.stats(500)
+                        stats : self.kit.stats()
                     }})
 
                 }
@@ -1025,19 +850,6 @@ var Proxy = function (settings, manage) {
             },
         },
 
-        exchanges : {
-            history : {
-                path : '/exchanges/history',
-                action : function(){
-                    return self.exchanges.kit.get.history().then(d => {
-                        return Promise.resolve({
-                            data : d
-                        })
-                    })
-                }
-            }
-        },
-
         captcha : {
             get : {
                 authorization : 'signature',
@@ -1047,9 +859,9 @@ var Proxy = function (settings, manage) {
                     if (captcha && captchas[captcha] && captchas[captcha].done){
                         return Promise.resolve({
                             data : {
-                                id : captchas[captcha].id,
+                                id : captchas[connect.parameters.captcha].id,
                                 done : true,
-                                result : captchas[captcha].text
+                                result : captchas[connect.parameters.captcha].text
                             }
                         })
                     }
@@ -1167,38 +979,11 @@ var Proxy = function (settings, manage) {
 
                     }
 
-                    return self.wallet.addqueue(key || 'registration', address, ip).then(r => {
-
-
-                        return Promise.resolve({
-                            data : r
-                        })
-
-                    }).catch(e => {
-
-                        return Promise.reject(e)
-                    })
-
-                }
-            },
-            freeregistrationfake : {
-                path : '/free/registrationfake',
-                action : function({}){  
-
-                    return Promise.reject('disabled')
-
-                    var addresses = ['PP582V47P8vCvXjdV3inwYNgxScZCuTWsq']
-
-                    var promises = _.map(addresses, function(a){
-                        return self.wallet.addqueue('registration', a, "::1")
-                    })
-
-                    return Promise.all(promises).then(r => {
+                    self.wallet.kit.addqueue(key || 'registration', address, ip).then(r => {
                         return Promise.resolve({
                             data : r
                         })
                     })
-                    
 
                 }
             }
@@ -1211,11 +996,9 @@ var Proxy = function (settings, manage) {
                 action : function(message){
 
 
-                    if(!message.A) 
-                        return Promise.reject({error : 'Unauthorized', code : 401})
+                    if(!message.U) return Promise.reject({error : 'Unauthorized', code : 401})
 
                     var kaction = f.deep(manage, message.action)
-
 
                     if(!kaction) {
                         return Promise.reject({error : 'unknownAction', code : 502})
@@ -1224,7 +1007,9 @@ var Proxy = function (settings, manage) {
                     return kaction(message.data).then(data => {
                         return Promise.resolve({data})
                     }).catch(e => {
-                        console.log("E", e)
+
+                        console.error(e)
+
                         return Promise.reject(e)
                     })
                 }

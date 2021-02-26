@@ -8,16 +8,12 @@ var f = require('../functions');
 var Control = function(settings) {
     if (!settings) settings = {};
 
-    var isDevelopment = process.argv.find(function(el) { return el == '--development'; })
 
     var self = this;
     var applications = new Applications(settings)
     
     var nodeStateInterval = null
     var nodeAutorunInterval = null
-    var checkUpdatesInterval = null
-
-    var lock = ''
 
     var state = {
         info : {}
@@ -30,14 +26,11 @@ var Control = function(settings) {
         proxy : null
     }
 
-    var hasupdates = false
-
     var config = {}
 
-    var enabled = false 
+    var enabled = settings.enabled
 
     self.helpers = {
-
         bin_name: function(name) {
             const win = `${name}.exe`
             const mac = name
@@ -45,96 +38,58 @@ var Control = function(settings) {
             return (process.platform == 'win32' ? win : (process.platform == 'darwin' ? mac : (process.platform == 'linux' ? linux : '')))
         },
 
+        bin_folder: function() {
+            return f.path('pocketcoind')
+        },
+
+        sbin_folder: function() {
+            return settings.binPath || self.helpers.bin_folder()
+        },
+
         conf_name: function() {
             return 'pocketcoin.conf'
         },
 
         complete_bin_path : function(){
-            var binPath = Path.join( node.binPath, self.helpers.bin_name('pocketcoind'))
+            var binPath = node.binPath
 
             if (process.platform == 'darwin' || process.platform == 'linux') {
-                binPath = `LD_LIBRARY_PATH=${node.binPath} ${self.helpers.bin_name('pocketcoind')}`
+                binPath = `LD_LIBRARY_PATH=${self.helpers.bin_folder()} ${node.binPath}`
             }
 
             return binPath
-        },
-
-        defaults : {
-            dataPath : function(){
-
-                if (self.proxy.userDataPath){
-
-                    if (isDevelopment){
-                        return f.path('pocketcoin')
-                    }
-
-                    return Path.join(self.proxy.userDataPath, 'pocketcoin')
-                }
-
-                return f.path('pocketcoin')
-
-            },
-            binPath : function(){
-                return f.path('pocketcoind')
-            }
         }
     }
 
-    var removeAll = function(removedata){
-        if(!node.dataPath) {
-            return Promise.reject('nodedatapath')
-        }
+    self.init = function(){
+        // change global settings
 
-        if(removedata && fs.existsSync(node.dataPath)){
-            try{
-                fs.rmdirSync(node.dataPath, { recursive: true });
-            }catch(e){
-                return Promise.reject('nodedatapath')
-            }
-            
-        }
 
-        if(fs.existsSync(node.binPath)){
-            try{
-                fs.rmdirSync(node.binPath, { recursive: true });
-            }catch(e){
-                return Promise.reject('binpath')
-            }
-            
-        }
+       // return
 
-        return applications.removeAll()
-    }
+        node.proxy = null
 
-    var folders = function(){
+        node.binPath = Path.join( self.helpers.sbin_folder(), self.helpers.bin_name('pocketcoind'))
 
-        if(!node.dataPath) {
+        if(!settings.dataPath) {
             return Promise.reject('nodedatapath')
         }
 
         // create catalogs if not exists
-        if(!fs.existsSync(node.dataPath)){
+        if(!fs.existsSync(settings.dataPath)){
             try{
-                fs.mkdirSync(node.dataPath, { recursive: true });
+                fs.mkdirSync(settings.dataPath, { recursive: true });
             }catch(e){
                 return Promise.reject('nodedatapath')
             }
             
         }
 
-        if(!fs.existsSync(node.binPath)){
-            try{
-                fs.mkdirSync(node.binPath, { recursive: true });
-            }catch(e){
-                return Promise.reject('binpath')
-            }
-            
-        }
+        node.dataPath = settings.dataPath
 
-        return Promise.resolve()
-    }
+        // create pocketcoin.conf
+        node.confPath = Path.join(settings.dataPath, self.helpers.conf_name())
 
-    var makeconfig = function(){
 
         try{
             if (!fs.existsSync(node.confPath)) {
@@ -166,72 +121,15 @@ var Control = function(settings) {
         catch(e){
             return Promise.reject(e)
         }
-    }
+    
+        self.autorun.init()
 
-    self.checkUpdates = function(){
+        return self.kit.autorun().then(r => {
 
-        if(!self.kit.hasbin()){
-            return Promise.resolve()
-        }
-
-        return applications.checkupdate().then(r => {
-            hasupdates = r
+            self.kit.nodeState()
 
             return Promise.resolve()
         })
-    }
-
-    self.init = function(){
-        // change global settings
-
-        node.proxy = null
-
-        node.binPath = settings.binPath || self.helpers.defaults.binPath()
-
-        node.dataPath = settings.ndataPath || self.helpers.defaults.dataPath()
-
-        node.confPath = Path.join(node.dataPath, self.helpers.conf_name())
-
-        enabled = settings.enabled
-
-        return folders().then(r => {
-            return makeconfig()
-        }).then(r => {
-            return applications.init()
-        }).then(r => {
-            return self.checkUpdates()
-        }).then(r => {
-
-            // create pocketcoin.conf
-           
-        
-            self.autorun.init()
-
-            return self.kit.autorun().then(r => {
-
-                self.kit.nodeState()
-
-                return Promise.resolve()
-            })
-        })
-
-        
-    }
-
-    self.updates = {
-        init : function(){
-            if(!checkUpdatesInterval){
-                checkUpdatesInterval = setInterval(function(){
-                    self.checkUpdates().catch(e => {})
-                }, 360000)
-            }
-        },
-        destroy : function(){
-            if (checkUpdatesInterval){
-                clearInterval(checkUpdatesInterval)
-                checkUpdatesInterval = null
-            }
-        }
     }
 
     self.autorun = {
@@ -255,7 +153,6 @@ var Control = function(settings) {
     self.destroy = function(){
 
         self.autorun.destroy()
-        self.updates.destroy()
 
         return Promise.resolve()
     }
@@ -264,10 +161,9 @@ var Control = function(settings) {
         return {
             enabled : enabled,
             instance : node.instance ? true : false,
-            hasbin : self.kit.hasbin(),
-            state : state,
-            hasupdates : hasupdates,
-            lock : lock
+            
+            //status : state.status,
+            state : state
         }
     }
 
@@ -281,23 +177,9 @@ var Control = function(settings) {
         },
 
         getNodeAddresses: function() {
-            return self.kit.rpc('listaddressgroupings').then(result => {
-
-
-                var addresses = []
-
-                _.each(result, function(rs){
-                    _.each(rs, function(au){
-                        addresses.push(au)
-                    })
-                })
-
-                addresses = _.map(addresses, function(a){
-                    return {
-                        address : a[0],
-                        balance : a[1] || 0
-                    }
-                })
+            return self.kit.rpc('listaddressgroupings').then(data => {
+                
+                var addresses = data.result.flat(Infinity).filter(function(el) { return el.length == 34; });
 
                 return Promise.resolve(addresses)
             })
@@ -310,83 +192,26 @@ var Control = function(settings) {
 
     self.kit = {
 
+        install : function(){
+            return applications.install(self.helpers.sbin_folder())
+        },
+
         checkupdate : function(){
             return applications.checkupdate()
         },
 
-        install : function(){
-
-            if(lock) return Promise.resolve(false)
-
-            self.autorun.destroy()
-
-            lock = 'installing'
-
-            return self.kit.stop().then(r => {
-                return folders()
-            }).then(r => {
-                return makeconfig()
-            }).then(r => {
-                return applications.install(node.binPath)
-            }).then(r => {
-                lock = ''
-                self.autorun.init()
-                return self.kit.check()
-            }).catch(e => {
-                lock = ''
-
-                return Promise.reject(e)
-            })
-           
-        },
-
-        delete : function(all){
-
-            if(lock) return Promise.resolve(false)
-
-            self.autorun.destroy()
-
-            lock = 'deleting'
-
-            return self.kit.stop().then(r => {
-                return removeAll(all)
-            }).then(r => {
-
-                lock = ''
-                self.autorun.init()
-
-                return self.kit.check()
-            }).catch(e => {
-                lock = ''
-
-                return Promise.reject(e)
-            })
-        },
-
-       
-
         update : function(){
 
-            if(lock) return Promise.resolve(false)
-
             self.autorun.destroy()
 
-            lock = 'updating'
-
             return this.stop().then(r => {
+                state.status = 'updating'
 
                 return self.kit.install()
             }).then(r => {
-
-                lock = ''
-
                 self.autorun.init()
 
-                return self.kit.check()
-            }).catch(e => {
-                lock = ''
-
-                return Promise.reject(e)
+                return Promise.resolve(r)
             })
         },
 
@@ -395,13 +220,20 @@ var Control = function(settings) {
         },
 
         check : function(){
-            //return Promise.resolve({})
 
             node.hasbin = self.kit.hasbin();
 
-            if(lock) return Promise.resolve(false)
+            /*if (state.status == 'stopped'){
+                return Promise.resolve(false)
+            }*/
 
             return self.request.getNodeInfo().then(data => {
+
+                //console.log("CHECKED")
+
+                //self.kit.enable(true)
+
+                //enabled = true//
 
                 state.info = data
                 state.status = 'launched'    
@@ -410,6 +242,8 @@ var Control = function(settings) {
                 return Promise.resolve(true)
 
             }).catch(e => {
+
+                //console.log('e', e)
 
                 var stopped = e.code == 408
 
@@ -437,6 +271,8 @@ var Control = function(settings) {
                     message : e.message
                 }
         
+
+
                 return Promise.resolve(true)
 
             })
@@ -444,12 +280,9 @@ var Control = function(settings) {
         },
       
         autorun: function() {
-
-            if(!self.kit.hasbin()) {
-                return Promise.resolve()
-            }
             
             return self.kit.check().then(running => {
+
                 
                 if (enabled === true && running === false) return self.kit.start()
                 if (enabled === false && running === true) return self.kit.stop()
@@ -460,25 +293,22 @@ var Control = function(settings) {
         },
 
         nodeState: function() {
-
             return self.kit.check()
         },
 
         detach : function(){
             node.instance = null
+
             return Promise.resolve()
         },
 
         start: function() {
-
-            if(lock) return Promise.resolve(false)
 
             return self.kit.check().then(r => {
 
                 if(!r && !node.instance){
 
                     state.status = 'starting'
-                    
                 
                     var binPath = self.helpers.complete_bin_path()
 
@@ -508,7 +338,7 @@ var Control = function(settings) {
                             }
 
                             state.status = 'error'
-                            state.timestamp = f.now()
+                            state.timestamp = new Date()
 
                             self.kit.enable(false)
                         }
@@ -525,10 +355,9 @@ var Control = function(settings) {
 
                     });
 
-                    
+                    state.timestamp = new Date()
                 }
 
-                state.timestamp = f.now()
             })
 
 
@@ -552,12 +381,9 @@ var Control = function(settings) {
 
             //self.nodeManager.remove(self.config)
 
-            if(lock) return Promise.resolve(false)
-
             return self.kit.rpc('stop').then(r => {
 
                 state.status = 'stopped'
-                state.timestamp = f.now()
 
                 return Promise.resolve()
 
@@ -591,7 +417,7 @@ var Control = function(settings) {
                 c(enabled, state)
             })
 
-            state.timestamp = f.now()
+            state.timestamp = new Date()
 
         },
 
@@ -615,6 +441,14 @@ var Control = function(settings) {
         enabled : {}
     }
 
+
+    /*applications.download(self.helpers.sbin_folder()).then(path => {
+
+        return self.init()
+       
+    }).catch(e => {
+        console.log("E", e)
+    })*/
 
     return self;
 }

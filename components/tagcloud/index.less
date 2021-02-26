@@ -1,21 +1,17 @@
 @import "../../css/__cssvar";
 
 #tagcloud{
-    .rcptwrp{
-        background: #fff;
-    }
+    background: #fff;
 
-   
     .tcaption{
-       
-        padding : 2 * @rhythm;
-       
+        font-weight: 100;
+        padding : @rhythm @rhythm;
+        padding-top:  @rhythm ;
         margin-bottom: @rhythm;
         border-bottom : 1px solid @color-gray-slight;
 
         span{
-            font-size : 0.8em;
-            font-weight: 700;
+            font-size : 2em;
         }
     }
 
@@ -103,10 +99,7 @@
 
 html.stblack{
     #tagcloud{
-        .rcptwrp{
-            background: @color-black;
-        }
-        
+        background: @color-black;
     
         .tcaption{
             border-bottom : 1px solid fade(@color-main, 40);

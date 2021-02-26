@@ -680,7 +680,7 @@ var wallet = (function(){
 
 				if(reciever == 'wallet' || reciever == self.app.localization.e('twallet')){
 
-					self.app.platform.sdk.addresses.getFirstRandomAddress(function(_a){
+					self.app.platform.sdk.addresses.addNewWalletAddress(function(_a){
 
 						outputs.push({
 							address : _a,
@@ -1528,28 +1528,13 @@ var wallet = (function(){
 								self.app.settings.set(self.map.uri, 'feesMode', v)
 							}
 
-							var sendpreloader = function(r){
-								if (r){
-									_p.el.find('.sendtransaction').addClass('loading')
-								}
-								else{
-									_p.el.find('.sendtransaction').removeClass('loading')
-								}
-								
-							}
-
 							_p.el.find('.sendtransaction').on('click', function(){
-
-								if($(this).hasClass('loading')) return
-
-								sendpreloader(true)
 
 								actions.prepareTransaction(f, function(addresses, outputs, totalFees, feesMode){
 
 									self.app.platform.sdk.wallet.txbase(addresses, _.clone(outputs), totalFees, feesMode, function(err, inputs, _outputs){
 
 										if(err){
-											sendpreloader(false)
 											sitemessage(err)
 
 											return
@@ -1565,7 +1550,7 @@ var wallet = (function(){
 											if(err){
 
 												self.app.platform.sdk.node.transactions.releaseCS(inputs)
-												sendpreloader(false)
+
 												sitemessage(err)
 											}
 
@@ -1581,10 +1566,7 @@ var wallet = (function(){
 
 												renders.mainWithClear()
 
-												self.app.platform.sdk.wallet.saveTempInfoWallet(d, inputs, _outputs)
-												sendpreloader(false)
 												sitemessage(self.app.localization.e('wssuccessfully'))
-												
 											}
 										})	
 									})
@@ -1806,12 +1788,6 @@ var wallet = (function(){
 						}, function(_p){
 
 							_p.el.find('.addaddress').on('click', events.addaddress)
-							_p.el.find('.copyaddress').on('click', function(){
-								copyText($(this))
-
-								sitemessage(self.app.localization.e('successcopied'))
-							})
-							
 
 							if (clbk)
 								clbk()
@@ -1831,8 +1807,7 @@ var wallet = (function(){
 
 				charts[item.id].update();
 
-				if (el.total)
-					el.total.find('.totalItem[item="'+item.id+'"] .balanceWrapper').html(self.app.platform.mp.coinwithsmall(item.balance))
+				el.total.find('.totalItem[item="'+item.id+'"] .balanceWrapper').html(self.app.platform.mp.coinwithsmall(item.balance))
 			
 				if (clbk)
 					clbk()
@@ -1856,7 +1831,7 @@ var wallet = (function(){
 
 				var n = '#F1F1F1'
 
-				if($('html').hasClass('stblack')) n = '#112035'
+				if($('html').hasClass('stblack')) n = 'rgb(9, 20, 34)'
 
 				_.each(item.move, function(m){
 					_.each(m.items, function(i){
@@ -2219,7 +2194,6 @@ var wallet = (function(){
 
 								send.parameters.amount.value = Number(_p.amount.replace(/,/g,''))
 								send.parameters.reciever.value = _p.address
-								send.parameters.message.value = _p.message || ""
 
 								send.parameters.amount._onChange();
 

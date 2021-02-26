@@ -6,23 +6,17 @@
 
 	.addbutton{
 		position: fixed;
-		right : 2 * @rhythm;
-		bottom : 2 * @rhythm;
-		background: fade(#00a3f7, 90);
+		right : 2.5%;
+		bottom : 2.5%;
+		background: #00a3f7;
+		border : 1px solid #00a3f7;
 		color : #fff;
-		border-radius: 44px;
-		line-height: 44px;
-		width : 44px;
-		text-align: center;
+		padding : 1.5 * @rhythm 4 * @rhythm;
+		border-radius: 30px;
 		cursor: pointer;
 		display : none;
 		opacity: 0;
-		z-index: 999;
 		.transition(0.3s);
-
-		i{
-			font-size: 0.8em;
-		}
 
 		&.active{
 		}
@@ -33,7 +27,16 @@
 		}
 
 		&:hover{
-			background: @color-bright;
+			background: transparent;
+			color : #00a3f7;
+		}
+
+
+		i{
+			width : 20px;
+		}
+
+		span{
 		}
 
 		
@@ -277,12 +280,12 @@
 
 html.stblack{
 	#main{
-		background: #0a1630;
+		background: #071024;
 		
 		.addbutton{
 			background: #00a3f7;
 			border : 1px solid #00a3f7;
-			color : #fff;
+			color : @color-gray-mlight;
 	
 			&:hover{
 				background: transparent;
@@ -482,27 +485,16 @@ html.stblack{
 #main{
 	.addbutton{
 		
-		display : none!important;
+		display : none;
 		
 		&.active{
-			display: none!important;
+			display: none;
 		}
 
 	}
 }
 }
 @media only screen and (max-width: 768px) {
-	#main{
-		.addbutton{
-			
-			display : none!important;
-			
-			&.active{
-				display: none!important;
-			}
-	
-		}
-	}
 	#main{
 		min-height: 1024px;
 

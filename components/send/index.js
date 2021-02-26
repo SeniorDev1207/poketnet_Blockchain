@@ -47,7 +47,7 @@ var send = (function(){
 					self.nav.api.load({
 						open : true,
 						history : true,
-						href : 'userpage?id=wallet&action=send&address=' + data.address + '&amount=' + data.amount + '&message=' + data.message,
+						href : 'userpage?id=wallet&action=send&address=' + data.address + '&amount=' + data.amount,
 					})
 
 				})
@@ -119,7 +119,7 @@ var send = (function(){
 					data.address = p.address
 				}
 
-				if (p.amount){
+				if(p.amount){
 					data.amount = Number(p.amount)
 				}
 

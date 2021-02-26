@@ -34,10 +34,6 @@ html {
     }
 }
 
-.emojione{
-    height: 16px;
-}
-
 body{
     /*overflow-anchor: none;*/
 }
@@ -207,67 +203,7 @@ hr {
     color: #000;
     padding: 0.2em 0;
 }
-#globalpreloader,
-.updatingFrontend{
-    position: fixed;
-    left : 0;
-    top : 0;
-    bottom : 0;
-    right : 0;
-    z-index: 2000000;
-    background: fade(@color-white, 90);
-    .transition(0.3s);
-    display: none;
 
-    &.show{
-        display: block;
-    }
-
-    .table{
-        width : 100%;
-        height  :100%;
-        color : @color-gray-mlight;
-
-        >div{
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        .text{
-            max-width: 524px;
-            margin: 0 auto;
-            padding : 2 * @rhythm;
-
-            span{
-                font-size: 2em;
-                font-weight: 100;
-            }
-        }
-
-        .icon{
-            padding : 4 * @rhythm;
-            i{
-                font-size: 1.3em;
-            }
-            
-        }
-    }
-}
-
-#globalpreloader{
-    &.dark{
-        background: fade(@color-black2, 90);
-    }
-}
-
-html.stblack{
-    #globalpreloader{
-        background: fade(@color-black2, 90);
-        &.dark{
-            background: fade(@color-black2, 90);
-        }
-    }
-}
 
 .unselectable{
     -webkit-touch-callout: none;
@@ -2772,6 +2708,39 @@ input[type=radio].radio:checked + label {
         .shadowSmall();
     }
 
+    .poll {
+        margin-bottom: 2em;
+
+        .description {
+
+            margin-top: 1em;
+            margin-bottom: 1em;
+            color: @color-main
+        }
+
+        .poll-item {
+
+            margin-top: 0.5em;
+
+
+        }
+
+        input{
+            width: 400px;
+        }
+
+        i {
+            margin-left: 1em;
+            color: @color-gray-light;
+            cursor: pointer;
+
+            &:hover{
+                color: @color-bad;
+            }
+        }
+
+    }
+
     .header{
         font-weight: 700;
     }
@@ -3520,9 +3489,7 @@ input[type=radio].radio:checked + label {
         }
     }
 }
-.plyr__poster{
-    /*background-size: auto!important;*/
-}
+
 .popupsignup{
     .ppheader{
         text-align: center;
@@ -4353,8 +4320,6 @@ input[type=radio].radio:checked + label {
 .fastMessage,
 .notification{
 
-    .transition(0.3s);
-
     .time{
         padding-left: @rhythm;
 
@@ -4398,12 +4363,10 @@ input[type=radio].radio:checked + label {
 
         &[count='2']{
             color : #F82C06;
-            border : 1px solid #F82C06;
         }
 
         &[count='1']{
             color : @color-bad; 
-            border : 1px solid @color-bad; 
         }
     }
 
@@ -4504,8 +4467,6 @@ input[type=radio].radio:checked + label {
     }
     
     .sharepreview{
-
-        
 
         .shareprwrapper{
             >div{
@@ -4657,54 +4618,6 @@ input[type=radio].radio:checked + label {
 
         span{
             color : @color-main;
-        }
-    }   
-
-    .commentprev,
-    .sharepreview{
-        cursor: pointer;
-
-        &:hover{
-            color : @color-main;
-        }
-    }
-}
-
-.fastMessage{
-    &.smallsize{
-        padding : @rhythm;
-        width: 390px;
-        cursor : pointer;
-
-        &:hover{
-            background: fade(#020E1B, 80);
-        }
-
-        .cwrapper  {
-            >div{
-                &.cellforimage{
-                    display: none;
-                }
-
-                .tips{
-                    >div{
-                        display: none;
-
-                        &.notifytext{
-                            display: block;
-                            font-size : 0.8em;
-                        }
-                    }
-                }
-            }
-        }
-
-        .messagestar{
-            width : 33px;
-            height : 33px;
-            line-height: 31px;
-            font-size: 0.8em;
-            margin-bottom : 4px;
         }
     }
 }
@@ -5034,9 +4947,7 @@ input[type=radio].radio:checked + label {
 .mobiledevice{
     display: none;
 }
-.watchonyoutube{
-    color : #fff;
-}
+
 .editCategoryPath{
     cursor: pointer;
 
@@ -5230,16 +5141,6 @@ input[type=radio].radio:checked + label {
         }
     }
 
-}
-
-.ipad {
-	#content{
-		padding-bottom : 4 * @rhythm;
-	}
-
-    .upbutton{
-        display: none!important;
-    }
 }
 
 @media only screen and (max-width: 1280px) {

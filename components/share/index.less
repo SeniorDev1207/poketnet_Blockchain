@@ -30,8 +30,6 @@
 	  color:    @placeholder;
 	}
 
-
-
 	.sLoader{
 		display: none;
 		position: absolute;
@@ -83,24 +81,15 @@
 		padding-left : 2 * @rhythm;
 	}
 
-
+	
 
 	.repostShareWrapper{
 		position: relative;
 		overflow: hidden;
-		padding : @rhythm;
-
-		.repostShare{
-			border-radius: 3px;
-			background: #fff;
-			padding : 2 * @rhythm;
-			padding-right: 4 * @rhythm;
-			padding-left: 0;
-		}
 
 		.repostCaption{
 			position: absolute;
-			right : 4 * @rhythm;
+			right : 2 * @rhythm;
 			top : 4 * @rhythm;
 			cursor: pointer;
 
@@ -127,14 +116,14 @@
 			}
 		}
 
-		/*.repostShare{
+		.repostShare{
 			padding : 2 * @rhythm 0;
-		}*/
+		}
 	}	
 
 	#post{
 		.share{
-			/*background: fade(#fff, 50);*/
+			background: fade(#fff, 50);
 			.work{
 				padding : 0;
 				padding-right: 30px;
@@ -486,15 +475,8 @@
 		.emojionearea.form-control{
 			border : 0;
 			border-radius: 3px;
-			//overflow: hidden;
 			.shadowSmall();
-
-			.emojionearea-editor{
-				margin-right: 0;
-			}
 		}
-
-
 
 
 		.emojionearea-editor{
@@ -561,6 +543,54 @@
 
 		
 	}
+
+	.pollWrapper{
+
+		.poll{
+			padding-top: 1em;
+			padding-bottom: 1em;
+			position: relative;
+
+			.title{
+				color: @color-main;
+			}
+	
+			.removeWrapper{
+				position: absolute;
+				left: 70px;
+				bottom: 40px;
+				
+				.removelink {
+					// position: absolute;
+					// right: 4 * @rhythm;
+					// top: 2 *  @rhythm;
+					width: 40px;
+					height: 40px;
+					line-height: 40px;
+					text-align: center;
+					color : fade(#000, 50);
+					border-radius: 50%;
+					cursor: pointer;
+					background : fade(#000, 10);
+					.transition(0.3s);
+					opacity: 0;
+	
+					&:hover{
+						background : fade(#000, 20);
+					}
+				}
+				
+			}
+	
+			&:hover{
+				.removelink{
+					opacity: 1;
+				}
+			}
+	
+		};
+	}
+
 
 	.imagesWrapper{
 			
@@ -967,12 +997,6 @@
 			color: #c8cbcc;
 		}
 	}
-
-	.videoStatsWrapper {
-		font-weight: 100;
-
-		padding-top: @rhythm;
-	}
 }
 
 
@@ -1019,7 +1043,7 @@
 	}
 
     .wndinner{
-		max-height: 450px;
+		max-height: 650px;
 		
     }
 	.wndcontent{
@@ -1123,15 +1147,6 @@
 html.stblack{
 	#share{
 		
-
-		.repostShareWrapper{
-	
-			.repostShare{
-				background: @color-black2;
-			}
-	
-			
-		}	
 	
 		@bg : @color-black3;
 		@placeholder : @color-add;
@@ -1164,9 +1179,9 @@ html.stblack{
 	
 		#post{
 			.share{
-				/*background: fade(@color-black3, 50);*/
+				background: fade(@color-black3, 50);
 				
-				background: @color-black2;
+	
 			}
 			
 	
@@ -1648,10 +1663,6 @@ html.stblack{
 				top : 2 * @rhythm;
 				background: fade(#FAFAFA, 90);
 				padding-top : 2.75em;
-			}
-
-			.cntwrk{
-				margin-left: 0;
 			}
 		}
 	}
@@ -2300,7 +2311,7 @@ html.stblack{
 	
 		#post{
 			.share{
-				/*background: fade(@color-black, 50);*/
+				background: fade(@color-black, 50);
 			}
 	
 			.iconWrapper{

@@ -10,15 +10,13 @@ var lastcomments = (function(){
 
 		var el, loadinterval = null;
 
-		var ed = null;
-
 		var actions = {
 			show : function(posttxid, commentid, parentid){
 				self.app.platform.app.nav.api.load({
 					open : true,
 					href : 'post?s=' + posttxid,
 					inWnd : true,
-					history : true,
+					//history : true,
 					clbk : function(d, p){									
 						app.nav.wnds['post'] = p
 					},
@@ -62,12 +60,9 @@ var lastcomments = (function(){
 
 					p.el.find('.image').imagesLoaded({ background: true }, function(image) {
 
-						if(ed.renderclbk) ed.renderclbk()
+						
 
 					});
-
-
-					if(ed.renderclbk) ed.renderclbk()
 
 				})
 
@@ -172,8 +167,8 @@ var lastcomments = (function(){
 		return {
 			primary : primary,
 
-			getdata : function(clbk, p){
-				ed = p.settings.essenseData || {}
+			getdata : function(clbk){
+
 				var data = {};
 
 				clbk(data);

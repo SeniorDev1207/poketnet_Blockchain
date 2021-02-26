@@ -22,8 +22,6 @@ var userpage = (function(){
 		var init = function(){
 			reports = []
 
-			console.log("self.app.user.validate()self.app.user.validate()self.app.user.validate()", self.app.user.validate())
-
 			if(!self.app.user.validate()){
 
 				var h = self.app.localization.e('e13184');
@@ -143,16 +141,6 @@ var userpage = (function(){
 					}	
 
 				}
-			})
-
-			reports.push({
-				name : 'Pocketcoin',
-				id : 'staking',
-				report : 'staking',
-				mobile : true,
-				if : function(){
-					return isMobile()
-				},
 			})
 
 			if(self.app.user.validate()) {
@@ -527,12 +515,7 @@ var userpage = (function(){
 						},
 	
 					}, function(_p){
-						console.log(_p.el)
-						_p.el.find('.copyaddress').on('click', function(){
-							copyText($(this))
-
-							sitemessage(self.app.localization.e('successcopied'))
-						})
+	
 					})
 
 					
@@ -547,38 +530,7 @@ var userpage = (function(){
 
 				var s = helpers.selector();
 
-				var r = function(){
-					self.shell({
-							
-
-						name :  'contents',
-						el :   el.contents,
-						data : {
-							reports : reports,
-							each : helpers.eachReport,
-	
-							selector : s
-						},
-	
-					}, function(_p){
-	
-						_p.el.find('.groupNamePanelWrapper').on('click', events.closeGroup);
-						//_p.el.find('.groupName').on('click', events.closeGroup);
-						_p.el.find('.openReport').on('click', events.openReport);
-	
-						ParametersLive([s], _p.el)
-
-						_scrollTop(0)
-
-						if (hcready)
-							el.contents.hcSticky('refresh');
-	
-						if (clbk)
-							clbk();
-					})
-				}
-
-				if (id && isMobile()){
+				if(id && isMobile()){
 
 					el.contents.html('')
 
@@ -588,22 +540,42 @@ var userpage = (function(){
 				}
 				else{
 
-					
+					self.app.platform.sdk.node.transactions.get.allBalance(function(amount){
+						var temp = self.app.platform.sdk.node.transactions.tempBalance()
 
-					if(isMobile()){
-						self.app.platform.sdk.node.transactions.get.allBalance(function(amount){
-							var temp = self.app.platform.sdk.node.transactions.tempBalance()
+						allbalance = amount + temp
+						
 
-							allbalance = amount + temp
+						self.shell({
 							
 
-							r()
-						
+							name :  'contents',
+							el :   el.contents,
+							data : {
+								reports : reports,
+								each : helpers.eachReport,
+		
+								selector : s
+							},
+		
+						}, function(_p){
+		
+							_p.el.find('.groupNamePanelWrapper').on('click', events.closeGroup);
+							//_p.el.find('.groupName').on('click', events.closeGroup);
+							_p.el.find('.openReport').on('click', events.openReport);
+		
+							ParametersLive([s], _p.el)
+	
+							_scrollTop(0)
+
+							if (hcready)
+								el.contents.hcSticky('refresh');
+		
+							if (clbk)
+								clbk();
 						})
-					}
-					else{
-						r()
-					}
+					
+					})
 
 					
 

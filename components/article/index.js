@@ -52,6 +52,7 @@ var article = (function(){
 
 			trx : function(share, clbk){
 
+
 				if (el.c){
 					el.c.addClass('loading')
 				}
@@ -107,6 +108,7 @@ var article = (function(){
 								art.txid = alias.txid;
 								art.ptime = Math.floor((new Date().getTime()) / 1000)
 		
+								self.app.platform.sdk.user.survey()
 
 								actions.complete();
 							}
@@ -135,7 +137,7 @@ var article = (function(){
 
 			add : function(){
 
-				var share = new Share(self.app.localization.key);
+				var share = new Share();
 				
 				var text = self.app.platform.sdk.articles.echo(art)
 				var date = new Date().getTime()
@@ -154,8 +156,6 @@ var article = (function(){
 
 
 				var error = share.validation()
-
-				console.log("ERROR", error)
 
 				if(!error){
 
@@ -218,7 +218,6 @@ var article = (function(){
 				}
 				else
 				{
-					console.log('errors[error]', errors[error])
 					if(errors[error]){
 						sitemessage(errors[error])
 					}

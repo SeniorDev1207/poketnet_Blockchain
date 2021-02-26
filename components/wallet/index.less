@@ -17,45 +17,6 @@
 		}
 	}
 
-	.copyaddress{
-		cursor: pointer;
-	}
-
-	.toblockexplorer{
-		font-size: 0.8em;
-		color : @color-gray-slight;
-		.transition(0.3s);
-		cursor: pointer;
-		width: 30px;
-		text-align: center;
-
-		&:hover{
-			color : @color-main;
-		}
-
-	}
-
-	.withloading{
-		.nlpart{
-			display: inline-block;
-		}
-
-		.lpart{
-			display: none;
-		}
-
-		&.loading{
-			cursor: default!important;
-			.nlpart{
-				display: none;
-			}
-	
-			.lpart{
-				display: inline-block;
-			}
-		}
-	}
-
 	.circularprogress{
 		overflow: hidden;
 		height: 0px;
@@ -388,8 +349,7 @@
 		}
 
 		button{
-			max-width : 310px;
-			width: 100%;
+			min-width : 310px;
 			height: 37px;
 			line-height: 35px;
 			padding : 0;
@@ -863,7 +823,7 @@
 
 				&.percent{
 					font-weight: 700;
-					width: 100px;
+					width: 10%;
 				}
 
 				&.panel{
