@@ -7,8 +7,6 @@ if (setupEvents.handleSquirrelEvent()) {
 
 
 const {protocol} = require('electron');
-
-console.log('protocol', protocol);
 //const ProxyInterface = require('./proxy/mainserver.js')
 
 const ProxyInterface = require('./proxy16/ipc.js')
@@ -45,7 +43,7 @@ autoUpdater.on('checking-for-update', (ev) => {
 
 autoUpdater.on('update-available', (ev) => {
     if (!is.linux()) updatesLoading = true
-    win.webContents.send('updater-message', { msg: 'update-available', type: 'info', ev: ev, linux: is.linux() })
+    win.webContents.send('updater-message', { msg: 'update-available', type: 'info', ev: ev, linux: is.linux(), macos: is.macOS() })
 })
 
 autoUpdater.on('update-not-available', (ev) => {
@@ -77,6 +75,12 @@ if (is.linux()) {
     defaultIcon = require('path').join(__dirname, 'res/electron/icons/png/64x64.png')
     defaultTrayIcon = require('path').join(__dirname, 'res/electron/icons/png/32x32.png')
     badgeTrayIcon = require('path').join(__dirname, 'res/electron/icons/png/iconbadge.png')
+}
+
+if (is.macOS()) {
+    defaultIcon = require('path').join(__dirname, 'assets/icons/mac/trayTemplate.png')
+    defaultTrayIcon = require('path').join(__dirname, 'assets/icons/mac/trayTemplate.png')
+    badgeTrayIcon = require('path').join(__dirname, 'assets/icons/mac/traybadgeTemplate.png')
 }
 
 function showHideWindow(show) {
@@ -119,6 +123,11 @@ function destroyBadge() {
     badge = null;
 }
 
+function quit(){
+    willquit = true
+    app.quit()
+}
+
 function createTray() {
 
     var defaultImage = nativeImage.createFromPath(defaultTrayIcon);
@@ -140,15 +149,11 @@ function createTray() {
 
             proxyInterface.destroy().then(r => {
 
-                willquit = true
-                app.quit()
+                quit()
 
             }).catch(e => {
 
-                console.log("ERROR", e) //// CATCH ERROR TODO
-
-                willquit = true
-                app.quit()
+                quit()
 
             })
 
@@ -157,8 +162,16 @@ function createTray() {
 
     tray.setContextMenu(contextMenu);
 
+    if (is.macOS()) {
+        app.dock.setMenu(contextMenu)
+        app.on('activate', () => {
+            showHideWindow(true)
+        })
+    }
+
     tray.on('click', () => {
-        showHideWindow()
+        if (!is.macOS())
+            showHideWindow()
     })
 
     ipcMain.on('update-badge-tray', function(e, c) {
@@ -204,8 +217,12 @@ function createBadgeOS() {
         ipcMain.on('update-badge', (event, badgeNumber) => {
             if (badgeNumber) {
                 app.setBadgeCount(badgeNumber);
+                if (is.macOS())
+                    app.dock.setBadge(badgeNumber.toString())
             } else {
                 app.setBadgeCount(0);
+                if (is.macOS())
+                    app.dock.setBadge('')
             }
 
             event.returnValue = 'success';
@@ -231,7 +248,7 @@ function initApp() {
     var isDevelopment = process.argv.find(function(el) { return el == '--development'; })
 
     if (isDevelopment) {
-
+        //win.toggleDevTools();
     } else {
 
         log.info('First check updates...');
@@ -317,7 +334,6 @@ function notification(nhtml) {
 }
 
 function createWindow() {
-    console.log('createWindow!!!!');
     const screen = require('electron').screen;
     const mainScreen = screen.getPrimaryDisplay();
 
@@ -378,7 +394,109 @@ function createWindow() {
         win.maximize();
     }
 
-    Menu.setApplicationMenu(null)
+    if(is.macOS()){
+
+        var isMac = true
+
+        const template = [
+            // { role: 'appMenu' }
+            ...(isMac ? [{
+              label: app.name,
+              submenu: [
+                {
+                    label: 'About',
+                    click: async () => {
+                        win.webContents.send('nav-message', { msg: 'about', type: 'action'})
+                    }
+                },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                {
+                    label: 'Quit Pocketnet',
+                    click: async () => {
+                      quit()
+                    }
+                }
+              ]
+            }] : []),
+            // { role: 'fileMenu' }
+            
+            {
+              label: 'Edit',
+              submenu: [
+                { role: 'undo' },
+                { role: 'redo' },
+                { type: 'separator' },
+                { role: 'cut' },
+                { role: 'copy' },
+                { role: 'paste' },
+                ...(isMac ? [
+                  { role: 'pasteAndMatchStyle' },
+                  { role: 'delete' },
+                  { role: 'selectAll' },
+                  { type: 'separator' },
+                  {
+                    label: 'Speech',
+                    submenu: [
+                      { role: 'startSpeaking' },
+                      { role: 'stopSpeaking' }
+                    ]
+                  }
+                ] : [
+                  { role: 'delete' },
+                  { type: 'separator' },
+                  { role: 'selectAll' }
+                ])
+              ]
+            },
+            // { role: 'viewMenu' }
+            {
+              label: 'View',
+              submenu: [
+            
+                { role: 'toggleDevTools' },
+                { type: 'separator' },
+                { role: 'togglefullscreen' }
+              ]
+            },
+            // { role: 'windowMenu' }
+            {
+              label: 'Window',
+              submenu: [
+                { role: 'minimize' },
+                { role: 'zoom' },
+                ...(isMac ? [
+                  { type: 'separator' },
+                  { role: 'front' },
+                  { type: 'separator' },
+                  { role: 'window' }
+                ] : [
+                  { role: 'close' }
+                ])
+              ]
+            },
+            {
+              role: 'help',
+              submenu: [
+                {
+                  label: 'Help center',
+                  click: async () => {
+                    win.webContents.send('nav-message', { msg: 'help', type: 'action'})
+                    }
+                }
+              ]
+            }
+          ]
+
+          const menu = Menu.buildFromTemplate(template)
+          Menu.setApplicationMenu(menu)
+    }
+    else{
+        Menu.setApplicationMenu(null)
+    }
+    
 
     win.loadFile('index_el.html')
 
@@ -392,13 +510,19 @@ function createWindow() {
         open(url);
     });
 
-    win.webContents.on('will-navigate', function(event, url) {
-        console.log('new-window!!!!', event, url);
-    });
-
     win.on('close', function(e) {
         if (!willquit) {
+
             e.preventDefault();
+            
+            if (is.macOS()){
+                if (win.isFullScreen()){
+                    win.setFullScreen(false)
+                    return
+                }
+            }
+
+            
             win.hide();
             destroyBadge()
         } else {
@@ -418,6 +542,12 @@ function createWindow() {
         callback({ cancel: false, responseHeaders: detail.responseHeaders });
     });
 
+
+    // console.log('process.argv', process.argv);
+    
+    // var href = process.argv[process.argv.length - 1].replace(/.+pocketnet\//, '');
+
+    // win.webContents.send('nav-message', { msg: href, type: 'action'})
 
 
     //
@@ -447,7 +577,10 @@ function createWindow() {
     ipcMain.on('quitAndInstall', function(e) {
 
         willquit = true
-        autoUpdater.quitAndInstall(true, true)
+
+        proxyInterface.destroy().then(r => {
+            autoUpdater.quitAndInstall(true, true)
+        })
 
     })
 
@@ -471,15 +604,19 @@ var r = app.requestSingleInstanceLock()
 if (!r) {
     app.quit()
 } else {
+
+    
     app.on('second-instance', function(event, argv, cwd) {
-        const currentURL = win.webContents.getURL()
-        console.log('currentUrl', currentURL);
-        console.log('second', event, argv, cwd);
 
-        setTimeout(() => {
-            win.webContents.loadURL('file:///C:/inetpub/wwwroot/pocketnet/userpage?id=notifications')
 
-        }, 6000)
+        if (argv && argv.length && argv[argv.length - 1] && argv[argv.length - 1].indexOf('pocketnet/') > -1){
+
+            var href = argv[argv.length - 1].replace(/.+pocketnet\//, '');
+
+            win.webContents.send('nav-message', { msg: href, type: 'action'})
+    
+        }
+
 
         if (win) {
 
@@ -490,11 +627,11 @@ if (!r) {
         }
     })
 
-    console.log('process.execPath', process.execPath, [path.resolve(process.argv[1])])
     // If we are running a non-packaged version of the app && on windows
 
 
-    app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);        
+    app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);  
+    
 
 
     // Этот метод будет вызываться, когда Electron закончит 
@@ -517,6 +654,7 @@ if (!r) {
         // после того, как на иконку в доке нажали, и других открытых окон нету.
         if (win === null) {
             createWindow()
+            console.log('createWindow!!!!!!!!', process.argv);
         }
     })
 
