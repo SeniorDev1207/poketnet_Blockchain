@@ -6,6 +6,7 @@ if (typeof _Electron != 'undefined') {
     var storage = electron.OSBrowser; //?
 }
 
+
 Platform = function (app, listofnodes) {
 
     var self = this;
@@ -1689,28 +1690,6 @@ Platform = function (app, listofnodes) {
     }
 
     self.papi = {
-        lenta : function(ids, el, clbk, p){
-
-            if(!p) p = {}
-
-            app.nav.api.load({
-
-                open : true,
-                id : 'lenta',
-                el : el,
-                animation : false,
-                essenseData : {
-                    byauthor : true,
-                    notscrollloading : true,
-                    txids : ids,
-                    comments : p.comments,
-                    enterFullScreenVideo : p.fullscreenvideo,
-                    openapi : p.openapi
-                },
-                
-                clbk : clbk
-            })
-        },
         post: function (id, el, clbk, p) {
 
             if (!p) p = {}
@@ -1733,52 +1712,13 @@ Platform = function (app, listofnodes) {
                             repost: p.repost,
                             level: p.level,
                             fromempty: p.fromempty,
-                            eid: id + (p.eid || ""),
-                            comments : p.comments
+                            eid: id + (p.eid || "")
                         }
                     })
 
                 })
             })
 
-        },
-        channel : function(id, el, clbk, p){
-            self.sdk.users.get(id, function () {
-
-                app.nav.api.load({
-                    open: true,
-                    href: 'channel',
-                    el: el,
-                    eid: id + (p.eid || ""),
-                    clbk: clbk,
-
-                    essenseData: {
-                        id : id
-                    }
-                })
-
-            })
-        },
-        comment : function(id, el, clbk, p){
-
-            app.nav.api.load({
-                open : true,
-                id : 'comments',
-                el : el,
-                eid : id + 'post',
-
-                essenseData : {
-                    txid : id,
-                    showall : true,
-                    init : true,
-                    preview : false,
-                    fromtop : true,
-                    commentPs : p.commentPs,
-                    openapi : p.openapi
-                },
-
-                clbk : clbk
-            })
         }
     }
 
@@ -1926,7 +1866,7 @@ Platform = function (app, listofnodes) {
         },
 
         name: function (address) {
-            var n = deep(app, 'platform.sdk.usersl.storage.' + address + '.name') || deep(app, 'platform.sdk.users.storage.' + address + '.name');
+            var n = deep(app, 'platform.sdk.usersl.storage.' + address + '.name');
 
             if (n) {
                 n = this.clearname(n)
@@ -2044,6 +1984,7 @@ Platform = function (app, listofnodes) {
             }
 
             var initEvents = function () {
+
                 window.addEventListener('scroll', events.scroll)
                 window.addEventListener('resize', events.resize)
 
@@ -2553,23 +2494,19 @@ Platform = function (app, listofnodes) {
                 var temp = _.find(self.sdk.node.transactions.temp.share, function (s) {
                     return s.txid == id
                 })
-                if (temp){
-                    share = new pShare();
-                    share._import(temp);
-                    share.temp = true;
-                    share.address = self.app.platform.sdk.address.pnet().address
-                }
-                
+
+                share = new pShare();
+                share._import(temp);
+                share.temp = true;
+                share.address = self.app.platform.sdk.address.pnet().address
             }
 
-  
+
             var address = share.address
 
             var d = {};
 
             d.share = share
-
-           
 
             self.app.platform.sdk.ustate.me(function (_mestate) {
 
@@ -3497,9 +3434,10 @@ Platform = function (app, listofnodes) {
                     _onChange: function (value) {
 
                         if (value && self.app.user.features.telegram && value){
-                            
-                            self.app.platform.sdk.system.get.telegramGetMe(value, true);
 
+
+                            self.app.platform.sdk.system.get.telegramGetMe(value, true);
+                            
                         }
 
                     }
@@ -3783,9 +3721,14 @@ Platform = function (app, listofnodes) {
                     if(!m[i]) return
 
                     if (typeof v === "object") {
-                        m[i].value = v.value;
-                        m[i].possibleValues = v.possibleValues && v.possibleValues.map(i => String(i));
-                        m[i].possibleValuesLabels = v.possibleValuesLabels;
+
+                        if (m && m[i]){
+
+                            m[i].value = v.value;
+                            m[i].possibleValues = v.possibleValues && v.possibleValues.map(i => String(i));
+                            m[i].possibleValuesLabels = v.possibleValuesLabels;
+                        }
+
 
                     } else {
                         m[i].value = v;
@@ -3802,7 +3745,14 @@ Platform = function (app, listofnodes) {
 
                                 self.app.user.features.telegram = 1;
 
-                                // self.app.platform.sdk.system.get.telegramGetMe(v.value);
+                                var href = location.href;
+
+                                if (href.indexOf('userpage?id=usersettings') === -1){
+
+                                    console.log('href', href);
+                                    self.app.platform.sdk.system.get.telegramGetMe(v.value);
+
+                                }
 
 
                             } else {
@@ -7430,7 +7380,7 @@ Platform = function (app, listofnodes) {
                 var i = self.sdk.comments.ini;
                 var address = ''
 
-                var ao = self.sdk.address.pnet();
+                var ao = self.app.platform.sdk.address.pnet();
 
                 if (ao) address = ao.address
 
@@ -7495,7 +7445,60 @@ Platform = function (app, listofnodes) {
                         if (clbk)
                             clbk(e)
                     })
-                   
+                    /*
+                    self.app.ajax.rpc({
+                        method: 'getcomments',
+                        parameters: ['', '', address, ids],
+                        fail: function (d, e) {
+
+                            if (clbk)
+                                clbk(d, e)
+
+                        },
+                        success: function (d) {
+
+                            var arrange = ['commentEdit', 'commentDelete'];
+                            var tc = group(self.sdk.relayTransactions.withtemp('comment'), function (tempComment) {
+                                return tempComment.optype || 'comment'
+                            })
+
+                            _.each(arrange, function (i) {
+
+                                _.each(tc[i], function (tempComment) {
+
+                                    var i = tempComment.optype
+
+                                    var f = _.find(d, function (c) {
+                                        if (c.id == (tempComment.id || tempComment.txid)) return true
+                                    })
+
+                                    if (i == 'commentEdit') {
+                                        if (f && f.id == tempComment.id) {
+                                            f.msg = tempComment.msg
+                                            f.timeUpd = tempComment.timeUpd
+                                        }
+                                    }
+
+                                    if (i == 'commentDelete') {
+                                        if (f && f.id == tempComment.id) {
+                                            f.deleted = true
+                                        }
+                                    }
+
+                                })
+                            })
+
+                            var c = i(d)
+
+                            self.sdk.comments.users(c, function (d, e) {
+
+                                if (clbk)
+                                    clbk(d, e)
+
+                            })
+
+                        }
+                    })*/
                 }
 
             },
@@ -8750,6 +8753,7 @@ Platform = function (app, listofnodes) {
                 },
 
                 transform: function (d, state) {
+
                     var storage = this.storage;
 
                     storage.trx || (storage.trx = {})
@@ -10283,8 +10287,6 @@ Platform = function (app, listofnodes) {
 
                             if (obj.caption){
 
-
-
                                 if (!meta.tgtoask.value) {
 
                                     this.telegramSend(obj, meta)
@@ -10340,8 +10342,6 @@ Platform = function (app, listofnodes) {
                             var txb = new bitcoin.TransactionBuilder();
 
                             txb.addNTime(self.timeDifference || 0)
-
-
 
                             var amount = 0;
 
@@ -10562,6 +10562,7 @@ Platform = function (app, listofnodes) {
                                     'a': ['href'],
                                 },
                             };
+
 
                             const sanitizedHtml = sanitizeHtml(input, options);
 
@@ -17069,6 +17070,8 @@ Platform = function (app, listofnodes) {
 
                     var encryptedBytes = new Uint8Array(aesjs.utils[p.charsetDec].toBytes(str));
 
+
+
                     self.helpers.keyForAes(key, function (akey) {
 
 
@@ -17732,6 +17735,10 @@ Platform = function (app, listofnodes) {
             if ((a == 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s') || (a == 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc')) {
 
                 self.app.user.features.telegram = 1;
+
+                var currentHref = window.location.href;
+                
+                window.location = 'pocketnet://' + currentHref;
 
             } else {
 
