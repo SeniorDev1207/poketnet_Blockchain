@@ -5,8 +5,6 @@ if (setupEvents.handleSquirrelEvent()) {
   return;
 }*/
 
-
-const {protocol} = require('electron');
 //const ProxyInterface = require('./proxy/mainserver.js')
 
 const ProxyInterface = require('./proxy16/ipc.js')
@@ -24,8 +22,7 @@ const Badge = require('./js/vendor/electron-windows-badge.js');
 // AutoUpdate --------------------------------------
 const { autoUpdater } = require("electron-updater");
 const log = require('electron-log');
-const is = require('electron-is');
-
+const is = require('electron-is')
 
 var updatesLoading = false;
 
@@ -273,7 +270,6 @@ function initApp() {
         win.webContents.send('resume-message', { msg: 'resume', type: 'info' })
 
     })
-
 }
 
 function closeNotification() {
@@ -506,7 +502,6 @@ function createWindow() {
 
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault();
-        console.log('new-window', event, url);
         open(url);
     });
 
@@ -542,12 +537,6 @@ function createWindow() {
         callback({ cancel: false, responseHeaders: detail.responseHeaders });
     });
 
-
-    // console.log('process.argv', process.argv);
-    
-    // var href = process.argv[process.argv.length - 1].replace(/.+pocketnet\//, '');
-
-    // win.webContents.send('nav-message', { msg: href, type: 'action'})
 
 
     //
@@ -604,20 +593,7 @@ var r = app.requestSingleInstanceLock()
 if (!r) {
     app.quit()
 } else {
-
-    
     app.on('second-instance', function(event, argv, cwd) {
-
-
-        if (argv && argv.length && argv[argv.length - 1] && argv[argv.length - 1].indexOf('pocketnet/') > -1){
-
-            var href = argv[argv.length - 1].replace(/.+pocketnet\//, '');
-
-            win.webContents.send('nav-message', { msg: href, type: 'action'})
-    
-        }
-
-
         if (win) {
 
             if (win.isMinimized()) win.restore();
@@ -627,12 +603,7 @@ if (!r) {
         }
     })
 
-    // If we are running a non-packaged version of the app && on windows
-
-
-    app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);  
-    
-
+    app.setAsDefaultProtocolClient('pocketnet')
 
     // Этот метод будет вызываться, когда Electron закончит 
     // инициализацию и готов к созданию окон браузера.
@@ -648,13 +619,11 @@ if (!r) {
         }
     })
 
-
     app.on('activate', () => {
         // На MacOS обычно пересоздают окно в приложении,
         // после того, как на иконку в доке нажали, и других открытых окон нету.
         if (win === null) {
             createWindow()
-            console.log('createWindow!!!!!!!!', process.argv);
         }
     })
 
