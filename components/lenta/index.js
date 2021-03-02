@@ -2877,6 +2877,8 @@ var lenta = (function(){
 			if(!essenseData.txids){
 				self.app.platform.sdk.node.shares.clbks.added.lenta = function(share){
 
+					console.log('share', share);
+
 					if (share.txidEdit){		
 												
 						delete initedcommentes[share.txidEdit]

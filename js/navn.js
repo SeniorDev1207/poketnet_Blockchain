@@ -367,7 +367,6 @@ Nav = function(app)
 					href = self.addParameters(href)
 				}
 
-
 				history.pushState({
 
 					href : href,
