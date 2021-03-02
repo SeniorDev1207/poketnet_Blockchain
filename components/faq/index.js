@@ -390,13 +390,13 @@ var faq = (function(){
 
 				self.nav.api.load({
 					open : true,
-					href : 'socialshare2',
+					href : 'socialshare',
 					history : true,
 					inWnd : true,
 
 					essenseData : {
 						url : url,
-						caption : 'Share FAQ answer in social networks',
+						caption : 'Share FAQ answer in social',
 						title : m
 					}
 				})
