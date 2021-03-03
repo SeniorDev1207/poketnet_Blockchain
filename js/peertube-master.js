@@ -19,7 +19,7 @@ PeerTubeHandler = function (app) {
   const apiHandler = {
     upload({ method, parameters }) {
       $.ajax({
-        url: `${baseUrl}${method}`,
+        url,
         ...parameters,
       })
         .done((res) => {
