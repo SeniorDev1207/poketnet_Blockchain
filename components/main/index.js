@@ -19,15 +19,8 @@ var main = (function(){
 		var helpers = {
 			
 		}
-		
+
 		var actions = {
-			refreshSticky : function(){
-
-				console.log('refreshSticky')
-
-				if (hsready)
-					el.panel.hcSticky('refresh');
-			},
 			addbutton : function(){
 
 				self.app.platform.ui.share()
@@ -222,7 +215,8 @@ var main = (function(){
 
 							share = p
 
-							actions.refreshSticky()
+							if (hsready)
+								el.panel.hcSticky('refresh');
 
 						},
 						essenseData : {
@@ -249,7 +243,8 @@ var main = (function(){
 					essenseData : {
 					
 						renderclbk : function(){
-							actions.refreshSticky()
+							if (hsready)
+								el.panel.hcSticky('refresh');
 	
 						}
 					},
@@ -269,7 +264,7 @@ var main = (function(){
 							bottom : 122
 						});
 
-						hsready = true
+						//hsready = true
 
 					}
 
@@ -331,7 +326,9 @@ var main = (function(){
 
 							renderclbk : function(){
 								
-								//actions.refreshSticky()
+								if (hsready)
+
+									el.panel.hcSticky('refresh');
 		
 							}
 						},
@@ -506,9 +503,8 @@ var main = (function(){
 
 					makeShare()
 
-					
-
-					actions.refreshSticky()
+					if (hsready)
+						el.panel.hcSticky('refresh');
 				}
 				
 			},
@@ -585,8 +581,6 @@ var main = (function(){
 			},
 
 			destroy : function(){
-
-				hsready = false
 
 				if (plissing)
 					plissing.destroy()

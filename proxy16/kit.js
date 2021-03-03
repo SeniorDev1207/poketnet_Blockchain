@@ -580,16 +580,6 @@ var kit = {
 			},
 	
 			node : {
-
-				check : function(){
-					return kit.proxy().then(proxy => {
-
-						return proxy.nodeControl.check()
-
-					}).then(r => {
-						return Promise.resolve()
-					})
-				},
 	
 				enabled : function({enabled}){
 

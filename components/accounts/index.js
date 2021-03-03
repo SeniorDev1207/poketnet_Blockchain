@@ -236,12 +236,12 @@ var accounts = (function(){
 				el.c.find('.dumpaddress').html(address)
 
 				try{
-					var keyPair = self.app.user.keysPairFromPrivate(private)
+					var keyPair = bitcoin.ECPair.fromPrivateKey(Buffer.from(private, 'hex')) 
 
 					privateWif = keyPair.toWIF().toString('hex')
 				}
 				catch(e){
-					console.log("ER", e)
+
 				}
 
 			

@@ -238,6 +238,7 @@ var system16 = (function(){
 
 					globalpreloader(false)
 
+					console.log("ER", e)
 				})
 			}
 		}
@@ -336,6 +337,7 @@ var system16 = (function(){
 				var address = self.app.platform.sdk.address.pnet()
 
 				if(!address) return false
+
 				if (proxy && info){
 					return proxy.direct || _.indexOf(info.admins, address.address) > -1
 				}
@@ -368,11 +370,13 @@ var system16 = (function(){
 			dust : function(pk, address, value, clbk){
 				self.app.platform.sdk.wallet.sendmanyoutputs(pk, address, value, 2, function(err , data){
 
+					console.log("ERR", err)
 					if(err){
 						self.app.platform.errorHandler(err, true)	
 					}
 					else{
 
+						//sitemessage("Success!")
 					}
 
 					clbk(err)
@@ -381,7 +385,6 @@ var system16 = (function(){
 			},
 
 			ticksettings : function(settings, s, changed){
-
 
 				if (changed){
 					system = settings
@@ -414,7 +417,6 @@ var system16 = (function(){
 
 				info = state
 
-
 				var laststate = stats[stats.length - 1]
 
 				if(!laststate || (new Date(laststate.time)).addSeconds(10) < new Date() ){
@@ -425,20 +427,21 @@ var system16 = (function(){
 
 					stats = lastelements(stats, 1000)
 
-					if (el.c){
-						renders.nodecontentstate(el.c)
-						renders.nodescontenttable(el.c)
-						renders.webadminscontent(el.c)
-						renders.webdistributionwallets(el.c)
-						renders.webserverstatus(el.c)
-					}
-	
-					setTimeout(function(){
-						makers.stats(true)
-					}, 200)
+				}
+				
+
+
+				if (el.c){
+					renders.nodecontentstate(el.c)
+					renders.nodescontenttable(el.c)
+					renders.webadminscontent(el.c)
+					renders.webdistributionwallets(el.c)
+					renders.webserverstatus(el.c)
 				}
 
-				
+				setTimeout(function(){
+					makers.stats(true)
+				}, 200)
 			},
 
 			addnode : function(_node, clbk){
@@ -1239,9 +1242,7 @@ var system16 = (function(){
 
 						settings.charts[type].showed = _el.find('.graphWrapper').hasClass('showed')
 
-						
-							graph.chart.reflow()
-						
+						graph.chart.reflow()
 					})
 
 					_el.find('.subcaptiongraph').on('click', function(){
@@ -1279,8 +1280,6 @@ var system16 = (function(){
 
 				if(!el.c) return
 
-				console.log("update", update)
-
 				if (graphs[type] && update){
 
 					var t = helpers.type(type, stats)
@@ -1288,12 +1287,9 @@ var system16 = (function(){
 
 					series = graphs[type].rarefied(series, 50)
 
-					if(self.app.platform.focus){
-						console.log("focus")
-						graphs[type].chart.update({
-							series: series
-						});
-					}
+					graphs[type].chart.update({
+						series: series
+					});
 
 					return 
 				}
@@ -1449,6 +1445,7 @@ var system16 = (function(){
 
 							}).catch(e => {
 
+								console.log("ERROR", e)
 								wnd.find('.addproxy').removeClass('loading')
 
 								sitemessage("Unable to connect")
@@ -2018,10 +2015,12 @@ var system16 = (function(){
 									}
 	
 								}).catch(e => {
+									console.log("E", e)
 									globalpreloader(false)
 									return Promise.resolve()
 		
 								}).then(r => {
+									console.log("r", r)
 									changes.server = {}
 		
 									make(proxy || api.get.current());
@@ -2761,48 +2760,8 @@ var system16 = (function(){
 							})
 						})
 
-						p.el.find('.refreshother').on("click", function(){
-
-							globalpreloader(true)
-
-							proxy.fetch('manage', {
-
-								action : 'set.node.check',
-								data : {}
-
-							}).then(r => {
-
-								actions.refresh().then(r => {
-									actions.refreshsystem()
-
-									setTimeout(function(){
-										globalpreloader(false)
-									}, 300)
-									
-								})
-	
-							}).catch(e => {
-
-								setTimeout(function(){
-									globalpreloader(false)
-								}, 300)
-								
-								sitemessage(self.app.localization.e('e13293'))
-	
-							})
-						})
-
 						if (clbk)
 							clbk()
-
-					
-						/*if(!info.nodeManager.chain){
-
-							setTimeout(function(){
-								renders.allsettings()
-							}, 2000)
-
-						}*/
 					})
 
 				}
@@ -2853,7 +2812,7 @@ var system16 = (function(){
 		var makers = {
 
 			stacking : function(update){
-				if(actions.admin() && (!stacking || update)){
+				if(actions.admin() && (!stacking || update) && 1 == 0){
 
 					proxy.fetch('manage', {
 
@@ -2870,8 +2829,8 @@ var system16 = (function(){
 
 					}).catch(e => {
 
-						if (update)
-							sitemessage(deep(e, 'message') || self.app.localization.e('e13293'))
+						
+						sitemessage(deep(e, 'message') || self.app.localization.e('e13293'))
 
 						topPreloader(100);
 

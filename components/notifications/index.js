@@ -77,6 +77,7 @@ var notifications = (function(){
 					open : true
 				})
 
+				console.log('showAll', self)
 
 				self.closeContainer();
 			},
@@ -135,7 +136,7 @@ var notifications = (function(){
 					var tpl = m.fastMessage(notification)
 
 					if(!tpl) {
-						console.log('empty', notification)
+						console.log(notification)
 						return false
 					}
 
@@ -264,8 +265,12 @@ var notifications = (function(){
 			el.c.find('.showAll').on('click', events.showAll)
 
 			inel.addEventListener('scroll', events.seen);
+
+			console.log("INITEEVEV", el.c)
 			
 			el.c.find('.closecontainer').on('click', function(){
+
+				console.log('closeContainer')
 				self.closeContainer()
 			})
 

@@ -105,6 +105,7 @@ var staking = (function(){
 				do{
 					prevprice = this.price(i)
 
+					console.log('prevprice - price', prevprice - price, i, price, prevprice)
 
 					i--
 				}

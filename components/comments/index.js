@@ -1,8 +1,3 @@
-
-if(typeof _OpenApi == 'undefined'){
-	_OpenApi = false
-}
-
 var comments = (function(){
 
 	var self = new nModule();
@@ -70,7 +65,6 @@ var comments = (function(){
 
 			post : function(err, alias, _txid, pid, aid, editid, id, manual){
 
-				
 				if(_txid != txid) return
 
 				el.c.find('.sending').removeClass('sending')
@@ -183,18 +177,6 @@ var comments = (function(){
 
 			stateAction : function(clbk){
 
-				if (_OpenApi){
-
-					var phref = 'https://pocketnet.app/post?openapi=true&s=' + txid
-
-					if (self.app.ref){
-						phref += '&ref=' + self.app.ref
-					}
-
-					window.open(phref, '_blank');
-
-					return
-				}
 
 				self.app.user.isState(function(state){
 
@@ -238,6 +220,18 @@ var comments = (function(){
 			},
 			sharesocial : function(comment){
 
+
+					var nm = '';
+
+					var l = findAndReplaceLink(filterXSS(comment.message, {
+						whiteList: [],
+						stripIgnoreTag: true
+					}), true)
+
+					var m = emojione.toImage(l)
+
+					nm = nl2br(trimrn(m))
+
 					var hr = ed.hr + "&commentid=" + comment.id;
 
 					if(comment.parentid && comment.parentid != '0') hr = hr + "&parentid=" + comment.parentid;
@@ -245,21 +239,16 @@ var comments = (function(){
 					
 					self.nav.api.load({
 						open : true,
-						href : 'socialshare2',
+						href : 'socialshare',
 						history : true,
 						inWnd : true,
-						
 
 						essenseData : {
 							url : hr,
-							caption : "Share comment",
-							sharing : comment.social(self.app),
-							embedding : {
-								type : "comment",
-								commentid : comment.id,
-								parentid : comment.parentid,
-								id : txid
-							}
+							caption : self.app.localization.e('e13031'),
+							image : deep(app, 'platform.sdk.usersl.storage.'+comment.address+'.image'),
+							title : deep(app, 'platform.sdk.usersl.storage.'+comment.address+'.name'),
+							text : nm
 						}
 					})
 				
@@ -1540,11 +1529,6 @@ var comments = (function(){
 
 			post : function(clbk, p){
 
-				if(ed.openapi) {
-					if(clbk) clbk()
-					return
-				}
-
 				self.app.user.isState(function(state){
 					//if(!state) return;
 
@@ -1771,12 +1755,6 @@ var comments = (function(){
 					}
 				})
 
-				if (ed.commentPs){
-					p.comments = _.filter(p.comments || [], function(c){
-						if(c.id == ed.commentPs.commentid || c.id == ed.commentPs.parentid) return true
-					})
-				}
-
 				var _in = append
 
 				if(ed.fromtop && !p.el){
@@ -1825,8 +1803,7 @@ var comments = (function(){
 					},
 
 					additionalActions : function(){
-						if (ed && ed.additionalActions)
-							ed.additionalActions()
+						ed.additionalActions()
 					}
 
 				}, function(_p){
@@ -2089,7 +2066,7 @@ var comments = (function(){
 						}
 						else
 						{
-							var ps = ed.commentPs || parameters();
+							var ps = parameters();
 							var reply = {};
 
 							if (ps.commentid){

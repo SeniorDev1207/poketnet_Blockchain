@@ -18,8 +18,8 @@ var Applications = function(settings) {
     var applications = {
         win32: {
             github: {
-                //name : "win_x64_setup.exe",
-                name: "pocketnetcore_0.19.2_win_x64_daemon.bin",
+                name : "win_x64_setup.exe",
+                //name: "win_x64_pocketnetcore_daemon.zip",
                 url: 'https://api.github.com/repos/pocketnetapp/pocketnet.core/releases/latest',
                 page: 'https://github.com/pocketnetteam/pocketnet.core/releases/latest'
             }
@@ -143,12 +143,11 @@ var Applications = function(settings) {
     self.install = function(dest){
         return new Promise((resolve, reject) => {
             return self.download().then(r => {
-                console.log('r.path, dest', r.path, dest)
                 try{
+
                     fs.copyFile(r.path, dest, (e) => {
 
                         if(!e) {
-                            console.log("E", e)
                             return resolve(r)
                         }
     
@@ -160,7 +159,7 @@ var Applications = function(settings) {
                     });
                 }
                 catch(e){
-                    console.log("E", e)
+
                     reject({
                         code : 500,
                         error : 'cantcopy'
@@ -191,13 +190,12 @@ var Applications = function(settings) {
                     return true
                 }
 
+            }).then(p => {
+
+                r.path = p
+
+                return Promise.resolve(r)
             })
-            
-        }).then(p => {
-
-            r.path = p
-
-            return Promise.resolve(r)
         })
     }
 
@@ -226,10 +224,6 @@ var Applications = function(settings) {
 
     self.kit = {
 
-    }
-
-    self.hasapplication = function(){
-        return meta ? true : false
     }
 
     return self

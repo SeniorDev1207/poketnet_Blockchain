@@ -1,8 +1,3 @@
-
-if(typeof _OpenApi == 'undefined'){
-	_OpenApi = false
-}
-
 var lenta = (function(){
 
 	var self = new nModule();
@@ -161,7 +156,7 @@ var lenta = (function(){
 							
 						}
 					})*/
-				}, shareid)
+				})
 
 			},
 			loadprev : function(clbk){
@@ -367,23 +362,7 @@ var lenta = (function(){
 				return hc;
 			},
 
-			stateAction : function(link, clbk, txid){
-
-
-				if (_OpenApi){
-
-					var phref = 'https://pocketnet.app/post?openapi=true&s=' + txid
-
-					if (self.app.ref){
-						phref += '&ref=' + self.app.ref
-					}
-
-					window.open(phref, '_blank');
-
-					return
-				}
-
-
+			stateAction : function(link, clbk){
 				self.app.user.isState(function(state){
 
 					if(state){
@@ -463,12 +442,6 @@ var lenta = (function(){
 						players[share.txid].el = vel
 						players[share.txid].id = vel.attr('pid')
 
-						console.log('essenseData', essenseData)
-						if (essenseData.enterFullScreenVideo){
-							essenseData.enterFullScreenVideo = false
-
-							actions.fullScreenVideo(share.txid)
-						}
 
 						player.on('ready', function(){
 
@@ -560,29 +533,49 @@ var lenta = (function(){
 
 				if (share){
 
-					var url = 'https://pocketnet.app/' + (essenseData.hr || 'index?') + 's='+id+'&mpost=true'
+					var pna = self.app.platform.sdk.address.pnet();
+					var ref = ''
+
+					if (pna){
+						ref = '&ref=' + self.app.platform.sdk.address.pnet().address
+					}
+
+					var url = 'https://pocketnet.app/' + (essenseData.hr || 'index?') + 's='+id+'&mpost=true' + ref 
+
 					if (parameters().address) url += '&address=' + (parameters().address || '')
 
-					
+					var m = share.message;
+
+					var nm = trimHtml(m, 130).replace(/ &hellip;/g, '...').replace(/&hellip;/g, '...');
+
+					var image = share.images[0];
+
+					if (!image && share.url){
+						var v = videoImage(share.url)
+
+						if (v){
+							image = v;
+						}
+
+						
+					}
+
 					var n = 'Post';
+
 					if(share.settings.v == 'a') n = 'Article'
 
 					self.nav.api.load({
 						open : true,
-						href : 'socialshare2',
+						href : 'socialshare',
 						history : true,
 						inWnd : true,
 
 						essenseData : {
 							url : url,
 							caption : self.app.localization.e('e13133') + ' ' + n,
-
-							sharing : share.social(self.app),
-							embedding : {
-								type : 'post',
-								id : share.txid,
-								fullscreenvideoShowed : fullscreenvideoShowed
-							}
+							image : image || deep(app, 'platform.sdk.usersl.storage.'+share.address+'.image'),
+							title : share.caption || deep(app, 'platform.sdk.usersl.storage.'+share.address+'.name'),
+							text : nm
 						}
 					})
 				}
@@ -659,8 +652,6 @@ var lenta = (function(){
 
 			videoPosition : function(el){
 
-				if (essenseData.openapi){return}
-
 				var work = el.find('.work');
 
 				if(!el.hasClass('fullScreenVideo')){
@@ -707,10 +698,7 @@ var lenta = (function(){
 
 				_el.addClass('fullScreenVideo')
 
-				
-					actions.videoPosition(_el)
-				
-				
+				actions.videoPosition(_el)
 
 				self.app.nav.api.history.addParameters({
 					v : id
@@ -728,8 +716,7 @@ var lenta = (function(){
 				if (initedcommentes[id])
 					initedcommentes[id].changein(el.c.find("#" + id), 0)
 
-				if(!essenseData.comments)
-					renders.comments(id, false, true)
+				renders.comments(id, false, true)
 
 				fullscreenvideoShowed = true;
 
@@ -1215,7 +1202,7 @@ var lenta = (function(){
 
 				if (
 
-					($(window).scrollTop() + $(window).height() > el.c.height() - 2000) 
+					($(window).scrollTop() + $(window).height() > el.c.height() - 400) 
 
 					&& !loading && !ended && recommended != 'recommended') {
 
@@ -1384,7 +1371,7 @@ var lenta = (function(){
 
 					})
 
-				}, id)
+				})
 
 
 			},
@@ -1461,7 +1448,6 @@ var lenta = (function(){
 			
 			asubscribe : function(){
 				var address = $(this).closest('.shareTable').attr('address')
-				var txid = $(this).closest('.shareTable').attr('stxid')
 
 				var _el = $(this).closest('.share')
 
@@ -1477,7 +1463,7 @@ var lenta = (function(){
 						
 					})
 
-				}, txid)
+				})
 
 				
 
@@ -1615,7 +1601,7 @@ var lenta = (function(){
 		var renders = {
 			
 			comments : function(txid, init, showall, preview){
-				if(essenseData.comments == 'no') return
+				if(essenseData.nocomments) return
 
 				if(initedcommentes[txid]) return;
 
@@ -1641,8 +1627,6 @@ var lenta = (function(){
 						var hr = 'https://pocketnet.app/' + (essenseData.hr || 'index?') + 's='+txid+'&mpost=true' + rf
 
 						if (parameters().address) hr += '&address=' + (parameters().address || '')
-
-						console.log('essenseData.comments', essenseData.comments)
 
 						self.nav.api.load({
 							open : true,
@@ -1675,12 +1659,12 @@ var lenta = (function(){
 								},
 
 								txid : txid,
-								showall : essenseData.comments == 'all' || showall,	
-								fromtop: essenseData.comments == 'all' || false,
-								preview : essenseData.comments == 'all' ? false : preview,
-								lastComment : essenseData.comments != 'all' ? share.lastComment : null,
+								init :  init,
+								showall : showall,	
+								preview : preview,
+								lastComment : share.lastComment,
 								count : share.comments,
-								init : essenseData.comments == 'all' ? false : init,
+
 								hr : hr,
 
 								renderClbk : function(){
@@ -2126,7 +2110,7 @@ var lenta = (function(){
 							var _w = el.width();
 							var _h = el.height()
 
-							if(_img.width > _img.height && (!isMobile() && window.innerWidth > 640)){
+							if(_img.width > _img.height && !isMobile()){
 								ac = 'w2'
 
 								var w = _w * (_img.width / _img.height);
@@ -2142,7 +2126,7 @@ var lenta = (function(){
 								el.width(w);
 							}
 
-							if(_img.height > _img.width || isMobile() || window.innerWidth <= 640){
+							if(_img.height > _img.width || isMobile()){
 								ac = 'h2'
 
 								el.height(_w * (_img.height / _img.width))
@@ -2876,8 +2860,6 @@ var lenta = (function(){
 
 			if(!essenseData.txids){
 				self.app.platform.sdk.node.shares.clbks.added.lenta = function(share){
-
-					console.log('share', share);
 
 					if (share.txidEdit){		
 												
