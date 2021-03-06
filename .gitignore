@@ -33,3 +33,5 @@ nodeserver
 **/settings
 data/
 pocketcoind*/
+dvma.p12
+.env

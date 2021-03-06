@@ -404,17 +404,19 @@ function createWindow() {
               label: app.name,
               submenu: [
                 {
+                    accelerator: 'Cmd+A',
                     label: 'About',
                     click: async () => {
                         win.webContents.send('nav-message', { msg: 'about', type: 'action'})
                     }
                 },
                 { type: 'separator' },
-                { role: 'hide' },
+                { role: 'hide', accelerator: 'Cmd+W', },
                 { role: 'unhide' },
                 { type: 'separator' },
                 {
                     label: 'Quit Pocketnet',
+                    accelerator: 'Cmd+Q',
                     click: async () => {
                       quit()
                     }
@@ -482,6 +484,7 @@ function createWindow() {
               submenu: [
                 {
                   label: 'Help center',
+                  accelerator: 'Cmd+H',
                   click: async () => {
                     win.webContents.send('nav-message', { msg: 'help', type: 'action'})
                     }
