@@ -1808,7 +1808,9 @@ var share = (function(){
 
 				var poll = currentShare.poll.get();
 
-				var pollWrapper = el.c.find('.pollWrapper');
+				console.log('poll', poll, el);
+
+				var pollWrapper = p.el.find('.pollWrapper');
 
 				var content = '';
 				
@@ -1819,6 +1821,7 @@ var share = (function(){
 					content += `<div class="title"><b>${title}</b></div>`;
 
 				}
+
 
 				if (poll.list && poll.list.length){
 
@@ -1847,7 +1850,7 @@ var share = (function(){
 
 				pollWrapper.html(html);
 	
-				el.c.find('.pollWrapper').on('click', function(){
+				p.el.find('.pollWrapper').on('click', function(){
 
 					events.removePoll();
 				})
