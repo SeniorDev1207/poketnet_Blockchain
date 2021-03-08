@@ -18,7 +18,7 @@ PeerTubeHandler = function (app) {
 
   const apiHandler = {
     upload({ method, parameters }) {
-      return $.ajax({
+      $.ajax({
         url: `${baseUrl}${method}`,
         ...parameters,
       })
@@ -204,34 +204,48 @@ PeerTubeHandler = function (app) {
       formData.append(key, bodyOfQuery[key]),
     );
 
-    const CancelToken = axios.CancelToken;
-
-    return axios
-      .post(`${baseUrl}videos/upload`, formData, {
+    apiHandler.upload({
+      method: 'videos/upload',
+      parameters: {
+        type: 'POST',
+        method: 'POST',
+        contentType: false,
+        processData: false,
+        data: formData,
         headers: {
           Authorization: `Bearer ${this.userToken}`,
         },
 
-        onUploadProgress: (evt) => {
-          const percentCompleted = Math.round((evt.loaded * 100) / evt.total);
+        xhr: () => {
+          const xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
+          xhr.upload.addEventListener(
+            'progress',
+            function (evt) {
+              // добавляем обработчик события progress (onprogress)
+              if (evt.lengthComputable) {
+                const percentComplete = (evt.loaded / evt.total) * 100;
 
-          this.uploadProgress = percentCompleted;
-          parameters.uploadFunction(percentCompleted);
+                this.uploadProgress = percentComplete;
+                parameters.uploadFunction(percentComplete);
+              }
+            },
+            false,
+          );
+          return xhr;
         },
 
-        cancelToken: new CancelToken(c => parameters.cancelClbk(c)),
-      })
-      .then((res) => {
-        const json = res.data;
+        success: (json) => {
+          if (!json.video) return parameters.successFunction('error');
+          parameters.successFunction(
+            `${this.peertubeId}${watchUrl}${json.video.uuid}`,
+          );
+        },
 
-        if (!json.video) return parameters.successFunction('error');
-        parameters.successFunction(
-          `${this.peertubeId}${watchUrl}${json.video.uuid}`,
-        );
-      })
-      .catch((res) => {
-        return parameters.successFunction({ error: res });
-      });
+        fail: (res) => {
+          return parameters.successFunction({ error: res });
+        },
+      },
+    });
   };
 
   this.removeVideo = async (video) => {
@@ -307,23 +321,23 @@ PeerTubeHandler = function (app) {
           Authorization: `Bearer ${this.userToken}`,
         },
 
-        xhr: () => {
-          const xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
-          xhr.upload.addEventListener(
-            'progress',
-            function (evt) {
-              // добавляем обработчик события progress (onprogress)
-              if (evt.lengthComputable) {
-                const percentComplete = (evt.loaded / evt.total) * 100;
+        // xhr: () => {
+        //   const xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
+        //   xhr.upload.addEventListener(
+        //     'progress',
+        //     function (evt) {
+        //       // добавляем обработчик события progress (onprogress)
+        //       if (evt.lengthComputable) {
+        //         const percentComplete = (evt.loaded / evt.total) * 100;
 
-                this.uploadProgress = percentComplete;
-                parameters.uploadFunction(percentComplete);
-              }
-            },
-            false,
-          );
-          return xhr;
-        },
+        //         this.uploadProgress = percentComplete;
+        //         parameters.uploadFunction(percentComplete);
+        //       }
+        //     },
+        //     false,
+        //   );
+        //   return xhr;
+        // },
 
         success: (json) => {
           if (!json.video) return parameters.successFunction('error');
