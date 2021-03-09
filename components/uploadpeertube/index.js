@@ -273,7 +273,6 @@ var uploadpeertube = (function () {
         offScroll: true,
         noInnerScroll: true,
         class: 'uploadpeertube',
-        allowHide: true,
 
         swipeClose: true,
         swipeCloseDir: 'right',
