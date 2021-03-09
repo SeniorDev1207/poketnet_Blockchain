@@ -1,6 +1,5 @@
 var Proxy = require("./proxy");
 var Datastore = require('nedb');
-console.log("S")
 
 var deepExtend = require('deep-extend');
 var cloneDeep = require('clone-deep');
@@ -844,8 +843,6 @@ var kit = {
 
 		db = new Datastore(f.path(settingsPath));
 
-		console.log('f.path(settingsPath)', f.path(settingsPath))
-
 		return new Promise((resolve, reject) => {
 
 			var start = function(){
@@ -865,7 +862,6 @@ var kit = {
 					resolve()
 
 				}).catch(e => {
-					console.log("E", e)
 					reject(e)
 				})
 			}
@@ -879,8 +875,6 @@ var kit = {
 						var savedSettings = !err? docs[0] || {} : {}
 			
 						state.apply(state.expand(savedSettings, settings))
-
-						state.save()
 			
 						start()
 					});
@@ -888,10 +882,6 @@ var kit = {
 			
 				else{
 					state.apply(state.expand({}, settings))
-
-					console.log("ERROR", err)
-
-					state.save()
 
 					start()
 				}
