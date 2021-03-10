@@ -251,10 +251,8 @@ var share = (function(){
 	
 								closeClbk : function() {
 									if (!currentShare.url.v.includes(self.app.peertubeHandler.peertubeId)) {
-										if (el.peertube && el.peertubeLiveStream) {
-											el.peertube.removeClass('disabledShare');
-											el.peertubeLiveStream.removeClass('disabledShare');
-										}
+										el.peertube.removeClass('disabledShare');
+										el.peertubeLiveStream.removeClass('disabledShare');
 									}
 								}
 							},
@@ -323,9 +321,7 @@ var share = (function(){
 									el.peertubeLiveStream.removeClass('disabledShare');
 	
 									if (!currentShare.url.v.includes(self.app.peertubeHandler.peertubeId)) {
-										if (el.peertube) {
-											el.peertube.removeClass('disabledShare');
-										}
+										el.peertube.removeClass('disabledShare');
 									}
 								}
 							},
