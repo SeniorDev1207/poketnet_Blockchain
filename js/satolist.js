@@ -17940,33 +17940,37 @@ Platform = function (app, listofnodes) {
 
         self.preparingUser = true;
 
-        ///telegram access
-        if (self.app.platform.sdk.address.pnet()){
-            var a = self.app.platform.sdk.address.pnet().address
+        var pnet = self.app.platform.sdk.address.pnet()
 
-            if ((a == 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82') || (a == 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s') || (a == 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc')) {
+        $('#matrix').empty();
+
+        ///telegram access
+        if (pnet){
+
+            var a = pnet.address;
+
+            var addresses = ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8']
+        
+            if (addresses.indexOf(a) > -1) {
 
                 self.app.user.features.telegram = 1;
 
-                var currentHref = self.app.nav.get.href();
+                if (!isMobile()){
 
-                var electronHrefs = JSON.parse(localStorage['electron_hrefs'] || "[]");
-               
-                if (electronHrefs.indexOf(currentHref) == -1 && !electron){
+                    var a = self.app.platform.sdk.address.pnet().address
+                    var privatekey = self.app.user.private.value.toString('hex');
+        
+                    var matrix = `<div class="wrapper">
+                        <matrix-element
+                            address="${a}"
+                            privatekey="${privatekey}"
+                            pocketnet="true"   
+                        >
+                        </matrix-element>
+                    </div>`
 
-                    electronHrefs.push(currentHref)
-
-                    localStorage['electron_hrefs'] = JSON.stringify(electronHrefs)
-
-                    try{
-                        window.location = 'pocketnet://electron/' + currentHref;
-                    }
-                    catch(e){
-                        console.log("electron not installed")
-                    }
-                   
+                    $('#matrix').append(matrix);                 
                 }
-
 
             } else {
                 self.app.user.features.telegram = 0;
