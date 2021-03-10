@@ -17940,56 +17940,33 @@ Platform = function (app, listofnodes) {
 
         self.preparingUser = true;
 
-        var pnet = self.app.platform.sdk.address.pnet()
-
-        $('#matrix').empty();
-
         ///telegram access
-        if (pnet){
+        if (self.app.platform.sdk.address.pnet()){
+            var a = self.app.platform.sdk.address.pnet().address
 
-            var a = pnet.address;
-
-            var addresses = ['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8']
-        
-            if (addresses.indexOf(a) > -1) {
+            if ((a == 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82') || (a == 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s') || (a == 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc')) {
 
                 self.app.user.features.telegram = 1;
 
-                if (!isMobile()){
+                var currentHref = self.app.nav.get.href();
 
-                    var a = self.app.platform.sdk.address.pnet().address
-                    var privatekey = self.app.user.private.value.toString('hex');
-        
-                    var matrix = `<div class="wrapper">
-                        <matrix-element
-                            address="${a}"
-                            privatekey="${privatekey}"
-                            pocketnet="true"   
-                        >
-                        </matrix-element>
-                    </div>`
+                var electronHrefs = JSON.parse(localStorage['electron_hrefs'] || "[]");
+               
+                if (electronHrefs.indexOf(currentHref) == -1 && !electron){
 
-                    $('#matrix').append(matrix);
+                    electronHrefs.push(currentHref)
 
-                    var currentHref = self.app.nav.get.href();
+                    localStorage['electron_hrefs'] = JSON.stringify(electronHrefs)
 
-                    var electronHrefs = JSON.parse(localStorage['electron_hrefs'] || "[]");
+                    try{
+                        window.location = 'pocketnet://electron/' + currentHref;
+                    }
+                    catch(e){
+                        console.log("electron not installed")
+                    }
                    
-                    if (electronHrefs.indexOf(currentHref) == -1 && !electron){
-    
-                        electronHrefs.push(currentHref)
-    
-                        localStorage['electron_hrefs'] = JSON.stringify(electronHrefs.slice(electronHrefs.length - 100))
-    
-                        try{
-                            window.location = 'pocketnet://electron/' + currentHref;
-                        }
-                        catch(e){
-                            console.log("electron not installed")
-                        }
-                       
-                    }                    
                 }
+
 
             } else {
                 self.app.user.features.telegram = 0;
