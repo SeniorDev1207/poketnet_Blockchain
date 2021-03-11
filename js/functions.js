@@ -9911,6 +9911,7 @@
 					id = test[9]	
 			    }
 				if (test.indexOf('peertube://') > -1) {
+
 					var params = _url.split('?')[1] || '';
 
 					type = 'peertube'
