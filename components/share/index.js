@@ -16,8 +16,6 @@ var share = (function(){
 
 		var focusfixed = false, external = null, pliss;
 
-		var videoUploadData = {};
-
 		var intro = false;
 
 		var m = self.app.localization.e('e13160')
@@ -199,6 +197,7 @@ var share = (function(){
 				var storage = currentShare.export(true)
 
 				if (type === 'addVideo') {
+
 					globalpreloader(true);
 
 					el.peertube.addClass('disabledShare');
@@ -252,17 +251,14 @@ var share = (function(){
 	
 								closeClbk : function() {
 									if (!currentShare.url.v.includes(self.app.peertubeHandler.peertubeId)) {
-										if (el.peertube && el.peertubeLiveStream) {
-											el.peertube.removeClass('disabledShare');
-											el.peertubeLiveStream.removeClass('disabledShare');
-										}
+										el.peertube.removeClass('disabledShare');
+										el.peertubeLiveStream.removeClass('disabledShare');
 									}
 								}
 							},
 	
-							clbk : function(p, element){
+							clbk : function(p){
 								external = p
-								videoUploadData = element.essenseData;
 							}
 						})
 
@@ -325,9 +321,7 @@ var share = (function(){
 									el.peertubeLiveStream.removeClass('disabledShare');
 	
 									if (!currentShare.url.v.includes(self.app.peertubeHandler.peertubeId)) {
-										if (el.peertube) {
-											el.peertube.removeClass('disabledShare');
-										}
+										el.peertube.removeClass('disabledShare');
 									}
 								}
 							},
@@ -1111,28 +1105,10 @@ var share = (function(){
 			post : function(){
 				var error = actions.error();
 
-				if (videoUploadData.uploadInProgress) {
-					dialog({
-						html : "Video is still uploading. Do you want to cancel it?",
-						btn1text : "Wait",
-						btn2text : "Cancel uploading",
-	
-						class : 'videoCaution',
-	
-						success : () => {
-							return;
-						},
+				console.log('error',error)
 
-						fail : () => {
-							if (videoUploadData.cancelCloseFunction) videoUploadData.cancelCloseFunction();
-							
-							return;
-						},
-					})
-				} else {
-					if (!error){
-						actions.post()
-					}
+				if (!error){
+					actions.post()
 				}
 				
 			},
@@ -1340,8 +1316,6 @@ var share = (function(){
 
 					p.el.find('.cancelediting').on('click', function(){
 						self.closeContainer();
-
-						if (videoUploadData.cancelCloseFunction) videoUploadData.cancelCloseFunction();
 		
 						if (essenseData.close){
 							essenseData.close()
@@ -2296,8 +2270,6 @@ var share = (function(){
 
 			wnd : {
 				close : function(){
-					if (videoUploadData.cancelCloseFunction) videoUploadData.cancelCloseFunction();
-					
 					if (essenseData.close){
 						essenseData.close()
 					}
