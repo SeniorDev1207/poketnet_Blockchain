@@ -5,12 +5,14 @@ PeerTubeHandler = function (app) {
     'pocketnetpeertube3.nohost.me',
   ];
 
-  let randomServer =
+  const randomServer =
     hardCodeUrlsList[Math.floor(Math.random() * hardCodeUrlsList.length)];
 
-  let baseUrl = `https://${randomServer}/api/v1/`;
+  const baseUrl = `https://${randomServer}/api/v1/`;
 
-  let watchUrl = `https://${randomServer}/videos/watch/`;
+  const watchUrl = `https://${randomServer}/videos/watch/`;
+
+  console.log('Selected Server', baseUrl);
 
   this.peertubeId = 'peertube://';
 
@@ -48,19 +50,6 @@ PeerTubeHandler = function (app) {
   this.password = '';
   this.uploadProgress = 0;
 
-  this.getServerInfo = () => {
-    return app.api
-      .fetch('peertube/servers')
-      .then((data) => {
-        [baseUrl, watchUrl, randomServer] = [
-          `https://${data.fastest.server}/api/v1/`,
-          `https://${data.fastest.server}/videos/watch/`,
-          data.fastest.server,
-        ];
-      })
-      .catch(() => {});
-  };
-
   this.registerUser = (userInfo) => {
     return apiHandler.run({
       method: 'users/register',
@@ -96,8 +85,6 @@ PeerTubeHandler = function (app) {
         ),
       )
       .toString('hex');
-
-    await this.getServerInfo();
 
     const { client_id, client_secret } = await apiHandler
       .run({
@@ -232,7 +219,7 @@ PeerTubeHandler = function (app) {
           parameters.uploadFunction(percentCompleted);
         },
 
-        cancelToken: new CancelToken((c) => parameters.cancelClbk(c)),
+        cancelToken: new CancelToken(c => parameters.cancelClbk(c)),
       })
       .then((res) => {
         const json = res.data;
