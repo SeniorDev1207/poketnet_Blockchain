@@ -9228,7 +9228,7 @@ var PlyrEx = function(target, options, clbk) {
   
               if ((response.files || []).length) {
                   _plyr(response.files[0].fileUrl, preview_picture || '', response.name || '');
-                  clearInterval(checkInterval);
+                  // clearInterval(checkInterval);
 
                   if (clbk) clbk(new Plyr(target, options));
   
@@ -9237,12 +9237,12 @@ var PlyrEx = function(target, options, clbk) {
   
                   if (linkParameters.imported) loadingMessage = 'Video is importing.';
   
-                  if (response.isLive) loadingMessage = 'Live is yet to start.'
+                  if (response.isLive) loadingMessage = linkParameters.date ? `Live will start at ${moment(linkParameters.date).format('HH:mm MM/DD/YYYY')}` : 'Live is yet to start.'
                   _error(loadingMessage);
               }
           }
       });
-      }, 1000);
+      }, 5000);
 
     } else {
 
