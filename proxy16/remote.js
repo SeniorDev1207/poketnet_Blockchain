@@ -382,6 +382,7 @@ var Remote = function(app){
 					d = d.data || {}
 				}
 				catch(e){
+					console.log("E", e)
 				}
 
 				if (clbk){

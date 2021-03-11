@@ -242,20 +242,6 @@ Nav = function(app)
 	}
 
 	var historyManager = {
-		removeParametersFromHref : function(href, ids){
-
-			if(!href) return href
-
-			var _p = parameters(href, true) || {};
-
-			_.each(ids || [], function(id){
-				delete _p[id]
-			})
-
-			href = href.split('?')[0];
-
-			return href + collectParameters(_p);
-		},
 		addParametersToHref : function(href, p){
 
 			if(!href) return href
