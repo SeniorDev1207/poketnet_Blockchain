@@ -17,8 +17,6 @@ var streampeertube = (function () {
     var wnd;
     var wndObj;
 
-    var streamDate;
-
     var actions = {};
 
     var events = {};
@@ -112,9 +110,7 @@ var streampeertube = (function () {
             sitemessage(message || 'Uploading error');
             contentSection.removeClass('hidden');
             el.streamButton.removeClass('disabledButton');
-            el.streamButton.html(
-              '<i class="fas fa-broadcast-tower"></i> Go Live',
-            );
+            el.streamButton.html('<i class="fas fa-broadcast-tower"></i> Go Live');
 
             return;
           }
@@ -132,11 +128,7 @@ var streampeertube = (function () {
           rtmpInput.val(response.rtmpUrl);
           streamKeyInput.val(response.streamKey);
 
-          actions.added(
-            `${response.video}?stream=true${
-              streamDate ? `&date=${streamDate}` : ''
-            }`,
-          );
+          actions.added(`${response.video}?stream=true`);
           // wndObj.close();
         };
 
@@ -153,14 +145,9 @@ var streampeertube = (function () {
 
           copyText(linkValue);
 
-          sitemessage('Link was copied to clipboard');
+          sitemessage('Link was copied to clipboard')
         });
-      });
 
-      el.dateInput.DateTimePicker({
-        settingValueOfElement: function (a, b) {
-          streamDate = moment.utc(b).format();
-        },
       });
     };
 
@@ -236,7 +223,6 @@ var streampeertube = (function () {
         el.uploadProgress = el.c.find('.upload-progress-container');
         el.contentSection = el.c.find('.content-section');
         el.resultSection = el.c.find('.result-section');
-        el.dateInput = el.c.find('#dtBox');
 
         el.streamButton = el.c.find('.streamButton');
 

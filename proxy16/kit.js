@@ -1,5 +1,6 @@
 var Proxy = require("./proxy");
 var Datastore = require('nedb');
+console.log("S")
 
 var deepExtend = require('deep-extend');
 var cloneDeep = require('clone-deep');
@@ -285,6 +286,7 @@ var kit = {
 							type : 'proxy-settings-changed',
 							data : notification
 						}).catch(e => {
+							console.log("E", e)
 							return Promise.resolve()
 						})
 
@@ -433,8 +435,6 @@ var kit = {
 				},
 	
 				captcha : function(v){
-
-					if(typeof v == 'undefined') return Promise.reject('emptyargs')
 	
 					if (settings.server.captcha == v) return Promise.resolve()
 						settings.server.captcha = v
@@ -445,7 +445,6 @@ var kit = {
 	
 				enabled : function(v){
 
-					if(typeof v == 'undefined') return Promise.reject('emptyargs')
 	
 					if (settings.server.enabled == v) return Promise.resolve() 
 						settings.server.enabled = v
@@ -480,10 +479,10 @@ var kit = {
 	
 				ssl : function(sslobj){
 	
-					if(sslobj.key && sslobj.cert && typeof sslobj.passphrase != 'undefined'){
+					if(sslobj.key && sslobj.cert && sslobj.passphrase){
 		
 						var d = {
-							passphrase : sslobj.passphrase || '',
+							passphrase : sslobj.passphrase,
 							name : sslobj.name || 'Default'
 						}
 	
@@ -662,6 +661,7 @@ var kit = {
 
 							return r.importPrivKey(privatekey)
 						}).catch(e => {
+							console.log(e)
 
 							return Promise.reject(e)
 						})
@@ -787,32 +787,6 @@ var kit = {
 					return proxy.kit.detach(modules)
 				})
 			}
-		},
-
-		help : {
-			commands : function(){
-
-				var list = [];
-
-				var rec = function(obj, key){
-
-					if (typeof obj == 'function'){
-
-						list.push(key)
-
-					}
-					else{
-						_.each(obj, (obj, i) => {
-							rec(obj, key ? key + '.' + i : i )
-						})
-					}
-
-				}
-
-				rec(kit.manage)
-
-				return Promise.resolve(list.join("\n"))
-			}
 		}
 	},
 
@@ -870,6 +844,7 @@ var kit = {
 
 		db = new Datastore(f.path(settingsPath));
 
+		console.log('f.path(settingsPath)', f.path(settingsPath))
 
 		return new Promise((resolve, reject) => {
 
@@ -890,6 +865,7 @@ var kit = {
 					resolve()
 
 				}).catch(e => {
+					console.log("E", e)
 					reject(e)
 				})
 			}
@@ -912,6 +888,8 @@ var kit = {
 			
 				else{
 					state.apply(state.expand({}, settings))
+
+					console.log("ERROR", err)
 
 					state.save()
 

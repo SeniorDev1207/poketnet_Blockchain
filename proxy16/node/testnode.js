@@ -51,6 +51,7 @@ var Testnode = function(node){
 
     var request = function(method, p){
 
+        //console.log("REQUEST")
 
         var parameters = _.map(_.clone(p || methods[method] || []), function(p, i){
             if(h[p]) return h[p]()
@@ -58,6 +59,7 @@ var Testnode = function(node){
             return p
         })
 
+        //console.log('parameters', parameters)
 
         return f.delay(f.rand(3, 100)).then(() => {
             return node.rpcs(method, parameters)
@@ -82,7 +84,7 @@ var Testnode = function(node){
     }
 
     var log = function(){
-        //console.log(node.statistic.get())
+        console.log(node.statistic.get())
     }
 
     self.scenariosmeta = {
@@ -99,6 +101,7 @@ var Testnode = function(node){
 
                     log()
 
+                    console.log("wait:", waittime)
 
                     return f.delay(waittime)
 
@@ -147,6 +150,7 @@ var Testnode = function(node){
                         })
 
                     }).catch(e => {
+                        console.log("E", e)
 
                         return Promise.resolve()
                     })
@@ -155,6 +159,7 @@ var Testnode = function(node){
 
 
             return Promise.all(promises).catch(e => {
+                console.log("E", e)
 
                 return Promise.reject(e)
             })
@@ -162,6 +167,7 @@ var Testnode = function(node){
 
         parallellMethodsLong : function(count, methodkeys, time){
 
+            console.log('time', time)
 
             if(!time) time = 0
 
@@ -174,6 +180,7 @@ var Testnode = function(node){
 
             return self.scenariosmeta.parallellMethods(count, methodkeys).catch(e => {
 
+                console.log("E" ,e)
 
                 return Promise.resolve()
 
@@ -195,6 +202,7 @@ var Testnode = function(node){
                 methodkeys = ['getuserprofile', 'getrawtransactionwithmessage', 'getuserstate', 'getrawtransactionwithmessagebyid', 'txunspent']
             
 
+            console.log("TESTING", count, methodkeys)
 
             return self.scenariosmeta.parallellMethodsLong(count, methodkeys, 60000)
         }
