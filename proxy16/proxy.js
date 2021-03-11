@@ -22,6 +22,7 @@ var Wallet = require('./wallet/wallet.js');
 var Remote = require('./remote.js');
 var Proxies = require('./proxies.js');
 var Exchanges = require('./exchanges.js');
+var Peertube = require('./peertube.js');
 //////////////
 
 
@@ -39,13 +40,14 @@ var Proxy = function (settings, manage) {
     var remote = new Remote();
     var proxies = new Proxies(settings.proxies)
     var exchanges = new Exchanges() 
+    var peertube = new Peertube() 
 
     self.userDataPath = null    
 
     f.mix({ 
         wss, server, pocketnet, nodeControl, 
         remote, firebase, nodeManager, wallet,
-        proxies, exchanges,
+        proxies, exchanges, peertube,
 
         proxy : self
     })
@@ -98,7 +100,7 @@ var Proxy = function (settings, manage) {
             var options = {};
 
 
-            if(!sslsettings.key || !sslsettings.cert || !sslsettings.passphrase) return {
+            if(!sslsettings.key || !sslsettings.cert || typeof sslsettings.passphrase == 'undefined') return {
 
             }
 
@@ -106,7 +108,7 @@ var Proxy = function (settings, manage) {
                 options = {
                     key: fs.readFileSync(f.path(sslsettings.key)),
                     cert: fs.readFileSync(f.path(sslsettings.cert)),
-                    passphrase: sslsettings.passphrase
+                    passphrase: sslsettings.passphrase || ''
                 }
             }
             catch (e) {
@@ -192,11 +194,9 @@ var Proxy = function (settings, manage) {
 
         rews : function(){
             return self.server.re().then(r => {
-                console.log("R", r)
                 return self.wss.re()
             }).then(r => {
 
-                console.log("R2", r)
                 return self.firebase.re()
 
             }).catch(e => {
@@ -288,7 +288,6 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
-                console.log("R3", r)
                 this.init()
             })
         },
@@ -397,7 +396,6 @@ var Proxy = function (settings, manage) {
 
         re : function(){
             return this.destroy().then(r => {
-                console.log("R4", r)
                 this.init()
             })
         },
@@ -424,6 +422,26 @@ var Proxy = function (settings, manage) {
 
         get kit(){
             return exchanges.kit
+        },
+    }
+
+    self.peertube = {
+        init: function () {
+            return peertube.init()
+        },
+
+        destroy: function () {
+            return peertube.destroy()
+        },
+
+        re : function(){
+            return this.destroy().then(r => {
+                this.init()
+            })
+        },
+
+        get kit(){
+            return peertube.kit
         },
     }
 
@@ -518,7 +536,7 @@ var Proxy = function (settings, manage) {
 
             status = 1
 
-            return this.initlist(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges']).then(r => {
+            return this.initlist(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges', 'peertube']).then(r => {
 
                 status = 2
 
@@ -561,7 +579,7 @@ var Proxy = function (settings, manage) {
                 }
             }
 
-            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges'], (i) => {
+            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges', 'peertube'], (i) => {
                 return self[i].destroy().catch(catchError(i)).then(() => {
                     return Promise.resolve()
                 })
@@ -1042,6 +1060,17 @@ var Proxy = function (settings, manage) {
             }
         },
 
+        peertube : {
+            servers : {
+                path : '/peertube/servers',
+                action : () => self.peertube.kit.getBestServer().then(res => Promise.resolve({
+                    data: res,
+                })).catch(err => Promise.reject({
+                    data: err,
+                })),
+            }
+        },
+
         captcha : {
             get : {
                 authorization : 'signature',
@@ -1228,7 +1257,6 @@ var Proxy = function (settings, manage) {
                     return kaction(message.data).then(data => {
                         return Promise.resolve({data})
                     }).catch(e => {
-                        console.log("E", e)
                         return Promise.reject(e)
                     })
                 }

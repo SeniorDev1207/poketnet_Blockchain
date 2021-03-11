@@ -2017,6 +2017,27 @@ input[type=radio].radio:checked + label {
         }
     }
 
+    .changeStateButtons {
+        display: flex;
+        background-color: white;
+
+        position: absolute;
+        right: 2 * @rhythm;
+        top: 2 * @rhythm;
+
+        .changeButton {
+            cursor: pointer;
+            
+            &:hover {
+                color: @color-contrast;
+            }
+        }
+
+        .hideButton {
+            margin-right: 2 * @rhythm;
+        }
+    }
+
     .leftbg{
         position: absolute;
         left: -60px;

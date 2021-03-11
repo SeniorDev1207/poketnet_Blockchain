@@ -285,7 +285,6 @@ var kit = {
 							type : 'proxy-settings-changed',
 							data : notification
 						}).catch(e => {
-							console.log("E", e)
 							return Promise.resolve()
 						})
 
@@ -434,6 +433,8 @@ var kit = {
 				},
 	
 				captcha : function(v){
+
+					if(typeof v == 'undefined') return Promise.reject('emptyargs')
 	
 					if (settings.server.captcha == v) return Promise.resolve()
 						settings.server.captcha = v
@@ -444,6 +445,7 @@ var kit = {
 	
 				enabled : function(v){
 
+					if(typeof v == 'undefined') return Promise.reject('emptyargs')
 	
 					if (settings.server.enabled == v) return Promise.resolve() 
 						settings.server.enabled = v
@@ -478,10 +480,10 @@ var kit = {
 	
 				ssl : function(sslobj){
 	
-					if(sslobj.key && sslobj.cert && sslobj.passphrase){
+					if(sslobj.key && sslobj.cert && typeof sslobj.passphrase != 'undefined'){
 		
 						var d = {
-							passphrase : sslobj.passphrase,
+							passphrase : sslobj.passphrase || '',
 							name : sslobj.name || 'Default'
 						}
 	
@@ -660,7 +662,6 @@ var kit = {
 
 							return r.importPrivKey(privatekey)
 						}).catch(e => {
-							console.log(e)
 
 							return Promise.reject(e)
 						})
@@ -786,6 +787,32 @@ var kit = {
 					return proxy.kit.detach(modules)
 				})
 			}
+		},
+
+		help : {
+			commands : function(){
+
+				var list = [];
+
+				var rec = function(obj, key){
+
+					if (typeof obj == 'function'){
+
+						list.push(key)
+
+					}
+					else{
+						_.each(obj, (obj, i) => {
+							rec(obj, key ? key + '.' + i : i )
+						})
+					}
+
+				}
+
+				rec(kit.manage)
+
+				return Promise.resolve(list.join("\n"))
+			}
 		}
 	},
 
@@ -843,6 +870,7 @@ var kit = {
 
 		db = new Datastore(f.path(settingsPath));
 
+
 		return new Promise((resolve, reject) => {
 
 			var start = function(){
@@ -875,6 +903,8 @@ var kit = {
 						var savedSettings = !err? docs[0] || {} : {}
 			
 						state.apply(state.expand(savedSettings, settings))
+
+						state.save()
 			
 						start()
 					});
@@ -882,6 +912,8 @@ var kit = {
 			
 				else{
 					state.apply(state.expand({}, settings))
+
+					state.save()
 
 					start()
 				}

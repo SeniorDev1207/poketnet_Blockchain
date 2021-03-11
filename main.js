@@ -186,7 +186,7 @@ function createTray() {
         }
     })
 
-    win.on('show', () => {
+    /*win.on('show', () => {
         if (!tray) return;
         try {
             tray.setHighlightMode('always')
@@ -198,7 +198,7 @@ function createTray() {
         try {
             tray.setHighlightMode('never')
         } catch {}
-    })
+    })*/
 }
 
 function destroyTray() {
@@ -645,7 +645,9 @@ if(!r) {
     // If we are running a non-packaged version of the app && on windows
 
 
-    app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);  
+    /*if (is.windows()) {
+        app.setAsDefaultProtocolClient('pocketnet', process.execPath, [path.resolve(process.argv[1])]);  
+    }*/
     
 
 
