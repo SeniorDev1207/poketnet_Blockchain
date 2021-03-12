@@ -63,6 +63,10 @@ var uploadpeertube = (function () {
       el.uploadButton.on('click', function () {
         var filesWrittenObject = {};
 
+        ed.uploadInProgress = true;
+
+        el.header.removeClass('activeOnRolled');
+
         if (el.importUrl.val()) {
           filesWrittenObject.uploadFunction = function (percentComplete) {
             var formattedProgress = percentComplete.toFixed(2);
@@ -98,8 +102,6 @@ var uploadpeertube = (function () {
           };
 
           filesWrittenObject.url = el.importUrl.val();
-
-          ed.uploadInProgress = true;
 
           wndObj.hide();
           el.uploadProgress.removeClass('hidden');
@@ -213,12 +215,7 @@ var uploadpeertube = (function () {
           el.cancelButton.removeClass('hidden');
         };
 
-        ed.uploadInProgress = true;
-
-        el.header.removeClass('activeOnRolled');
-
         wndObj.hide();
-
         el.uploadButton.prop('disabled', true);
         el.uploadProgress.removeClass('hidden');
         el.header.removeClass('activeOnRolled');

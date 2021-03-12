@@ -36,8 +36,6 @@
     }
 
     .upload-field-container {
-        position: relative;
-
         color: @color-black;
 
         .upload-peertube-label {
@@ -101,21 +99,10 @@
         font-weight: bold;
     }
 
-    .upload-input {
-        border-width: 1px;
-        border-radius: 15px;
+    .upload-video-name {
+        border-width: 0;
 
-        padding-left: 1em;
-    }
-
-    .on-border-input {
-        position: absolute;
-        top: -10px;
-        left: 15px;
-        font-size: 0.9em;
-        font-weight: bold;
-        background-color: white;
-        padding: 0 2px;
+        border-bottom-width: 1px;
     }
 
     .upload-progress-container {
@@ -123,18 +110,21 @@
         flex-direction: row;
         justify-content: flex-start;
         align-items: flex-end;
+
+
+        margin-top: @rhythm * 4;
     }
 
     .barWrapper {
         min-width: 50px;
-        width: 100%;
+        width: 80%;
     }
 
     .upload-progress-bar {
         height: 1px;
         width: 100%;
 
-        background-color: @color-orange;
+        background-color: green;
     }
 
     .disabledInput {
@@ -177,6 +167,9 @@
 
     .import-video-link {
         width: 250px;
+
+        border-width: 0px;
+        border-bottom-width: 1px;
     }
 
   
@@ -216,6 +209,7 @@
 
         input{
             width: 100%;
+            padding-left: 0;
         }
 
 
@@ -238,25 +232,12 @@
     }
 
     .upload-button-section {
+        width: 38%;
         box-sizing: border-box;
         border-left: 1px solid @color-gray-slight;
         text-align: center;
         padding : 2  * @rhythm;
         background: fade(@color-gray-slight, 20);
-
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        align-items: center;
-        justify-content: center;
-
-        .progressSection {
-            width: 100%;
-        }
-    }
-
-    .main-upload-fields {
-        width: 62%;
     }
 
     .mainWrapper {
@@ -266,14 +247,6 @@
         top : 0;
         bottom : 0;
         right: 0;
-    }
-
-    .verticalSection {
-        padding: @rhythm;
-    }
-
-    .video-title-container {
-        position: relative;
     }
 
 }
@@ -291,37 +264,7 @@
         }
     }
 
-    .upload-button-section {
-        > :not(.activeOnRolled) {
-            display: none;
-        }
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        padding: 0;
-        width: 100%;
-        height: 100%;
-
-        .progressSection {
-            width: 80%;
-        }
-    }
-
-    .upload-header-wrapper {
-        > :not(.activeOnRolled) {
-            display: none;
-        }
-    }
-
     .main-upload-fields {
-        > :not(.activeOnRolled) {
-            display: none;
-        }
-    }
-
-    .sectionsWrapper {
         > :not(.activeOnRolled) {
             display: none;
         }

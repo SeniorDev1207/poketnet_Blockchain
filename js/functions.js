@@ -9857,10 +9857,6 @@
 		if(v.type == 'vimeo'){
 			return 'https://i.vimeocdn.com/video/'+v.id+'_320.jpg'
 		}
-
-		if(v.type == 'peertube'){
-			return `https://${v.host_name}/static/thumbnails/${v.id}.jpg`;
-		}
 	}
 
 
