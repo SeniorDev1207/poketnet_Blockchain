@@ -2019,9 +2019,11 @@ input[type=radio].radio:checked + label {
 
     .changeStateButtons {
         display: flex;
+        background-color: white;
+
         position: absolute;
-        right: 2 * @rhythm;
-        top: 2 * @rhythm;
+        right: 10px;
+        top: 10px;
 
         .changeButton {
             cursor: pointer;
@@ -2032,7 +2034,7 @@ input[type=radio].radio:checked + label {
         }
 
         .hideButton {
-            margin-right: 2 * @rhythm;
+            margin-right: 10px;
         }
     }
 
@@ -3171,11 +3173,6 @@ input[type=radio].radio:checked + label {
             display: none;
         }
     }
-
-    &.videoCaution {
-        z-index: 1006;
-    }
-    
 }
 
 .menudialog{
@@ -3576,10 +3573,6 @@ input[type=radio].radio:checked + label {
             display: table-cell;
             vertical-align: middle;
             text-align: center;
-        }
-
-        .errorcntCell {
-            font-size: 2em;
         }
     }
 }
@@ -5710,4 +5703,25 @@ input[type=radio].radio:checked + label {
     }
         
 
+}
+
+.matrix{
+    position: relative;
+    top: 10px;
+    float: right;
+    bottom: auto;
+    z-index: 999;
+    width: 420px;
+    right: 15px;
+
+    // background: white
+
+
+    .wrapper{
+        position: fixed;
+        width: 420px;
+        bottom: 0;
+        -webkit-box-shadow: 0px 0px 21px 5px rgba(0,0,0,0.16); 
+        box-shadow: 0px 0px 21px 5px rgba(0,0,0,0.16);
+    }
 }
