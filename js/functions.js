@@ -94,7 +94,7 @@
  	}
 
 	isios = function () {
-		return typeof window != 'undefined' && window.cordova && window.device && deep(window, 'device.platform') == 'iOS'
+		return window.cordova && window.device && deep(window, 'device.platform') == 'iOS'
 	}
 
  
@@ -560,7 +560,7 @@
 				if(p.leftbg) 
 					h+='<div class="leftbg"><div>'+p.leftbg+'</div></div>';
 
-				h+=	 p.allowHide ? '<div class="wndcontent content">' + content + '<div class="changeStateButtons"><div class="hideButton changeButton"><i class="fas fa-minus"></i></div><div class="closeButton changeButton"><i class="fas fa-times"></i></div><div class="changeButton expandButton hidden"><i class="fas fa-expand-arrows-alt"></i></div></div></div>' : '<div class="wndcontent content">'+content+'</div>';
+				h+=	 p.allowHide ? '<div class="wndcontent content"><div class="changeStateButtons"><div class="hideButton changeButton"><i class="fas fa-minus"></i></div><div class="closeButton changeButton"><i class="fas fa-times"></i></div><div class="changeButton expandButton hidden"><i class="fas fa-expand-arrows-alt"></i></div></div>' + content + '</div>' : '<div class="wndcontent content">'+content+'</div>';
 
 				if(p.header) 
 				{
@@ -5926,8 +5926,11 @@
 	    appendTo.appendChild(script);
 	}
 
-	importCss = function(src) { 
-	    var link = document.createElement('link');
+	importCss = function(src, _document) { 
+
+		if(!_document) _document = document
+
+	    var link = _document.createElement('link');
 	    link.rel = 'stylesheet';
 
 
@@ -5935,7 +5938,7 @@
 
 	    link.setAttribute('href', src);
 	    
-	    var appendTo = document.getElementsByTagName('head')[0];
+	    var appendTo = _document.getElementsByTagName('head')[0];
 
 	    appendTo.appendChild(link);
 	}
@@ -9844,7 +9847,6 @@
 
 		return w[1];
 	}
-	
 	videoImage = function(url){
 		var v = url;
 
@@ -9894,12 +9896,12 @@
 	    var type = null
 		var id = null
 		var host_name = null
-		
+
 	    // if(test && url.indexOf('channel') == -1 && url.indexOf("user") == -1){}
 
 	    	if(test && test[2]){
 
-				if (test.indexOf('youtube.com') > -1 || test.indexOf('youtu.be') > -1) {
+				if (test.indexOf('youtube.com') || test.indexOf('youtu.be') > -1) {
 					type = 'youtube'
 			        id = test[9]
 			    }
@@ -9911,11 +9913,9 @@
 					type = 'bitchute'
 					id = test[9]	
 			    }
-				if (test.indexOf('peertube://') > -1) {
-					var params = _url.split('?')[1] || '';
-
+				if (/pocketnetpeertube[0-9]*\.nohost\.me/i.test(test)) {
 					type = 'peertube'
-			        id = `${test[9]}?${params}`
+			        id = test[9]
 					host_name = test[4]
 			    }
 			}
