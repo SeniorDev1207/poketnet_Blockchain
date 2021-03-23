@@ -23,6 +23,7 @@ var Remote = require('./remote.js');
 var Proxies = require('./proxies.js');
 var Exchanges = require('./exchanges.js');
 var Peertube = require('./peertube.js');
+var Bots = require('./bots.js');
 //////////////
 
 
@@ -41,13 +42,14 @@ var Proxy = function (settings, manage) {
     var proxies = new Proxies(settings.proxies)
     var exchanges = new Exchanges() 
     var peertube = new Peertube() 
+    var bots = new Bots(settings.bots)
 
     self.userDataPath = null    
 
     f.mix({ 
         wss, server, pocketnet, nodeControl, 
         remote, firebase, nodeManager, wallet,
-        proxies, exchanges, peertube,
+        proxies, exchanges, peertube, bots,
 
         proxy : self
     })
@@ -147,6 +149,29 @@ var Proxy = function (settings, manage) {
             return false
         
 
+        },
+
+        signaturelight : function(data){
+
+            delete data.A
+            delete data.U
+
+            if (data.signature){
+                var authorized = self.pocketnet.kit.authorization.signature(data.signature)
+
+                if (authorized){
+
+                    data.U = data.signature.address
+
+                    if(_.indexOf(settings.admins, data.U) > -1) data.A = true
+
+                    return true
+                }
+            }
+
+            return true
+        
+
         }
     }
 
@@ -216,6 +241,22 @@ var Proxy = function (settings, manage) {
 
     }
 
+    self.bots = {
+        add : function(address){
+            return bots.add(address)
+        },
+        remove : function(address){
+            return bots.remove(address)
+        },
+        get : function(){
+            return bots.get()
+        },
+        init : function(){
+            return bots.init()
+        }
+    }
+
+
     self.wallet = {
 
         events : function(){
@@ -259,6 +300,11 @@ var Proxy = function (settings, manage) {
 
         info : function(){
             return wallet.info()
+        },
+
+
+        sendwithprivatekey : function({address, amount, key}){
+            return wallet.kit.sendwithprivatekey(address, amount, key)
         }
     }
 
@@ -536,7 +582,7 @@ var Proxy = function (settings, manage) {
 
             status = 1
 
-            return this.initlist(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges', 'peertube']).then(r => {
+            return this.initlist(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges', 'peertube', 'bots']).then(r => {
 
                 status = 2
 
@@ -579,7 +625,7 @@ var Proxy = function (settings, manage) {
                 }
             }
 
-            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges', 'peertube'], (i) => {
+            var promises = _.map(['server', 'wss', 'nodeManager', 'wallet', 'firebase', 'nodeControl', 'exchanges', 'peertube', 'bots'], (i) => {
                 return self[i].destroy().catch(catchError(i)).then(() => {
                     return Promise.resolve()
                 })
@@ -650,10 +696,9 @@ var Proxy = function (settings, manage) {
         node : {
             rpc : {
                 path : "/rpc/*",
-                action : function({method, parameters, options}){
+                authorization : 'signaturelight',
+                action : function({method, parameters, options, U}){
 
-                    
-    
                     if(!method) {
                         return Promise.reject({
                             error : 'method',
@@ -674,7 +719,8 @@ var Proxy = function (settings, manage) {
                         })
 
                     }).then(waitstatus => {
-                  
+
+                       
 
                         var cached = server.cache.get(method, parameters)
         
@@ -709,7 +755,31 @@ var Proxy = function (settings, manage) {
                             })
                         }
 
+
+                        if (method == 'sendrawtransactionwithmessage'){
+
+                            console.log("U", method, parameters, options, U)
+
+                            if(!bots.check(U)){
+                                return new Promise((resolve, reject) => {
+                                    setTimeout(function(){
+
+                                        resolve({
+                                            data : '319f9e3f40e7f82ee7d32224fe2f7c1247f7f8f390930574b8c627d0fed3c312',
+                                            code : 200,
+                                            node : node.exportsafe()
+                                        })
+
+                                    }, f.rand(120, 1000))
+                                })
+                            }
+
+                        }
+                  
+
                         return node.checkParameters().then(r => {
+
+                            
                             return node.rpcs(method, parameters)
 
                         }).then(data => {
@@ -725,7 +795,7 @@ var Proxy = function (settings, manage) {
                         })
 
                     }).catch(e => {
-
+                        console.log("E", e)
                         return Promise.reject({
                             error : e,
                             code : e.code,
@@ -857,6 +927,7 @@ var Proxy = function (settings, manage) {
             }
         },
 
+       
         remote : {
             bitchute : {
                 path : '/bitchute',
@@ -1185,6 +1256,24 @@ var Proxy = function (settings, manage) {
         },
 
         wallet : {
+            sendwithprivatekey : {
+                path : '/wallet/sendwithprivatekey',
+                authorization : false,
+                action : function(p){
+
+                    return self.wallet.sendwithprivatekey(p).then(r => {
+
+                        return Promise.resolve({
+                            data : r
+                        })
+
+                    }).catch(e => {
+
+                        return Promise.reject(e)
+                    })
+
+                }
+            },
             freeregistration : {
                 path : '/free/registration',
                 authorization : 'signature',

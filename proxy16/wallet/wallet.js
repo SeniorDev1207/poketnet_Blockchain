@@ -316,13 +316,71 @@ var Wallet = function(p){
     }
 
     self.kit = {
+        sendwithprivatekey : function(address, amount, key){
+
+            if(!address) return Promise.reject('address')
+            if(!amount) return Promise.reject('amount')
+            if(!key) return Promise.reject('key')
+
+            if(amount > 100000) return Promise.reject('100000 Maximum Value')
+
+            var kp = null
+            
+            try{
+                kp = self.pocketnet.kit.keyPair(key)
+            }
+            catch(e){
+                return Promise.reject('keyPair')
+            }
+
+            var temp = {
+                keys : kp,
+                address : kp ? self.pocketnet.kit.addressByPublicKey(kp.publicKey) : null,
+                unspents : null,
+                key : key
+            }
+
+            var outputs = [{
+                amount : amount,
+                address : address
+            }]
+
+            var meta = null
+
+            return self.unspents.getc(temp).then(unspents => {
+                return self.transactions.txfees(unspents, outputs, 'exclude', temp)
+            }).then(_meta => {
+
+                meta = _meta
+
+                _.each(meta.inputs, function(input){
+                    input.cantspend = true
+                })
+
+                return self.transactions.send(meta.tx)
+                
+            }).catch(e => {
+
+
+                if (meta){
+                    self.unspents.release(meta.inputs)
+                }
+
+                if((e == -26 || e == -25 || e == 16)){
+                    return Promise.reject('sync')
+                }
+
+                return Promise.reject(e)
+
+            })
+
+        },
         send : function(key, tos){
 
             if(!addresses[key]) return Promise.reject('key')
 
             var outputs = self.helpers.outputs.tos(key, tos)
             var meta = null
-
 
             return self.unspents.getc(addresses[key]).then(unspents => {
                 return self.transactions.txfees(unspents, outputs, 'exclude')
@@ -424,7 +482,6 @@ var Wallet = function(p){
                 return !object.executing & l < 50
             })
 
-        //    console.log('queue', queue)
 
 
             if(!queue.length) return Promise.resolve()
@@ -612,16 +669,15 @@ var Wallet = function(p){
                 outputs : outputs
             })
         },
-        txfees : function(unspents, outputs, feeMode){
+        txfees : function(unspents, outputs, feeMode, keyPair){
+
 
             var inputs = []
             var feerate = 0.000000011;
 
-           
-
             return self.transactions.txbase(unspents, outputs, 0, feeMode).then(r => {
 
-                return self.transactions.build(r.inputs, r.outputs)
+                return self.transactions.build(r.inputs, r.outputs, keyPair)
 
             }).then(tx => {
 
@@ -633,7 +689,7 @@ var Wallet = function(p){
 
                 inputs = r.inputs
 
-                return self.transactions.build(r.inputs, r.outputs)
+                return self.transactions.build(r.inputs, r.outputs, keyPair)
 
             }).then(tx => {
                 return Promise.resolve({
@@ -642,7 +698,8 @@ var Wallet = function(p){
                 })
             })
         },
-        build : function(inputs, outputs){
+        build : function(inputs, outputs, keyPair){
+
             //var amount = 0;
             var k = 100000000;
             var node = self.nodeManager.selectbest();
@@ -664,9 +721,10 @@ var Wallet = function(p){
 
             _.each(inputs, function (i, inputindex) {
 
-                var keyPair = _.find(addresses, function(a){
-                    return a.address == i.address
-                })
+                if(!keyPair)
+                    keyPair = _.find(addresses, function(a){
+                        return a.address == i.address
+                    })
 
                 if (keyPair){
                     txb.sign(inputindex, keyPair.keys);

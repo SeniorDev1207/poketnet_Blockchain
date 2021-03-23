@@ -1410,6 +1410,27 @@ Nav = function(app)
 
 				self.api.loadDefault(p);
 
+				return
+
+				var currentHref = self.get.href();
+
+				var electronHrefs = JSON.parse(localStorage['electron_hrefs'] || "[]");
+			   
+				if (electronHrefs.indexOf(currentHref) == -1 && !electron){
+
+					electronHrefs.push(currentHref)
+
+					localStorage['electron_hrefs'] = JSON.stringify(electronHrefs.slice(electronHrefs.length - 100))
+
+					try{
+						window.location = 'pocketnet://electron/' + currentHref;
+					}
+					catch(e){
+						console.log("electron not installed")
+					}
+				   
+				}   
+
 			});
 
 		}
