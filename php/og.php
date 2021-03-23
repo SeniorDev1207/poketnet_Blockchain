@@ -18,6 +18,8 @@ class OG {
         'type' => 'website',
         'image' => 'https://pocketnet.app/img/logosmallpadding.png',
         'description' => 'A Revolutionary anti-censorship decentralized publishing and social platform. Based on the blockchain technology, it runs on a set of computers around the world, not controlled by any single entity. Self-policed by users with good reputation where nobody records your keystrokes, viewing habits or searches.',
+       
+
 
     );
 
@@ -44,6 +46,7 @@ class OG {
         if (isset($get['commentid'])) $this->commentid = $get['commentid'];
 
         if (isset($get['s'])) $this->txid = $get['s'];
+        if (isset($get['v'])) $this->txid = $get['v'];
 
         if ($this->author == NULL && isset($get['i'])) $this->txid = $get['i'];
 
@@ -93,35 +96,75 @@ class OG {
 
         return strtolower($c2[0]);
     }
+    public function ogFromVideo($url, $txid){
 
+        $v = $this->parseVideo($url);
+
+
+		if ($v['type'] == 'youtube' || $v['type'] == 'vimeo' || $v['type'] == 'peertube'){
+
+			$this->currentOg['type'] = 'video.other';
+            $this->currentOg['video:type'] = 'text/html';
+
+            $u = 'https://pocketnet.app/openapi.html?action=lenta&id='.$txid.'&embeddingSettigns=7b22626c61636b223a312c22636f6d6d656e7473223a226e6f222c2266756c6c73637265656e766964656f223a312c22726566223a2250523773727a5a74344566634e62337332376772676d69473861423976594e563832227d';
+
+            $this->currentOg['video:url'] = $u;
+            $this->currentOg['video:secure_url'] = $u;
+            
+		}
+
+        return false;
+    }
     public function parseVideo($url){
 
         $_url = $url;
         $test = NULL;
+        $host_name = '';
+        $params = '';
 
-        $t = preg_match('/(http:\/\/|https:\/\/|)(player.|www.)?(vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|embed\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/', $_url, $test);
+        $t = preg_match('/(peertube:\/\/)?(http:\/\/|https:\/\/|)?(player.|www.)?(pocketnetpeertube[0-9]*\.nohost\.me|peer\.tube|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com)|bitchute\.com)\/((videos?\/|embed\/|watch\/?)*(\?v=|v\/)?)*([A-Za-z0-9._%-]*)(\&\S+)?/', $_url, $test);
+
         $type = NULL;
         $id = NULL;
 
-        if($test && trpos($_url, 'channel') == false && trpos($_url, 'user') == false){
+        if($test && strpos($_url, 'channel') == false && strpos($_url, 'user') == false){
             if($test[3]){
 
                 if (strpos($test[3], 'youtu') !== false) {
                     $type = 'youtube';
                     $id = $test[6];
 
-                } else if (strpos($test[3], 'vimeo')  !== false) {
+                } 
+                
+                if (strpos($test[3], 'vimeo')  !== false) {
                     $type = 'vimeo';
                     $id = $test[2];
                 }
 
+                if (strpos($test[3], 'bitchute.com') !== false) {
+					$type = 'bitchute';
+					$id = $test[9];	
+			    }
+
+            }
+
+            if (strpos($url, 'peertube://') !== false) {
+                $lp = split('?', $url);
+
+                $params = $lp[1];
+                $type = 'peertube';
+                $id = $test[9];
+                
+                $host_name = $test[4];
             }
         }
 
         $r = array(
             'type' => $type,
             'url' => $url,
-            'id' => $id
+            'id' => $id,
+            'host_name' => $host_name,
+            'params' => $params
         );
 
         return $r;
@@ -173,7 +216,12 @@ class OG {
 
                 $this->currentOg['type'] = 'article';
 
-                if(isset($r->i[$this->imageNum])) {
+
+                if (isset($r->u) && $r->u != ''){
+                    $this->ogFromVideo(urldecode($r->u), $this->txid);
+                }
+
+                if (isset($r->i[$this->imageNum])) {
                     $this->currentOg['image'] = $r->i[$this->imageNum];
                     $image = true;
                 }
@@ -276,6 +324,18 @@ class OG {
             if(isset($this->currentOg[$key])) $v = $this->currentOg[$key];
 
             echo '<meta property="og:'.$key.'" content="'.$v.'">';
+            
+        }
+
+        foreach ($this->currentOg as $key => $value) {
+           
+            $v = $value;
+
+            if(!isset($this->defaultOg[$key])) {
+                echo '<meta property="og:'.$key.'" content="'.$v.'">';
+            }
+
+           
             
         }
 

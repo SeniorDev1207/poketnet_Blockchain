@@ -63,8 +63,6 @@ var uploadpeertube = (function () {
       el.uploadButton.on('click', function () {
         var filesWrittenObject = {};
 
-        el.header.removeClass('activeOnRolled');
-
         if (el.importUrl.val()) {
           filesWrittenObject.uploadFunction = function (percentComplete) {
             var formattedProgress = percentComplete.toFixed(2);
@@ -78,6 +76,8 @@ var uploadpeertube = (function () {
           };
 
           filesWrittenObject.successFunction = function (response) {
+            ed.uploadInProgress = false;
+
             el.uploadButton.prop('disabled', false);
             el.header.addClass('activeOnRolled');
 
@@ -93,11 +93,13 @@ var uploadpeertube = (function () {
               return;
             }
 
-            actions.added(response);
+            actions.added(`${response}?imported=true`);
             wndObj.close();
           };
 
           filesWrittenObject.url = el.importUrl.val();
+
+          ed.uploadInProgress = true;
 
           wndObj.hide();
           el.uploadProgress.removeClass('hidden');
@@ -172,6 +174,8 @@ var uploadpeertube = (function () {
           el.uploadButton.prop('disabled', false);
           el.header.addClass('activeOnRolled');
 
+          ed.uploadInProgress = false;
+
           if (response.error) {
             if (axios.isCancel(response.error)) {
               sitemessage('Uploading canceled');
@@ -193,15 +197,28 @@ var uploadpeertube = (function () {
         };
 
         filesWrittenObject.cancelClbk = function (cancel) {
+          const cancelCloseFunction = () => {
+            if (typeof cancel === 'function') cancel();
+            wndObj.close();
+          };
+
+          ed.cancelCloseFunction = cancelCloseFunction;
+
           el.cancelButton.on('click', () => {
             el.uploadProgress.addClass('hidden');
             el.cancelButton.addClass('hidden');
+            ed.uploadInProgress = false;
             cancel();
           });
           el.cancelButton.removeClass('hidden');
         };
 
+        ed.uploadInProgress = true;
+
+        el.header.removeClass('activeOnRolled');
+
         wndObj.hide();
+
         el.uploadButton.prop('disabled', true);
         el.uploadProgress.removeClass('hidden');
         el.header.removeClass('activeOnRolled');

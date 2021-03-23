@@ -242,6 +242,20 @@ Nav = function(app)
 	}
 
 	var historyManager = {
+		removeParametersFromHref : function(href, ids){
+
+			if(!href) return href
+
+			var _p = parameters(href, true) || {};
+
+			_.each(ids || [], function(id){
+				delete _p[id]
+			})
+
+			href = href.split('?')[0];
+
+			return href + collectParameters(_p);
+		},
 		addParametersToHref : function(href, p){
 
 			if(!href) return href
@@ -1395,25 +1409,6 @@ Nav = function(app)
 				}
 
 				self.api.loadDefault(p);
-
-				var currentHref = self.get.href();
-
-				var electronHrefs = JSON.parse(localStorage['electron_hrefs'] || "[]");
-			   
-				if (electronHrefs.indexOf(currentHref) == -1 && !electron){
-
-					electronHrefs.push(currentHref)
-
-					localStorage['electron_hrefs'] = JSON.stringify(electronHrefs.slice(electronHrefs.length - 100))
-
-					try{
-						window.location = 'pocketnet://electron/' + currentHref;
-					}
-					catch(e){
-						console.log("electron not installed")
-					}
-				   
-				}   
 
 			});
 

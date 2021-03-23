@@ -454,7 +454,6 @@ var lenta = (function(){
 						s.controls = ['play', 'progress', 'current-time', 'fullscreen']
 					}	
 
-					
 					PlyrEx(pels[0], s, function(player){
 
 						players[share.txid] || (players[share.txid] = {})
@@ -3274,69 +3273,6 @@ var lenta = (function(){
 				canloadprev = !!!essenseData.txids || false
 
 
-				/*if(!p.state){
-
-					if(recommended || essenseData.author || essenseData.txids){
-
-					}
-					else
-					{
-
-						if(beginmaterial){
-
-							load.begin(function(bshares){
-
-								self.app.platform.sdk.node.shares.users(bshares, function(){
-
-									p.settings.el.closest('#main').addClass('onepost')
-
-									self.nav.api.load({
-										open : true,
-										href : 'post',
-										primary : true,
-										el : p.settings.el,
-
-										essenseData : {
-											share : beginmaterial
-										},
-
-										clbk : function(){
-											
-										}
-									})
-								})
-
-							})
-						}
-						else
-						{
-
-							
-							if(typeof _Electron != 'undefined' || window.cordova){
-
-								self.nav.api.load({
-									open : true,
-									href : 'authorization',
-									history : true
-								})
-								
-							}	
-							else
-							{
-								
-								self.nav.api.load({
-									open : true,
-									href : 'video',
-									history : true
-								})
-							}
-						
-						}
-
-						return
-					}
-
-				}*/
 				
 				self.app.platform.sdk.ustate.me(function(_mestate){
 
@@ -3443,7 +3379,6 @@ var lenta = (function(){
 				el.c = p.el.find('#' + self.map.id);
 				el.shares = el.c.find('.shares');
 				el.loader = el.c.find('.loader');
-
 				el.lentacnt = el.c.find('.lentacell .cnt')
 
 
@@ -3451,14 +3386,6 @@ var lenta = (function(){
 
 				make(null, p);
 
-
-				/*setTimeout(function(){
-
-					actions.stateAction('_this', function(){
-
-					})
-
-				}, 3000)*/
 
 				if(!essenseData.goback)
 
