@@ -641,7 +641,7 @@ pie {
     position: fixed;
     left : 0;
     bottom : 0;
-    top : 0;
+    top : 65px;
     display: none;
     cursor: pointer;
 
@@ -2019,9 +2019,11 @@ input[type=radio].radio:checked + label {
 
     .changeStateButtons {
         display: flex;
+        background-color: white;
+
         position: absolute;
-        right: 2 * @rhythm;
-        top: 2 * @rhythm;
+        right: 10px;
+        top: 10px;
 
         .changeButton {
             cursor: pointer;
@@ -2032,7 +2034,7 @@ input[type=radio].radio:checked + label {
         }
 
         .hideButton {
-            margin-right: 2 * @rhythm;
+            margin-right: 10px;
         }
     }
 
@@ -3171,11 +3173,6 @@ input[type=radio].radio:checked + label {
             display: none;
         }
     }
-
-    &.videoCaution {
-        z-index: 1006;
-    }
-    
 }
 
 .menudialog{
@@ -3576,10 +3573,6 @@ input[type=radio].radio:checked + label {
             display: table-cell;
             vertical-align: middle;
             text-align: center;
-        }
-
-        .errorcntCell {
-            font-size: 2em;
         }
     }
 }
@@ -5314,22 +5307,7 @@ input[type=radio].radio:checked + label {
         }
     }
 
-    .upbutton{
-        position: fixed;
-        right : 2.5%;
-        bottom : 2.5%;
-        top : auto;
-        left : auto;
-        z-index: 50;
     
-        .mini{
-            display: block;
-        }
-
-        .full{
-            display: none;
-        }
-    }
     
 }
 
