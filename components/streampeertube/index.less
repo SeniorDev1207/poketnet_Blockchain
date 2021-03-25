@@ -4,57 +4,17 @@
     width: 100%;
     height: 100%;
 
-    position: absolute;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
     .upload-header {
-        position: absolute;
-        left: 2 * @rhythm;
-        top: 2 * @rhythm;
-
         display: flex;
         justify-content: flex-start;
         align-items: center;
 
-        span {
-            font-size: 0.8em;
-        }
-    }
-
-    .content-section, .result-section {
-        width: 100%;
-        height: 100%;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .main-content-section {
-            width: 100%;
-            height: 100%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            flex-direction: column;
-        }
-    }
-
-    .result-section {
-        .upload-field-container {
-            width: 80%;
-
-            display: flex;
-            justify-content: flex-start;
-
-            .result-video-info {
-                width: 80%;
-                margin-right: 0.5em;
+        .logo-container {
+            img {
+                width: 1em;
             }
+
+            margin-right: 0.5em;
         }
     }
 
@@ -78,8 +38,6 @@
     .upload-field-container {
         color: black;
 
-        position: relative;
-
         &:hover,
         &:active {
             color: @color-orange;
@@ -88,19 +46,6 @@
         .upload-peertube-label {
             text-decoration: underline;
         }
-    }
-
-    .upload-file-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background: fade(@color-gray-slight, 20);
-        border-radius: 5px;
-
-        width: 80%;
-
-        padding: 2em 0;
     }
 
     .upload-field-container:not(:first-child) {
@@ -141,23 +86,11 @@
     }
 
     .upload-video-field {
-        border-width: 1px;
-        border-radius: 15px;
-        padding-left: 1em;
+        border-width: 0;
 
-        width: 80%;
+        border-bottom-width: 1px;
 
         border-color: @color-orange;
-    }
-
-    .on-border-label {
-        position: absolute;
-        top: -10px;
-        left: 15px;
-        font-size: .9em;
-        font-weight: 700;
-        background-color: #fff;
-        padding: 0 2px;
     }
 
     .upload-progress-container {
@@ -178,25 +111,9 @@
 
     .verticalFieldsWrapper {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-
         width: 100%;
-        height: 100%;
 
-        .verticalSection {
-            height: 100%;
-        }
-
-        .main-upload-fields {
-            width: 62%;
-
-            padding: 4em 1em;
-        }
-
-        .liveButtonWrapper {
-            background: fade(@color-gray-slight, 20);
-        }
+        margin: @rhythm * 4 0;
     }
 
     .liveButtonWrapper {
@@ -208,13 +125,16 @@
         border-left: 1px solid @color-gray-slight;
     }
 
+    .streamButton {
+        padding: @rhythm * 2 @rhythm * 4;
+    }
+
     .verticalSection {
         width: 50%;
     }
 
     .result-video-info {
         border-color: @color-orange;
-        border-radius: 15px;
     }
 
     .preloader-section {
@@ -246,8 +166,7 @@
         }
     }
 
-    .result-section,
-    .content-section {
+    .result-section, .content-section {
         > :not(.activeOnRolled) {
             display: none;
         }
@@ -261,7 +180,7 @@
         width: 50%;
         height: 100%;
 
-        max-height: 300px;
+        max-height: 250px;
 
         overflow: hidden;
 
@@ -272,8 +191,6 @@
             overflow: hidden;
 
             height: 100%;
-
-            padding: 0;
         }
     }
 }

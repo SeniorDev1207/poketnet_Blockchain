@@ -724,7 +724,7 @@ var share = (function(){
 				topPreloader(50)
 
 		
-				//currentShare.language.set(self.app.localization.key)
+				currentShare.language.set(self.app.localization.key)
 
 				currentShare.uploadImages(self.app, function(){
 
@@ -1547,6 +1547,7 @@ var share = (function(){
 			},
 
 			all : function(){
+
 				el.eMessage[0].emojioneArea.setText(currentShare.message.v);
 				el.cpt.find('input').val(currentShare.caption.v || "")
 
@@ -1611,8 +1612,6 @@ var share = (function(){
                             Plyr.setup('.js-player', function(player) {
 
 								player.muted = false
-							}, {
-								denyPeertubeAutoPlay: true,
 							});
 
 						} else {
@@ -2190,7 +2189,6 @@ var share = (function(){
 				intro = false;
 				external = null
 				currentShare = deep(p, 'settings.essenseData.share') || new Share(self.app.localization.key);
-				console.log('currentShare', currentShare)
 				essenseData = deep(p, 'settings.essenseData') || {};
 
 				self.app.platform.sdk.user.get(function(u){

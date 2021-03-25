@@ -367,10 +367,14 @@ var post = (function(){
 					};
 
                     $.each(pels, function(key, el) {
-                        PlyrEx(el, options, () => {}, () => {
-							if (clbk)
-                                clbk()
-						});
+                        PlyrEx(el, options, function(player) {
+                            player.on('ready', function(){
+    
+                                if (clbk)
+                                    clbk()
+        
+                            })
+                        });
                     });                    
 					
 				}
