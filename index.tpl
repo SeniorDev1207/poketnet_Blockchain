@@ -35,8 +35,7 @@
         ?>
 
         __CSS__
-
-        <link rel="icon" href="./favicon.svg" sizes="any" type="image/svg+xml">
+        
         <link rel="stylesheet" href="css/fontawesome/css/all.css">
 
         <script src="js/vendor/device.min.js?v=136"></script>

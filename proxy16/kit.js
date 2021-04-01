@@ -62,14 +62,6 @@ var nodes = [
 		name : 'CryptoserverSP4',
 		stable : true
 	},
-
-	/*{
-		host : '188.187.45.218',
-		port : 31011,
-		ws : 8010,
-		name : 'CryptoserverTest',
-		stable : true
-	}*/
 	
 	{
 		host : '185.148.147.15',

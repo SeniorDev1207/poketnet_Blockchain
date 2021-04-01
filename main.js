@@ -108,7 +108,7 @@ function createBadge() {
     if (badge) return
 
     const bo = {
-        font: '10px arial',
+        font: '12px Segue',
         color: '#f7244b'
     }
 

@@ -31,10 +31,9 @@ var Node = function(options, manager){
 
 
     var notactualevents = 360000 //mult
-    var checkEventsLength = 100 
-    var getinfointervaltime = 60000 
+    var checkEventsLength = 100
+    var getinfointervaltime = 60000
     var lastinfoTime = f.now()
-    var maxevents = 10000
 
     var test = new Test(self)
 
@@ -83,7 +82,6 @@ var Node = function(options, manager){
     }
 
     self.addblock = function(block){
-
 
         if ((block.hash || block.blockhash) && block.time && block.height){
 
@@ -147,8 +145,6 @@ var Node = function(options, manager){
 
     self.rpcs = function(method, parsed){
 
-        
-
         if(!self.checkParameters()) return Promise.reject('nodeparameters') 
         if(!self.rpc[method]) return Promise.reject('method')
         
@@ -169,7 +165,7 @@ var Node = function(options, manager){
 
             var difference = performance.now() - time;
             var code = 200;
-
+           
             if (err) {
 
                 code = 500;
@@ -212,7 +208,7 @@ var Node = function(options, manager){
 
             self.events.push(push)
 
-            var d = self.events.length - maxevents
+            var d = self.events.length - 10000
 
             if (d > 100){
                 self.events = self.events.splice(0, d)
@@ -370,21 +366,17 @@ var Node = function(options, manager){
         interval : function(){
             if(!statisticInterval){
 
-
                 self.info().catch(e => {})
 
                 statisticInterval = setInterval(function(){
 
                     self.statistic.clearOld()
 
-
                     if (self.events.length < 1 + checkEventsLength || f.date.addseconds(lastinfoTime, notactualevents / 1000) < f.now()){
-
                         self.info().catch(e => {})
-
                     }
 
-                }, getinfointervaltime * 10)
+                }, getinfointervaltime)
             }
         },
 
@@ -400,7 +392,6 @@ var Node = function(options, manager){
             var timecheck = f.date.addseconds(f.now(), -notactualevents / 1000)
 
             self.events = _.filter(self.events, function(e){
-
                 if(e.time < timecheck) return false
 
                 return true
@@ -537,20 +528,17 @@ var Node = function(options, manager){
             return Promise.resolve(lastinfo || {})
         }
 
-
         return self.rpcs('getnodeinfo').then(info => {
-
 
             lastinfo = info
             lastinfoTime = f.now()
 
             if (info.proxies){
 
-                //self.proxies.kit.addlist(info.proxies || [])
+                self.proxies.kit.addlist(info.proxies || [])
 
                 //manager.proxy.kit.addproxies(info.proxies || [])
             }
-
 
             self.addblock(info.lastblock)
             
@@ -641,7 +629,6 @@ var Node = function(options, manager){
     }
 
     self.init = function(){
-
         
         self.statistic.interval()
 

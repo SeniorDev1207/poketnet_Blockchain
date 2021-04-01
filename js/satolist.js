@@ -3556,13 +3556,6 @@ Platform = function (app, listofnodes) {
 					type : "BOOLEAN",
 					value : false,
 				},
-
-                hierarchicalShares : {
-					name: 'Hierarchical Post Feed',
-					id : 'hierarchicalShares',
-					type : "BOOLEAN",
-					value : false,
-				},
             },
 
             create: function (id) {
@@ -3596,8 +3589,6 @@ Platform = function (app, listofnodes) {
 
                 var c = {
 
-
-
                     notifications: {
                         name: self.app.localization.e('notifications'),
                         options: {
@@ -3611,15 +3602,6 @@ Platform = function (app, listofnodes) {
                             followers: options.followers,
                             rescued: options.rescued,
                             commentScore: options.commentScore
-
-                        }
-                    },
-
-                    postfeed : {
-                        name: 'Post Feed',
-                        options: {
-
-                            hierarchicalShares: options.hierarchicalShares
 
                         }
                     },
@@ -9216,12 +9198,7 @@ Platform = function (app, listofnodes) {
 
                             var parameters = [p.height, p.txid, p.count, p.lang, p.tags];
 
-                            s.get(parameters, function (data, error) {
-
-                                var shares = data.shares
-                                var blocknumber = data.blocknumber
-
-                                p.blocknumber = blocknumber
+                            s.get(parameters, function (shares, error) {
 
                                 if (shares) {
                                     if (state) {
@@ -16132,7 +16109,7 @@ Platform = function (app, listofnodes) {
 
                         if (
 
-                            (data.upvoteVal <= 2 && platform.sdk.usersettings.meta.downvotes.value && 2 == 1) ||
+                            (data.upvoteVal <= 2 && platform.sdk.usersettings.meta.downvotes.value) ||
                             
                             (data.upvoteVal > 2 &&  platform.sdk.usersettings.meta.upvotes.value) 
                             
