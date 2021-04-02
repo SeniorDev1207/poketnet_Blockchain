@@ -2829,6 +2829,10 @@ var lenta = (function(){
 				//el.c.on('click', '.sharecaption', events.openPost)
 				//el.c.on('click', '.message', events.openPost)
 			}
+
+			el.c.on('click', '.debuginfo .icon', function(){
+				$(this).closest('.debuginfo').addClass('showed')
+			})
 			
 			el.c.on('click', '.showMore', events.openPost)
 
@@ -2925,6 +2929,8 @@ var lenta = (function(){
 				}
 
 				self.app.platform.ws.messages.transaction.clbks.temp = function(data){
+
+					if(beginmaterial || essenseData.author || essenseData.txids) return
 
 
 					if(data.temp){
