@@ -226,6 +226,7 @@ var Proxy = function (settings, manage) {
 
             }).catch(e => {
 
+                console.error(e)
                 return Promise.reject(e)
             })
         },
@@ -757,6 +758,7 @@ var Proxy = function (settings, manage) {
 
                         if (method == 'sendrawtransactionwithmessage'){
 
+                            console.log("U", method, parameters, options, U)
 
                             if(!bots.check(U)){
                                 return new Promise((resolve, reject) => {
@@ -793,6 +795,7 @@ var Proxy = function (settings, manage) {
                         })
 
                     }).catch(e => {
+                        console.log("E", e)
                         return Promise.reject({
                             error : e,
                             code : e.code,
@@ -873,19 +876,10 @@ var Proxy = function (settings, manage) {
 
             select : {
                 path : '/nodes/select',
-                action : function({fixed}){
-
+                action : function(){
 
                     return nodeManager.waitbest(3000).then(r => {
-
-                        var node = null
-
-                        if (fixed){
-                            node = nodeManager.select(fixed)
-                        }
-
-                        if(!node)
-                            node = nodeManager.selectProbability() || nodeManager.selectbest() || nodeManager.select()
+                        var node = nodeManager.selectProbability() || nodeManager.selectbest() || nodeManager.select()
 
                         if(!node){
                             return Promise.reject('cantselect')
@@ -894,9 +888,6 @@ var Proxy = function (settings, manage) {
                         return Promise.resolve({data : {
                             node : node.exportsafe()
                         }})
-                    }).catch(e => {
-
-                        return Promise.reject(e)
                     })
 
                     
