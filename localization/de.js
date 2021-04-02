@@ -1,9 +1,9 @@
 if(typeof loclib == 'undefined' || !loclib)
 loclib = {};
 
-loclib.de = {};
+loclib.en = {};
 
-var ____loclib = loclib.de;
+var ____loclib = loclib.en;
 
 //time
 
