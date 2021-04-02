@@ -1,9 +1,9 @@
 if(typeof loclib == '정의되지 않음' || !loclib)
 loclib = {};
 
-loclib.kr = {};
+loclib.en = {};
 
-var ____loclib = loclib.kr;
+var ____loclib = loclib.en;
 
 //time
 

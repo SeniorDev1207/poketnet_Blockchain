@@ -2618,8 +2618,6 @@ var system16 = (function(){
 					return
 				}
 
-				
-
 				self.shell({
 					inner : html,
 					name : 'nodescontent',
@@ -2627,8 +2625,7 @@ var system16 = (function(){
 						info : info,
 						manager : info.nodeManager,
 						proxy : proxy,
-						admin : actions.admin(),
-						
+						admin : actions.admin()
 					},
 
 					el : elc.find('.nodesWrapper')
@@ -2663,8 +2660,7 @@ var system16 = (function(){
 						manager : info.nodeManager,
 						proxy : proxy,
 						admin : actions.admin(),
-						currentnode : currentnode,
-						fixednode : api.get.fixednode()
+						currentnode : currentnode
 					},
 
 					el : elc.find('.nodesWrapper .nodes')
@@ -2679,53 +2675,22 @@ var system16 = (function(){
 					}
 
 					p.el.find('.use').on('click', function(){
-						var key = $(this).closest('.node').attr('node')
+
 						var node = find($(this).closest('.node').attr('node'))
 
 						if(!node) return
 
-						if (key == currentnode) {
+						dialog({
+							class : 'zindex',
+							html : "Do you really want reconnect to selected Pocketnet Node?",
+							btn1text : self.app.localization.e('dyes'),
+							btn2text : self.app.localization.e('dno'),
+							success : function(){	
 
-							var f = api.get.fixednode()
-
-							if (f == key){
-								api.set.fixednode(null)
-								renders.nodescontenttable(elc)	
+								proxy.changeNode(node.node)
+								renders.nodescontenttable(elc)								
 							}
-							else{
-								dialog({
-									class : 'zindex',
-									html : "Do you really want to fix selected Pocketnet Node?",
-									btn1text : self.app.localization.e('dyes'),
-									btn2text : self.app.localization.e('dno'),
-									success : function(){	
-	
-										api.set.fixednode(key)
-										renders.nodescontenttable(elc)								
-									}
-								})
-							}
-
-							
-
-						}
-						else{
-
-							dialog({
-								class : 'zindex',
-								html : "Do you really want reconnect to selected Pocketnet Node?",
-								btn1text : self.app.localization.e('dyes'),
-								btn2text : self.app.localization.e('dno'),
-								success : function(){	
-									api.set.fixednode(null)
-									proxy.changeNode(node.node)
-									renders.nodescontenttable(elc)								
-								}
-							})
-
-						}
-
-						
+						})
 
 					})
 
