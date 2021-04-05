@@ -370,29 +370,23 @@ var Control = function(settings) {
 
         update : function(){
 
-
             if(lock) return Promise.resolve(false)
 
             self.autorun.destroy()
 
-            console.log("12")
+            lock = 'updating'
 
             return this.stop().then(r => {
-
 
                 return self.kit.install()
             }).then(r => {
 
-                hasupdates = false
-
-                console.log("installed")
+                lock = ''
 
                 self.autorun.init()
 
                 return self.kit.check()
             }).catch(e => {
-
-                console.log("ERROR", e)
                 lock = ''
 
                 return Promise.reject(e)
