@@ -1,7 +1,8 @@
 PeerTubeHandler = function (app) {
   const hardCodeUrlsList = [
+    'pocketnetpeertube1.nohost.me',
+    'pocketnetpeertube2.nohost.me',
     'pocketnetpeertube3.nohost.me',
-    'pocketnetpeertube4.nohost.me',
   ];
 
   let randomServer =
@@ -97,8 +98,6 @@ PeerTubeHandler = function (app) {
         ),
       )
       .toString('hex');
-
-    console.log('userName', this.userName);
 
     await this.getServerInfo();
 
@@ -437,20 +436,6 @@ PeerTubeHandler = function (app) {
         fail: (res) => {
           return parameters.successFunction({ error: res });
         },
-      },
-    });
-  };
-
-  this.updateVideo = async (id, options) => {
-    const formData = new FormData();
-
-    Object.keys(options).map((key) =>
-      formData.append(key, options[key]),
-    );
-
-    return axios.put(`${baseUrl}videos/${id}`, formData, {
-      headers: {
-        Authorization: `Bearer ${this.userToken}`,
       },
     });
   };
