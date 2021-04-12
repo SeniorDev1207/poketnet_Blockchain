@@ -243,24 +243,9 @@ var panel = (function(){
 				
 			},
 
-			discussions : function(clbk){
+			discussions : function(){
 
-				console.log('discussiondummydiscussiondummydiscussiondummydiscussiondummy')
-
-				self.shell({
-					name :  'discussiondummy',
-					el : el.cnt,
-					data : {
-					}
-
-				}, function(p){
-
-					if (clbk)
-						clbk()
-
-				})
-
-				/*var d = ed.discussions || {};
+				var d = ed.discussions || {};
 
 					d.view = 'fixedin'
 
@@ -277,7 +262,7 @@ var panel = (function(){
 						discussions = p
 					}
 
-				})*/
+				})
 			},
 
 			_discussions : function(){

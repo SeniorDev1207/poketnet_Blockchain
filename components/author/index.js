@@ -1166,12 +1166,8 @@ var author = (function(){
 
 				self.sdk.users.addressByName(p.address, function(address){
 
-
-
 					if (address){
 						author.address = address
-
-						self.sdk.activity.adduser('visited', address)
 
 						self.sdk.users.get(author.address, function(){
 
