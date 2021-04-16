@@ -243,24 +243,9 @@ var panel = (function(){
 				
 			},
 
-			discussions : function(clbk){
+			discussions : function(){
 
-				console.log('discussiondummydiscussiondummydiscussiondummydiscussiondummy')
-
-				self.shell({
-					name :  'discussiondummy',
-					el : el.cnt,
-					data : {
-					}
-
-				}, function(p){
-
-					if (clbk)
-						clbk()
-
-				})
-
-				/*var d = ed.discussions || {};
+				var d = ed.discussions || {};
 
 					d.view = 'fixedin'
 
@@ -277,7 +262,7 @@ var panel = (function(){
 						discussions = p
 					}
 
-				})*/
+				})
 			},
 
 			_discussions : function(){
@@ -373,8 +358,8 @@ var panel = (function(){
 			if (self.app.platform.sdk.usersettings.meta.vidgetchat.value)
 				renders._discussions()
 
-			/*if (self.app.platform.sdk.usersettings.meta.vidgettags.value)
-				renders.tags()*/
+			if (self.app.platform.sdk.usersettings.meta.vidgettags.value)
+				renders.tags()
 
 			if (self.app.platform.sdk.usersettings.meta.vidgetlastcomments.value)
 				renders.lastcomments()

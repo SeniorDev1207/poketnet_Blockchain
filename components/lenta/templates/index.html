@@ -2,7 +2,7 @@
 
 	<div class="mlwr">
 
-		<div class="loadprev"><button><span><%=e('lloadprev')%></span><!-- <span class='countnew'></span>--></button></div>
+		<div class="loadprev"><button><span><%=e('lloadprev')%></span> <span class='countnew'></span></button></div>
 
 		<div class="circularprogress">	
 			<div class="circularprogressWrapper"></div>
@@ -35,15 +35,7 @@
 		<% } %>
 
 
-		<% if(typeof filters != 'undefined' && filters) {%>
 
-			<div class="zero">
-				
-				<%=e('zeron')%>	
-					
-			</div>
-
-		<% } %>
 
 		<% if(author) {%>
 
@@ -80,7 +72,6 @@
 			</div>
 
 		<% } %>
-
 
 		<% if(recommended) {%>
 

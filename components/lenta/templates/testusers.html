@@ -3,11 +3,7 @@
         <div class="work">
     
             <% if(ids.length) {%>
-            <% _.each(ids, function(_uadmin){ 
-
-                var uadmin = _uadmin.split("_")[0]
-                var value = _uadmin.split("_")[1]
-
+            <% _.each(ids, function(uadmin){ 
                 var user = deep(app, 'platform.sdk.users.storage.'+uadmin) || {} %>
     
            
@@ -39,9 +35,7 @@
                                 
                             </div>			
                           
-                            <div class="value">
-                                <%-value%>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

@@ -67,7 +67,7 @@ var menu = (function(){
 
 			setWidth : function(_el){
 
-				return
+				if(isMobile()) return
 
 				
 
@@ -106,10 +106,8 @@ var menu = (function(){
 
 				sitenameToNav = slowMade(function(){
 
-
-					if (menusearch && menusearch.active || parameters().ss) return
-
 					var pn = self.app.nav.current.href
+
 					
 					if ((pn == 'index' || pn == 'author') && $(window).scrollTop() > 45){
 
@@ -117,11 +115,6 @@ var menu = (function(){
 						el.c.addClass('menupanelactive')
 
 						el.nav.find('.pcenterLabel').removeClass('active')
-
-						el.postssearch.find('input').blur()
-
-						if (menusearch)
-							menusearch.blur()
 
 						var r = parameters(self.app.nav.current.completeHref, true).r || 'empty'
 
@@ -418,9 +411,9 @@ var menu = (function(){
 
 			search : {
 				click : function(){
-					el.c.addClass('searchactive')
+					el.c.toggleClass('searchactive')
 
-					//if (el.c.hasClass('searchactive')){
+					if (el.c.hasClass('searchactive')){
 
 						searchBackAction = null;
 
@@ -433,8 +426,8 @@ var menu = (function(){
 						}
 
 						
-					//}
-					/*else
+					}
+					else
 					{
 						el.postssearch.removeClass('active')
 
@@ -443,8 +436,9 @@ var menu = (function(){
 						if (authorForSearch){
 							authorForSearch.clear()
 						}
-					}*/
+					}
 
+					actions.elswidth()
 				}
 			},
 			searchinit : {
@@ -454,7 +448,7 @@ var menu = (function(){
 
 						var pn = self.app.nav.current.href
 
-						if (pn != 'index' || cl){
+						if (pn != 's' || cl){
 
 							_el.find('input').val('')
 							
@@ -485,74 +479,8 @@ var menu = (function(){
 						}
 					}
 
-					var render = function(results, value, clbk, p){
-
-
-						renders.results(results, value, function(tpl){
-
-							clbk(tpl, function(el, helpers){
-
-								bgImages(el)
-
-								self.app.nav.api.links(null, el, function(){
-									helpers.closeResults()
-									clearex()
-								});
-
-								/*el.find('.result').on('click', function(){
-
-									var r = $(this).attr('result')
-
-									_el.find('input').val(r)
-
-									var href = 'index?ss=' + r.replace("#", 'tag:')
-
-									if (authorForSearch){
-										href = '?report=shares&ss=' + r.replace("#", 'tag:')
-
-										authorForSearch.clear(true)
-									}
-
-									var p = {
-										href : href,
-										history : true,
-										open : true
-									};
-
-									if(authorForSearch) p. handler = true
-
-									self.nav.api.go(p)
-
-									helpers.closeResults()
-
-									clearex()
-
-								})*/
-
-								el.find('.user').on('click', function(){
-
-									var r = $(this).attr('address')
-
-									self.nav.api.go({
-										href : 'author?address=' + r,
-										history : true,
-										open : true
-									})
-
-									helpers.closeResults()
-									close()
-									clearex()
-
-								})
-							})
-
-						}, p)
-					}
-
 					menusearch = new search(el.postssearch, {
 						placeholder : self.app.localization.e('e13139'),
-
-						right : true,
 
 						clbk : function(_el){
 
@@ -571,129 +499,91 @@ var menu = (function(){
 						last : {
 							get : function(){
 
-								var result = {};
-
-								var getresults = function(){
-									
-									var r = []
-
-									var counts = {
-
-									}
-
-									_.each(self.sdk.activity.latest, function(c, k){
-
-										_.each(c, function(v){
-											counts[v.type] || (counts[v.type] = 0)
-
-											if(counts[v.type] >= 7) return
-
-											counts[v.type]++
-
-											r.push(v)
-										})
-										
-									})
-
-									r = _.uniq(r, function(d){
-										return d.type + d.index
-									})
-
-									r = _.sortBy(r, function(r){
-										return -Number(r.date)
-									})
-
-									return r
-								}
-
-								console.log('getresults', getresults())
-
-								return getresults();
+								return [];
 
 							},
 
 							tpl : function(result, clbk){
-								console.log('result', result)
-								render(result, '', clbk)
+								
 							}
 						},
 
 						events : {
 							fastsearch : function(value, clbk){
 
-								var result = {};
-								var counts = {}
-
-								var composeresult = function(type, results, count){
-
-									result[type] = _.map(results, function(r){
-
-										var vi = {
-											type : type,
-											data : r
-										}
-
-										if(type == 'user'){
-											vi.id = r.address,
-											vi.index = r.name
-										}
-
-										return vi
-									})
-
-									counts[type] = count
-								}
-
-								var getresults = function(){
-									var mp = ['user', 'tag']
-									var r = []
-
-									_.each(mp, function(k){
-										r = r.concat(result[k] || [])
-									})
-
-									console.log('e', r)
-
-									return r
-								}
-
 								//authorForSearch
 
-								self.app.platform.sdk.search.get(value, 'users', null, null, null, function(r){
-									composeresult('user', r.data, r.count)
+								self.app.platform.sdk.search.get(value, 'fs', null, null, null, function(r){
 
-									render(getresults(), value, clbk, {
-										counts : counts
+
+									renders.results(r || {}, value, function(tpl){
+
+										clbk(tpl, function(el, helpers){
+
+											bgImages(el)
+
+											el.find('.result').on('click', function(){
+
+												var r = $(this).attr('result')
+
+												_el.find('input').val(r)
+
+												var href = 's?ss=' + r.replace("#", 'tag:')
+
+												if (authorForSearch){
+													href = '?report=shares&ss=' + r.replace("#", 'tag:')
+
+													authorForSearch.clear(true)
+												}
+
+												var p = {
+													href : href,
+													history : true,
+													open : true
+												};
+
+												if(authorForSearch) p. handler = true
+
+												self.nav.api.go(p)
+
+												helpers.closeResults()
+
+												clearex()
+
+											})
+
+											el.find('.user').on('click', function(){
+
+												var r = $(this).attr('address')
+
+												self.nav.api.go({
+													href : 'author?address=' + r,
+													history : true,
+													open : true
+												})
+
+												helpers.closeResults()
+												close()
+												clearex()
+
+											})
+										})
+
 									})
+
 								})
-
 								
-
 							},
 
 							search : function(value, clbk, e, helpers){
 
-								var href = '';
+								var href = 's?ss=' + value.replace("#", 'tag:')
 
-								if (value.indexOf('#') > -1){
-
-									var wordsRegExp = /[,.!?;:() \n\r]/g
-
-									var words = _.uniq(_.filter(value.replace(/#/g, '').split(wordsRegExp), function(r){
-										return r
-									}));
-
-									href = 'index?sst=' + words.join(' ')
-								}
-								else{
-									href = 'index?ss=' + value
-								}
-
-								/*if (authorForSearch){
+								if (authorForSearch){
 									href = '?report=shares&ss=' + value.replace("#", 'tag:')
 
 									authorForSearch.clear(true)
-								}*/
+								}
 
 								var p = {
 									href : href,
@@ -717,33 +607,22 @@ var menu = (function(){
 
 							clear : function(fs){
 
+								
+
 								if(fs) return
 
 								_el.find('input').blur();
+
 								
 								setTimeout(function(){
 									close(true)
 									clearex()
 								}, 100)
-
-								if(parameters().sst || parameters().ss){
-									self.nav.api.go({
-										href : 'index',
-										history : true,
-										open : true
-									})
-								}
 								
-							},
-
-							blank : function(){
-								events.search.click()
 							}
 						}
 						
 					})
-
-					
 				}
 			},
 			newaccount: {
@@ -1154,21 +1033,17 @@ var menu = (function(){
 		}
 
 		var renders = {
-			results : function(results, value, clbk, p){
-
-				if(!p) p = {}
-				console.log("p", p)
+			results : function(results, value, clbk){
+				//if(!p) p = {};
 
 				self.shell({
 					name :  'results',
 					data : {
 						results : results,
-						value : value,
-						counts : p.counts || {}
+						value : value
 					},
 
 				}, function(_p){
-
 					if (clbk)
 						clbk(_p.rendered);
 				})
@@ -1290,15 +1165,11 @@ var menu = (function(){
 			closesearch : function(){
 				if (el.c)
 					el.c.removeClass('searchactive')
-
-				
 			},
 
 			showsearch : function(v, _searchBackAction){
 
-				if(v){
-					el.c.addClass('searchactive')
-				}
+				el.c.addClass('searchactive')
 				
 				el.postssearch.find('input').val(v.replace('tag:', "#"));
 
@@ -1309,8 +1180,6 @@ var menu = (function(){
 				setTimeout(function(){
 					actions.elswidth()
 				}, 2)
-
-				
 			},
 
 			initauthorsearch : function(author){

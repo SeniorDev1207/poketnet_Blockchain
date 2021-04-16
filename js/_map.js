@@ -550,64 +550,6 @@ __map =  {
 
 			},
 			anonimus : true,
-		},
-		
-		taginput : {
-			uri : "taginput",
-			href : "taginput",
-			add : function(settings, p){
-
-				if(p.inWnd)
-				{
-					return {
-						insert : 'wnd'
-					}
-				}
-				else
-				if(p.inTooltip)
-				{
-					return {
-						insert : 'tooltip'
-					}
-				}
-				else
-				{
-					return {
-						el : 'content'
-					}
-				}
-
-			},
-			anonimus : true,
-		},
-		
-		categories : {
-			uri : "categories",
-			href : "categories",
-			add : function(settings, p){
-
-				if(p.inWnd)
-				{
-					return {
-						insert : 'wnd'
-					}
-				}
-				else
-				if(p.inTooltip)
-				{
-					return {
-						insert : 'tooltip'
-					}
-				}
-				else
-				{
-					return {
-						el : 'content'
-					}
-				}
-
-			},
-			anonimus : true,
 		},	
 
 		staking : {
@@ -952,9 +894,9 @@ __map =  {
 			}
 			
 		},
-		oldchat : {
-			uri : "oldchat",
-			href : "oldchat",
+		chat : {
+			uri : "chat",
+			href : "chat",
 			add : {
 				el : 'content'
 			},
@@ -963,7 +905,11 @@ __map =  {
 			relations : [
 				{src : 'js/vendor/emojionearea.min.js',			   f : 'js'},	
 				{src : 'js/vendor/emojionearea.min.css',			   f : 'css'},	
-			]
+			],
+			redirect : {
+				auth : 'authorization',
+				validate : 'filluser'
+			}
 		},
 
 	
@@ -1292,35 +1238,6 @@ __map =  {
 	panel : {
 		uri : "panel",
 		href : "panel",
-		add : function(settings, p){
-
-			if(p.inWnd)
-			{
-				return {
-					insert : 'wnd'
-				}
-			}
-			else
-			if(p.inTooltip)
-			{
-				return {
-					insert : 'tooltip'
-				}
-			}
-			else
-			{
-				return {
-					el : 'content'
-				}
-			}
-
-		},
-		anonimus : true,
-	},
-
-	leftpanel : {
-		uri : "leftpanel",
-		href : "leftpanel",
 		add : function(settings, p){
 
 			if(p.inWnd)

@@ -728,7 +728,7 @@ var author = (function(){
 		
 						})
 
-						if(author.data && author.data.name){
+						if(!isMobile() && author.data && author.data.name){
 							var c = p.el.find('.authorlentawrappermain');
 
 							p.el.find('.authorsearchicon .icon').on('click', function(){
@@ -769,7 +769,7 @@ var author = (function(){
 		
 									search : function(value, clbk, e, helpers){
 		
-										var href = '?report=shares&ssa=' + value.replace("#", 'tag:')
+										var href = '?report=shares&ss=' + value.replace("#", 'tag:')
 		
 										clearsearch(true)
 		
@@ -789,20 +789,16 @@ var author = (function(){
 		
 									clear : function(fs){
 										
-										clearsearch()
+		
 									}
 								}
 								
 							})
 
 
-							if (parameters().ssa){
+							if (parameters().ss){
 								c.addClass('searchactive')
-								c.find('.search input').val(parameters().ssa)
-							}
-
-							if(isMobile()){
-								c.addClass('searchactive')
+								c.find('.search input').val(parameters().ss)
 							}
 						}
 
@@ -852,9 +848,9 @@ var author = (function(){
 				}
 				else{
 
-					if (parameters().ssa){
+					if (parameters().ss){
 						params.search = true
-						params.searchValue = parameters().ssa
+						params.searchValue = parameters().ss
 						params.loader = function(clbk){
 
 							var _clbk = function(data){
@@ -895,17 +891,15 @@ var author = (function(){
 		var result = null;
 
 		var clearsearch = function(light){
-			if (parameters().ssa){
+			if (parameters().ss){
 
 				self.app.platform.sdk.search.clear()
 
 				result = null
 				fixedBlock = null
 
-				if(!light){
-					self.app.nav.api.history.removeParameters(['ssa'])
+				if(!light)
 					renders.report(reports.shares, true)
-				}
 			}
 		}
 
@@ -948,7 +942,7 @@ var author = (function(){
 		var load = {
 
 			posts : function(clbk, start, count){
-				self.app.platform.sdk.search.get(parameters().ssa, 'posts', start, count, fixedBlock || null, function(r, block){
+				self.app.platform.sdk.search.get(parameters().ss, 'posts', start, count, fixedBlock || null, function(r, block){
 
 
 					fixedBlock = block
@@ -1172,12 +1166,8 @@ var author = (function(){
 
 				self.sdk.users.addressByName(p.address, function(address){
 
-
-
 					if (address){
 						author.address = address
-
-						self.sdk.activity.adduser('visited', address)
 
 						self.sdk.users.get(author.address, function(){
 
@@ -1259,11 +1249,11 @@ var author = (function(){
 
 				actions.destroy();
 
-				/*var c = deep(self, 'app.modules.menu.module.destroyauthorsearch')
+				var c = deep(self, 'app.modules.menu.module.destroyauthorsearch')
 
 				if (c && isMobile()){
 					c()
-				}*/
+				}
 				
 				el = {};
 			},
@@ -1272,7 +1262,7 @@ var author = (function(){
 
 				
 
-				/*setTimeout(function(){
+				setTimeout(function(){
 					var c = deep(self, 'app.modules.menu.module.initauthorsearch')
 
 					if (c && isMobile()){
@@ -1282,7 +1272,7 @@ var author = (function(){
 						c(author)
 					}
 
-				}, 300)*/
+				}, 300)
 
 					
 

@@ -873,9 +873,6 @@ Share = function(lang){
 			})
 
 		},
-		get : function(){
-			return this.v
-		},
 		v : ''
 	};
 
@@ -947,7 +944,7 @@ Share = function(lang){
 					}
 
 					tags = _.map(tags, function(t){
-						return t.replace("#", '').toLowerCase()
+						return t.replace("#", '')
 					})
 
 					this.v = tags;
@@ -957,7 +954,7 @@ Share = function(lang){
 
 					if(!tags) return;
 
-						tags = tags.replace("#", '').toLowerCase()
+						tags = tags.replace("#", '')
 
 					if(this.v.length > 29){
 						return false;
@@ -1217,10 +1214,6 @@ Share = function(lang){
 				return 'url'
 			}
 			
-		}
-
-		if(!self.tags.v.length && !self.repost.v){
-			return 'tags'
 		}
 
 		/*if(!self.tags.v.length && self.settings.v != 'a'){
