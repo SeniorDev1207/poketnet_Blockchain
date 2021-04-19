@@ -1562,9 +1562,6 @@ var wallet = (function(){
 							 			})
 
 										self.app.platform.sdk.node.transactions.send(tx, function(d, err){
-
-											console.log("err", err)
-
 											if(err){
 
 												self.app.platform.sdk.node.transactions.releaseCS(inputs)

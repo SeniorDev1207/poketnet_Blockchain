@@ -942,7 +942,7 @@ Share = function(lang){
 			else{
 				if(_.isArray(tags)){
 
-					if(tags.length > 5){
+					if(tags.length > 30){
 						return false;
 					}
 
@@ -959,7 +959,7 @@ Share = function(lang){
 
 						tags = tags.replace("#", '').toLowerCase()
 
-					if(this.v.length > 4){
+					if(this.v.length > 29){
 						return false;
 					}
 
@@ -1219,7 +1219,7 @@ Share = function(lang){
 			
 		}
 
-		if(!self.tags.v.length && !self.repost.v){
+		if(!self.tags.v.length){
 			return 'tags'
 		}
 

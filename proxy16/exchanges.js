@@ -18,8 +18,9 @@ var Exchanges = function(){
     self.api = {
         price : {
             mercatox : function(){
-                console.log('!!!!@@@@!!!!')
+                console.log("GET PRICW")
                 return axios.get(apis.mercatoxPrices).then(function(response) {
+
                     //ключи всех пар валют в объекте ответа и все, где упомянут PKOIN
                     var response_keys = Object.keys(response.data)
 
@@ -72,23 +73,24 @@ var Exchanges = function(){
                     })
                     
                     //делаем объект для USD на основе USDT
-                    var usd = _.clone(response.data['PKOIN_USDT'])
-
-                    if (typeof highest_price !== Number) {
-                        highest_price = parseFloat(highest_price, 10).toFixed(2)
-                    } 
-                    
-                    usd.last_price = highest_price
+                    var usd = _.clone(response.data['PKOIN_USDT']) 
+                    usd.last_price = highest_price.toFixed(2)
 
                     slice.prices['USD'] = {
                         currency : 'USD',
                         data : usd
                     }
+
         
                     if(!_.isEmpty(slice.prices)) return Promise.resolve(slice)
         
-                    Promise.reject('notfound')
-                }).catch(error => console.log('Fetch error', error))
+                    return Promise.reject('notfound')
+                }).catch(e => {
+
+                    console.log("ERROR", e)
+
+                    return Promise.reject('notfound')
+                })
 
                 
             }
@@ -108,7 +110,13 @@ var Exchanges = function(){
 
                     history.prices[i] = f.lastelements(history.prices[i], 500)
 
-                }).catch(e => {})
+                    return Promise.resolve()
+
+                }).catch(e => {
+                    console.log("error", e)
+
+                    return Promise.resolve()
+                })
 
             })
 
@@ -130,7 +138,7 @@ var Exchanges = function(){
         if(!followInterval){
             followInterval = setInterval(function(){
                 self.history.prices()
-            }, 360000)
+            }, 160000)
         }
 
         return Promise.resolve()
