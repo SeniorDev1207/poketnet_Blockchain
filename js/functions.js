@@ -9905,7 +9905,7 @@
 		
 	    // if(test && url.indexOf('channel') == -1 && url.indexOf("user") == -1){}
 
-	    	if(test && test[2]){
+	    	if(test && test[2] || (_url && _url.indexOf('peertube://') > -1)){
 
 				if (test.indexOf('youtube.com') > -1 || test.indexOf('youtu.be') > -1) {
 					type = 'youtube'
@@ -9925,6 +9925,8 @@
 					type = 'peertube'
 			        id = `${test[9]}?${params}`
 					host_name = test[4]
+
+					console.log(id, host_name)
 			    }
 			}
 			
@@ -10544,7 +10546,15 @@ findResponseError = (response) => {
 
 	return (typeof error === 'object') ? (Object.values(error)[0] || {}).msg : error;
 }
-
+serialize = function (obj) {
+	var str = [];
+	for (var p in obj)
+	  if (obj.hasOwnProperty(p)) {
+		str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+	  }
+	return str.join('&');
+  };
+  
 
 stringEqTrig = function(s1, s2){
 
@@ -10573,6 +10583,8 @@ stringEqTrig = function(s1, s2){
 			if(index < 0 || index >= w.length) c = "_";
 
 			else c = w[index];
+
+
 
 			return c;
 		}
