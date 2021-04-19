@@ -12,8 +12,6 @@ var main = (function(){
 
 		var roller = null, lenta = null, share = null, panel,leftpanel, uptimer = null;
 
-		var videomain = false
-
 		var upbutton = null, plissing = null, searchvalue = '', searchtags = null, result, fixedBlock;
 
 		var currentMode = 'common', hsready = false;
@@ -259,7 +257,7 @@ var main = (function(){
 			},
 			share : function(){
 
-				if(!isMobile() && !videomain){
+				if(!isMobile()){
 
 					self.nav.api.load({
 
@@ -312,8 +310,6 @@ var main = (function(){
 			},
 
 			panel : function(){
-
-				if(videomain) return
 
 				self.nav.api.load({
 
@@ -450,7 +446,6 @@ var main = (function(){
 						searchValue : searchvalue || null,
 						search : searchvalue ? true : false,
 						tags : searchtags,
-						video : videomain,
 						renderclbk : function(){
 						},
 						loader : loader
@@ -711,6 +706,8 @@ var main = (function(){
 					upbutton.destroy()
 
 					upbutton = null
+
+
 				
 				if (roller)
 					roller.destroy()
@@ -731,12 +728,12 @@ var main = (function(){
 				if (leftpanel){
 					leftpanel.destroy()
 				}
+
 				
 				leftpanel = null
 				panel = null
 				roller = null
 				lenta = null
-				videomain = false
 			},
 			
 			init : function(p){
@@ -777,12 +774,6 @@ var main = (function(){
 
 					fixedBlock = null
 					result = {}
-				}
-
-				videomain = parameters().video
-
-				if(videomain){
-					el.c.addClass('videomain')
 				}
 
 				make(function(){
