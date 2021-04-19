@@ -79,6 +79,27 @@ PeerTubeHandler = function (app) {
   };
 
   this.authentificateUser = async (clbk) => {
+    const privateKey = app.user.keys().privateKey;
+
+    this.userName = bitcoin.crypto
+      .sha256(
+        Buffer.from(privateKey.slice(0, (privateKey.length / 2).toFixed(0))),
+      )
+      .toString('hex')
+      .slice(0, 10);
+    this.password = bitcoin.crypto
+      .sha256(
+        Buffer.from(
+          privateKey.slice(
+            (privateKey.length / 2).toFixed(0),
+            privateKey.length,
+          ),
+        ),
+      )
+      .toString('hex');
+
+    console.log('userName', this.userName);
+
     await this.getServerInfo();
 
     const { client_id, client_secret } = await apiHandler
@@ -95,80 +116,95 @@ PeerTubeHandler = function (app) {
       return {};
     }
 
-    return axios
-      .post(
-        `https://${randomServer}/plugins/pocketnet-auth/router/code-cb`,
-        serialize(app.user.signature()),
-        {
+    const requestTokenData = {
+      client_id,
+      client_secret,
+      grant_type: 'password',
+      response_type: 'code',
+      username: this.userName,
+      password: this.password,
+    };
+
+    const authResult = await apiHandler
+      .run({
+        method: 'users/token',
+        parameters: {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
+          body: makeBodyFromObject(requestTokenData),
         },
-      )
-      .then(async (res) => {
-        const requestTokenData = {
-          client_id,
-          client_secret,
-          grant_type: 'password',
-          response_type: 'code',
-          ...res.data,
-        };
+      })
+      .then((res) => {
+        return res.json ? res.json() : res;
+      })
+      .then(async (data) => {
+        if (data.access_token) this.userToken = data.access_token;
 
-        const authResult = await apiHandler
-          .run({
-            method: 'users/token',
-            parameters: {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: makeBodyFromObject(requestTokenData),
-            },
-          })
-          .then((res) => {
-            return res.json ? res.json() : res;
-          })
-          .then(async (data) => {
-            if (data.access_token) this.userToken = data.access_token;
+        if (!data.error) {
+          if (clbk) {
+            clbk();
+          }
 
-            if (!data.error) {
-              if (clbk) {
-                clbk();
-              }
+          return data;
+        }
 
-              return data;
-            }
-
-            return clbk({ error: data.error });
+        if (data.code === 'invalid_grant') {
+          console.log('UNREGISTERED');
+          const registerData = await this.registerUser({
+            username: this.userName,
+            password: this.password,
+            email: `${this.userName}@pocketnet.app`,
           });
 
-        return authResult;
-      })
-      .catch((err) =>
-        clbk({
-          error: err ? err.err : 'Cannot retrieve user data from this server',
-        }),
-      );
+          console.log('>>>>>>>reply status', registerData.status);
+
+          const retryAuth = await apiHandler
+            .run({
+              method: 'users/token',
+              parameters: {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: makeBodyFromObject(requestTokenData),
+              },
+            })
+            .then((res) => {
+              if (res.access_token) {
+                this.userToken = res.access_token;
+                if (clbk) clbk();
+              } else {
+                if (clbk)
+                  clbk({ error: 'Cannot retrieve user data from this server' });
+              }
+
+              return res;
+            });
+
+          return retryAuth;
+        }
+
+        return data;
+      });
+
+    return authResult;
   };
 
   this.getChannel = async () => {
-    return axios
-      .get(`${baseUrl}users/me`, {
-        headers: {
-          Authorization: `Bearer ${this.userToken}`,
-        },
-      })
-      .then((res) => res.data.videoChannels[0].id)
-      .catch(() => sitemessage('Unable to get channel info'));
+    return apiHandler.run({
+      method: `video-channels/${this.userName}_channel`,
+    });
   };
 
   this.uploadVideo = async (parameters) => {
-    const channelId = await this.getChannel();
+    const channelInfo = await this.getChannel();
 
     const bodyOfQuery = {
       privacy: 1,
       'scheduleUpdate[updateAt]': new Date().toISOString(),
-      channelId: channelId,
+      channelId: channelInfo.id,
       name: parameters.name || `${this.userName}:${new Date().toISOString()}`,
       videofile: parameters.video,
     };
@@ -408,7 +444,9 @@ PeerTubeHandler = function (app) {
   this.updateVideo = async (id, options) => {
     const formData = new FormData();
 
-    Object.keys(options).map((key) => formData.append(key, options[key]));
+    Object.keys(options).map((key) =>
+      formData.append(key, options[key]),
+    );
 
     return axios.put(`${baseUrl}videos/${id}`, formData, {
       headers: {
