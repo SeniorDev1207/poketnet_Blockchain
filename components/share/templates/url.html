@@ -7,8 +7,6 @@
 
 	if((meta.type == 'youtube') || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){ 
 
-		console.log('meta', meta)
-
 		if(!app.platform.sdk.usersettings.meta.embedvideo || 
 			app.platform.sdk.usersettings.meta.embedvideo.value) {
 	%>
@@ -103,7 +101,7 @@
 	<div class="urlcnt">
 		<div class="urlcnttable table">
 			<div class="linkcnt">
-				<span class="<%- (meta.type === 'peertube' && typeof remove === 'undefined') ? 'hidden' : '' %>">
+				<span class="linkedstyle <%- (meta.type === 'peertube' && typeof remove === 'undefined') ? 'hidden' : '' %>">
 					<a href="<%- url %>" cordovalink="_system">
 						<%- url %>
 					</a>

@@ -1,4 +1,4 @@
-var chat = (function(){
+var oldchat = (function(){
 
 	var self = new nModule();
 
@@ -533,12 +533,12 @@ var chat = (function(){
 
 			resizeWindow : function(){
 				if (topcaption){
-					topcaption.setOffset([0, 0]);
+					topcaption.setOffset([65, 0]);
 					
 				}
 
 				if (bottomcaption){
-					bottomcaption.setOffset([50, 100]);
+					bottomcaption.setOffset([0, 100]);
 				}
 			},
 
@@ -754,6 +754,8 @@ var chat = (function(){
 
 				messages || (messages = []);
 
+				console.log("BEFORE", messages)
+
 				messages = _.filter(messages, function(m){
 					var id = m.tm + m.f
 
@@ -802,6 +804,8 @@ var chat = (function(){
 				}
 				
 				lastmessage = sorted[sorted.length - 1]
+
+				console.log('messages : sorted	', sorted	)
 
 				self.shell({
 					name :  'messages',
@@ -894,7 +898,7 @@ var chat = (function(){
 					topcaption = new Caption({
 						container: el.c.find('.chatWrapper'),
 						caption: el.c.find('.captionfwrapper'),
-						offset: [0, 0],
+						offset: [65, 0],
 						
 					}).init();	
 
@@ -1118,7 +1122,15 @@ var chat = (function(){
 
 				}
 
+				if(!_chat){
+					self.app.platform.sdk.chats.add(chatid, 'share')
+
+					_chat = self.app.platform.sdk.discussions.fromChatId(chatid)
+				}
+
 				var ed = deep(p, 'settings.essenseData') || {};
+
+				console.log('_chat', _chat)
 
 				if (_chat) 
 				{
@@ -1206,6 +1218,7 @@ var chat = (function(){
 
 				renderedMessages = {};
 				renderedMessagesTime = {};
+				lastmessage = null
 
 				essenseData = p.essenseData || {};
 				essenseData.view || (essenseData.view = 'buildin')
@@ -1268,11 +1281,11 @@ var chat = (function(){
 
 if(typeof module != "undefined")
 {
-	module.exports = chat;
+	module.exports = oldchat;
 }
 else{
 
-	app.modules.chat = {};
-	app.modules.chat.module = chat;
+	app.modules.oldchat = {};
+	app.modules.oldchat.module = oldchat;
 
 }
