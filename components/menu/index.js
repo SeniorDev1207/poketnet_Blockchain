@@ -532,10 +532,9 @@ var menu = (function(){
 								el.find('.user').on('click', function(){
 
 									var r = $(this).attr('address')
-									var name = $(this).attr('name')
 
 									self.nav.api.go({
-										href : name ? name.toLowerCase() : 'author?address=' + r,
+										href : 'author?address=' + r,
 										history : true,
 										open : true
 									})
