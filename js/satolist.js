@@ -15161,25 +15161,34 @@ Platform = function (app, listofnodes) {
                     return self.sdk.videos.types.youtube(links)
                 },
 
-                peertube : async function(links){
+                peertube : function(links){
 
-                    console.log("links", links);
+                    console.log("links", links)
 
-                    const linksInfo = await self.app.api.fetch('peertube/listVideos', {
-                        ids: links.map(link => link.link),
-                    });
+                    var result = _.map(links, function(l){
 
-                    links.forEach(link => {
-                        const linkInfo = linksInfo[link.link];
+                        return self.app.api.fetch('peertube/video', {
+                            host : 'https://' + l.meta.host_name,
+                            id : l.meta.id
+                        }).then(d => {
+                            
 
-                        linkInfo ? link.data = {
-                            image : linkInfo.previewPath,
-                            views : linkInfo.views,
-                            duration : linkInfo.duration
-                        } : '';
-                    });
+                            l.data = {
+                                image : d.previewPath,
+                                views : d.views,
+                                duration : d.duration
+                            }
 
-                    return Promise.resolve(links);
+                            return Promise.resolve(l)
+            
+                        }).catch(e => {
+                           return Promise.resolve(l)
+                        })
+
+                    })
+
+                    return Promise.all(result)
+
                 },
 
                 bitchute : function(links){
