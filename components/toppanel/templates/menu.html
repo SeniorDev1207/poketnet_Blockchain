@@ -34,6 +34,14 @@ var video = false /*parameters(app.nav.current.completeHref, true).video;*/
 <% } %>
 
 
+<% if(!app.curation()) {%> 
+<div class="panelitem right">
+	<a href="help"><%=e('e13183')%> <i class="fas fa-question-circle"></i></a>
+</div>
+
+
+<% } %>
+
 <% if(!mobile) { %>
 
 	<div class="panelitemCenter">
@@ -64,12 +72,5 @@ var video = false /*parameters(app.nav.current.completeHref, true).video;*/
 			</div>
 			
 		</div>
-	</div>
-<% } %>
-
-
-<% if(!app.curation()) {%> 
-	<div class="panelitem right">
-		<a href="help"><%=e('e13183')%> <i class="fas fa-question-circle"></i></a>
 	</div>
 <% } %>
