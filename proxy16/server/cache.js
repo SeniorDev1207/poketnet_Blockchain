@@ -55,10 +55,6 @@ var Cache = function(p){
             time : 160,
             block : 0,
         },
-
-        listVideos: {
-            time : 120,
-        },
     }
 
 
