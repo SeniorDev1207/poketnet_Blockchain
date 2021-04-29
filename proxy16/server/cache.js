@@ -12,6 +12,19 @@ var Cache = function(p){
             time : 160,
             block : 0
         },
+
+        getcomments : {
+            time : 160,
+            block : 0
+        },
+
+        getuseraddress : {
+            time : 82000
+        },
+
+        search: {
+            time : 6000
+        },
        
         gettags : {
             time : 82000
@@ -54,6 +67,14 @@ var Cache = function(p){
         getmissedinfo: {
             time : 160,
             block : 0,
+        },
+
+        listVideos: {
+            time : 120,
+        },
+
+        estimatesmartfee: {
+            time : 1600
         },
     }
 
