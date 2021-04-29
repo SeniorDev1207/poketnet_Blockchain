@@ -12,10 +12,6 @@ var Cache = function(p){
             time : 160,
             block : 0
         },
-
-        getuseraddress : {
-            time : 82000
-        },
        
         gettags : {
             time : 82000
