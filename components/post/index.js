@@ -761,434 +761,452 @@ var post = (function(){
 		}
 
 		var renders = {
-      comments: function (clbk) {
-        if ((!ed.repost || ed.fromempty) && ed.comments != 'no') {
-          self.fastTemplate(
-            'commentspreview',
-            function (rendered) {
-              var _el = el.c.find('.commentsWrapper');
+			comments : function(clbk){
 
-              var rf = '';
+				if((!ed.repost || ed.fromempty) && ed.comments != 'no'){
+					self.fastTemplate('commentspreview', function(rendered){
 
-              if (self.app.platform.sdk.address.pnet()) {
-                rf = '&ref=' + self.app.platform.sdk.address.pnet().address;
-              }
+						var _el = el.c.find(".commentsWrapper");
 
-              var url =
-                'https://pocketnet.app/' +
-                (ed.hr || 'index?') +
-                's=' +
-                share.txid +
-                '&mpost=true' +
-                rf;
+						var rf = ''
 
-              if (parameters().address) {
-                url += '&address=' + (parameters().address || '');
-              }
+						if (self.app.platform.sdk.address.pnet()){
+							rf = '&ref=' + self.app.platform.sdk.address.pnet().address
+						}
 
-              self.nav.api.load({
-                open: true,
-                id: 'comments',
-                el: _el,
+	
+						var url = 'https://pocketnet.app/' + (ed.hr || 'index?') + 's='+share.txid+'&mpost=true' + rf
+	
+						if (parameters().address){
+							url += '&address=' + (parameters().address || '')
+						}
+	
+						self.nav.api.load({
+							open : true,
+							id : 'comments',
+							el : _el,
+	
+							eid : (ed.eid || "") + share.txid + 'post',
+	
+							essenseData : {
+								hr : url,
+								totop : el.c,
+								
+								caption : rendered,
+								send : function(){
+									var c = el.c.find(".commentsAction .count span");
+	
+									c.html(Number(c.html() || "0") + 1)
+								},
+								txid : share.txid,
+								
+								reply : ed.reply,
+								
+								showall : !ed.fromempty,
+								init : ed.fromempty || false,
+								preview : ed.fromempty || false,
+								
+	
+								fromtop : !ed.fromempty,
+								fromempty : ed.fromempty,
+								lastComment : ed.fromempty ? share.lastComment : null,
+	
+								additionalActions : function(){
+									self.closeContainer()
+								}
+							},
+	
+							clbk : function(e, p){
+								actions.position()
+								inicomments = p
+	
+	
+								if (clbk)
+									clbk()
+							}
+						})
+	
+					}, {
+						share : share
+					})
+				}
 
-                eid: (ed.eid || '') + share.txid + 'post',
+				else{
+					if (clbk)
+						clbk()
+				}
 
-                essenseData: {
-                  hr: url,
-                  totop: el.c,
+				
+			},
+			empty : function(){
+				self.shell({
+					name :  'empty',
+					el : el.share,
 
-                  caption: rendered,
-                  send: function () {
-                    var c = el.c.find('.commentsAction .count span');
+				}, function(_p){
 
-                    c.html(Number(c.html() || '0') + 1);
-                  },
-                  txid: share.txid,
+					actions.position()
 
-                  reply: ed.reply,
 
-                  showall: !ed.fromempty,
-                  init: ed.fromempty || false,
-                  preview: ed.fromempty || false,
+				})
+			},
+			images : function(clbk){
 
-                  fromtop: !ed.fromempty,
-                  fromempty: ed.fromempty,
-                  lastComment: ed.fromempty ? share.lastComment : null,
+				var _el = el.c.find(".image");
+				var images = el.c.find(".images");
 
-                  additionalActions: function () {
-                    self.closeContainer();
-                  },
-                },
+				if(images.hasClass('active') || !_el.length || !images.length){
 
-                clbk: function (e, p) {
-                  actions.position();
-                  inicomments = p;
+					if (clbk)
+						clbk()
 
-                  if (clbk) clbk();
-                },
-              });
-            },
-            {
-              share: share,
-            },
-          );
-        } else {
-          if (clbk) clbk();
-        }
-      },
-      empty: function () {
-        self.shell(
-          {
-            name: 'empty',
-            el: el.share,
-          },
-          function (_p) {
-            actions.position();
-          },
-        );
-      },
-      images: function (clbk) {
-        var _el = el.c.find('.image');
-        var images = el.c.find('.images');
+				}
+				else
+				{
+					_el.imagesLoaded({ background: true }, function(image) {
 
-        if (images.hasClass('active') || !_el.length || !images.length) {
-          if (clbk) clbk();
-        } else {
-          _el.imagesLoaded({ background: true }, function (image) {
-            if (share.settings.v != 'a') {
-              _.each(image.images, function (img, n) {
-                var _img = img.img;
+						if(share.settings.v != 'a'){
 
-                var el = $(image.elements[n]).closest('.imagesWrapper');
-                var ac = '';
+							_.each(image.images, function(img, n){
 
-                var _w = el.width();
-                var _h = el.height();
+								var _img = img.img;
 
-                var w = _w * (_img.width / _img.height);
+								var el = $(image.elements[n]).closest('.imagesWrapper');
+								var ac = '';
 
-                if (_img.width < el.width()) {
-                  el.find('.image').width(_img.width);
-                  el.find('.image').height(_img.height);
-                } else {
-                  el.height(_w * (_img.height / _img.width));
-                }
-              });
-            }
+								var _w = el.width();
+								var _h = el.height()
 
-            images.addClass('active');
+								var w = _w * (_img.width / _img.height);
 
-            _el.addClass('active');
+								
 
-            if (clbk) clbk();
-          });
-        }
-      },
-      share: function (clbk) {
-        self.shell(
-          {
-            turi: 'lenta',
-            name: ed.video ? 'sharevideo' : 'share',
-            el: el.share,
 
-            additionalActions: function () {
-              self.closeContainer();
-            },
+								if(_img.width < el.width()){
+									el.find('.image').width(_img.width)
+									el.find('.image').height(_img.height)
+								}
+								else{
+									el.height(_w * (_img.height / _img.width))
+								}
+								
+							})
 
-            data: {
-              share: share,
-              all: true,
-              mestate: {},
-              repost: ed.repost,
-              fromempty: ed.fromempty,
-            },
-          },
-          function (_p) {
-            el.stars = el.share.find('.forstars');
+						}
 
-            actions.position();
+						
 
-            el.wr.addClass('active');
+						images.addClass('active')
 
-            renders.stars(function () {
-              renders.mystars(function () {});
+						_el.addClass('active')
 
-              renders.url(function () {
-                renders.repost();
+						if (clbk)
+							clbk()
 
-                actions.position();
+					});
+				}
 
-                renders.urlContent(function () {
-                  actions.position();
+				
+				
+			},
+			share : function(clbk){
 
-                  actions.initVideo();
+				self.shell({
+					turi : 'lenta',
+					name : ed.video ? 'sharevideo' : 'share',
+					el : el.share,
 
-                  renders.images(function () {
-                    if (!ed.repost) {
-                      actions.position();
+					additionalActions : function(){
+						self.closeContainer()
+					},
 
-                      el.share.find('.complain').on('click', events.complain);
+					data : {
+						share : share,
+						all : true,
+						mestate : {},
+						repost : ed.repost,
+						fromempty : ed.fromempty
+					},
 
-                      el.share.on(
-                        'click',
-                        '.imagePostOpent',
-                        events.openGallery,
-                      );
-                      el.share.on('click', '.forrepost', events.repost);
+				}, function(_p){
 
-                      el.share.find('.txid').on('click', events.getTransaction);
-                      el.share.find('.donate').on('click', events.donate);
-                      el.share
-                        .find('.sharesocial')
-                        .on('click', events.sharesocial);
-                      el.share
-                        .find('.asubscribe')
-                        .on('click', events.subscribe);
-                      el.share
-                        .find('.aunsubscribe')
-                        .on('click', events.unsubscribe);
-                      el.share.find('.metmenu').on('click', events.metmenu);
+					el.stars = el.share.find('.forstars')
 
-                      el.share
-                        .find('.notificationturn')
-                        .on('click', events.subscribePrivate);
-                    }
+					actions.position();
 
-                    if (clbk) clbk();
-                  });
-                });
-              });
-            });
-          },
-        );
-      },
-      wholike: function (clbk) {
-        var wholikes = share.who || [];
+					el.wr.addClass('active')	
 
-        self.shell(
-          {
-            turi: 'lenta',
-            name: 'wholike',
-            el: el.share.find('.wholikes'),
-            data: {
-              scores: Number(share.scnt),
-              wholikes: wholikes,
-            },
-            bgImages: {},
-          },
-          function (p) {
-            p.el.find('.wholikesTable').on('click', events.postscores);
+					renders.stars(function(){
 
-            if (clbk) clbk();
-          },
-        );
-      },
-      mystars: function (clbk) {
-        if (typeof share.myVal == 'undefined') {
-          var ids = [share.txid];
+						renders.mystars(function(){
+							
+						})
 
-          self.app.platform.sdk.likes.get(ids, function () {
-            renders.stars();
+						renders.url(function(){
 
-            renders.wholike(clbk);
-          });
-        } else {
-          if (clbk) clbk();
-        }
-      },
-      stars: function (clbk) {
-        self.shell(
-          {
-            turi: 'lenta',
-            name: 'stars',
-            el: el.stars,
-            data: {
-              share: share,
-            },
-          },
-          function (p) {
-            fastars(p.el.find('.stars'));
+							renders.repost();
 
-            el.share.find('.stars i').on('click', events.like);
+							actions.position()
+							
+							renders.urlContent(function(){
 
-            if (clbk) clbk();
-          },
-        );
-      },
-      repost: function (clbk) {
-        if (share.repost) {
-          self.shell(
-            {
-              turi: 'lenta',
-              name: 'repost',
-              el: el.c.find('.repostWrapper'),
-              data: {
-                repost: share.repost,
-                level: level,
-                share: share,
-                //fromrepost : ed.repost
-              },
-            },
-            function (_p) {
-              actions.position();
+								actions.position()
 
-              if (_p.el && _p.el.length) {
-                self.app.platform.papi.post(
-                  share.repost,
-                  _p.el.find('.repostShare'),
-                  function (p) {
-                    _repost = p;
+								actions.initVideo()
 
-                    actions.position();
-                  },
-                  {
-                    repost: true,
-                    eid: eid + share.txid,
-                    level: level,
-                    fromempty: share.isEmpty(),
-                  },
-                );
-              }
-            },
-          );
-        }
-      },
-      url: function (clbk) {
-        var url = share.url;
+								renders.images(function(){
 
-        var og = self.app.platform.sdk.remote.storage[url];
+									if(!ed.repost){
 
-        self.app.platform.sdk.videos
-          .info([url])
-          .then(() => {
-            self.shell(
-              {
-                turi: 'share',
-                name: 'url',
-                el: el.c.find('.url'),
-                data: {
-                  url: url,
-                  og: og,
-                  share: share,
-                },
+										actions.position()
 
-                additionalActions: function () {
-                  self.closeContainer();
-                },
-              },
-              function (_p) {
-				var info = app.platform.sdk.videos.storage[url].data;
+										
+										el.share.find('.complain').on('click', events.complain)
 
-                var loadingPlayer = _p.el.find('.jsPlayerLoading');
+										el.share.on('click', '.imagePostOpent', events.openGallery)
+										el.share.on('click', '.forrepost', events.repost)
 
-                var width = loadingPlayer.width();
-                loadingPlayer.css(
-                  'padding-top', `${width / (2 * info.aspectRatio)}px`
-                );
-				loadingPlayer.css(
-					'padding-bottom', `${width / (2 * info.aspectRatio)}px`
-				  );
+										el.share.find('.txid').on('click', events.getTransaction)
+										el.share.find('.donate').on('click', events.donate)
+										el.share.find('.sharesocial').on('click', events.sharesocial)
+										el.share.find('.asubscribe').on('click', events.subscribe)
+										el.share.find('.aunsubscribe').on('click', events.unsubscribe)
+										el.share.find('.metmenu').on('click', events.metmenu)
 
-                var images = _p.el.find('img');
+										el.share.find('.notificationturn').on('click', events.subscribePrivate)
 
-                _p.el
-                  .find('img')
-                  .imagesLoaded({ background: true }, function (image) {
-                    _.each(image.images, function (i, index) {
-                      if (i.isLoaded) {
-                        $(images[index]).addClass('active');
 
-                        if (i.img.naturalWidth > 500) {
-                          _p.el.addClass('bigimageinlink');
-                        }
-                      } else {
-                        $(images[index])
-                          .closest('.image')
-                          .css('display', 'none');
-                      }
-                    });
+									}
 
-                    if (clbk) clbk();
-                  });
-              },
-            );
-          })
-          .catch(() => {
-            self.shell(
-              {
-                turi: 'share',
-                name: 'url',
-                el: el.c.find('.url'),
-                data: {
-                  url: url,
-                  og: og,
-                  share: share,
-                },
+									if (clbk)
+										clbk()
+									
+								})
 
-                additionalActions: function () {
-                  self.closeContainer();
-                },
-              },
-              function (_p) {
 
-                var images = _p.el.find('img');
+							});
+					
 
-                _p.el
-                  .find('img')
-                  .imagesLoaded({ background: true }, function (image) {
-                    _.each(image.images, function (i, index) {
-                      if (i.isLoaded) {
-                        $(images[index]).addClass('active');
+						})
 
-                        if (i.img.naturalWidth > 500) {
-                          _p.el.addClass('bigimageinlink');
-                        }
-                      } else {
-                        $(images[index])
-                          .closest('.image')
-                          .css('display', 'none');
-                      }
-                    });
+					})
 
-                    if (clbk) clbk();
-                  });
-              },
-            );
-          });
-      },
+				})
+			},
+			wholike : function(clbk){
 
-      urlContent: function (clbk) {
-        var url = share.url;
 
-        if (url) {
-          var meta = self.app.platform.parseUrl(url);
-          var og = self.app.platform.sdk.remote.storage[url];
+				var wholikes = share.who || [];
 
-          if (url && !og) {
-            if (
-              meta.type == 'youtube' ||
-              meta.type == 'vimeo' ||
-              meta.type == 'bitchute' ||
-              meta.type == 'peertube'
-            ) {
-              if (clbk) clbk();
-            } else {
-              self.app.platform.sdk.remote.get(url, function (og) {
-                if (og) {
-                  renders.url(clbk);
-                } else {
-                  if (clbk) clbk();
-                }
-              });
-            }
-          } else {
-            if (clbk) clbk();
-          }
-        } else {
-          if (clbk) clbk();
-        }
-      },
-    };
+				self.shell({
+					turi : 'lenta',
+					name :  'wholike',
+					el : el.share.find('.wholikes'),
+					data : {
+						scores : Number(share.scnt),
+						wholikes : wholikes
+					},
+					bgImages : {}			
+
+				}, function(p){
+
+					p.el.find('.wholikesTable').on('click', events.postscores)
+
+					if (clbk)
+						clbk()
+
+				})
+
+			},
+			mystars : function(clbk){
+
+				if(typeof share.myVal == 'undefined'){
+					var ids = [share.txid]
+
+					self.app.platform.sdk.likes.get(ids, function(){
+
+						renders.stars()
+
+						renders.wholike(clbk)
+
+					})
+				}
+				else{
+					if(clbk) clbk()
+				}
+
+			},
+			stars : function(clbk){
+
+
+				self.shell({
+					turi : 'lenta',
+					name :  'stars',
+					el : el.stars,
+					data : {
+						share : share
+					}					
+
+				}, function(p){
+
+
+					fastars(p.el.find('.stars'))
+
+					el.share.find('.stars i').on('click', events.like)
+
+					if (clbk)
+						clbk()
+
+				})
+				
+			},
+			repost : function(clbk){
+
+				
+
+				if(share.repost){
+
+					self.shell({
+						turi : 'lenta',
+						name :  'repost',
+						el : el.c.find('.repostWrapper'),
+						data : {
+							repost : share.repost,
+							level : level,
+							share : share
+							//fromrepost : ed.repost
+						},
+	
+					}, function(_p){
+
+						actions.position()
+
+						if(_p.el && _p.el.length){
+
+							self.app.platform.papi.post(share.repost, _p.el.find('.repostShare'), function(p){
+
+								_repost = p;
+
+								actions.position()
+
+							}, {
+								repost : true,
+								eid : eid + share.txid,
+								level : level,
+								fromempty : share.isEmpty()
+							})
+
+						}
+
+
+						
+
+					})
+
+				}
+			},
+			url : function(clbk){
+
+				var url = share.url
+
+				var og = self.app.platform.sdk.remote.storage[url];
+
+
+				self.shell({
+					turi : 'share',
+					name :  'url',
+					el : el.c.find('.url'),
+					data : {
+						url : url,
+						og : og,
+						share : share
+					},
+
+					additionalActions : function(){
+						self.closeContainer()
+					},
+
+				}, function(_p){
+
+					var images = _p.el.find('img');
+
+					_p.el.find('img').imagesLoaded({ background: true }, function(image) {
+
+						_.each(image.images, function(i, index){
+							if(i.isLoaded){
+								$(images[index]).addClass('active')
+
+								if(i.img.naturalWidth > 500){
+									_p.el.addClass('bigimageinlink')
+								}
+							}
+							else
+							{
+								$(images[index]).closest('.image').css('display', 'none')
+							}
+						})
+
+						if (clbk)
+							clbk()
+
+					});
+
+					
+
+					
+
+				})
+			},
+
+			urlContent : function(clbk){
+				
+
+				var url = share.url;
+
+				if (url){
+
+					var meta = self.app.platform.parseUrl(url);
+					var og = self.app.platform.sdk.remote.storage[url];
+
+					if (url && !og){
+
+						if (meta.type == 'youtube' || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){
+							if (clbk)
+								clbk()
+						}
+						else
+						{
+							self.app.platform.sdk.remote.get(url, function(og){
+
+								if(og){
+									renders.url(clbk)
+								}
+								else
+								{
+									if (clbk)
+										clbk()
+								}
+
+							})
+						}
+					}
+
+					else
+					{
+						if(clbk)
+							clbk()
+					}
+
+				}	
+
+				else
+				{
+					if(clbk)
+						clbk()
+				}			
+
+			},
+		}
 
 		var state = {
 			save : function(){

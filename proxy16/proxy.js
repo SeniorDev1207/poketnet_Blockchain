@@ -27,7 +27,9 @@ var Bots = require('./bots.js');
 //////////////
 
 
-var Proxy = function (settings, manage) {
+var Proxy = function (settings, manage, test) {
+
+    console.log("TESTMODE", test)
 
     var self = this;
 
@@ -709,13 +711,29 @@ var Proxy = function (settings, manage) {
 
             var node = null;
 
+            var log = false
+
+            if(method == 'getlastcomments') {
+
+              parameters[1] = ''
+
+              log = true
+            }
+
             return new Promise((resolve, reject) => {
               server.cache.wait(method, parameters, function (waitstatus) {
+                if(log){
+                  console.log('waitstatus', waitstatus)
+                }
                 resolve(waitstatus);
               });
             })
               .then((waitstatus) => {
                 var cached = server.cache.get(method, parameters);
+
+                if(log){
+                  console.log('cached', cached ? true : false)
+                }
 
                 if (cached) {
                   return Promise.resolve({
@@ -758,6 +776,11 @@ var Proxy = function (settings, manage) {
                       }, f.rand(120, 1000));
                     });
                   }
+                }
+
+
+                if(log){
+                  console.log('load', method, parameters)
                 }
 
                 return node
@@ -885,7 +908,10 @@ var Proxy = function (settings, manage) {
           path: '/nodes/test',
           authorization: 'signature',
           action: function ({ node, scenario, A }) {
-            return Promise.reject('err');
+
+            if(!test)
+
+              return Promise.reject('err');
 
             if (!A) return Promise.reject();
 
