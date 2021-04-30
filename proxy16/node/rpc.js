@@ -105,8 +105,6 @@ function rpc(request, callback, obj) {
     var pbl = publics[request.method]
     var pst = posts[request.method]
 
-    //console.log("REQUEST", m , request)
-
     var self = obj;
     request = JSON.stringify(request);
     var auth = new Buffer(self.user + ':' + self.pass).toString('base64');
@@ -165,8 +163,6 @@ function rpc(request, callback, obj) {
             }
             if (res.statusCode === 500 && buf.toString('utf8') === 'Work queue depth exceeded') {
 
-               
-
                 var exceededError = new Error('Bitcoin JSON-RPC: ' + buf.toString('utf8'));
 
                 exceededError.code = 429;
@@ -195,8 +191,6 @@ function rpc(request, callback, obj) {
 
     req.on('error', function(e) {
         var err = new Error(errorMessage + 'Request Error: ' + e.message);
-
-        //console.log("errorMessage + 'Request Error: ' + e.message", errorMessage + 'Request Error: ' + e.message)
 
         if (!called) {
 
@@ -425,7 +419,7 @@ function generateRPCMethods(constructor, apiCalls, rpc) {
 }
 
 function getRandomId() {
-    return parseInt(Math.random() * 1000000000);
+    return parseInt(Math.random() * 100000);
 }
 
 generateRPCMethods(RpcClient, RpcClient.callspec, rpc);

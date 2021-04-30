@@ -9,15 +9,14 @@ var Middle = function(){
     var countlogs = 10000
     var logs = []
 
-    var addLogs = function(parameters, ip, status, pathname, start){
+    var addLogs = function(parameters, ip, status, pathname){
 		
 		logs.push({
 			p : _.clone(parameters),
 			ip : ip,
 			s : status,
 			pn : pathname,
-			date : f.now(),
-            start : start
+			date : f.now()
 		})
 
 		var d = logs.length - countlogs
@@ -104,7 +103,6 @@ var Middle = function(){
     }
 
     self.extend = function(request, result, next){
-        var start = f.now()
         
         result._success = function(data, code){
 
@@ -115,7 +113,7 @@ var Middle = function(){
                 data : data
             })
 
-            addLogs(request.data, request.clientIP, code, request.baseUrl + request.path, start)
+            addLogs(request.data, request.clientIP, code, request.baseUrl + request.path)
     
         }
     
@@ -132,7 +130,7 @@ var Middle = function(){
                 code : code
             })
 
-            addLogs(request.data, request.clientIP, code, request.baseUrl + request.path, start)
+            addLogs(request.data, request.clientIP, code, request.baseUrl + request.path)
     
         }
     

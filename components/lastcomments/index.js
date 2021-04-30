@@ -127,20 +127,6 @@ var lastcomments = (function(){
 			}
 		}
 
-		var multimake = function(){
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-		}
-
 		var initEvents = function(){
 			
 			self.app.platform.ws.messages['newblocks'].clbks['lastcomments'] =
@@ -149,9 +135,6 @@ var lastcomments = (function(){
 				//if(self.app.platform.focus){
 					make()
 				//}
-
-				//multimake()
-				
 
 			}
 
@@ -215,10 +198,6 @@ var lastcomments = (function(){
 				initEvents();
 
 				make()
-
-				
-				//multimake()
-				
 
 				p.clbk(null, p);
 			}

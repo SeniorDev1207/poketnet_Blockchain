@@ -9,21 +9,8 @@ var Cache = function(p){
 
     var ckeys = {
         getlastcomments : {
-            time : 960,
+            time : 160,
             block : 0
-        },
-
-        getcomments : {
-            time : 360,
-            block : 0
-        },
-
-        getuseraddress : {
-            time : 82000
-        },
-
-        search: {
-            time : 6000
         },
        
         gettags : {
@@ -36,27 +23,27 @@ var Cache = function(p){
         },
         
         getrawtransactionwithmessage: {
-            time : 460,
+            time : 160,
             block : 0
         },
 
         gethierarchicalstrip: {
-            time : 460,
+            time : 160,
             block : 0
         },
         
         getuserprofile: {
-            time : 560,
+            time : 160,
             block : 0
         },
 
         getuserstate : {
-            time : 560,
+            time : 160,
             block : 0
         },
         
         getpagescores: {
-            time : 460,
+            time : 160,
             block : 0
         },
         
@@ -67,14 +54,6 @@ var Cache = function(p){
         getmissedinfo: {
             time : 160,
             block : 0,
-        },
-
-        listVideos: {
-            time : 120,
-        },
-
-        estimatesmartfee: {
-            time : 1600
         },
     }
 
