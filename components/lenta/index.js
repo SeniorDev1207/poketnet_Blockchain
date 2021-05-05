@@ -1227,19 +1227,7 @@ var lenta = (function(){
 						
 					}
 				})
-			},
-
-			videoShare : function(share) {
-				if (!share.url || !share.itisvideo()) return sitemessage('Unable to parse a video in the post');
-
-				const metaInfo = self.app.platform.parseUrl(share.url);
-
-				const peertubeLink = `https://pocketnet.app/peertube/embed.html?host=${metaInfo.host_name}&id=${metaInfo.id}`;
-
-				(metaInfo.type === 'peertube') ? copycleartext(peertubeLink) : copycleartext(share.url);
-
-				return sitemessage('Video link successfully copied to clipboard');
-			},
+			}
 		}
 
 		var events = {
@@ -2435,7 +2423,6 @@ var lenta = (function(){
 				}
 
 				var rndr = function(res){
-
 					self.shell({
 						turi : 'share',
 						name :  'url',
@@ -2457,12 +2444,10 @@ var lenta = (function(){
 				}
 
 				if (meta.type === 'peertube') {
-					self.app.api.fetch('peertube/video',{
-						host: `https://${meta.host_name}`,
-						id: meta.id,
-					}).then(res => {
-						rndr({ views: res.views, aspectRatio: res.aspectRatio });
-					});
+					
+					//self.app.peertubeHandler.getVideoInfoAnon(meta, (res) => {
+						rndr({})
+					//});
 
 				} else {
 					rndr({})

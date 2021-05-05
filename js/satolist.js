@@ -2829,11 +2829,6 @@ Platform = function (app, listofnodes) {
 
                         })
 
-                        el.find('.videoshare').on('click', function () {
-                            actions.videoShare(share)
-
-                            _el.tooltipster('hide')
-                        })
                     })
 
                 }, d, 'components/lenta')
@@ -14999,8 +14994,7 @@ Platform = function (app, listofnodes) {
                         linkInfo ? link.data = {
                             image : linkInfo.previewPath,
                             views : linkInfo.views,
-                            duration : linkInfo.duration,
-                            aspectRatio : linkInfo.aspectRatio,
+                            duration : linkInfo.duration
                         } : '';
                     });
 
