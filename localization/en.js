@@ -569,6 +569,10 @@ ____loclib.e13135 = "User haven't private key"
 ____loclib.e13136 = "All Posts"
 ____loclib.e13137 = "Your Pocket"
 ____loclib.e13138 = "Top posts"
+____loclib["Top Posts Over"] = "Top Posts Over"
+____loclib.topnext = "Next"
+____loclib.topprevious = "Previous"
+____loclib.topactual = "Return to the latest"
 ____loclib.e13139 = "Search on Pocketnet"
 ____loclib.e13140 = "Search on"
 ____loclib.notifications = "Notifications"
@@ -985,5 +989,3 @@ ____loclib.period3day = "Three Days";
 ____loclib.period7day = "One week";
 ____loclib.period31day = "One Month";
 ____loclib.period182day = "Half of year";
-
-____loclib.shareBareLink = "Share video link";
