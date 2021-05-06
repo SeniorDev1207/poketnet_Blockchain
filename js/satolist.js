@@ -26,7 +26,7 @@ Platform = function (app, listofnodes) {
     self.online = undefined;
     self.avblocktime = 45;
     self.repost = true;
-    self.videoenabled = false;
+    self.videoenabled = true;
 
     var onlinetnterval;
     var unspentoptimizationInterval = null;
@@ -187,7 +187,6 @@ Platform = function (app, listofnodes) {
                 windows: {
     
                     appname: "Pocketnet",
-                    id: "#windows",
                     text: {
                         name: "Windows",
                         download: self.app.localization.e('e13222'),
@@ -200,13 +199,11 @@ Platform = function (app, listofnodes) {
                         name: "PocketnetSetup.exe",
                         url: 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
                         page: 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
-                    },
-                    
+                    }
                 },
 
                 macos: {
                     appname: "Pocketnet",
-                    id: '#macos',
                     text: {
                         name: "macOS",
                         download: self.app.localization.e('e13222'),
@@ -219,12 +216,11 @@ Platform = function (app, listofnodes) {
                         name: "PocketnetSetup.dmg",
                         url: 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
                         page: 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
-                    },
+                    }
                 },
         
-                currentos: {
+                linux: {
                     appname: "Pocketnet",
-                    id: "#linux",
                     text: {
                         name: "Linux",
                         download: self.app.localization.e('e13222'),
@@ -11171,9 +11167,33 @@ Platform = function (app, listofnodes) {
                     },
                     create : function(inputs, dummyoutputs, id, reciever, amount, time){
 
+                        var multisha = function(str, count){
+
+                            if(!count) count = 100
+                    
+                            var h = Buffer.from(str)
+                    
+                            for (var i = 0; i < count; i++){
+                                h = bitcoin.crypto.sha256(h)
+                            }
+                    
+                            return h.toString('hex')
+                        }
+                    
+                        var createhash = function(key, seed){
+                    
+                            var str = multisha(multisha(key) + '_' + seed, 10)
+                    
+                            return str
+                        }
+                    
+                        var crrc = function(key, txid){
+                            return createhash(key, txid)
+                        }
+
                         var keyPair = self.app.user.keys()
                         var privatekey = keyPair.privateKey
-                        var secret = self.htls.hash(privatekey.toString('hex'), id)
+                        var secret = crrc(privatekey.toString('hex'), id)
 
                         var payment = bitcoin.payments.htlc({
                             htlc : {
@@ -11197,7 +11217,13 @@ Platform = function (app, listofnodes) {
                         var indexes = {}
 
                         _.each(dummyoutputs, function(dop){
-                            if(dop.address) indexes[outputs.push(dop) - 1] = true
+                            if(dop.address) {
+                                indexes[outputs.push(dop) - 1] = true
+
+                                console.log('dop.amount ', dop.amount )
+
+                                dop.amount = dop.amount - 0.02
+                            }
                         })
 
                         var txb = self.sdk.node.transactions.create.wallet(inputs, outputs, null, true)
@@ -11470,7 +11496,7 @@ Platform = function (app, listofnodes) {
                             amount = amount * smulti;
 
                             var data = Buffer.from(bitcoin.crypto.hash256(obj.serialize()), 'utf8');
-                            var optype = obj.typeop ? obj.typeop() : obj.type
+                            var optype = obj.typeop ? obj.typeop(self) : obj.type
                             var optstype = optype
 
                             if (obj.optstype && obj.optstype(self)) optstype = obj.optstype(self)
@@ -18059,7 +18085,6 @@ Platform = function (app, listofnodes) {
                     });
                 }
 
-
             },
 
             keyForAes: function (key, clbk) {
@@ -19123,7 +19148,7 @@ Platform = function (app, listofnodes) {
 
                     if (addresses.indexOf(a) > -1) {
 
-                        
+                        return
                         if (!isMobile()){
 
                             self.matrixchat.inited = true

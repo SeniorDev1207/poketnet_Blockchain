@@ -11,8 +11,6 @@ var help = (function(){
 		var el, cpage, external, c = {};
 
 
-
-
 		
 		
 		
@@ -175,22 +173,11 @@ var help = (function(){
 		}
 
 		var renders = {
-			applications : function(page){
+			application : function(page){
 
 				this.page(page, function(_el){
 
 
-					self.nav.api.load({
-
-						open : true,
-						id : 'applications',
-						el : _el.find('.applicationsWrapper'),
-
-						
-						clbk : function(e, p){
-							external = p
-						}
-					})
 					
 				})
 
@@ -339,7 +326,11 @@ var help = (function(){
 						})
 					})
 					
+					
+
 				})
+
+				
 
 			},
 		}
