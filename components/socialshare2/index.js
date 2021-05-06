@@ -634,14 +634,12 @@ var socialshare2 = (function(){
 
 			    		var pn = p[p.length - 1]
 
-						if(!pn) pn = 'index'
-
 						ed.url = 'https://pocketnet.app/' +  pn + window.location.search
 						
 				    }
 				    else
 				    {
-				    	ed.url = 'https://pocketnet.app/' + self.app.nav.get.href() || 'index'
+				    	ed.url = 'https://pocketnet.app/' + self.app.nav.get.href()
 				    }
 
 				}

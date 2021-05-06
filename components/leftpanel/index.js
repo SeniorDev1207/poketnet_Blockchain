@@ -102,7 +102,6 @@ var leftpanel = (function(){
 
 				if (page < 0) page = 0
 
-
 				self.shell({
 					name :  'top',
 					data : {

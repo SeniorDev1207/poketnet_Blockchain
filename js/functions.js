@@ -3682,17 +3682,7 @@
 
 						parameter.set(value);
 
-						var label = parameter.labelByValue(value)
-
-						if(parameter.labelToInput){
-							__el.val(parameter.labelToInput(label))
-						}
-						else
-						{
-							__el.val(label)
-						}
-
-						
+						__el.val(parameter.labelByValue(value))
 
 						if (parameter.type == 'valuesmultibig'){							
 
@@ -4142,8 +4132,7 @@
 			self.possibleValuesLabels = p.possibleValuesLabels || [];
 			self.value = p.value || null;
 			self.defaultValuesTemplate = p.defaultValuesTemplate || null;
-			self.defaultValueTemplate = p.defaultValueTemplate || null;
-			self.labelToInput = p.labelToInput || null; 
+
 			self.currency = p.currency || null;
 			self.disabled = p.disabled;
 
@@ -4617,10 +4606,6 @@
 
 				if (self.type == 'values' || self.type == 'valuescustom'){
 					displayValue = self.labelByValue(self.value)
-
-					if(self.labelToInput){
-						displayValue = self.labelToInput(displayValue)
-					}
 				}
 
 				var caret = '';
@@ -4685,17 +4670,7 @@
 							var label = self.labelByValue(value);
 
 							input += '<div class="vc_value" value="' + value + '">';
-
-							if (self.defaultValueTemplate)
-							{
-								input += self.defaultValueTemplate(label, value, self)
-
-							}
-							else{
-								input += label;
-							}
-							
-							
+							input += label;
 							input += '</div>';
 
 					  	});
