@@ -21,9 +21,17 @@ var settingsPath = 'data/settings'
 var settings = {};
 
 var pocketnet = new Pocketnet()
-var test = false
+var test = true
 
 var testnodes = [
+	/*{
+		host : '192.168.0.33',
+		port : 37071,
+		ws : 6067,
+		name : 'CryptoserverTest',
+		stable : true
+	},*/
+
 	{
 		host : '216.108.231.28',
 		port : 36061,
