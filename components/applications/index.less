@@ -2,6 +2,10 @@
 
 #applications{
 
+    h1{
+        
+    }
+
     .caption{
         font-size: 2em;
         font-weight: 100;
@@ -74,6 +78,15 @@
     }
     
     .currentos{
+        display: none;
+        padding : 4 * @rhythm 0;
+        &.active{
+            display: block;
+            
+        }
+    }
+
+    .extraos{
         display: none;
         padding : 4 * @rhythm 0;
         &.active{
