@@ -2974,7 +2974,6 @@ body {
 
 video {
   width: 100%;
-  padding: 0 !important;
 }
 
 #video-wrapper {
@@ -2983,13 +2982,19 @@ video {
 }
 
 .video-js .vjs-tech {
-  position: absolute;
+  position: relative;
+  left: 0;
+  top: 0;
+  bottom: auto;
+  right: auto;
   height: auto;
 }
 
 .video-js {
   height: auto !important;
-  position: relative;
+}
+.video-js video {
+  max-height: 640px;
 }
 .video-js.vjs-fullscreen video {
   max-height: 100%;
@@ -3053,14 +3058,6 @@ video {
   max-width: 100%;
 }
 
-.js-player {
-  position: relative;
-}
-
-.js-player,
-.video-js-wrapper {
-  box-sizing: border-box;
-}
 .js-player .vjs-menu *,
 .video-js-wrapper .vjs-menu * {
   font-family: "Segoe UI", SegoeUI, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
