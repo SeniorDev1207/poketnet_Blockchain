@@ -102,9 +102,6 @@ var Cache = function(p){
 
             var k = f.hash(JSON.stringify(params))
 
-            if(key == 'gethotposts')
-                console.log(key, params, k)
-
 
             if(!storage[key])
                 storage[key] = {}
@@ -187,9 +184,6 @@ var Cache = function(p){
 
         var k = f.hash(JSON.stringify(params))
 
-        if(key == 'gethotposts')
-            console.log(key, params, k)
-
         if(!waiting[key])
             waiting[key] = {}
 
@@ -219,7 +213,7 @@ var Cache = function(p){
                 delete waiting[key][k].clbks[waitid]
             }
 
-        }, 6500)
+        }, 3500)
 
         
     }
