@@ -2974,6 +2974,9 @@ body {
 
 video {
   width: 100%;
+}
+
+video[src], .vjs-fullscreen {
   padding: 0 !important;
 }
 
@@ -2987,8 +2990,11 @@ video {
   height: auto;
 }
 
-.video-js {
+.video-js:not(.verticalVideo) {
   height: auto !important;
+}
+
+.video-js {
   position: relative;
 }
 .video-js.vjs-fullscreen video {
