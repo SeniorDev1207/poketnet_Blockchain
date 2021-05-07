@@ -4,11 +4,9 @@ const { performance } = require('perf_hooks');
 var addresses = require('./addresses.json');
 
 
-var Testnode = function(node, manager){
+var Testnode = function(node){
 
     var self = this;
-
-    var wallet = node.wallet /// link to proxy wallet kit
 
     var address = "PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82"
 
@@ -439,28 +437,6 @@ var Testnode = function(node, manager){
         }
     }
 
-    self.kit = {
-        preparekey : function(index){
-            var privatekey = manager.proxy.wallet.testkey(pkindex)
-
-            if(!privatekey) return Promise.reject('privatekey')
-
-            var ao = wallet.kit.addressobj({
-                privatekey
-            })
-
-            if(!ao.pk) return Promise.reject('privatekeyao')
-
-            return wallet.unspents.getc(ao).then(r => {
-                return Promise.resolve(ao)
-            })
-        },
-
-        getposts : function(){
-            return request('gethotposts')
-        }   
-    }
-
     self.scenarios = {
         pageload : function(){
             var count = 100,
@@ -487,24 +463,7 @@ var Testnode = function(node, manager){
                 console.log("testing", methodkeys)
 
             return self.scenariosmeta.parallellMethodsLong(count, methodkeys, 600000)
-        },
-
-        limits : function(pkindex){
-
-            var address = null
-
-            return self.kit.preparekey(pkindex).then(a => {
-
-                address = a
-
-                return self.kit.getposts()
-
-            }).then(posts => {
-                
-            })
-
         }
-
     }
 
     return self
