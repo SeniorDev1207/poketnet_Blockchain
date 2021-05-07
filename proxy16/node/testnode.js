@@ -4,11 +4,9 @@ const { performance } = require('perf_hooks');
 var addresses = require('./addresses.json');
 
 
-var Testnode = function(node, manager){
+var Testnode = function(node){
 
     var self = this;
-
-    var wallet = node.wallet /// link to proxy wallet kit
 
     var address = "PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82"
 
@@ -335,8 +333,6 @@ var Testnode = function(node, manager){
         //console.log(node.statistic.get())
     }
 
-
-
     self.scenariosmeta = {
         allmethods : function(count, waittime){
 
@@ -438,93 +434,6 @@ var Testnode = function(node, manager){
                 return this.parallellMethodsLong(count, methodkeys, time)
 
             })
-        },
-
-        actions : function(count, actions){
-
-            if(!count) count = 1;
-
-            var promises = []
-            var waittime = 200
-            
-            for(var i = 0; i < count; i++){
-                promises.push(
-                    f.processArrayWithDelay(actions, waittime, function(m){
-
-                        return m().then(r => {
-                            return Promise.resolve()
-                        }).catch(e => {
-                            return Promise.resolve()
-                        })
-
-                    }).catch(e => {
-
-                        return Promise.resolve()
-                    })
-                )
-            }
-
-
-            return Promise.all(promises).catch(e => {
-
-                return Promise.reject(e)
-            })
-        },
-
-        actionsLong : function(count, actions, time){
-            if(!time) time = 0
-            if (time <= 0) {
-                return Promise.resolve()
-            }
-            var ctime = performance.now()
-            return self.scenariosmeta.actions(count, actions).catch(e => {
-                return Promise.resolve()
-            }).then(r => {
-                var difference = (performance.now() - ctime);
-                time = time - difference
-                return this.actionsLong(count, methodkeys, time)
-
-            })
-        }
-    }
-
-    self.kit = {
-        preparekey : function(index){
-            var privatekey = manager.proxy.wallet.testkey(pkindex)
-
-            if(!privatekey) return Promise.reject('privatekey')
-
-            var ao = wallet.kit.addressobj({
-                privatekey
-            })
-
-            if(!ao.pk) return Promise.reject('privatekeyao')
-
-            return wallet.unspents.getc(ao).then(r => {
-                return Promise.resolve(ao)
-            })
-        },
-
-        getposts : function(){
-            return request('gethotposts')
-        },
-        
-        makecomment : function(address, txid, message){
-
-            if(!message) message = this.randomtext()
-
-            var comment = wallet.pocketnet.pobjects.comment(txid, message)
-
-            return wallet.transactions.common(address, comment, {}).then({alias, data}).catch(e => {
-
-                console.log("error", e)
-
-                return Promise.reject(e)
-            })
-        },
-
-        randomtext : function(l){
-            return 'time: ' + f.now + ", text: "  + f.randomString(l || f.rand(10, 100))
         }
     }
 
@@ -554,35 +463,7 @@ var Testnode = function(node, manager){
                 console.log("testing", methodkeys)
 
             return self.scenariosmeta.parallellMethodsLong(count, methodkeys, 600000)
-        },
-
-        limits : function(pkindex){
-
-            var address = null
-            var count = 200
-            var time = 600000
-
-            return self.kit.preparekey(pkindex).then(a => {
-
-                address = a
-
-                return self.kit.getposts()
-
-            }).then(posts => {
-
-                var actions = [new Promise((resolve, reject) => {
-
-                    var post = posts[f.rand(0, posts.length - 1)]
-
-                    return self.kit.makecomment(address, post.txid)
-
-                })]
-
-                return self.scenariosmeta.actionsLong(count, actions, time)
-            })
-
         }
-
     }
 
     return self

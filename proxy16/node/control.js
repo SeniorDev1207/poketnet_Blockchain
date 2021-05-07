@@ -463,8 +463,6 @@ var Control = function(settings) {
       
         autorun: function() {
 
-            return Promise.resolve()
-
             if(!self.kit.hasbin()) {
                 return Promise.resolve()
             }

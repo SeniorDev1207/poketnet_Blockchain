@@ -48,8 +48,6 @@ var Proxy = function (settings, manage, test) {
 
     self.userDataPath = null    
 
-    
-
     f.mix({ 
         wss, server, pocketnet, nodeControl, 
         remote, firebase, nodeManager, wallet,
@@ -261,10 +259,6 @@ var Proxy = function (settings, manage, test) {
 
 
     self.wallet = {
-
-        testkey : function(i){
-          return manage.get.testkey(i)
-        },
 
         events : function(){
             wallet.clbks.error.queue.main = function(e, p){
@@ -499,7 +493,6 @@ var Proxy = function (settings, manage, test) {
     }
 
     self.kit = {
-        
         service : function(){
             var w = self.wss.info(true)
             var s = self.server.info(true)

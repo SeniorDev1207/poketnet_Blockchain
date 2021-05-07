@@ -472,8 +472,6 @@ var Nodemanager = function(p){
         },
        
         peernodes : function(node){
-
-            return Promise.resolve()
   
             return node.peers().then(nodes => {
 
