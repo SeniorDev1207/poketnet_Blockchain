@@ -22,12 +22,6 @@ var all = {
 		class : 'socialshare'
 	},
 
-	shareBareVideoLink : {
-		icon : '<i class="fas fa-video"></i>',
-		text : e('shareBareLink'),
-		class : 'videoshare'
-	},
-
 	subscribe : {
 		icon : '<i class="fas fa-users"></i>',
 		text : e('sub'),
@@ -61,7 +55,7 @@ var all = {
 	htls : {
 		icon : '<i class="fas fa-cubes"></i>',
 		text : 'HTLC BUY TEST',
-		class : 'buy'
+		class : 'htls'
 	}
 
 }
@@ -84,7 +78,7 @@ if(share){
 		if(!my && me){
 
 			m.push('donation')
-			/*m.push('htls')*/
+			m.push('htls')
 
 			if(isMobile()){
 				if (!me.relation(share.address, 'subscribes')){
@@ -103,10 +97,6 @@ if(share){
 
 			m.push('block')
 		}
-	}
-
-	if (share.itisvideo()) {
-		m.push('shareBareVideoLink');
 	}
 }
 
