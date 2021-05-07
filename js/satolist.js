@@ -15,12 +15,6 @@ Platform = function (app, listofnodes) {
 
     self.app = app;
     
-
-    self.real = {
-        'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd' : true,
-        'PLJvEixJkj85C4jHM3mt5u1ATwZE9zgFaA' : true,
-        'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y' : true
-    }
     
 
     self.testaddresses = ['PEwL86dE6MuKKaGPxooGyFCKocUP8B6jw8', 'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2', 'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y', 'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux', 'PSWxzYS4Y37tmnZ9oxKfm9ffVqLRBbFbjH', 'PHvQEGtYYpDpmHYuUwA4gF4ey1YitF2NRW', 'PA6biduJbWcQ97n5jz2jUqWHtenLpWTH7s', 'PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PQsvaeBWB5WX3BsdWcNFmP1wy61P3gpRKf', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PHNKYionoaBRVudUhqWzNrJyqxVxaDYqT7', 'PVCUYATJxi4yNM2sqThPxd3P6jJDrvuWJs', 'PLJvEixJkj85C4jHM3mt5u1ATwZE9zgFaA', 'PShAyCoM32HEEHqrdEYvQ1wRjeqZsmWqDa', 'PKLWLXN6kwmdkbYG981gyPj5jb7bgzhstj', 'PHdW4pwWbFdoofVhSEfPSHgradmrvZdbE5', 'P9jDYvkXHw4FtRZof661ddzmMyFRqGUjwN', 'P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PSRFH9Ctq4wV1THes39izo3J4dHybLyT32', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
@@ -32,7 +26,7 @@ Platform = function (app, listofnodes) {
     self.online = undefined;
     self.avblocktime = 45;
     self.repost = true;
-    self.videoenabled = false;
+    self.videoenabled = true;
 
     var onlinetnterval;
     var unspentoptimizationInterval = null;
@@ -193,7 +187,6 @@ Platform = function (app, listofnodes) {
                 windows: {
     
                     appname: "Pocketnet",
-                    id: "#windows",
                     text: {
                         name: "Windows",
                         download: self.app.localization.e('e13222'),
@@ -206,17 +199,15 @@ Platform = function (app, listofnodes) {
                         name: "PocketnetSetup.exe",
                         url: 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
                         page: 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
-                    },
-                    
+                    }
                 },
 
                 macos: {
                     appname: "Pocketnet",
-                    id: '#macos',
                     text: {
                         name: "macOS",
                         download: self.app.localization.e('e13222'),
-                        label: self.app.localization.e('e132232')
+                        label: 'Download Pocketnet for macOS'
                     },
         
                     icon: '<i class="fab fa-apple"></i>',
@@ -225,12 +216,11 @@ Platform = function (app, listofnodes) {
                         name: "PocketnetSetup.dmg",
                         url: 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
                         page: 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
-                    },
+                    }
                 },
         
-                currentos: {
+                linux: {
                     appname: "Pocketnet",
-                    id: "#linux",
                     text: {
                         name: "Linux",
                         download: self.app.localization.e('e13222'),
@@ -240,7 +230,7 @@ Platform = function (app, listofnodes) {
                     icon: '<i class="fab fa-linux"></i>',
         
                     github: {
-                        name: "PocketnetSetup.deb",
+                        name: "Pocketnet_linux_x64.AppImage",
                         url: 'https://api.github.com/repos/pocketnetapp/pocketnet.gui/releases/latest',
                         page: 'https://github.com/pocketnetteam/pocketnet.gui/releases/latest'
                     }
@@ -2657,6 +2647,7 @@ Platform = function (app, listofnodes) {
         },
 
         metmenu: function (_el, id, actions) {
+
             var share = self.sdk.node.shares.storage.trx[id]
 
             if (!share) {
@@ -2838,11 +2829,6 @@ Platform = function (app, listofnodes) {
 
                         })
 
-                        el.find('.videoshare').on('click', function () {
-                            actions.videoShare(share)
-
-                            _el.tooltipster('hide')
-                        })
                     })
 
                 }, d, 'components/lenta')
@@ -5277,9 +5263,6 @@ Platform = function (app, listofnodes) {
                 }
 
                 u.address = a
-
-
-                if(self.real[a]) u.real = true
 
                 self.sdk.users.extend(u, state)
 
@@ -11184,9 +11167,33 @@ Platform = function (app, listofnodes) {
                     },
                     create : function(inputs, dummyoutputs, id, reciever, amount, time){
 
+                        var multisha = function(str, count){
+
+                            if(!count) count = 100
+                    
+                            var h = Buffer.from(str)
+                    
+                            for (var i = 0; i < count; i++){
+                                h = bitcoin.crypto.sha256(h)
+                            }
+                    
+                            return h.toString('hex')
+                        }
+                    
+                        var createhash = function(key, seed){
+                    
+                            var str = multisha(multisha(key) + '_' + seed, 10)
+                    
+                            return str
+                        }
+                    
+                        var crrc = function(key, txid){
+                            return createhash(key, txid)
+                        }
+
                         var keyPair = self.app.user.keys()
                         var privatekey = keyPair.privateKey
-                        var secret = self.htls.hash(privatekey.toString('hex'), id)
+                        var secret = crrc(privatekey.toString('hex'), id)
 
                         var payment = bitcoin.payments.htlc({
                             htlc : {
@@ -11210,7 +11217,13 @@ Platform = function (app, listofnodes) {
                         var indexes = {}
 
                         _.each(dummyoutputs, function(dop){
-                            if(dop.address) indexes[outputs.push(dop) - 1] = true
+                            if(dop.address) {
+                                indexes[outputs.push(dop) - 1] = true
+
+                                console.log('dop.amount ', dop.amount )
+
+                                dop.amount = dop.amount - 0.02
+                            }
                         })
 
                         var txb = self.sdk.node.transactions.create.wallet(inputs, outputs, null, true)
@@ -11483,7 +11496,7 @@ Platform = function (app, listofnodes) {
                             amount = amount * smulti;
 
                             var data = Buffer.from(bitcoin.crypto.hash256(obj.serialize()), 'utf8');
-                            var optype = obj.typeop ? obj.typeop() : obj.type
+                            var optype = obj.typeop ? obj.typeop(self) : obj.type
                             var optstype = optype
 
                             if (obj.optstype && obj.optstype(self)) optstype = obj.optstype(self)
@@ -15606,17 +15619,6 @@ Platform = function (app, listofnodes) {
                 h += '<div class="usericon" image="' + clearStringXss(src || '') + '">'
 
 
-                if(deep(platform, 'real.'+author.address)) {
-                    h += '<div class="realperson">'
-
-                    h += '<span class="fa-stack fa-2x">'
-                    h += '<i class="fas fa-certificate fa-stack-2x"></i>'
-                    h += '<i class="fas fa-check fa-stack-1x"></i>'
-                    h += '</span>'
-                    h += '</div>'
-                }
-
-
                 h += '</div>'
 
                 if (gotoprofile) h += clink
@@ -18083,7 +18085,6 @@ Platform = function (app, listofnodes) {
                     });
                 }
 
-
             },
 
             keyForAes: function (key, clbk) {
@@ -19147,7 +19148,7 @@ Platform = function (app, listofnodes) {
 
                     if (addresses.indexOf(a) > -1) {
 
-                        
+                        return
                         if (!isMobile()){
 
                             self.matrixchat.inited = true
