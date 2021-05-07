@@ -26,3 +26,6 @@ At the moment, users can connect to the network in two ways:
 
 # Contacts
 support@pocketnet.app
+
+# Issuer
+Daniel Satchkov, Open Source Developer

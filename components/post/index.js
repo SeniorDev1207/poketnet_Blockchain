@@ -1089,22 +1089,17 @@ var post = (function(){
                 },
               },
               function (_p) {
+				var info = app.platform.sdk.videos.storage[url].data;
 
-				if(app.platform.sdk.videos.storage[url]){
-					var info = app.platform.sdk.videos.storage[url].data;
+                var loadingPlayer = _p.el.find('.jsPlayerLoading');
 
-					var loadingPlayer = _p.el.find('.jsPlayerLoading');
-
-					var width = loadingPlayer.width();
-					loadingPlayer.css(
-					'padding-top', `${width / (2 * info.aspectRatio)}px`
-					);
-					loadingPlayer.css(
-						'padding-bottom', `${width / (2 * info.aspectRatio)}px`
-					);
-				}
-
-				
+                var width = loadingPlayer.width();
+                loadingPlayer.css(
+                  'padding-top', `${width / (2 * info.aspectRatio)}px`
+                );
+				loadingPlayer.css(
+					'padding-bottom', `${width / (2 * info.aspectRatio)}px`
+				  );
 
                 var images = _p.el.find('img');
 
