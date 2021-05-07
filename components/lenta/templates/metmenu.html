@@ -22,12 +22,6 @@ var all = {
 		class : 'socialshare'
 	},
 
-	shareBareVideoLink : {
-		icon : '<i class="fas fa-video"></i>',
-		text : e('shareBareLink'),
-		class : 'videoshare'
-	},
-
 	subscribe : {
 		icon : '<i class="fas fa-users"></i>',
 		text : e('sub'),
@@ -103,10 +97,6 @@ if(share){
 
 			m.push('block')
 		}
-	}
-
-	if (share.itisvideo()) {
-		m.push('shareBareVideoLink');
 	}
 }
 
