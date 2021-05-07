@@ -46711,18 +46711,13 @@ class PeerTubeEmbed {
                 const metaUrl = videoInfo.files[0].metadataUrl;
                 const videoSizeValue = yield fetch(metaUrl).then((res) => res.json()).then((json) => {
                     const info = json.streams[0];
-                    return Number((info.width / info.height).toFixed(2));
+                    return (info.width / info.height);
                 });
                 this.playerElement = document.createElement('video');
                 this.playerElement.className = 'video-js';
                 this.playerElement.setAttribute('playsinline', 'true');
-                const isVideoEmbedded = document.querySelector('.standalone-video-embed');
-                // if (!isVideoEmbedded) {
                 const paddingSize = 100 / (2 * videoSizeValue);
                 this.playerElement.style.cssText = `padding-top: ${paddingSize}%; padding-bottom: ${paddingSize}%;`;
-                // }
-                if (paddingSize > 50)
-                    this.playerElement.classList.add('verticalVideo');
                 this.wrapperElement.innerHTML = '';
                 this.wrapperElement.appendChild(this.playerElement);
                 if (!alreadyHadPlayer)
@@ -46786,6 +46781,7 @@ class PeerTubeEmbed {
                     videoFiles: videoInfo.files
                 }
             };
+            debugger;
             if (this.mode === 'p2p-media-loader') {
                 const hlsPlaylist = videoInfo.streamingPlaylists.find(p => p.type === 1 /* HLS */);
                 Object.assign(options, {
