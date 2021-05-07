@@ -85,7 +85,7 @@ var panel = (function(){
 			},
 
 
-			lastcomments : function(clbk){
+			lastcomments : function(comments, clbk){
 
 				self.nav.api.load({
 
@@ -104,6 +104,8 @@ var panel = (function(){
 							if(ed.renderclbk) ed.renderclbk()
 						}
 					},
+
+					
 
 				})
 
@@ -422,8 +424,6 @@ var panel = (function(){
 					tags.destroy()
 					tags = null;
 				}
-
-				console.log("DESTROY", comments)
 
 				if (comments){
 					comments.destroy()

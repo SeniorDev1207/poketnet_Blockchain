@@ -55,6 +55,7 @@ var Exchanges = function(){
 
                 }).catch(e => {
 
+                    console.log("ERROR", e)
 
                     return Promise.reject('notfound')
                 })
@@ -67,6 +68,7 @@ var Exchanges = function(){
                 
                 }).catch(e => {
 
+                    console.log("ERROR", e)
 
                     return Promise.reject('notfound')
                 })
@@ -85,12 +87,12 @@ var Exchanges = function(){
 
         let first_price
         if(price_history[history_length - 1]) {
-            first_price = price_history[history_length - 1]? price_history[history_length - 1].prices :  null
+            first_price = price_history[history_length - 1]?.prices
         }
 
         let second_price
         if(price_history[history_length - 2]) {
-            second_price = price_history[history_length - 2] ?  price_history[history_length - 2].prices : null
+            second_price = price_history[history_length - 2]?.prices
         }
 
         price_keys.forEach(item => {
@@ -133,6 +135,7 @@ var Exchanges = function(){
                 return r().then(slice => {
                     if(!slice) return Promise.resolve()
 
+                    console.log('!!!', r)
 
                     if(!history.prices[i]) history.prices[i] = []
 
@@ -146,6 +149,7 @@ var Exchanges = function(){
 
                     history.prices[i].push(slice)
                     
+                    console.log('HISTORY', slice.prices)
 
                     history.prices[i] = f.lastelements(history.prices[i], 500)
 

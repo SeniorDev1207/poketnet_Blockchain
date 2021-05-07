@@ -20,19 +20,6 @@ var main = (function(){
 
 		var lastscroll = 0
 
-		var mobilemodes = [{
-			mode : 'leftshow',
-			icon : 'fas fa-hashtag'
-		},{
-			mode : 'mainshow',
-			icon : 'fas fa-home'
-		},{
-			mode : 'rightshow',
-			icon : 'fas fa-arrow-right'
-		}]
-
-		var mobilemode = 'mainshow'
-
 		var helpers = {
 			
 		}
@@ -588,50 +575,6 @@ var main = (function(){
 				}
 
 				
-			},
-
-			mobilemode : function(mode){
-
-				if (mode){
-
-					if (mobilemode == 'mainshow'){
-						lastscroll = $(window).scrollTop()
-						_scrollTop(0, null, 0)
-					}
-
-					mobilemode = mode
-				}
-
-				el.c.attr('mobilemode', mobilemode)
-
-				renders.columnnavigation()
-
-				if (mobilemode == 'mainshow' && lastscroll){
-					_scrollTop(lastscroll, null, 0)
-				}
-			},
-
-			columnnavigation : function(){
-
-
-				self.shell({
-					name :  'columnnavigation',
-					el : el.columnnavigationWrapper,
-					data : {
-						mobilemode : mobilemode,
-						mobilemodes : mobilemodes
-					},
-
-				}, function(_p){
-
-					_p.el.find('.columnnavigation').on('click', function(){
-						var mode = $(this).attr('mode')
-
-						renders.mobilemode(mode)
-						
-					})
-
-				})
 			}
 		}
 
@@ -654,21 +597,17 @@ var main = (function(){
 
 			el.addbutton.on('click', actions.addbutton)
 
-			if(!isMobile()){
+			el.leftpanel.hcSticky({
+				stickTo: '#main',
+				top : 64,
+				bottom : 122
+			});
 
-				el.leftpanel.hcSticky({
-					stickTo: '#main',
-					top : 64,
-					bottom : 122
-				});
-
-				el.panel.hcSticky({
-					stickTo: '#main',
-					top : 76,
-					bottom : 122
-				});
-
-			}
+			el.panel.hcSticky({
+				stickTo: '#main',
+				top : 76,
+				bottom : 122
+			});
 
 			hsready = true
 
@@ -678,8 +617,16 @@ var main = (function(){
 			self.app.user.isState(function(state){
 				//if(state){
 
-					renders.panel();
-					renders.leftpanel();
+					if(!isMobile()){
+						renders.panel()
+
+					}
+
+					if(!isMobile()){
+						renders.leftpanel()
+
+					}
+
 					renders.addpanel();
 				//}
 			})
@@ -915,7 +862,7 @@ var main = (function(){
 				}
 
 				lastscroll = 0
-				mobilemode = 'mainshow'
+				
 				leftpanel = null
 				panel = null
 				roller = null
@@ -934,13 +881,12 @@ var main = (function(){
 				el.c = p.el.find('#' + self.map.id);
 				el.share = el.c.find('.share');
 				el.lenta = el.c.find('.lentaWrapper');
-				el.panel = el.c.find('.panel');
+				el.panel = el.c.find('.panel'); //00
 				el.leftpanel = el.c.find('.leftpanel');
 				el.up = el.c.find('.upbuttonwrapper')
 				el.upbackbutton = el.c.find('.upbackbuttonwrapper')
 				el.smallpanel = el.c.find('.smallpanell')
 				el.addbutton = el.c.find('.addbutton')
-				el.columnnavigationWrapper = el.c.find('.columnnavigationWrapper')
 
 				el.w = $(window)
 
@@ -970,8 +916,6 @@ var main = (function(){
 				if(videomain){
 					el.c.addClass('videomain')
 				}
-
-				renders.mobilemode()
 
 				make(function(){
 					p.clbk(null, p);

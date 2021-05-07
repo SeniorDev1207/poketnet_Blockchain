@@ -70,6 +70,7 @@
 			padding : 2 * @rhythm;
 			padding-top : 2 * @rhythm;
 			padding-left: 0;
+		   
 			margin-bottom: @rhythm;
 	
 			span{
@@ -92,29 +93,6 @@
 				width: 110px;
 			}
 		}
-
-		.toplabel{
-			padding-top : 2 * @rhythm;
-
-			.topactualback{
-				a{
-					font-size: 0.8em;
-					text-decoration: underline;
-				}
-			}
-		}
-
-		.vc_inputWrapper{
-			width: 130px;
-		}
-
-		.vc_iconWrapper{
-			width: auto;
-
-			.vc_iconSpinWrapper{
-				width: 22px;
-			}
-		}
 	}
 
 	.vc_valuecustom{
@@ -130,7 +108,7 @@
 		}
 
 		.vc_iconWrapper{
-			font-size: 0.6em;
+			display: none;
 		}
 
 		.vc_selectInput,
@@ -165,24 +143,4 @@
 			padding-left: 0;
 		}
 	}
-}
-
-@media only screen and (max-width: 768px) {
-	#leftpanel{
-		padding-left: 2 * @rhythm;
-
-		>div{
-			font-size: 1.3em;
-		}
-
-		.subtop{
-			.topnavigation{
-				button{
-					width: 135px;
-				}
-			}
-			
-		}
-	}
-
 }

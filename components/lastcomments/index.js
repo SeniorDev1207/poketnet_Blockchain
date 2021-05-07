@@ -127,38 +127,21 @@ var lastcomments = (function(){
 			}
 		}
 
-		var multimake = function(){
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-			make()
-		}
-
 		var initEvents = function(){
 			
 			self.app.platform.ws.messages['newblocks'].clbks['lastcomments'] =
-			self.app.platform.ws.messages['new block'].clbks['lastcomments'] = function(data, p){
-				console.log("CLBKS")
+			self.app.platform.ws.messages['new block'].clbks['lastcomments'] = function(){
+
 				//if(self.app.platform.focus){
 					make()
 				//}
-
-				//multimake()
-				
 
 			}
 
 			self.app.platform.clbks._focus.lastcomments = function(time){
 
 				if(time > 120 && typeof _Electron != 'undefined'){
-					console.log("CLBKS2")
+
 					make()
 
 					
@@ -200,8 +183,6 @@ var lastcomments = (function(){
 			destroy : function(){
 				el = {};
 
-				console.log("DESTROYED")
-
 				delete self.app.platform.ws.messages['newblocks'].clbks['lastcomments'];
 				delete self.app.platform.ws.messages['new block'].clbks['lastcomments'];
 				delete self.app.platform.clbks._focus.lastcomments;
@@ -217,10 +198,6 @@ var lastcomments = (function(){
 				initEvents();
 
 				make()
-
-				
-				//multimake()
-				
 
 				p.clbk(null, p);
 			}
