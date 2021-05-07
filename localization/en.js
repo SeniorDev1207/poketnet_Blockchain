@@ -942,6 +942,8 @@ ____loclib.e14105 = 'Videos'
 ____loclib.e14106 = 'Applications'
 ____loclib.e14107 = 'Check for updates'
 ____loclib.e14108 = 'Share answer'
+____loclib.e14109 = 'Where do I download the Android App?'
+____loclib.e14110 = 'Google Play Market'
 
 
 ____loclib.peertubeAddVideo = 'Add video to post'
@@ -989,3 +991,6 @@ ____loclib.period3day = "Three Days";
 ____loclib.period7day = "One week";
 ____loclib.period31day = "One Month";
 ____loclib.period182day = "Half of year";
+
+____loclib.shareBareLink = "Share Video Link";
+____loclib.videoCopied = "Video link successfully copied to clipboard";
