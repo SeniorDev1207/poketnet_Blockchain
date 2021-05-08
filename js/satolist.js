@@ -26,12 +26,7 @@ Platform = function (app, listofnodes) {
     self.online = undefined;
     self.avblocktime = 45;
     self.repost = true;
-    self.videoenabled = true;
-
-
-    //////////////
-    self.test = false;
-    //////////////
+    self.videoenabled = false;
 
     var onlinetnterval;
     var unspentoptimizationInterval = null;
@@ -51,15 +46,6 @@ Platform = function (app, listofnodes) {
             staking : true
         }
     }
-
-    /*self.network = function(){
-        if(self.test){
-            return bitcoin.networks.testnet
-        }
-        else{
-            return bitcoin.networks.bitcoin
-        }
-    }*/
 
     self.mp = {
         dollars: function (value, p) {
@@ -2661,7 +2647,6 @@ Platform = function (app, listofnodes) {
         },
 
         metmenu: function (_el, id, actions) {
-
             var share = self.sdk.node.shares.storage.trx[id]
 
             if (!share) {
@@ -2843,6 +2828,11 @@ Platform = function (app, listofnodes) {
 
                         })
 
+                        el.find('.videoshare').on('click', function () {
+                            actions.videoShare(share)
+
+                            _el.tooltipster('hide')
+                        })
                     })
 
                 }, d, 'components/lenta')
@@ -11181,33 +11171,9 @@ Platform = function (app, listofnodes) {
                     },
                     create : function(inputs, dummyoutputs, id, reciever, amount, time){
 
-                        var multisha = function(str, count){
-
-                            if(!count) count = 100
-                    
-                            var h = Buffer.from(str)
-                    
-                            for (var i = 0; i < count; i++){
-                                h = bitcoin.crypto.sha256(h)
-                            }
-                    
-                            return h.toString('hex')
-                        }
-                    
-                        var createhash = function(key, seed){
-                    
-                            var str = multisha(multisha(key) + '_' + seed, 10)
-                    
-                            return str
-                        }
-                    
-                        var crrc = function(key, txid){
-                            return createhash(key, txid)
-                        }
-
                         var keyPair = self.app.user.keys()
                         var privatekey = keyPair.privateKey
-                        var secret = crrc(privatekey.toString('hex'), id)
+                        var secret = self.htls.hash(privatekey.toString('hex'), id)
 
                         var payment = bitcoin.payments.htlc({
                             htlc : {
@@ -11231,13 +11197,7 @@ Platform = function (app, listofnodes) {
                         var indexes = {}
 
                         _.each(dummyoutputs, function(dop){
-                            if(dop.address) {
-                                indexes[outputs.push(dop) - 1] = true
-
-                                console.log('dop.amount ', dop.amount )
-
-                                dop.amount = dop.amount - 0.02
-                            }
+                            if(dop.address) indexes[outputs.push(dop) - 1] = true
                         })
 
                         var txb = self.sdk.node.transactions.create.wallet(inputs, outputs, null, true)
@@ -11510,7 +11470,7 @@ Platform = function (app, listofnodes) {
                             amount = amount * smulti;
 
                             var data = Buffer.from(bitcoin.crypto.hash256(obj.serialize()), 'utf8');
-                            var optype = obj.typeop ? obj.typeop(self) : obj.type
+                            var optype = obj.typeop ? obj.typeop() : obj.type
                             var optstype = optype
 
                             if (obj.optstype && obj.optstype(self)) optstype = obj.optstype(self)
@@ -18099,6 +18059,7 @@ Platform = function (app, listofnodes) {
                     });
                 }
 
+
             },
 
             keyForAes: function (key, clbk) {
@@ -19162,7 +19123,7 @@ Platform = function (app, listofnodes) {
 
                     if (addresses.indexOf(a) > -1) {
 
-                        return
+                        
                         if (!isMobile()){
 
                             self.matrixchat.inited = true
