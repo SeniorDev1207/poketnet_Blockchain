@@ -1,4 +1,5 @@
 var bitcoin = require('./lib/btc16.js');
+var pkit = require('./lib/kit.js');
 
 var Pocketnet = function(){
     var self = this
@@ -10,7 +11,6 @@ var Pocketnet = function(){
             try{
                 keyPair = bitcoin.ECPair.fromWIF(privateKey)//(Buffer.from(privateKey, 'hex'))
             }catch(e){
-
 
             }
 
@@ -87,12 +87,20 @@ var Pocketnet = function(){
                 }
             }
         }
+    }
 
-        
+    self.pobjects = {
+        comment : function(txid, message){
+            var comment = new pkit.c.comment(txid)
 
+                comment.message.set(message)
+
+            return comment
+        }
     }
     
     self.lib = bitcoin
+    self.pkit = pkit
 
     return self
 }

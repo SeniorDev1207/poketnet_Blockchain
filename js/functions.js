@@ -3585,6 +3585,8 @@
 
 							var value = $(this).val().toLowerCase(); 
 
+												
+
 							if(!take().hasClass('opened')){
 								open();		
 							}
@@ -3676,27 +3678,19 @@
 
 						}
 
+
+
 						parameter.set(value);
 
 						var label = parameter.labelByValue(value)
 
-						if (parameter.labelToInput){
+						if(parameter.labelToInput){
 							__el.val(parameter.labelToInput(label))
-
-							_el.parent().html(parameter.input())
-
-							ParametersLive([parameter], el, p)
-
-							return
-
-							console.log('value', value, parameter.labelToInput(label))
 						}
 						else
 						{
 							__el.val(label)
 						}
-
-						console.log('value', value, label)
 
 						
 
@@ -4099,8 +4093,6 @@
 					{
 						_el.addClass('error')
 					}
-
-					console.log("VALUE", value)
 
 					parameter.set(value)
 				}
@@ -4533,14 +4525,6 @@
 			if (index > -1){
 				return self.possibleValuesLabels[index]
 			}
-
-			/*index = _.indexOf(self.possibleValues, function(_v){
-				if(_v && _v.address) return _v.address == v
-			});
-
-			if (index > -1){
-				return self.possibleValuesLabels[index]
-			}*/
 
 			return v;
 		}
