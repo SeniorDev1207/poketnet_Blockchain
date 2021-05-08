@@ -48,8 +48,6 @@ var Proxy = function (settings, manage, test) {
 
     self.userDataPath = null    
 
-    
-
     f.mix({ 
         wss, server, pocketnet, nodeControl, 
         remote, firebase, nodeManager, wallet,
@@ -261,10 +259,6 @@ var Proxy = function (settings, manage, test) {
 
 
     self.wallet = {
-
-        testkey : function(i){
-          return manage.get.testkey(i)
-        },
 
         events : function(){
             wallet.clbks.error.queue.main = function(e, p){
@@ -499,7 +493,6 @@ var Proxy = function (settings, manage, test) {
     }
 
     self.kit = {
-        
         service : function(){
             var w = self.wss.info(true)
             var s = self.server.info(true)
@@ -915,21 +908,17 @@ var Proxy = function (settings, manage, test) {
           authorization: 'signature',
           action: function ({ node, scenario, A }) {
 
-            console.log("A")
+            if(!test)
 
-            if(!test) return Promise.reject('err');
+              return Promise.reject('err');
 
-            console.log("Aa")
-
-            if(!A) return Promise.reject('admin');
+            if (!A) return Promise.reject();
 
             var _node = nodeManager.nodesmap[node];
 
             if (!_node) {
               return Promise.reject('cantselect');
             }
-
-            console.log('_node.test(scenario)', scenario)
 
             return _node.test(scenario);
           },
