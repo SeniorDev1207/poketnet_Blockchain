@@ -1636,7 +1636,6 @@
 	  };
 
 	  xhr.onerror = function(){
-	  	console.log("ERROR")
 	  }
 
 	  xhr.open('GET', url);
@@ -3586,8 +3585,6 @@
 
 							var value = $(this).val().toLowerCase(); 
 
-												
-
 							if(!take().hasClass('opened')){
 								open();		
 							}
@@ -3679,11 +3676,29 @@
 
 						}
 
-
-
 						parameter.set(value);
 
-						__el.val(parameter.labelByValue(value))
+						var label = parameter.labelByValue(value)
+
+						if (parameter.labelToInput){
+							__el.val(parameter.labelToInput(label))
+
+							_el.parent().html(parameter.input())
+
+							ParametersLive([parameter], el, p)
+
+							return
+
+							console.log('value', value, parameter.labelToInput(label))
+						}
+						else
+						{
+							__el.val(label)
+						}
+
+						console.log('value', value, label)
+
+						
 
 						if (parameter.type == 'valuesmultibig'){							
 
@@ -4085,6 +4100,8 @@
 						_el.addClass('error')
 					}
 
+					console.log("VALUE", value)
+
 					parameter.set(value)
 				}
  
@@ -4133,7 +4150,8 @@
 			self.possibleValuesLabels = p.possibleValuesLabels || [];
 			self.value = p.value || null;
 			self.defaultValuesTemplate = p.defaultValuesTemplate || null;
-
+			self.defaultValueTemplate = p.defaultValueTemplate || null;
+			self.labelToInput = p.labelToInput || null; 
 			self.currency = p.currency || null;
 			self.disabled = p.disabled;
 
@@ -4516,6 +4534,14 @@
 				return self.possibleValuesLabels[index]
 			}
 
+			/*index = _.indexOf(self.possibleValues, function(_v){
+				if(_v && _v.address) return _v.address == v
+			});
+
+			if (index > -1){
+				return self.possibleValuesLabels[index]
+			}*/
+
 			return v;
 		}
 
@@ -4607,6 +4633,10 @@
 
 				if (self.type == 'values' || self.type == 'valuescustom'){
 					displayValue = self.labelByValue(self.value)
+
+					if(self.labelToInput){
+						displayValue = self.labelToInput(displayValue)
+					}
 				}
 
 				var caret = '';
@@ -4671,7 +4701,17 @@
 							var label = self.labelByValue(value);
 
 							input += '<div class="vc_value" value="' + value + '">';
-							input += label;
+
+							if (self.defaultValueTemplate)
+							{
+								input += self.defaultValueTemplate(label, value, self)
+
+							}
+							else{
+								input += label;
+							}
+							
+							
 							input += '</div>';
 
 					  	});
@@ -6946,20 +6986,6 @@
 						}
 						else{
 
-							/*console.log("YEEES", _direction, mainDirection.i, self.opposite(_direction, mainDirection.i))
-
-							if(self.opposite(_direction, mainDirection.i) && mainDirection.mintrueshold){
-
-								var d = nullbydirection(_d, mainDirection.i)
-
-								var dp = (d.x || d.y || 0);
-
-								if(Math.abs(dp) <= mainDirection.mintrueshold){
-									self.backup(mainDirection.i)	
-								}
-
-							}*/
-
 							mainDirection = null;
 						}
 
@@ -7620,7 +7646,6 @@
 				request(_d,
 			    function (_error, response, body) {
 
-					// console.log(url, _error)
 
 			    	if(_error)
 			    	{
@@ -8237,7 +8262,6 @@
 	        try {
 	            return document.execCommand("copy");  // Security exception may be thrown by some browsers.
 	        } catch (ex) {
-	            console.warn("Copy to clipboard failed.", ex);
 	            return false;
 	        } finally {
 	            document.body.removeChild(textarea);
@@ -9997,7 +10021,6 @@
 			        id = `${test[9]}` //?${params}
 					host_name = test[4]
 
-					console.log(id, host_name)
 			    }
 			}
 			
