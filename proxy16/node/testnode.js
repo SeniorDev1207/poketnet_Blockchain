@@ -4,11 +4,9 @@ const { performance } = require('perf_hooks');
 var addresses = require('./addresses.json');
 
 
-var Testnode = function(node){
+var Testnode = function(node, manager){
 
     var self = this;
-
-    var address = "PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82"
 
     var h = {
         getrandomaddress : function(){
@@ -311,7 +309,6 @@ var Testnode = function(node){
         })
 
         .catch(e => {
-            console.log("E", e, method, parameters)
             return Promise.resolve()
         })
     }
@@ -333,6 +330,8 @@ var Testnode = function(node){
         //console.log(node.statistic.get())
     }
 
+
+
     self.scenariosmeta = {
         allmethods : function(count, waittime){
 
@@ -342,11 +341,9 @@ var Testnode = function(node){
 
             return f.processArrayWithDelay(methods, waittime, function(m){
 
-
                 return requestes(m, count).then(r => {
 
                     log()
-
 
                     return f.delay(waittime)
 
@@ -390,8 +387,6 @@ var Testnode = function(node){
 
                         return request(m).then(r => {
                             return Promise.resolve()
-                        }).catch(e => {
-                            return Promise.resolve()
                         })
 
                     }).catch(e => {
@@ -434,6 +429,114 @@ var Testnode = function(node){
                 return this.parallellMethodsLong(count, methodkeys, time)
 
             })
+        },
+
+        actions : function(count, actions){
+
+            if(!count) count = 1;
+
+            var promises = []
+            var waittime = 200
+            
+            for(var i = 0; i < count; i++){
+                promises.push(
+                    f.processArrayWithDelay(actions, waittime, function(m){
+
+                        console.log("PROCESSPART", m)
+
+                        return m().then(r => {
+                            return Promise.resolve()
+                        })
+
+                    }).catch(e => {
+
+                        return Promise.resolve()
+                    })
+                )
+            }
+
+
+            return Promise.all(promises).catch(e => {
+
+                return Promise.reject(e)
+            })
+        },
+
+        actionsLong : function(count, actions, time){
+            if(!time) time = 0
+            if (time <= 0) {
+                return Promise.resolve()
+            }
+
+            var ctime = performance.now()
+
+            return self.scenariosmeta.actions(count, actions).catch(e => {
+
+                return Promise.resolve()
+
+            }).then(r => {
+
+                var difference = (performance.now() - ctime);
+
+                time = time - difference
+
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        return this.actionsLong(count, actions, time)
+                    }, 200)
+                })
+
+                
+
+            })
+        }
+    }
+
+    self.kit = {
+        preparekey : function(index){
+            var privatekey = manager.proxy.wallet.testkey(index)
+
+            if(!privatekey) return Promise.reject('privatekey')
+
+            var ao = manager.wallet.kit.addressobj({
+                privatekey
+            })
+
+
+            if(!ao.keys) return Promise.reject('privatekeyao')
+
+            return manager.wallet.unspents.getc(ao, true).then(r => {
+                return Promise.resolve(ao)
+            })
+        },
+
+        getposts : function(){
+            return request('gethotposts')
+        },
+        
+        makecomment : function(address, txid, message){
+
+            if(!message) message = this.randomtext()
+
+            var comment = manager.wallet.pocketnet.pobjects.comment(txid, message)
+
+            console.log('makecomment', message, txid)
+
+            return manager.wallet.transactions.common(address, comment, {}).then(() => {
+
+                console.log('makecommentsuccess', message, txid)
+
+                return Promise.resolve()
+            }).catch(e => {
+
+                console.log('makecommentfailed', message, txid)
+
+                return Promise.reject(e)
+            })
+        },
+
+        randomtext : function(l){
+            return 'time: ' + f.now() + ", text: "  + f.randomString(l || f.rand(10, 100))
         }
     }
 
@@ -463,7 +566,41 @@ var Testnode = function(node){
                 console.log("testing", methodkeys)
 
             return self.scenariosmeta.parallellMethodsLong(count, methodkeys, 600000)
+        },
+
+        limits : function(pkindex){
+
+            if(!pkindex) pkindex = 0
+
+            var address = null
+            var count = 3
+            var time = 20000
+
+            return self.kit.preparekey(pkindex).then(a => {
+
+                address = a
+
+                return self.kit.getposts()
+
+            }).then(posts => {
+
+                var actions = [
+
+                    function(){
+                        return new Promise((resolve, reject) => {
+
+                        var post = posts[f.rand(0, posts.length - 1)]
+
+                        return self.kit.makecomment(address, post.txid)
+
+                    })}
+                ]
+
+                return self.scenariosmeta.actionsLong(count, actions, time)
+            })
+
         }
+
     }
 
     return self
