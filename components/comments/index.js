@@ -35,9 +35,9 @@ var comments = (function(){
 		var wordsRegExp = /[,.!?;:() \n\r]/g
 
 		var clbks = {
-			upvote : function(err, comment, value, address, temp){
+			upvote : function(err, comment, value, address){
 
-				console.log("CLBK")
+
 				if(!comment) return
 
 				if (comment.txid != txid) return
@@ -48,39 +48,24 @@ var comments = (function(){
 
 				if (address == self.app.platform.sdk.address.pnet().address){
 
-					console.log('value', value, err)
+					_el.addClass('rated')
 
-					if(!value){
-
-						if(err != 40){
-							_el.removeClass('rated')
-							d_el.find('.scoreUp').removeClass('ratedScore')
-							d_el.find('.scoreDown').removeClass('ratedScore')
-						}
-						
+					if(value > 0){
+						d_el.find('.scoreUp').addClass('ratedScore')
 					}
-					else{
-						_el.addClass('rated')
 
-						if(value > 0){
-							d_el.find('.scoreUp').addClass('ratedScore')
-						}
-
-						if(value < 0)
-						{
-							d_el.find('.scoreDown').addClass('ratedScore')
-						}
+					if(value < 0)
+					{
+						d_el.find('.scoreDown').addClass('ratedScore')
 					}
 
 				}
 
-				var cs = {
-					scoreUp : (comment.scoreUp || 0) + ((temp && value > 0) ? 1 : 0),
-					scoreDown : (comment.scoreDown || 0) + ((temp && value < 0) ? 1 : 0)
-				}
+				if (comment.scoreUp)
+					d_el.find('.scoreUp .commentScore').html(compressedNumber(comment.scoreUp, 1))
 
-				d_el.find('.scoreUp .commentScore').html(comment.scoreUp ? compressedNumber(cs.scoreUp, 1) : '')
-				d_el.find('.scoreDown .commentScore').html(cs.scoreDown ? compressedNumber(cs.scoreDown, 1) : '')
+				if (comment.scoreDown)
+					d_el.find('.scoreDown .commentScore').html(compressedNumber(comment.scoreDown, 1))
 			},
 
 			post : function(err, alias, _txid, pid, aid, editid, id, manual){
@@ -200,7 +185,7 @@ var comments = (function(){
 
 				if (_OpenApi){
 
-					var phref = 'https://pocketnet.app/post?openapi=true&s=' + txid
+					var phref = 'https://'+self.app.options.url+'/post?openapi=true&s=' + txid
 
 					if (self.app.ref){
 						phref += '&ref=' + self.app.ref
@@ -1066,6 +1051,7 @@ var comments = (function(){
 				var d = {
 					address : self.app.user.address.value,
 					caddress : self.app.platform.sdk.comments.address(txid, id, pid),
+					txid : id
 				};
 
 				if (listpreview && ed.lastComment && !pid){
