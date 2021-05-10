@@ -255,7 +255,7 @@ var Testnode = function(node, manager){
 
             var lang = langs[f.rand(0, langs.length - 1)]
 
-            return ["50", "", "en"]
+            return ["50", "", lang]
         },
         gethierarchicalstrip : function(){
 
@@ -644,6 +644,8 @@ var Testnode = function(node, manager){
         },
 
         limits : function(){
+
+            return self.scenarios.limit(0, 'upvoteComment')
 
             return self.scenarios.limitsChank('share').then(r => {
                 self.scenarios.limitsChank('comment')
