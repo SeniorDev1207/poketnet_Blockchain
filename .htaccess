@@ -329,7 +329,7 @@ AddDefaultCharset utf-8
     # Options +SymLinksIfOwnerMatch
 
     # (4)
-     RewriteBase __VAR__.path
+     RewriteBase /
 
     # (5)
     # RewriteOptions <options>
