@@ -81,7 +81,7 @@ ____loclib.continue = "Продолжить";
 
 //user page
 
-____loclib.rstate = "Репутация";	
+____loclib.rstate = "Статус";	
 ____loclib.rprofile = "Профиль";	
 ____loclib.rsettings = "Настройки";	
 ____loclib.rwallet = 'Кошелек';	
