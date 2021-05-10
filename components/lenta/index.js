@@ -2190,32 +2190,7 @@ var lenta = (function(){
 					if (essenseData.renderclbk)
 						essenseData.renderclbk()
 
-					//events.sharesInview()		
-					
-
-					if(video){
-
-						var sharesvideo = el.shares
-
-						var gutter = 20;
-
-						sharesvideo.isotope({
-
-							layoutMode: 'packery',
-							itemSelector: '.authorgroup',
-							packery: {
-								gutter: 0
-							},
-							initLayout: false
-						});
-	
-						sharesvideo.on('arrangeComplete', function(){
-						});
-	
-						sharesvideo.isotope()
-					}
-					
-					
+					//events.sharesInview()				
 
 					if (clbk)
 						clbk();
@@ -2350,7 +2325,11 @@ var lenta = (function(){
 						});
 
 						images.on('arrangeComplete', function(){
+
+							
+		
 							isclbk()
+
 						});
 
 						images.isotope()

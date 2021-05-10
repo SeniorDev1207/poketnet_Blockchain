@@ -475,17 +475,17 @@ fs.exists(mapJsPath, function (exists) {
 							if (err) {
 								return reject(err)
 							}
-							var JSENV = "";
+	
 							var JS = "";
 							var CSS = "";
 							var VE = ""
 	
 							if(args.test){
-								JSENV += '<script>window.testpocketnet = true;</script>';
+								JS += '<script>window.testpocketnet = true;</script>';
 							}
 
 							if(args.path){
-								JSENV += '<script>window.pocketnetpublicpath = "'+args.path+'";</script>';
+								JS += '<script>window.pocketnetpublicpath = "'+args.path+'";</script>';
 							}
 	
 							if(args.prodaction)
@@ -502,7 +502,7 @@ fs.exists(mapJsPath, function (exists) {
 							else
 							{
 	
-								JSENV += '<script>window.design = true;</script>';
+								JS += '<script>window.design = true;</script>';
 								
 								_.each(m.__sources, function(source){
 									JS += '<script join src="'+source+'?v='+rand(1, 999999999999)+'"></script>\n';
@@ -516,7 +516,7 @@ fs.exists(mapJsPath, function (exists) {
 									VE += '<script join src="'+source+'?v='+args.vendor+'"></script>\n';
 								})			            		
 							}
-							index = index.replace("__JSENV__" , JSENV);
+	
 							index = index.replace("__VE__" , VE);
 							index = index.replace("__JS__" , JS);
 							index = index.replace("__CSS__" , CSS);
