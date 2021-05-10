@@ -185,7 +185,7 @@ var comments = (function(){
 
 				if (_OpenApi){
 
-					var phref = 'https://pocketnet.app/post?openapi=true&s=' + txid
+					var phref = 'https://'+self.app.options.url+'/post?openapi=true&s=' + txid
 
 					if (self.app.ref){
 						phref += '&ref=' + self.app.ref
@@ -1051,6 +1051,7 @@ var comments = (function(){
 				var d = {
 					address : self.app.user.address.value,
 					caddress : self.app.platform.sdk.comments.address(txid, id, pid),
+					txid : id
 				};
 
 				if (listpreview && ed.lastComment && !pid){
