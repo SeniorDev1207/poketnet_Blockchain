@@ -270,8 +270,10 @@ var lenta = (function(){
 			},
 
 			loadmore : function(loadclbk){
+				console.log('loadmore')
 				load.shares(function(shares, error){
 
+					console.log('shares, error', shares, error)
 
 					if (error){
 						making = false;
@@ -376,7 +378,7 @@ var lenta = (function(){
 
 				if (_OpenApi){
 
-					var phref = 'https://'+self.app.options.url+'/post?openapi=true&s=' + txid
+					var phref = 'https://pocketnet.app/post?openapi=true&s=' + txid
 
 					if (self.app.ref){
 						phref += '&ref=' + self.app.ref
@@ -590,7 +592,7 @@ var lenta = (function(){
 
 				if (share){
 
-					var url = 'https://'+self.app.options.url+'/' + (essenseData.hr || 'index?') + 's='+id+'&mpost=true'
+					var url = 'https://pocketnet.app/' + (essenseData.hr || 'index?') + 's='+id+'&mpost=true'
 					if (parameters().address) url += '&address=' + (parameters().address || '')
 
 					
@@ -1232,7 +1234,7 @@ var lenta = (function(){
 
 				const metaInfo = self.app.platform.parseUrl(share.url);
 
-				const peertubeLink = `https://`+self.app.options.url+`/embedVideo.php?host=${metaInfo.host_name}&id=${metaInfo.id}&embed=true&s=${share.txid}`;
+				const peertubeLink = `https://pocketnet.app/embedVideo.php?host=${metaInfo.host_name}&id=${metaInfo.id}&embed=true&s=${share.txid}`;
 
 				(metaInfo.type === 'peertube') ? copycleartext(peertubeLink) : copycleartext(share.url);
 
@@ -1416,6 +1418,7 @@ var lenta = (function(){
 
 					self.app.platform.sdk.node.shares.getbyid(id, function(){
 
+						console.log("ID", id, self.app.platform.sdk.node.shares.storage.trx[id])
 
 						var s = self.app.platform.sdk.node.shares.storage.trx[id]
 
@@ -1750,7 +1753,7 @@ var lenta = (function(){
 							rf = '&ref=' + self.app.platform.sdk.address.pnet().address
 						}
 
-						var hr = 'https://'+self.app.options.url+'/' + (essenseData.hr || 'index?') + 's='+txid+'&mpost=true' + rf
+						var hr = 'https://pocketnet.app/' + (essenseData.hr || 'index?') + 's='+txid+'&mpost=true' + rf
 
 						if (parameters().address) hr += '&address=' + (parameters().address || '')
 
@@ -2187,32 +2190,7 @@ var lenta = (function(){
 					if (essenseData.renderclbk)
 						essenseData.renderclbk()
 
-					//events.sharesInview()		
-					
-
-					if(video){
-
-						var sharesvideo = el.shares
-
-						var gutter = 20;
-
-						sharesvideo.isotope({
-
-							layoutMode: 'packery',
-							itemSelector: '.authorgroup',
-							packery: {
-								gutter: 0
-							},
-							initLayout: false
-						});
-	
-						sharesvideo.on('arrangeComplete', function(){
-						});
-	
-						sharesvideo.isotope()
-					}
-					
-					
+					//events.sharesInview()				
 
 					if (clbk)
 						clbk();
@@ -2347,7 +2325,11 @@ var lenta = (function(){
 						});
 
 						images.on('arrangeComplete', function(){
+
+							
+		
 							isclbk()
+
 						});
 
 						images.isotope()
@@ -2799,6 +2781,9 @@ var lenta = (function(){
 							if (essenseData.tags) tagsfilter = essenseData.tags
 
 							var page = parameters().page || 0
+
+
+							console.log('essenseData.txids', essenseData.txids)
 
 							self.app.platform.sdk.node.shares[loader]({
 
@@ -3351,6 +3336,9 @@ var lenta = (function(){
 
 			load.shares(function(shares, error){
 
+				console.log('load.shares', shares, error)
+
+
 				if (error){
 					making = false;
 					
@@ -3449,6 +3437,8 @@ var lenta = (function(){
 
 							if(essenseData.notscrollloading && essenseData.txids){
 
+								console.log("RENDER ALL SHARES", shares)
+
 								renders.txidall(essenseData.txids)
 							}
 						
@@ -3508,6 +3498,7 @@ var lenta = (function(){
 
 					mestate = _mestate || {}
 
+					console.log('essenseData', essenseData)
 
 					var data = {
 						beginmaterial : beginmaterial,

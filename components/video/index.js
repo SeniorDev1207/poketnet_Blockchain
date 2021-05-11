@@ -52,7 +52,7 @@ var video = (function(){
 
 				$.ajax({
 					type: 'POST',
-					url: 'https://'+self.app.options.url+'/Shop/AJAXMain.aspx',
+					url: 'https://pocketnet.app/Shop/AJAXMain.aspx',
 					data: _p,
 					dataType: 'json',
 					success : function(){

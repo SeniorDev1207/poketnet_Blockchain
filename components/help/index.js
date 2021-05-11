@@ -11,6 +11,8 @@ var help = (function(){
 		var el, cpage, external, c = {};
 
 
+
+
 		
 		
 		
@@ -52,7 +54,7 @@ var help = (function(){
 			
 			{
 				d : 'August 2019',
-				n : 'Personal link '+self.app.options.url+'/username plus history of personal posts and ability to search users’ posts (decentralized free blog hosting on Pocketnet blockchain)',
+				n : 'Personal link Pocketnet.app/username plus history of personal posts and ability to search users’ posts (decentralized free blog hosting on Pocketnet blockchain)',
 				r : true,
 			},
 
@@ -68,7 +70,7 @@ var help = (function(){
 			},
 			{
 				d : 'January 2021',
-				n : 'Full decentralization: all apps can speak directly to the nodes, desktop app can work without the website '+self.app.options.url+'',
+				n : 'Full decentralization: all apps can speak directly to the nodes, desktop app can work without the website pocketnet.app',
 				r : true,
 			},
 			{
@@ -304,7 +306,7 @@ var help = (function(){
 					c.pkoin.loading = true;
 
 					console.log('this.page', _el)
-					var explorerBase = 'https://explorer.'+self.app.options.url+'/rest/';
+					var explorerBase = 'https://explorer.pocketnet.app/rest/';
 
 
 					var endpoints = [c.pkoin.blockhash.api, c.pkoin.emission.api, c.pkoin.emission2.api, c.pkoin.topaddresses.api];
