@@ -1542,10 +1542,7 @@
 				overflow-y: scroll;
 				padding-top: 0;
 
-				.verticalVideo {
-					margin: 0 auto;
-				}
-
+				
 				&::-webkit-scrollbar{
 					width: 0!important
 				}
@@ -1684,8 +1681,15 @@
 					.videoWrapper{
 						max-width: none;
 
+					
+
 						&.verticalVideo {
-							max-width: 400px;
+							max-width: none;
+							background: #000;
+							>div{
+								max-width: 400px;
+								margin: 0 auto;
+							}
 						}
 
 						.videoTips{
@@ -2031,6 +2035,10 @@
 				.forurl{
 					height: 200px;
 					position: relative;
+
+					&.verticalVideo{
+						height: 530px;
+					}
 				}
 
 				.url{
@@ -2072,7 +2080,14 @@
 			.authorgroup{
 				float: left;
 				width: 33.3333%;
-				padding : @rhythm / 2;
+				.share{
+					padding : 15px;
+				}
+
+				.anothercntswrk{
+					height: 100px;
+					overflow: hidden;
+				}
 				
 				&:nth-child(3n + 1){
 					clear: left;
