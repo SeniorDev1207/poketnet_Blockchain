@@ -270,10 +270,8 @@ var lenta = (function(){
 			},
 
 			loadmore : function(loadclbk){
-				console.log('loadmore')
 				load.shares(function(shares, error){
 
-					console.log('shares, error', shares, error)
 
 					if (error){
 						making = false;
@@ -1418,7 +1416,6 @@ var lenta = (function(){
 
 					self.app.platform.sdk.node.shares.getbyid(id, function(){
 
-						console.log("ID", id, self.app.platform.sdk.node.shares.storage.trx[id])
 
 						var s = self.app.platform.sdk.node.shares.storage.trx[id]
 
@@ -2190,7 +2187,32 @@ var lenta = (function(){
 					if (essenseData.renderclbk)
 						essenseData.renderclbk()
 
-					//events.sharesInview()				
+					//events.sharesInview()		
+					
+
+					if(video){
+
+						var sharesvideo = el.shares
+
+						var gutter = 20;
+
+						sharesvideo.isotope({
+
+							layoutMode: 'packery',
+							itemSelector: '.authorgroup',
+							packery: {
+								gutter: 0
+							},
+							initLayout: false
+						});
+	
+						sharesvideo.on('arrangeComplete', function(){
+						});
+	
+						sharesvideo.isotope()
+					}
+					
+					
 
 					if (clbk)
 						clbk();
@@ -2325,11 +2347,7 @@ var lenta = (function(){
 						});
 
 						images.on('arrangeComplete', function(){
-
-							
-		
 							isclbk()
-
 						});
 
 						images.isotope()
@@ -2781,9 +2799,6 @@ var lenta = (function(){
 							if (essenseData.tags) tagsfilter = essenseData.tags
 
 							var page = parameters().page || 0
-
-
-							console.log('essenseData.txids', essenseData.txids)
 
 							self.app.platform.sdk.node.shares[loader]({
 
@@ -3336,9 +3351,6 @@ var lenta = (function(){
 
 			load.shares(function(shares, error){
 
-				console.log('load.shares', shares, error)
-
-
 				if (error){
 					making = false;
 					
@@ -3437,8 +3449,6 @@ var lenta = (function(){
 
 							if(essenseData.notscrollloading && essenseData.txids){
 
-								console.log("RENDER ALL SHARES", shares)
-
 								renders.txidall(essenseData.txids)
 							}
 						
@@ -3498,7 +3508,6 @@ var lenta = (function(){
 
 					mestate = _mestate || {}
 
-					console.log('essenseData', essenseData)
 
 					var data = {
 						beginmaterial : beginmaterial,
