@@ -10,6 +10,14 @@
 		}
 	}
 
+	&.videomain{
+		background: #fcfcfc;
+
+		#categories{
+			color : @color-gray;
+		}
+	}
+
 	.columnnavigation{
 		position: fixed;
 		bottom : 20%;
@@ -115,7 +123,7 @@
 	}
 
 	.lentacellsvi{
-		margin-right : 256px;
+		margin-right : 0;
 		padding-top : 10px;
 		
 	}
@@ -441,7 +449,7 @@
 
 html.stblack{
 	#main{
-		background: @color-black5;
+		background: #0a1630;
 		
 		.addbutton{
 			background: #00a3f7;
@@ -641,6 +649,16 @@ html.stblack{
 	
 	}
 }
+
+html {
+    &.testpocketnet{
+        #main.testpocketnetbg{
+            background-image: url(../../img/testbg.png);
+            background-position: center center;
+        }
+    }
+}
+
 @media only screen and (max-width: 1440px) {
 	#main{
 		.opensvi{
