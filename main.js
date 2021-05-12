@@ -404,6 +404,7 @@ function createWindow() {
               label: app.name,
               submenu: [
                 {
+                    accelerator: 'Cmd+A',
                     label: 'About',
                     click: async () => {
                         win.webContents.send('nav-message', { msg: 'about', type: 'action'})
@@ -508,6 +509,7 @@ function createWindow() {
 
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault();
+        console.log('new-window', event, url);
         open(url);
     });
 

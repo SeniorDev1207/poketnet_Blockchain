@@ -551,7 +551,7 @@ var article = (function(){
 												}
 												else
 												{
-													l = 'https://'+self.app.options.url+'/img/imagenotuploaded.jpg'
+													l = 'https://pocketnet.app/img/imagenotuploaded.jpg'
 												}
 
 												if (clbk)
@@ -571,7 +571,7 @@ var article = (function(){
 						
 													success : function(data){
 						
-														var l = 'https://'+self.app.options.url+':8092/i/' + deep(data, 'data.ident');
+														var l = 'https://pocketnet.app:8092/i/' + deep(data, 'data.ident');
 				
 														if (clbk)
 															clbk(l)
@@ -580,7 +580,7 @@ var article = (function(){
 						
 													fail : function(d){
 						
-														l = 'https://'+self.app.options.url+'/img/imagenotuploaded.jpg'
+														l = 'https://pocketnet.app/img/imagenotuploaded.jpg'
 
 														if (clbk)
 															clbk(l)

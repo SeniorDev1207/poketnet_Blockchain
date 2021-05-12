@@ -367,7 +367,7 @@ ____loclib.noMoneyError  = "You can't doing actions with zero account balance";
 
 ____loclib.waitConf = "You have to wait for your previous transaction to clear in the blockchain";
 ____loclib.postWaitConf = "Post is waiting for a blockchain confirmation";
-____loclib.actionWaitConf = "Action is waiting for a blockchain confirmation";
+
 
 
 // notifications
@@ -994,8 +994,3 @@ ____loclib.period182day = "Half of year";
 
 ____loclib.shareBareLink = "Share Video Link";
 ____loclib.videoCopied = "Video link successfully copied to clipboard";
-
-____loclib.editWallpaper = "Change Wallpaper";
-____loclib.removeVideo = "Remove Video";
-
-____loclib.removeVideoDialog = 'Are you sure you want to delete this video?'
