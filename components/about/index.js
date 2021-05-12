@@ -87,7 +87,7 @@ var about = (function(){
 
 				$.ajax({
 					type: 'POST',
-					url: self.app.options.server,
+					url: 'https://pocketnet.app/Shop/AJAXMain.aspx',
 					data: _p,
 					dataType: 'json',
 					success : function(){

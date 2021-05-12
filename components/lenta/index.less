@@ -1542,7 +1542,10 @@
 				overflow-y: scroll;
 				padding-top: 0;
 
-				
+				.verticalVideo {
+					margin: 0 auto;
+				}
+
 				&::-webkit-scrollbar{
 					width: 0!important
 				}
@@ -1681,15 +1684,8 @@
 					.videoWrapper{
 						max-width: none;
 
-					
-
 						&.verticalVideo {
-							max-width: none;
-							background: #000;
-							>div{
-								max-width: 400px;
-								margin: 0 auto;
-							}
+							max-width: 400px;
 						}
 
 						.videoTips{
@@ -1989,14 +1985,13 @@
 				}
 
 				.sharecaption{
-					color : @color-gray;
+					color : @color-gray-mlight;
 
 					div{
 						font-size: 0.9em;
 						font-weight: 700;
 					}
 				}
-
 
 				.meta{
 					padding-top : @rhythm;
@@ -2036,10 +2031,6 @@
 				.forurl{
 					height: 200px;
 					position: relative;
-
-					&.verticalVideo{
-						height: 530px;
-					}
 				}
 
 				.url{
@@ -2081,15 +2072,7 @@
 			.authorgroup{
 				float: left;
 				width: 33.3333%;
-				.share{
-					padding : 15px;
-				}
-				
-
-				.anothercntswrk{
-					height: 100px;
-					overflow: hidden;
-				}
+				padding : @rhythm / 2;
 				
 				&:nth-child(3n + 1){
 					clear: left;
@@ -2118,7 +2101,6 @@
 						&.authorCell{
 							padding-left: @rhythm;
 							padding-right: 0;
-							color : @color-gray;
 						}
 
 						&.datetime{
@@ -2330,7 +2312,7 @@ html.stblack{
 			}
 	
 			.commentsWrapper{			
-				background: @color-gray3;
+				background: transparent;
 			}
 	
 	
@@ -2692,21 +2674,6 @@ html.stblack{
 			}
 		}
 	
-	}
-}
-
-@media only screen and (max-width: 1024px) {
-	#lenta{
-		&.mainvideo{
-
-			
-			.shares{
-				
-				.authorgroup{
-					width: 50%;
-				}
-			}
-		}
 	}
 }
 
@@ -3337,18 +3304,6 @@ html.stblack{
 	.loadprev{
 		button{
 			width: 90%;
-		}
-	}
-
-	&.mainvideo{
-
-			
-		.shares{
-			
-			.authorgroup{
-				width: 100%;
-				padding : 0;
-			}
 		}
 	}
 }	

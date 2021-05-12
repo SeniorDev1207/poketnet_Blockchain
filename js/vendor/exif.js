@@ -963,6 +963,7 @@
             }
             return obj;
           } catch (e) {
+              console.log(e.message);
           }
     }
 

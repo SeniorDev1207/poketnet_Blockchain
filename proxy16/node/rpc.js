@@ -180,7 +180,7 @@ function rpc(request, callback, obj) {
                 parsedBuf = JSON.parse(buf);
             } catch (e) {
 
-                var exceededError = (new Error(errorMessage + 'Error Parsing JSON: ' + e.message)) || {};
+                var exceededError = new Error(errorMessage + 'Error Parsing JSON: ' + e.message);
                     exceededError.code = res.statusCode
 
                 callback(exceededError);
@@ -194,19 +194,16 @@ function rpc(request, callback, obj) {
     });
 
     req.on('error', function(e) {
-        //var err = new Error(errorMessage + 'Request Error: ' + e.message);
+        var err = new Error(errorMessage + 'Request Error: ' + e.message);
 
         //console.log("errorMessage + 'Request Error: ' + e.message", errorMessage + 'Request Error: ' + e.message)
 
         if (!called) {
 
-            //err.code = /*e.code ||*/ 408
+            err.code = /*e.code ||*/ 408
 
             called = true;
-
-            callback({
-                code : 408
-            });
+            callback(err);
         }
     });
 

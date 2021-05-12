@@ -2342,10 +2342,12 @@ _QRscanner = function(){
 	                qrcode.decode();
 	            }
 	            catch(e){       
+	                console.log(e);
 	                setTimeout(qrcode.captureToCanvas, 500);
 	            };
 	        }
 	        catch(e){       
+	                console.log(e);
 	                setTimeout(qrcode.captureToCanvas, 500);
 	        };
 	    }
@@ -2363,10 +2365,13 @@ _QRscanner = function(){
 	            navigator.mediaDevices.enumerateDevices()
 	            .then(function(devices) {
 	              devices.forEach(function(device) {
+	                console.log("deb1");
 	                if (device.kind === 'videoinput') {
 	                  if(device.label.toLowerCase().search("back") >-1)
 	                    options=[{'sourceId': device.deviceId}] ;
 	                }
+	                console.log(device.kind + ": " + device.label +
+	                            " id = " + device.deviceId);
 	              });
 	            })
 	            
