@@ -1,4 +1,4 @@
-SubscribePrivate = function(){
+var SubscribePrivate = function(){
 	var self = this;
 
 	self.address = {
@@ -46,7 +46,7 @@ SubscribePrivate = function(){
 	return self;
 }
 
-Subscribe = function(){
+var Subscribe = function(){
 	var self = this;
 
 	self.address = {
@@ -94,7 +94,7 @@ Subscribe = function(){
 	return self;
 }
 
-Unsubscribe = function(){
+var Unsubscribe = function(){
 	var self = this;
 
 	self.address = {
@@ -142,7 +142,7 @@ Unsubscribe = function(){
 	return self;
 }
 
-Blocking = function(){
+var Blocking = function(){
 	var self = this;
 
 	self.address = {
@@ -190,7 +190,7 @@ Blocking = function(){
 	return self;
 }
 
-Unblocking = function(){
+var Unblocking = function(){
 	var self = this;
 
 	self.address = {
@@ -238,7 +238,7 @@ Unblocking = function(){
 	return self;
 }
 
-Comment = function(txid){
+var Comment = function(txid){
 	var self = this;
 
 	self.txid = txid;
@@ -413,7 +413,7 @@ Comment = function(txid){
 		
 									success : function(data){
 		
-										self.images.v[index] = 'https://'+app.options.url+':8092/i/' + deep(data, 'data.ident');
+										self.images.v[index] = 'https://pocketnet.app:8092/i/' + deep(data, 'data.ident');
 
 										console.log('self.images.v[index]', self.images.v[index])
 										p.success();
@@ -562,7 +562,7 @@ Comment = function(txid){
 	return self;
 }
 
-СScore = function(){
+var СScore = function(){
 	var self = this;
 
 	self.comment = {
@@ -639,7 +639,7 @@ Comment = function(txid){
 	return self;
 }
 
-UpvoteShare = function(){
+var UpvoteShare = function(){
 	var self = this;
 
 	self.share = {
@@ -717,7 +717,7 @@ UpvoteShare = function(){
 	return self;
 }
 
-ComplainShare = function(){
+var ComplainShare = function(){
 	var self = this;
 
 	self.share = {
@@ -772,7 +772,7 @@ ComplainShare = function(){
 	return self;
 }
 
-Share = function(lang){
+var Share = function(lang){
 
 	var self = this;
 
@@ -1156,7 +1156,7 @@ Share = function(lang){
 		
 									success : function(data){
 		
-										self.images.v[index] = 'https://'+app.options.url+':8092/i/' + deep(data, 'data.ident');
+										self.images.v[index] = 'https://pocketnet.app:8092/i/' + deep(data, 'data.ident');
 
 										p.success();
 		
@@ -1258,9 +1258,9 @@ Share = function(lang){
 
 		var meta = parseVideo(self.url.v)
 
-		//if(meta.type) return true
+		if(meta.type) return true
 
-		if(meta.type == 'peertube') return true
+		//if(meta.type == 'peertube') return true
 	}
 
 	self.export = function(extend){
@@ -1345,8 +1345,6 @@ Share = function(lang){
 		return self.type	
 	}
 
-
-
 	self.typeop = function(platform){
 
 		if (self.itisvideo() && platform && platform.videoenabled) return 'video'
@@ -1358,6 +1356,8 @@ Share = function(lang){
 		return self.type
 	}
 
+	console.log("SAD")
+
 	if(lang) self.language.set(lang)
 
 	self.type = 'share'
@@ -1365,7 +1365,7 @@ Share = function(lang){
 	return self;
 }
 
-UserInfo = function(){
+var UserInfo = function(){
 
 	var self = this;
 
@@ -1513,7 +1513,7 @@ UserInfo = function(){
 		v : ''
 	};
 
-	self.uploadImage = function(app, clbk){
+	self.uploadImage = function(clbk){
 
 		var image = self.image.v;
 
@@ -1551,7 +1551,7 @@ UserInfo = function(){
 
 							success : function(data){
 
-								self.image.v = 'https://'+app.options.url+':8092/i/' + deep(data, 'data.ident');
+								self.image.v = 'https://pocketnet.app:8092/i/' + deep(data, 'data.ident');
 
 								if (clbk)
 									clbk();
@@ -1661,7 +1661,7 @@ UserInfo = function(){
 	return self;
 }
 
-pUserInfo = function(){
+var pUserInfo = function(){
 
 	var self = this;
 
@@ -1796,7 +1796,7 @@ pUserInfo = function(){
 	return self;
 }
 
-pShare = function(){
+var pShare = function(){
 
 	var self = this;
 
@@ -2157,7 +2157,7 @@ pShare = function(){
 	return self;
 }
 
-pComment = function(){
+var pComment = function(){
 
 	var self = this;
 
@@ -2358,7 +2358,7 @@ pComment = function(){
 	return self;
 }
 
-Img = function(p){
+var Img = function(p){
 	if(!p) p = {};
  
 	var self = this;
@@ -2371,7 +2371,7 @@ Img = function(p){
 	return self;	
 }
 
-kits = {
+var kits = {
 	c : {
 		userInfo : UserInfo,
 		share : Share,
@@ -2395,3 +2395,6 @@ kits = {
 		comment : pComment,
 	}
 }
+
+
+module.exports = kits
