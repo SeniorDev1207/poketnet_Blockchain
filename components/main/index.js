@@ -199,6 +199,8 @@ var main = (function(){
 					
 					actions.refreshSticky()
 
+					if(lenta && lenta.update) lenta.update()
+
 				}, 500)
 
 				
@@ -445,6 +447,12 @@ var main = (function(){
 
 				var loader = null
 				var fp = false
+
+				console.log("RENDERS LENTA")
+
+				if(lenta) {
+					lenta.destroy()
+				}
 
 				renders.addpanel();
 

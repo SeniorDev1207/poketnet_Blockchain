@@ -173,17 +173,17 @@ var metadisplay = function(){ %>
 				<div class="paddingWrapper showMorePW">
 					<div class="showMore">
 						<div class="showmoretable table">
-							<!-- <div class="linecell">
+							<div class="linecell">
 								<div class="line"></div>
-							</div> -->
+							</div>
 							<div class="buttoncell">
 								<button>
 									<%=e('showmore')%>
 								</button>
 							</div>
-							<!-- <div class="linecell">
+							<div class="linecell">
 								<div class="line"></div>
-							</div> -->
+							</div>
 						</div>
 						
 
@@ -477,6 +477,11 @@ var metadisplay = function(){ %>
 
 						<% } %>
 
+
+						<% if(typeof verticalVideo != 'undefined' && verticalVideo) {%>
+
+						<% } %>
+
 					</div>
 
 					
@@ -507,6 +512,7 @@ var metadisplay = function(){ %>
 	<div class="exitFull roundclosebutton">
 		<i class="fa fa-times" aria-hidden="true"></i>
 	</div>
+	
 
 	<% if(!emptywithrepost) {%>
 

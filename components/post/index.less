@@ -245,6 +245,8 @@
 			width: 100%;
 		}
 
+		
+
 		#post{
 			.postWrapper{
 				background: #fff;
@@ -1052,6 +1054,8 @@
 
 		.share{
 
+			max-width: 860px;
+
 			.jsPlayerLoading{
 				width: 100%;
 			}
@@ -1147,6 +1151,35 @@
 
 		.share .metatable>div.metapanel{
 			padding-right:  @rhythm;
+		}
+
+		&.verticalVideo{
+			.share{
+				max-width: none;
+				.shareTable{
+					width: 100%;
+					display: table;
+					>div{
+						vertical-align: top;
+						display: table-cell;
+
+						&.anothercntswrk{
+							width: 550px;
+						}
+					}
+				}
+			}
+
+
+			.videoWrapper{
+				background: #000;
+	
+				>div{
+					max-width: 350px;
+					margin: 0 auto;
+				}
+
+			}
 		}
 	}
 }

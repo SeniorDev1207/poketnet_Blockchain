@@ -3,26 +3,62 @@ _ = require('underscore');
 
 require('./js/functions.js');
 var uglifyJS = require("uglify-js");
-//var ClosureCompiler = require('google-closure-compiler').compiler;
-var compressor = require('yuicompressor');
  
-var path = ".",
-	prodaction = process.argv[2] ? false : true;
-
-var vendorversion = process.argv[3] || '7';
-
-if(prodaction === 'false') prodaction = false; 
 
 
+var args = {
+	test : false,
+	prodaction : true,
+	vendor : 89,
+	path : '/'
+}
+
+
+var argcli = _.filter(process.argv, function(a){
+	return a.indexOf('-') == 0
+})
+
+_.each(argcli, function(a){
+	var prs = a.replace('-', '').split('=')
+
+	if(!prs[0]) return
+
+	if(!prs[1]) return
+
+	try{
+		args[prs[0]] = JSON.parse(prs[1])
+	}
+	catch(e){
+		args[prs[0]] = prs[1]
+	}
+	
+})
 
 var mapJsPath = './js/_map.js';
-var indexPathTpl = './index.tpl';
-var indexPath = './index.php';
-
-var mapJs2Path = './js/_mapv2.js';
 
 console.log("run")
+console.log(args)
 
+var tpls = ['embedVideo.php', 'index_el.html', 'index.html', 'index.php', 'openapi.html', '.htaccess']
+	
+
+var vars = {
+	test : {
+		proxypath : '"https://pocketnet.app:8899/"',
+		domain : 'test.pocketnet.app',
+		test : '',
+		path : args.path
+	},
+	prod : {
+		proxypath : '"https://test.pocketnet.app:8899/"',
+		domain : 'pocketnet.app',
+		test : '<script>window.testpocketnet = true;</script>',
+		path : args.path
+	}
+}
+
+
+var VARS = args.test ? vars.test : vars.prod
 
 fs.exists(mapJsPath, function (exists) { 
 	if(exists) {
@@ -105,15 +141,15 @@ fs.exists(mapJsPath, function (exists) {
 
 							modules.data = modules.data + "\n /*_____*/ \n" + data;
 
-
 							fs.exists(csspath, function (exists) {
 								if(exists){
+
 									console.log(csspath)
+
 									fs.readFile(csspath, function read(err, data) {
 										if (err) {
 											throw err;
 										}
-
 
 										data = data.toString().replaceAll("../..", "..");
 
@@ -126,7 +162,7 @@ fs.exists(mapJsPath, function (exists) {
 
 								else
 								{
-									console.log('notexist', module.csspath, csspath)
+									throw "notexist (CSS) " + module.csspath + ": " + csspath
 									p.success();
 								}
 							})
@@ -138,9 +174,8 @@ fs.exists(mapJsPath, function (exists) {
 					}
 					else
 					{
-							console.log("notexist (CSS) " + module.uri)
-							
-							p.success();
+						console.log('module.uri', module.uri)
+						throw "notexist (CSS) " + module.uri
 					}
 				})
 
@@ -154,8 +189,8 @@ fs.exists(mapJsPath, function (exists) {
 					fs.writeFile(modules.path, modules.data, function(err) {
 
 						if(err) {
-							console.log("Access not permitted", err)
-							return
+
+							throw "Access not permitted " + modules.path
 						}
 
 						//console.log("Access permitted", item)
@@ -168,9 +203,18 @@ fs.exists(mapJsPath, function (exists) {
 
 						joinVendor(ver, function(){
 
+							console.log("joinVendor DONE")
+
 							joinScripts(ar, function(){
 
-								joinCss(createIndexFile)
+								console.log("joinScripts DONE")
+
+								joinCss(function(){
+
+									console.log("joinCss DONE")
+
+									createTemplates()
+								})
 								
 							});
 							
@@ -214,16 +258,14 @@ fs.exists(mapJsPath, function (exists) {
 
 									currentcssdata = currentcssdata + '\n' + data;
 
-									//cssmaster.data = cssmaster.data + '\n' + data;
 									p.success();
 								});
 
 							}
 							else
 							{
-								console.log("notexist (CSS) " + module.uri + ": " + path)
+								throw "notexist (CSS) " + module.uri + ": " + path
 
-								//p.success();
 							}
 						})
 
@@ -246,8 +288,7 @@ fs.exists(mapJsPath, function (exists) {
 							fs.writeFile(cssmaster.path, cssmaster.data, function(err) {
 
 								if(err) {
-									console.log("Access not permitted (CSS) ", cssmaster.path)
-									return
+									throw "Access not permitted (CSS) " +  cssmaster.path
 								}
 										
 								clbk();				
@@ -255,12 +296,11 @@ fs.exists(mapJsPath, function (exists) {
 
 							fs.writeFile(exported.path, exported.data, function(err) {
 
-								if(err) {
-									console.log("Access not permitted (LESS) ", exported.path)
-									return
+								if (err) {
+
+									console.log("Access not permitted (LESS) " +  exported.path) 
 								}
 										
-								clbk();				
 							});
 						}
 					}
@@ -269,7 +309,7 @@ fs.exists(mapJsPath, function (exists) {
 
 			else
 			{
-				clbk()
+				throw "m.__css"
 			}
 		}
 
@@ -311,13 +351,14 @@ fs.exists(mapJsPath, function (exists) {
 									
 
 									join.data = join.data + "\n /*_____*/ \n" + data;
+
 									p.success();
 								});
 
 							}
 							else
 							{
-								console.log("File doesn't exist " +  path)
+								throw "File doesn't exist " +  path
 							}
 						})
 
@@ -326,11 +367,12 @@ fs.exists(mapJsPath, function (exists) {
 					all : {
 						success : function(){
 							console.log(join.path)
+
 							fs.writeFile(join.path, join.data, function(err) {
 
 								if(err) {
-									console.log("Access not permitted (JS)", join.path)
-									return
+
+									throw "Access not permitted (JS) " +  join.path
 								}
 										
 								clbk();				
@@ -340,7 +382,7 @@ fs.exists(mapJsPath, function (exists) {
 				})
 
 			else
-				clbk();
+				throw "Access not permitted (JS) " +  join.path
 		}
 
 		var joinVendor = function(ar, clbk){
@@ -361,7 +403,9 @@ fs.exists(mapJsPath, function (exists) {
 						fs.exists(path, function (exists) {
 							//
 							if(exists){
+
 								console.log(path)
+
 								fs.readFile(path, function read(err, data) {
 									if (err) {
 										throw err;
@@ -385,7 +429,7 @@ fs.exists(mapJsPath, function (exists) {
 							}
 							else
 							{
-								console.log("File doesn't exist " +  path)
+								throw "File doesn't exist " +  path
 							}
 						})
 
@@ -393,12 +437,15 @@ fs.exists(mapJsPath, function (exists) {
 					
 					all : {
 						success : function(){
+
 							console.log(vendor.path)
+
 							fs.writeFile(vendor.path, vendor.data, function(err) {
 
 								if(err) {
-									console.log("Access not permitted (JS)", vendor.path)
-									return
+
+									throw "Access not permitted (JS) " +  vendor.path
+
 								}
 										
 								clbk();				
@@ -407,77 +454,108 @@ fs.exists(mapJsPath, function (exists) {
 					}
 				})
 
-			else
-				clbk();
+			else{
+				throw "File doesn't exist m.__vendor"
+			}
 		}
 
-		var createIndexFile = function(clbk){
+		var createTemplatedFile = function(tplname){
 			/*WORK WITH INDEX*/
+			var pth = './tpls/' + tplname + '.tpl'
 
-			fs.exists(indexPathTpl, function (exists) {
-				if(exists){
-					fs.readFile(indexPathTpl, {encoding: 'utf-8'}, function read(err, index) {
-						if (err) {
-							throw err;
-						}
+			console.log("CREATING TEMPLATE: ", tplname)
 
-						var JS = "";
-						var CSS = "";
-						var VE = ""
+			return new Promise((resolve, reject) => {
 
-						if(prodaction)
-						{
-							JS = '<script join src="js/join.min.js?v='+rand(1, 999999999999)+'"></script>';
+				fs.exists(pth, function (exists) {
 
-							VE = '<script join src="js/vendor.min.js?v='+vendorversion+'"></script>';
+					if(exists){
+	
+						fs.readFile(pth, {encoding: 'utf-8'}, function read(err, index) {
+							if (err) {
+								return reject(err)
+							}
+							var JSENV = "";
+							var JS = "";
+							var CSS = "";
+							var VE = ""
+	
+							if(args.test){
+								JSENV += '<script>window.testpocketnet = true;</script>';
+							}
 
-							CSS = '<link rel="stylesheet" href="css/master.css?v='+rand(1, 999999999999)+'">';
+							if(args.path){
+								JSENV += '<script>window.pocketnetpublicpath = "'+args.path+'";</script>';
+							}
+	
+							if(args.prodaction)
+							{
+	
+								JS += '<script join src="js/join.min.js?v='+rand(1, 999999999999)+'"></script>';
+	
+								VE = '<script join src="js/vendor.min.js?v='+args.vendor+'"></script>';
+	
+								CSS = '<link rel="stylesheet" href="css/master.css?v='+rand(1, 999999999999)+'">';
+	
+								index = index.replace(new RegExp(/\?v=([0-9]*)/g), '?v=' + rand(1, 999999999999));
+							}
+							else
+							{
+	
+								JSENV += '<script>window.design = true;</script>';
+								
+								_.each(m.__sources, function(source){
+									JS += '<script join src="'+source+'?v='+rand(1, 999999999999)+'"></script>\n';
+								})
+	
+								_.each(m.__css, function(source){
+									CSS += '<link rel="stylesheet" href="'+source+'?v='+rand(1, 999999999999)+'">\n';
+								})	
+	
+								_.each(m.__vendor, function(source){
+									VE += '<script join src="'+source+'?v='+args.vendor+'"></script>\n';
+								})			            		
+							}
+							index = index.replace("__JSENV__" , JSENV);
+							index = index.replace("__VE__" , VE);
+							index = index.replace("__JS__" , JS);
+							index = index.replace("__CSS__" , CSS);
 
-							index = index.replace( 
-									new RegExp(/\?v=([0-9]*)/g), 
-
-									'?v=' + rand(1, 999999999999)
-								);
-						}
-						else
-						{
-
-							JS += '<script>window.design = true;</script>';
-
-							
-							
-							_.each(m.__sources, function(source){
-								JS += '<script join src="'+source+'?v='+rand(1, 999999999999)+'"></script>\n';
+							_.each(VARS, function(v, i){
+								index = index.replaceAll("__VAR__." + i, v);
 							})
+	
+							fs.writeFile('./' + tplname, index, function(err) {
 
-							_.each(m.__css, function(source){
-								CSS += '<link rel="stylesheet" href="'+source+'?v='+rand(1, 999999999999)+'">\n';
-							})	
+								if (err) {
+									return reject(err)
+								}
 
-							_.each(m.__vendor, function(source){
-								VE += '<script join src="'+source+'?v='+vendorversion+'"></script>\n';
-							})			            		
-						}
+								resolve()
+								
+							})
+	
+						});
+	
+					}
+					else
+					{
+						return reject("not index tpl")
+					}
+				})
 
-						index = index.replace("__VE__" , VE);
-						index = index.replace("__JS__" , JS);
-						index = index.replace("__CSS__" , CSS);
+			})	
 
-						fs.writeFile(indexPath, index, function(err) {
-							
-						})
-
-					});
-
-				}
-				else
-				{
-					console.log("not index tpl")
-				}
-			})
+			
 		}
 
-		
+		var createTemplates = function(){
+			var promises = _.map(tpls, function(t){
+				return createTemplatedFile(t)
+			})
+
+			return Promise.all(promises)
+		}
 
 		/**/
 	}
