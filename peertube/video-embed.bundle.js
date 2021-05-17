@@ -43210,16 +43210,13 @@ class PeertubePlayerManager {
             return new Promise(res => {
                 video_js__WEBPACK_IMPORTED_MODULE_22___default()(options.common.playerElement, videojsOptions, function () {
                     const player = this;
-                    console.log("GOGG");
                     let alreadyFallback = false;
                     player.tech(true).one('error', () => {
-                        console.log('error2');
                         if (!alreadyFallback)
                             self.maybeFallbackToWebTorrent(mode, player, options);
                         alreadyFallback = true;
                     });
                     player.one('error', () => {
-                        console.log('error1');
                         if (!alreadyFallback)
                             self.maybeFallbackToWebTorrent(mode, player, options);
                         alreadyFallback = true;
@@ -43227,7 +43224,6 @@ class PeertubePlayerManager {
                     player.one('play', () => {
                         PeertubePlayerManager.alreadyPlayed = true;
                     });
-                    console.log('play');
                     self.addContextMenu(mode, player, options.common.embedUrl, options.common.embedTitle);
                     player.bezels();
                     return res(player);
@@ -43257,7 +43253,6 @@ class PeertubePlayerManager {
             const self = this;
             video_js__WEBPACK_IMPORTED_MODULE_22___default()(newVideoElement, videojsOptions, function () {
                 const player = this;
-                console.log('maybeFallbackToWebTorrent2');
                 self.addContextMenu(mode, player, options.common.embedUrl, options.common.embedTitle);
                 PeertubePlayerManager.onPlayerChange(player);
             });
@@ -43296,7 +43291,6 @@ class PeertubePlayerManager {
             Object.assign(html5, hlsjs.html5);
         }
         if (mode === 'webtorrent') {
-            console.log('addWebTorrentOptions');
             PeertubePlayerManager.addWebTorrentOptions(plugins, options);
             // WebTorrent plugin handles autoplay, because we do some hackish stuff in there
             autoplay = false;
@@ -43393,6 +43387,7 @@ class PeertubePlayerManager {
     static addWebTorrentOptions(plugins, options) {
         const commonOptions = options.common;
         const webtorrentOptions = options.webtorrent;
+        console.log('commonOptions', commonOptions);
         const autoplay = this.getAutoPlayValue(commonOptions.autoplay) === 'play'
             ? true
             : false;
@@ -43646,16 +43641,13 @@ class PeerTubePlugin extends Plugin {
             const playerOptions = this.player.options_;
             if (options.mode === 'webtorrent') {
                 this.player.webtorrent().on('resolutionChange', (_, d) => {
-                    console.log("resolutionChange2");
                     return this.handleResolutionChange(d);
                 });
                 this.player.webtorrent().on('autoResolutionChange', (_, d) => {
-                    console.log("resolutionChange3");
                     return this.trigger('autoResolutionChange', d);
                 });
             }
             if (options.mode === 'p2p-media-loader') {
-                console.log("resolutionChange");
                 this.player.p2pMediaLoader().on('resolutionChange', (_, d) => this.handleResolutionChange(d));
             }
             this.player.tech(true).on('loadedqualitydata', () => {
@@ -46365,7 +46357,6 @@ class PeerTubeEmbed {
     static main(element, videoId, parameters, clbk) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const embed = new PeerTubeEmbed(element);
-            console.log("parameters", parameters);
             embed.getInitialSettings(parameters);
             yield embed.init(videoId, parameters, clbk);
             return embed;
@@ -46393,7 +46384,6 @@ class PeerTubeEmbed {
         this.modeParam = this.getParamString(params, "mode");
         this.isVideoEmbed = this.getParamString(params, "videoEmbedded", "");
         this.txid = this.getParamString(params, "txid", "");
-        console.log("this.wautoplay", this.wautoplay);
     }
     getVideoUrl(id) {
         return "/api/v1/videos/" + id;
@@ -46526,7 +46516,6 @@ class PeerTubeEmbed {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const next = this.getNextPlaylistElement();
             if (!next) {
-                console.log("Next element not found in playlist.");
                 return;
             }
             this.currentPlaylistElement = next;
@@ -46537,7 +46526,6 @@ class PeerTubeEmbed {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const previous = this.getPreviousPlaylistElement();
             if (!previous) {
-                console.log("Previous element not found in playlist.");
                 return;
             }
             this.currentPlaylistElement = previous;
@@ -46569,7 +46557,6 @@ class PeerTubeEmbed {
     }
     loadParams(video) {
         try {
-            console.log("this", this);
             if (this.modeParam) {
                 if (this.modeParam === "p2p-media-loader")
                     this.mode = "p2p-media-loader";
@@ -46726,7 +46713,7 @@ class PeerTubeEmbed {
                     .then((res) => res.json())
                     .then((json) => {
                     const info = json.streams[0];
-                    return Number((info.width / info.height).toFixed(2));
+                    return Number((info.width / info.height));
                 });
                 this.playerElement = document.createElement("video");
                 this.playerElement.className = "video-js";
@@ -46953,12 +46940,10 @@ class PeerTubeEmbed {
         if (placeholder) {
             const url = this.host + video.previewPath;
             placeholder.style.backgroundImage = `url("${url}")`;
-            console.log("this.wautoplaythis.wautoplaythis.wautoplay", this.wautoplay);
             if (!this.wautoplay)
                 placeholder.style.display = "block";
             else {
                 placeholder.style.display = "none";
-                console.log("placeholder.style.display", placeholder.style.display);
             }
         }
     }

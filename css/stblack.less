@@ -3,7 +3,7 @@
 html.stblack{
     
 
-    background: transparent;
+    background: @color-black;
 
     body{
         background: @color-black;
@@ -77,9 +77,9 @@ html.stblack{
     input[type="password"],
     input[type="number"]
     {
-        background:  @color-black5;
+        background:  @color-black;
         color: #fff;
-        border: 1px solid @color-bright;
+        border: 1px solid @color-add;
         
     }
 
@@ -106,6 +106,7 @@ html.stblack{
         }
     
         &.shadowWhite{
+            background: transparent;
             color : @color-black3;
             border : 1px solid @color-black3;
     
@@ -149,13 +150,13 @@ html.stblack{
         }
     
         &.orange{
-            background: fade(@color-main, 70);
-            border: 1px solid fade(@color-main, 70);
+            background: fade(#FF4800, 70);
+            border: 1px solid fade(#FF4800, 70);
             color: #FFF;
     
             &:hover{
-                background : fade(@color-dark-blue, 20);
-                color: fade(@color-dark-blue, 70);
+                background : fade(#FF4800, 20);
+                color: fade(#FF4800, 70);
             }
         }
     
@@ -690,11 +691,12 @@ html.stblack{
     
             .vc_inputWrapper{
     
-                border : 1px solid @color-bright;
+                border : 1px solid  @color-black2;
                 border-right: 0;
     
                 input{
                     background: transparent;
+                    border : 0!important;
     
                     &[disabled]{
                         color : @color-gray-light;
@@ -704,7 +706,7 @@ html.stblack{
 
     
             .vc_iconWrapper{
-                border : 1px solid @color-bright;
+                border : 1px solid @color-black2;
                 border-left: 0;
                 color : fade(@color-main, 40);
     
@@ -735,7 +737,8 @@ html.stblack{
             .vc_textInput{
                
                 .vc_inputWrapper{
-
+    
+                    border : 1px solid  @color-bad;
                     border-right: 0;
                 }
     
