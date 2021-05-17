@@ -43,6 +43,7 @@ const registerSourceHandler = function (vjs) {
             if (tech.hlsProvider) {
                 tech.hlsProvider.dispose();
             }
+            console.log("SOURCE", source);
             tech.hlsProvider = new Html5Hlsjs(vjs, source, tech);
             return tech.hlsProvider;
         }
@@ -97,8 +98,10 @@ class Html5Hlsjs {
         this.videoElement.addEventListener('error', event => {
             let errorTxt;
             const mediaError = (event.currentTarget || event.target).error;
+            console.warn(event);
             if (!mediaError)
                 return;
+            console.warn(mediaError);
             switch (mediaError.code) {
                 case mediaError.MEDIA_ERR_ABORTED:
                     errorTxt = 'You aborted the video playback';
@@ -116,6 +119,7 @@ class Html5Hlsjs {
                 default:
                     errorTxt = mediaError.message;
             }
+            console.error('MEDIA_ERROR: ', errorTxt);
         });
         this.initialize();
     }
@@ -165,6 +169,7 @@ class Html5Hlsjs {
         }
     }
     _handleMediaError(error) {
+        console.warn(error);
         if (this.errorCounts[hls_js__WEBPACK_IMPORTED_MODULE_0__["ErrorTypes"].MEDIA_ERROR] === 1) {
             console.info('trying to recover media error');
             this.hls.recoverMediaError();
@@ -185,6 +190,7 @@ class Html5Hlsjs {
         }
     }
     _handleNetworkError(error) {
+        console.warn(error);
         if (this.errorCounts[hls_js__WEBPACK_IMPORTED_MODULE_0__["ErrorTypes"].NETWORK_ERROR] <= 5) {
             console.info('trying to recover network error');
             // Wait 1 second and retry
@@ -201,9 +207,11 @@ class Html5Hlsjs {
         this.tech.trigger('error');
     }
     _onError(_event, data) {
+        console.warn(data);
         const error = {
             message: `HLS.js error: ${data.type} - fatal: ${data.fatal} - ${data.details}`
         };
+        console.error(error.message, data);
         // increment/set error count
         if (this.errorCounts[data.type])
             this.errorCounts[data.type] += 1;
@@ -227,6 +235,7 @@ class Html5Hlsjs {
         }
     }
     switchQuality(qualityId) {
+        console.log('switchQuality', qualityId);
         this.hls.nextLevel = qualityId;
     }
     _levelLabel(level) {
@@ -270,6 +279,7 @@ class Html5Hlsjs {
         const qualityLevels = this.player.qualityLevels && this.player.qualityLevels();
         if (!qualityLevels)
             return;
+        console.log('_handleQualityLevels');
         for (let i = 0; i < this.metadata.levels.length; i++) {
             const details = this.metadata.levels[i];
             const representation = {
@@ -284,6 +294,7 @@ class Html5Hlsjs {
             representation.enabled = function (level, toggle) {
                 // Brightcove switcher works TextTracks-style (enable tracks that it wants to ABR on)
                 if (typeof toggle === 'boolean') {
+                    console.log("QUALITY CHANGE");
                     this[level]._enabled = toggle;
                     self._relayQualityChange(this);
                 }
@@ -296,6 +307,7 @@ class Html5Hlsjs {
         if (!this.metadata)
             return;
         const cleanTracklist = [];
+        console.log('_notifyVideoQualities_notifyVideoQualities');
         if (this.metadata.levels.length > 1) {
             const autoLevel = {
                 id: -1,
@@ -484,16 +496,9 @@ class Html5Hlsjs {
             this.handlers.play = this._startLoad.bind(this);
             this.videoElement.addEventListener('play', this.handlers.play);
         }
-        var fmp4Data;
         // _notifyVideoQualities sometimes runs before the quality picker event handler is registered -> no video switcher
         this.handlers.playing = this._notifyVideoQualities.bind(this);
         this.videoElement.addEventListener('playing', this.handlers.playing);
-        this.hlsjsConfig.debug = true;
-        this.hlsjsConfig.maxBufferHole = 0.5;
-        this.hlsjsConfig.maxFragLookUpTolerance = 0;
-        this.hlsjsConfig.highBufferWatchdogPeriod = 1;
-        this.hlsjsConfig.lowLatencyMode = true;
-        //this.hlsjsConfig.backBufferLength = 90
         this.hls = new hls_js__WEBPACK_IMPORTED_MODULE_0___default.a(this.hlsjsConfig);
         this._executeHooksFor('beforeinitialize');
         this.hls.on(hls_js__WEBPACK_IMPORTED_MODULE_0__["Events"].ERROR, (event, data) => this._onError(event, data));
@@ -501,6 +506,7 @@ class Html5Hlsjs {
         this.hls.on(hls_js__WEBPACK_IMPORTED_MODULE_0__["Events"].MANIFEST_PARSED, (event, data) => this._onMetaData(event, data)); // FIXME: typings
         this.hls.on(hls_js__WEBPACK_IMPORTED_MODULE_0__["Events"].LEVEL_LOADED, (event, data) => {
             // The DVR plugin will auto seek to "live edge" on start up
+            console.log("LOEV");
             if (this.hlsjsConfig.liveSyncDuration) {
                 this.edgeMargin = this.hlsjsConfig.liveSyncDuration;
             }
@@ -512,18 +518,13 @@ class Html5Hlsjs {
             this._duration = this.isLive ? Infinity : data.details.totalduration;
         });
         this.hls.once(hls_js__WEBPACK_IMPORTED_MODULE_0__["Events"].FRAG_LOADED, () => {
+            console.log("LOEsV");
             // Emit custom 'loadedmetadata' event for parity with `videojs-contrib-hls`
             // Ref: https://github.com/videojs/videojs-contrib-hls#loadedmetadata
             this.tech.trigger('loadedmetadata');
         });
-        /*this.hls.on(Hlsjs.Events.BUFFER_APPENDING, function (eventName, data) {
-    
-          console.log('BUFFER_APPENDING', data.type)
-    
-            //fmp4Data[data.type].push(data.data);
-        });
-        */
-        this.hls.once(hls_js__WEBPACK_IMPORTED_MODULE_0__["Events"].FRAG_BUFFERED, (e) => {
+        this.hls.once(hls_js__WEBPACK_IMPORTED_MODULE_0__["Events"].FRAG_BUFFERED, () => {
+            console.log("LOEsV2222");
         });
         this.hls.attachMedia(this.videoElement);
         this.hls.loadSource(this.source.src);

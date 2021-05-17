@@ -7,6 +7,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ htlc ]
+  pull_request:
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -27,9 +29,7 @@ jobs:
           node-version: '14'
 
       - name: Prepare
-        run: |
-          npm i
-          npm run minimize:test
+        run: npm ci --only-production
 
       - name: Copy to dest dir
         run: rsync -ah ./ /docker/gui/ --exclude .git

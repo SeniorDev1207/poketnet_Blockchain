@@ -199,11 +199,9 @@ var main = (function(){
 					
 					actions.refreshSticky()
 
-					
-
 				}, 500)
 
-				if(lenta && lenta.update) lenta.update()
+				
 			}
 		}
 
@@ -448,12 +446,6 @@ var main = (function(){
 				var loader = null
 				var fp = false
 
-				console.log("RENDERS LENTA")
-
-				if(lenta) {
-					lenta.destroy()
-				}
-
 				renders.addpanel();
 
 				if(searchvalue){
@@ -591,8 +583,7 @@ var main = (function(){
 						openedpost = p
 					}, {
 						video : true,
-						autoplay : true,
-						nocommentcaption : true
+						autoplay : true
 					})
 				}
 
@@ -792,20 +783,20 @@ var main = (function(){
 
 				if(_vm != videomain){
 					videomain = _vm
-				}
 
-				if(videomain){
-					el.c.addClass('videomain')
+					if(videomain){
+						el.c.addClass('videomain')
 
-					if(!parameters().v){
+						if(!parameters().v){
+							actions.backtolenta()
+							makePanel()
+						}
+					}
+					else{
+						el.c.removeClass('videomain')
 						actions.backtolenta()
 						makePanel()
 					}
-				}
-				else{
-					el.c.removeClass('videomain')
-					actions.backtolenta()
-					makePanel()
 				}
 				
 
