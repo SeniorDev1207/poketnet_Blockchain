@@ -10,22 +10,6 @@
 		}
 	}
 
-	&.videomain{
-		background: #fcfcfc;
-
-		#categories{
-			color : @color-gray;
-		}
-
-		.addbutton{
-			display: none!important;
-		}
-
-		.columnnavigation{
-			display: none;
-		}
-	}
-
 	.columnnavigation{
 		position: fixed;
 		bottom : 20%;
@@ -131,7 +115,7 @@
 	}
 
 	.lentacellsvi{
-		margin-right : 0;
+		margin-right : 256px;
 		padding-top : 10px;
 		
 	}
@@ -657,16 +641,6 @@ html.stblack{
 	
 	}
 }
-
-html {
-    &.testpocketnet{
-        #main.testpocketnetbg{
-            background-image: url(../../img/testbg.png);
-            background-position: center center;
-        }
-    }
-}
-
 @media only screen and (max-width: 1440px) {
 	#main{
 		.opensvi{
@@ -779,40 +753,6 @@ html {
 			.maincntwrapper{
 				transform: translateX(-66.66666%);
 			}
-		}
-
-		&.videomain{
-
-		
-			.columnnavigation{
-				display: none!important;
-			}
-
-			.lentacell{
-				margin-left: 33.333%;
-				margin-right: 33.333%;
-				padding-top : 0;
-				width : 33.333%;
-				padding-bottom: 0;
-			}
-			
-			.leftpanelcell{
-				margin-left: 0;
-				margin-right: 0;
-				width : 33.333%;
-			}
-	
-			.leftpanelsvicell{
-				display: none;
-			}
-
-			.lentacellsvi{
-				padding-top : 0;
-			}
-
-			/*.shares .authorgroup .share{
-				padding : 2 * @rhythm 0 ;
-			}*/
 		}
 
 		.fxd{

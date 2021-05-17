@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { performance } = require('perf_hooks');
-const PeertubeServer = require('./lib/PeertubeServer');
 
 //polyfill
 if (!Promise.allSettled) {
@@ -23,6 +22,7 @@ if (!Promise.allSettled) {
 }
 
 const STATS_METHOD = '/api/v1/videos';
+const SETTELED_SUCCESS_STATUS = 'fulfilled';
 
 const GOOD_STATUS = 'fulfilled';
 
@@ -42,49 +42,67 @@ const getAspectRatio = (width, height) => {
 const Peertube = function () {
   const hardCodeUrlsList = [
     'pocketnetpeertube3.nohost.me',
-    'pocketnetpeertube5.nohost.me',
+    'pocketnetpeertube4.nohost.me',
   ];
-
-  const serversList = [];
 
   this.serversCache = [];
 
   this.statsInterval = null;
 
   const getServerStats = () => {
-    const filteredResponse = serversList
-      .map((server) => server.getFreshStat())
-      .filter((stat) => stat);
+    const timerStack = {};
 
-    const output = {
-      all: filteredResponse,
-      best: {
-        fastest: filteredResponse.reduce((accumulator, current) => {
-          return accumulator.timeResponse < current.timeResponse
-            ? accumulator
-            : current;
-        }, filteredResponse[0]),
+    const statsStack = hardCodeUrlsList.map((server) => {
+      timerStack[server] = performance.now();
 
-        leastUsed: filteredResponse.reduce((accumulator, current) => {
-          return accumulator.total < current.total ? accumulator : current;
-        }, filteredResponse[0]),
-      },
-    };
+      return axios.get(`https://${server}${STATS_METHOD}`).then((data) => {
+        timerStack[server] = performance.now() - timerStack[server];
 
-    if (this.serversCache.length > CACHE_SIZE) this.serversCache.shift();
+        return data;
+      });
+    });
 
-    this.serversCache.push(output);
+    return Promise.allSettled(statsStack).then((res) => {
+      const filteredResponse = res
+        .filter((response) => response.status === SETTELED_SUCCESS_STATUS)
+        .map((item) => {
+          const serverLink = item.value.config.url
+            .replace('https://', '')
+            .replace(item.value.request.path, '');
+
+          return {
+            server: serverLink,
+            total: item.value.data.total,
+            timeResponse: timerStack[serverLink],
+          };
+        });
+
+      const output = {
+        all: filteredResponse,
+        best: {
+          fastest: filteredResponse.reduce((accumulator, current) => {
+            return accumulator.timeResponse < current.timeResponse
+              ? accumulator
+              : current;
+          }, filteredResponse[0]),
+
+          leastUsed: filteredResponse.reduce((accumulator, current) => {
+            return accumulator.total < current.total ? accumulator : current;
+          }, filteredResponse[0]),
+        },
+      };
+
+      if (this.serversCache.length > CACHE_SIZE) this.serversCache.shift();
+
+      this.serversCache.push(output);
+    });
   };
+
   this.destroy = () => {
     return Promise.resolve();
   };
 
   this.init = () => {
-    hardCodeUrlsList.map((url) => {
-      const newServer = new PeertubeServer(url);
-      serversList.push(newServer);
-    });
-
     this.statsInterval = setInterval(getServerStats, UPDATE_INTERVAL);
 
     return Promise.resolve();
@@ -108,7 +126,6 @@ const Peertube = function () {
       const { host, id } = info;
 
       if (!host || !id) return Promise.reject('No host/id info received');
-      console.log(`${host}/api/v1/videos/${id}`);
 
       return axios
         .get(`${host}/api/v1/videos/${id}`)
@@ -141,27 +158,18 @@ const Peertube = function () {
               }),
             );
         })
-        .catch((err) => {
-          return Promise.reject(err);
-        });
+        .catch((err) => Promise.reject(err));
     },
 
-    async getListVideos(info) {
+    getListVideos(info) {
       if (!info.ids) return Promise.reject('No video ids');
       const idsArray = info.ids;
 
-      const serverInfo = await this.getBestServer();
-
-      const bestHost = serverInfo ? serverInfo.fastest.server : null;
-
-      console.log('Best Host', bestHost);
-
       const videoIds = idsArray.map((id) => {
         const formattedId = id.replace(PEERTUBE_ID, HTTPS_ID);
+
         return {
-          host: bestHost
-            ? `https://${bestHost}`
-            : formattedId.split(SLASH).slice(0, 3).join(SLASH),
+          host: formattedId.split(SLASH).slice(0, 3).join(SLASH),
           id: formattedId.split(SLASH).pop(),
         };
       });
@@ -170,6 +178,7 @@ const Peertube = function () {
 
       return Promise.allSettled(infoStack)
         .then((data) => {
+
           const outputData = data.reduce(
             (accumulator, currVideo, currIndex) => {
               accumulator[idsArray[currIndex]] =

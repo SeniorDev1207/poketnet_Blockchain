@@ -1630,10 +1630,6 @@ class Engine extends events__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"] {
         return _a = class {
                 constructor() {
                     this.load = (context, config, callbacks) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                        console.log("LOAD SOMETHING");
-                        if (this.stats.loading.start) {
-                            throw new Error('Loader can only be used once.');
-                        }
                         this.context = context;
                         this.stats.bwEstimate = 12500;
                         this.stats.loading.start = performance.now();
@@ -1756,6 +1752,7 @@ class HlsJsLoader {
                 }
             }
             else {
+                console.warn("Unknown load request", context);
             }
         });
     }
@@ -1923,6 +1920,7 @@ function initJwPlayer(player, hlsjsConfig) {
 }
 function initHlsJsEvents(player, engine) {
     player.on("hlsFragChanged", (_event, data) => {
+        console.log('hlsFragChanged', _event, data);
         const frag = data.frag;
         const byteRange = frag.byteRange.length !== 2
             ? undefined
@@ -1933,6 +1931,7 @@ function initHlsJsEvents(player, engine) {
         yield engine.destroy();
     }));
     player.on("hlsError", (_event, errorData) => {
+        console.log('errorData', errorData);
         if (errorData.details === "bufferStalledError") {
             const htmlMediaElement = (player.media === undefined
                 ? player.el_ // videojs-contrib-hlsjs
@@ -2231,6 +2230,7 @@ class SegmentManager {
             let loadSegmentId = null;
             let priority = Math.max(0, this.playQueue.length - 1);
             const masterSwarmId = this.getMasterSwarmId();
+            console.log('loadSegments');
             for (let i = segmentIndex; i < playlistSegments.length && segments.length < this.settings.forwardSegmentCount; ++i) {
                 const segment = playlist.manifest.segments[i];
                 const url = playlist.getSegmentAbsoluteUrl(segment.uri);
