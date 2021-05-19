@@ -256,15 +256,18 @@ function renderMedia(file, elem, opts, callback) {
     }
     function useVideostream() {
         prepareElem();
+        console.log('useVideostream');
         preparedElem.addEventListener('error', function onError(err) {
             preparedElem.removeEventListener('error', onError);
             return callback(err);
         });
-        preparedElem.addEventListener('loadstart', onLoadStart);
+        console.log('file', file);
+        preparedElem.addEventListener('loadedmetadata', onLoadStart);
         return new videostream(file, preparedElem);
     }
     function useMediaSource(useVP9 = false) {
         const codecs = getCodec(file.name, useVP9);
+        console.log('useMediaSource');
         prepareElem();
         preparedElem.addEventListener('error', function onError(err) {
             preparedElem.removeEventListener('error', onError);
@@ -273,7 +276,7 @@ function renderMedia(file, elem, opts, callback) {
                 return fallbackToMediaSource(true);
             return callback(err);
         });
-        preparedElem.addEventListener('loadstart', onLoadStart);
+        preparedElem.addEventListener('loadedmetadata', onLoadStart);
         const wrapper = new MediaElementWrapper(preparedElem);
         const writable = wrapper.createWriteStream(codecs);
         file.createReadStream().pipe(writable);
@@ -297,7 +300,7 @@ function renderMedia(file, elem, opts, callback) {
         }
     }
     function onLoadStart() {
-        preparedElem.removeEventListener('loadstart', onLoadStart);
+        preparedElem.removeEventListener('loadedmetadata', onLoadStart);
         if (opts.autoplay)
             preparedElem.play();
         callback(null, renderer);
@@ -452,6 +455,7 @@ class WebTorrentPlugin extends Plugin {
                 return done();
             });
         }
+        console.log('updateVideoFile');
         this.addTorrent(this.currentVideoFile.magnetUri, previousVideoFile, options, () => {
             this.player.playbackRate(oldPlaybackRate);
             return done();
@@ -536,6 +540,7 @@ class WebTorrentPlugin extends Plugin {
                 if (options.delay)
                     this.renderFileInFakeElement(torrent.files[0], options.delay);
             }
+            console.log('options.delay', options.delay);
             // Render the video in a few seconds? (on resolution change for example, we wait some seconds of the new video resolution)
             this.addTorrentDelay = setTimeout(() => {
                 console.log("IMHERENOW");
@@ -549,9 +554,13 @@ class WebTorrentPlugin extends Plugin {
                 const renderVideoOptions = { autoplay: false, controls: true };
                 Object(_video_renderer__WEBPACK_IMPORTED_MODULE_2__["renderVideo"])(torrent.files[0], this.playerElement, renderVideoOptions, (err, renderer) => {
                     this.renderer = renderer;
+                    console.log("RENDER ERROR", err);
                     if (err)
                         return this.fallbackToHttp(options, done);
+                    //this.playerElement.play()
+                    //setTimeout(() => { working, 
                     return this.tryToPlay(err => {
+                        console.log("TRYTOPLAYDONE TORRENT", err, options);
                         if (err)
                             return done(err);
                         if (options.seek)
@@ -560,11 +569,18 @@ class WebTorrentPlugin extends Plugin {
                             this.player.pause();
                         return done();
                     });
+                    //}, 10)
                 });
             }, options.delay || 0);
         });
         this.torrent.on('error', (err) => console.error(err));
         this.torrent.on('warning', (err) => {
+            console.log("WARNING", err);
+            //// TEMP, TO DO
+            /*if (err.message.indexOf('Error connecting to wss') !== -1 || err.message.indexOf('Unsupported tracker protocol') !== -1) {
+              this.fallbackToHttp(options, done)
+              return
+            }*/
             // We don't support HTTP tracker but we don't care -> we use the web socket tracker
             if (err.message.indexOf('Unsupported tracker protocol') !== -1)
                 return;
@@ -577,6 +593,7 @@ class WebTorrentPlugin extends Plugin {
             if (err.message.indexOf('incorrect info hash') !== -1) {
                 console.error('Incorrect info hash detected, falling back to torrent file.');
                 const newOptions = { forcePlay: true, seek: options.seek };
+                console.log("IM HERE");
                 return this.addTorrent(this.torrent['xs'], previousVideoFile, newOptions, done);
             }
             // Remote instance is down
@@ -591,12 +608,10 @@ class WebTorrentPlugin extends Plugin {
             done = function () { };
         const playPromise = this.player.play();
         if (playPromise !== undefined) {
-            return playPromise.then(() => done())
-                .catch((err) => {
-                if (err.message.indexOf('The play() request was interrupted by a call to pause()') !== -1) {
+            return playPromise.then(() => done()).catch((err) => {
+                if (err.message.indexOf('The play() request') !== -1) {
                     return;
                 }
-                console.error(err);
                 this.player.pause();
                 this.player.posterImage.show();
                 this.player.removeClass('vjs-has-autoplay');
@@ -679,7 +694,6 @@ class WebTorrentPlugin extends Plugin {
     }
     runAutoQualityScheduler() {
         this.autoQualityInterval = setInterval(() => {
-            console.log("ASD");
             // Not initialized or in HTTP fallback
             if (this.torrent === undefined || this.torrent === null)
                 return;
@@ -715,7 +729,6 @@ class WebTorrentPlugin extends Plugin {
     }
     runTorrentInfoScheduler() {
         this.torrentInfoInterval = setInterval(() => {
-            console.log("INININ");
             // Not initialized yet
             if (this.torrent === undefined)
                 return;
@@ -744,7 +757,6 @@ class WebTorrentPlugin extends Plugin {
         }, this.CONSTANTS.INFO_SCHEDULER);
     }
     fallbackToHttp(options, done) {
-        console.log("IMHERE");
         const paused = this.player.paused();
         this.disableAutoResolution(true);
         this.flushVideoFile(this.currentVideoFile, true);
@@ -758,6 +770,7 @@ class WebTorrentPlugin extends Plugin {
         // We changed the source, so reinit captions
         this.player.trigger('sourcechange');
         return this.tryToPlay(err => {
+            console.log("TRYTOPLAYDONE", err, options);
             if (err && done)
                 return done(err);
             if (options.seek)

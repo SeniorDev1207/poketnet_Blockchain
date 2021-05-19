@@ -4,11 +4,9 @@ const { performance } = require('perf_hooks');
 var addresses = require('./addresses.json');
 
 
-var Testnode = function(node){
+var Testnode = function(node, manager){
 
     var self = this;
-
-    var address = "PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82"
 
     var h = {
         getrandomaddress : function(){
@@ -251,13 +249,13 @@ var Testnode = function(node){
 
             var lang = langs[f.rand(0, langs.length - 1)]
 
-            return ["30", "259200", "", lang]
+            return ["200", "2592000", "", "en"]
         }, 
         getlastcomments : function(){
 
             var lang = langs[f.rand(0, langs.length - 1)]
 
-            return [7, "", lang]
+            return ["50", "", "en"]
         },
         gethierarchicalstrip : function(){
 
@@ -311,7 +309,6 @@ var Testnode = function(node){
         })
 
         .catch(e => {
-            console.log("E", e, method, parameters)
             return Promise.resolve()
         })
     }
@@ -333,6 +330,8 @@ var Testnode = function(node){
         //console.log(node.statistic.get())
     }
 
+
+
     self.scenariosmeta = {
         allmethods : function(count, waittime){
 
@@ -342,11 +341,9 @@ var Testnode = function(node){
 
             return f.processArrayWithDelay(methods, waittime, function(m){
 
-
                 return requestes(m, count).then(r => {
 
                     log()
-
 
                     return f.delay(waittime)
 
@@ -390,8 +387,6 @@ var Testnode = function(node){
 
                         return request(m).then(r => {
                             return Promise.resolve()
-                        }).catch(e => {
-                            return Promise.resolve()
                         })
 
                     }).catch(e => {
@@ -434,8 +429,193 @@ var Testnode = function(node){
                 return this.parallellMethodsLong(count, methodkeys, time)
 
             })
+        },
+
+        actions : function(count, actions){
+
+            if(!count) count = 1;
+
+            var promises = []
+            var waittime = 200
+            
+            for(var i = 0; i < count; i++){
+                promises.push(
+                    f.processArrayWithDelay(actions, waittime, function(m){
+
+                        console.log("PROCESSPART", m)
+
+                        return m().then(r => {
+                            return Promise.resolve()
+                        })
+
+                    }).catch(e => {
+
+                        return Promise.resolve()
+                    })
+                )
+            }
+
+
+            return Promise.all(promises).catch(e => {
+
+                return Promise.reject(e)
+            })
+        },
+
+        actionsLong : function(count, actions, time){
+            if(!time) time = 0
+            if (time <= 0) {
+                return Promise.resolve()
+            }
+
+            var ctime = performance.now()
+
+            return self.scenariosmeta.actions(count, actions).catch(e => {
+
+                return Promise.resolve()
+
+            }).then(r => {
+
+                var difference = (performance.now() - ctime);
+
+                time = time - difference
+
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        this.actionsLong(count, actions, time).then((r) => {
+                            resolve(r)
+                        }).catch(e => {
+                            reject(e)
+                        })
+                    }, 200)
+                })
+
+            })
         }
     }
+
+    self.kit = {
+        preparekey : function(index){
+            var privatekey = manager.proxy.wallet.testkey(index)
+
+            if(!privatekey) return Promise.reject('privatekey')
+
+            var ao = manager.wallet.kit.addressobj({
+                privatekey
+            })
+
+
+            if(!ao.keys) return Promise.reject('privatekeyao')
+
+            return manager.wallet.unspents.getc(ao, true).then(r => {
+                return Promise.resolve(ao)
+            })
+        },
+
+        getlastcomments : function(){
+            return request('getlastcomments')
+        },
+
+        getposts : function(){
+            return request('gethotposts')
+        },
+        
+        makecomment : function(address, txid, message){
+
+            if(!message) message = this.randomtext()
+
+            var comment = manager.wallet.pocketnet.pobjects.comment(txid, message)
+
+            console.log('makecomment')
+
+            return manager.wallet.transactions.common(address, comment, {}).then(() => {
+
+                console.log('makecommentsuccess')
+
+                return Promise.resolve()
+            }).catch(e => {
+
+                console.log('makecommentfailed', e)
+
+                return Promise.reject(e)
+            })
+        },
+
+        makeupvoteShare : function(address, txid, txaddress){
+
+            var upvote = manager.wallet.pocketnet.pobjects.upvoteShare(txid, txaddress, f.rand(1, 5) + '')
+
+            console.log('makeupvoteShare')
+
+            return manager.wallet.transactions.common(address, upvote, {}).then(() => {
+                console.log('makeupvoteShareSuccess')
+                return Promise.resolve()
+            }).catch(e => {
+                console.log('makeupvoteShareFailed', e)
+                return Promise.reject(e)
+            })
+        },
+
+        makeUserAction : function(address, action, uaddress){
+
+            if(!manager.wallet.pocketnet.pobjects[action]){
+                return Promise.reject('action')
+            }
+
+            var action = manager.wallet.pocketnet.pobjects[action](uaddress)
+
+            console.log('actionBegin', action)
+
+            return manager.wallet.transactions.common(address, action, {}).then(() => {
+                console.log('actionSuccess', action)
+                return Promise.resolve()
+            }).catch(e => {
+                console.log('actionFailed', action)
+                return Promise.reject(e)
+            })
+        },
+
+        makeupvoteComment : function(address, commentid, txaddress){
+
+            console.log('commentid, txaddress', commentid, txaddress)
+
+            var upvote = manager.wallet.pocketnet.pobjects.upvoteComment(commentid, txaddress, f.rand(1, 5) + '')
+            console.log('makeupvoteComment')
+            return manager.wallet.transactions.common(address, upvote, {}).then(() => {
+                console.log('makeupvoteCommentSuccess')
+                return Promise.resolve()
+            }).catch(e => {
+                console.log('makeupvoteCommentFailed', e)
+                return Promise.reject(e)
+            })
+        },
+
+        makeshare : function(address, message){
+
+            if(!message) message = this.randomtext()
+
+            var share = manager.wallet.pocketnet.pobjects.share("en")
+            share.message.set(message)
+            share.tags.set(['test'])
+
+            console.log('makeshare')
+
+            return manager.wallet.transactions.common(address, share, {}).then(() => {
+
+                console.log('makeshareSuccess')
+
+                return Promise.resolve()
+            }).catch(e => {
+                console.log('makeshareSuccess', e)
+                return Promise.reject(e)
+            })
+        },
+
+        randomtext : function(l){
+            return 'time: ' + f.now() + ", text: "  + f.randomString(l || f.rand(10, 100))
+        }
+    }
+
 
     self.scenarios = {
         pageload : function(){
@@ -463,7 +643,153 @@ var Testnode = function(node){
                 console.log("testing", methodkeys)
 
             return self.scenariosmeta.parallellMethodsLong(count, methodkeys, 600000)
+        },
+
+        limits : function(){
+
+            return self.scenarios.limitsChank('share').then(r => {
+                return self.scenarios.limitsChank('comment')
+            }).then(r => {
+                return self.scenarios.limitsChank('upvoteComment')
+            }).then(r => {
+                return self.scenarios.limitsChank('upvoteShare')
+            }).then(r => {
+                return self.scenarios.limitsChank('userAction')
+            })
+
+        },
+
+        limitsChank : function(action){
+
+            var promises = []
+
+            for(var i = 0; i < 3; i++){
+                promises.push(self.scenarios.limit(i, action))
+            }
+
+            return Promise.all(promises)
+        },
+
+        limit : function(pkindex, action){
+
+            if(!pkindex) pkindex = 0
+
+            var address = null
+            var posts = []
+            var comments = []
+            var count = 2
+            var time = 60000
+
+            if(!action) action = 'comment'
+
+            var acts = {
+                comment : function(){
+                    return new Promise((resolve, reject) => {
+
+                        if(!posts.length) return resolve()
+
+                        var post = posts[f.rand(0, posts.length - 1)]
+
+                        self.kit.makecomment(address, post.txid).then(r => {
+                            resolve()
+                        }).catch(e => {
+                            reject(e)
+                        })
+
+                    })
+                },
+
+                share : function(){
+                    return new Promise((resolve, reject) => {
+
+                        self.kit.makeshare(address).then(r => {
+                            resolve()
+                        }).catch(e => {
+                            console.log("E", e)
+                            resolve()
+                        })
+
+                    })
+                },
+
+                upvoteComment : function(){
+                    return new Promise((resolve, reject) => {
+
+                        if(!posts.length) return resolve()
+
+                        if(!comments.length) return resolve()
+
+                        var comment = comments[f.rand(0, comments.length - 1)]
+
+                        self.kit.makeupvoteComment(address, comment.id, comment.address).then(r => {
+                            resolve()
+                        }).catch(e => {
+                            resolve()
+                        })
+
+                    })
+                },
+
+                upvoteShare : function(){
+                    return new Promise((resolve, reject) => {
+
+                        var post = posts[f.rand(0, posts.length - 1)]
+
+                        self.kit.makeupvoteShare(address, post.txid, post.address).then(r => {
+                            resolve()
+                        }).catch(e => {
+                            console.log("E", e)
+                            resolve()
+                        })
+
+                    })
+                },
+
+                userAction : function(){
+                    return new Promise((resolve, reject) => {
+
+                        var post = posts[f.rand(0, posts.length - 1)]
+
+                        var actions = ['unsubscribe', 'subscribe', 'subscribePrivate', 'blocking']
+
+                        var action = actions[f.rand(0, actions.length - 1)]
+
+                        self.kit.makeUserAction(address, action, post.address).then(r => {
+                            resolve()
+                        }).catch(e => {
+                            console.log("E", e)
+                            resolve()
+                        })
+
+                    })
+                }
+            }
+
+            return self.kit.preparekey(pkindex).then(a => {
+
+                address = a
+
+                return self.kit.getposts()
+
+            }).then(_posts => {
+
+                posts = _posts
+                
+                return self.kit.getlastcomments()
+
+            }).then(_comments => {
+
+                comments = _comments
+
+                var actions = [
+                    acts[action]
+                ]
+
+                return self.scenariosmeta.actionsLong(count, actions, time)
+            })
+
         }
+
     }
 
     return self

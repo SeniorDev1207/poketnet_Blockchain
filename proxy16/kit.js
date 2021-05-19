@@ -21,16 +21,26 @@ var settingsPath = 'data/settings'
 var settings = {};
 
 var pocketnet = new Pocketnet()
-var test = false
+var test = _.indexOf(process.argv, '--test') > -1
+
 
 var testnodes = [
+
 	/*{
-		host : '192.168.0.33',
-		port : 37071,
+		host : '157.90.235.121',
+		port : 36061,
 		ws : 6067,
 		name : 'CryptoserverTest',
 		stable : true
-	},*/
+	},
+
+	{
+		host : '65.21.56.203',
+		port : 36061,
+		ws : 6067,
+		name : 'CryptoserverTest2',
+		stable : true
+	}*/
 
 	{
 		host : '216.108.231.28',
@@ -98,9 +108,13 @@ var nodes = activenodes
 
 if (test) nodes = testnodes
 
+console.log('nodes', nodes)
+
 var defaultSettings = {
 
 	admins : [],
+
+	testkeys : [],
 	
 	nodes : {
 		dbpath : 'data/nodes'
@@ -169,6 +183,11 @@ var defaultSettings = {
 	proxies : {
 		dbpath : 'data/proxies',
 		explore : true
+	},
+
+	systemnotify : {
+		bot : {},
+		parameters : {}
 	}
 
 	/*rsa : {
@@ -179,6 +198,23 @@ var defaultSettings = {
 
 
 var state = {
+
+	exportkeys : function(){
+		return _.filter(settings.testkeys, function(key){
+
+			var kp = null
+
+			try{
+                kp = pocketnet.kit.keyPair(key)
+
+				return true
+            }
+            catch(e){
+                return false
+            }
+
+		})
+	},
 
 	export : function(view){
 
@@ -200,13 +236,17 @@ var state = {
 			admins : settings.admins,
 			proxies : {
 				explore : settings.proxies.explore
-			}
+			},
+			testkeys : state.exportkeys()
 			//rsa : settings.rsa
 		}
 
 		exporting = cloneDeep(exporting)
 
 		if(view) {
+
+			exporting.testkeys = []
+
 			if (exporting.server.ssl.passphrase)
 				exporting.server.ssl.passphrase = "*"
 
@@ -220,7 +260,6 @@ var state = {
 		return exporting
 	},
 
-	
 
 	apply : function(cds){
 		settings = cds
@@ -709,6 +748,38 @@ var kit = {
 
 				}
 			},
+
+			testkeys : {
+				add : function({
+					key
+				}){
+
+					if(!key) return Promise.reject("key")
+
+					var kp = pocketnet.kit.keyPair(key)
+
+					if(!kp) return Promise.reject("notvalidkey")
+
+					if(_.indexOf(settings.testkeys, key) > -1){
+						return Promise.resolve()
+					}
+	
+					settings.testkeys.push(key)
+	
+					return state.save()
+				},
+	
+				remove : function({
+					index
+				}){
+	
+					if (index < 0 || index > settings.testkeys.length - 1) return Promise.resolve()
+	
+					settings.testkeys.splice(index, 1)
+	
+					return state.save()
+				}
+			},
 	
 			admins : {
 				add : function({
@@ -748,10 +819,15 @@ var kit = {
 			settings : function(){
 				return Promise.resolve(state.export(true))
 			},
+			
 			state : function(compact){
 				return kit.proxy().then(proxy => {
 					return proxy.kit.info(compact)
 				})
+			},
+
+			testkey : function(index){
+				return settings.testkeys[index]
 			}
 		},
 
@@ -901,12 +977,6 @@ var kit = {
 
 		if(!proxy){
             
-            if (settings.server.test) {
-                test = true
-                nodes = testnodes
-                settings.nodes.stable = nodes
-            }
-
 			proxy = new Proxy(settings, kit.manage, test)
 
 			if (hck.userDataPath){
@@ -957,6 +1027,7 @@ var kit = {
 					resolve()
 
 				}).catch(e => {
+                    console.log(e)
 					reject(e)
 				})
 			}
