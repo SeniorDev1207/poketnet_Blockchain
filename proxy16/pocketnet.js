@@ -1,4 +1,5 @@
 var bitcoin = require('./lib/btc16.js');
+var pkit = require('./lib/kit.js');
 
 var Pocketnet = function(){
     var self = this
@@ -10,7 +11,6 @@ var Pocketnet = function(){
             try{
                 keyPair = bitcoin.ECPair.fromWIF(privateKey)//(Buffer.from(privateKey, 'hex'))
             }catch(e){
-
 
             }
 
@@ -87,12 +87,78 @@ var Pocketnet = function(){
                 }
             }
         }
+    }
 
-        
+    self.pobjects = {
+        comment : function(txid, message){
+            var comment = new pkit.c.comment(txid)
 
+                comment.message.set(message)
+
+            return comment
+        },
+
+        share : function(lang){
+            var share = new pkit.c.share(lang)
+
+            return share
+        },
+
+        blocking : function(address){
+            var blocking = new pkit.c.blocking()
+
+            blocking.address.set(address)
+
+            return blocking
+        },
+
+        unsubscribe : function(address){
+            var unsubscribe = new pkit.c.unsubscribe()
+
+            unsubscribe.address.set(address)
+
+            return unsubscribe
+        },
+
+        subscribe : function(address){
+            var subscribe = new pkit.c.subscribe()
+
+            subscribe.address.set(address)
+
+            return subscribe
+        },
+
+        subscribePrivate : function(address){
+            var subscribePrivate = new pkit.c.subscribePrivate()
+
+            subscribePrivate.address.set(address)
+
+            return subscribePrivate
+        },
+
+        upvoteShare : function(txid, address, value){
+            var upvoteShare = new pkit.c.upvoteShare()
+
+            upvoteShare.address.set(address)
+            upvoteShare.value.set(value)
+            upvoteShare.share.set(txid);
+
+            return upvoteShare
+        },
+
+        upvoteComment: function(commentid, address, value){
+            var upvoteComment = new pkit.c.cScore()
+
+            upvoteComment.address.set(address)
+            upvoteComment.value.set(value)
+            upvoteComment.comment.set(commentid);
+
+            return upvoteComment
+        },
     }
     
     self.lib = bitcoin
+    self.pkit = pkit
 
     return self
 }

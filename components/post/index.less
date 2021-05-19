@@ -245,6 +245,8 @@
 			width: 100%;
 		}
 
+		
+
 		#post{
 			.postWrapper{
 				background: #fff;
@@ -1049,8 +1051,20 @@
 
 			
 		}
-
 		.share{
+
+			/*max-width: 860px;*/
+
+			.message,
+			.sharecaption{
+				max-width: 650px;
+			}
+
+			.commentmessage{
+				div{
+					max-width: 650px;
+				}
+			}
 
 			.jsPlayerLoading{
 				width: 100%;
@@ -1148,6 +1162,88 @@
 		.share .metatable>div.metapanel{
 			padding-right:  @rhythm;
 		}
+
+		.videoWrapper{
+			overflow: hidden;
+			border-radius: 5px;
+		}
+
+		/*.video-js{
+			.vjs-control-bar{
+				position: fixed;
+				bottom : 0;
+				left: 0;
+				right : 0;
+				font-size: 1.3em;
+				z-index: 10000;
+			}
+		}*/
+
+		.forurl{
+			.url{
+				background: #000;
+			}
+		}
+
+		&.verticalVideo{
+			.forurl{
+				.url{
+					background: #000;
+					overflow: hidden;
+					border-radius: 5px;
+					position: relative;
+
+					.video-js,
+					.js-player{
+						position : static;
+
+					}
+				}
+				.videoWrapper{
+					margin : 0 auto;
+					max-width: 350px;
+				}
+			}
+		}
+
+		#comments.fromtop .list{
+			border-top: 0;
+		}
+
+		padding-bottom : 12 * @rhythm;
+
+			.share{
+				max-width: none;
+				/*.shareTable{
+					width: 100%;
+					display: table;
+					>div{
+						vertical-align: top;
+						display: table-cell;
+
+						&.forurl{
+							padding : 0 @rhythm;
+							padding-left: 0;
+							width: 562px;
+
+							.videoWrapper{
+								overflow: hidden;
+								border-radius: 5px;
+							}
+						}
+					}
+				}*/
+			}
+
+
+			/*.videoWrapper{
+	
+				>div{
+					max-width: 350px;
+					margin: 0 auto;
+				}
+
+			}*/
 	}
 }
 
@@ -1537,7 +1633,7 @@ html.stblack{
 	}
 }
 
-@media only screen and (max-width: 640px) {
+@media only screen and (max-width: 720px) {
 #post{
 
 	.nextpost{
@@ -1609,7 +1705,43 @@ html.stblack{
 		}
 	}
 
-	
+	&.videomainpost{
+
+		.cntswrk{
+			&.formeta{
+				margin-left: 0;
+				padding-left: 0;
+			}
+
+		}
+		&.verticalVideo {
+			.forurl{
+				.videoWrapper{
+					max-width: none;
+				}
+			}
+		}
+
+		
+
+		.share {
+
+			.anothercntswrk{
+				padding-right: @rhythm;
+			}
+			
+			.paddingWrapper{
+				margin-left: 0;
+				padding-left: 0;
+			}
+		}
+
+		#comments .post{
+			padding-left: @rhythm;
+			padding-right: @rhythm;
+		}
+		 
+	}
 
 	/*.shareTable{
 		display: block;

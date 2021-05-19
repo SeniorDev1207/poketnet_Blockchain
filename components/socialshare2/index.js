@@ -2,8 +2,6 @@ var socialshare2 = (function(){
 
 	var self = new nModule();
 
-	console.log('@@@@@@', localStorage.getItem('usertheme') === 'black' ? true : false)
-
 	var essenses = {};
 
 	var Essense = function(p){
@@ -37,9 +35,8 @@ var socialshare2 = (function(){
 				name: "Black Theme",
 				id: 'black',
 				type: "BOOLEAN",
-				value: localStorage.getItem('usertheme') === 'black' ? true : false
+				value: false
 			}),
-
 
 			autoplayvideo : new Parameter({
 				name: "Autoplay Video",
@@ -240,7 +237,7 @@ var socialshare2 = (function(){
 				p = hexEncode(JSON.stringify(p))
 
 				if(action && actionid){
-					return '<div id="pocketnet_'+seed+'"></div><script src="https://pocketnet.app/js/widgets.js"></script><script type="text/javascript">(new window.PNWIDGETS()).make('+seed+', "'+action+'", "'+actionid+'", "'+p+'")</script>'
+					return '<div id="pocketnet_'+seed+'"></div><script src="https://'+self.app.options.url+'/js/widgets.js"></script><script type="text/javascript">(new window.PNWIDGETS()).make('+seed+', "'+action+'", "'+actionid+'", "'+p+'")</script>'
 				}	
 				else{
 					return ''
@@ -639,12 +636,12 @@ var socialshare2 = (function(){
 
 						if(!pn) pn = 'index'
 
-						ed.url = 'https://pocketnet.app/' +  pn + window.location.search
+						ed.url = 'https://'+self.app.options.url+'/' +  pn + window.location.search
 						
 				    }
 				    else
 				    {
-				    	ed.url = 'https://pocketnet.app/' + self.app.nav.get.href() || 'index'
+				    	ed.url = 'https://'+self.app.options.url+'/' + self.app.nav.get.href() || 'index'
 				    }
 
 				}

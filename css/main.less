@@ -18,7 +18,7 @@ html {
     min-height: 100%;
     position: relative;
     overflow-y: scroll;
-    // background: #f6f6f6;
+    background: #f6f6f6;
     /*overflow-anchor: none;*/
 
     &.nooverflow{
@@ -37,6 +37,14 @@ html {
             width: 0!important
         }
             
+    }
+
+    &.testpocketnet{
+        .testpocketnetbg{
+            background-image: url(../img/testbg.png);
+            background-position: center center;
+            background-repeat: repeat-x repeat-y;
+        }
     }
 }
 
@@ -321,15 +329,14 @@ input[type="email"],
 input[type="password"],
 input[type="number"]
 {
-    // border: 0;
+    border: 0;
     background: #fff;
     color: @color-black;
     border-radius: 1px;
     padding: @rhythm;
-    border: 1px solid @color-gray-border;
-    // border-right: 0;
+    border: 1px solid @color-add;
+    
 }
-
 input[type="text"],
 input[type="email"],
 input[type="password"]{
@@ -411,11 +418,6 @@ button{
         }
     }
 
-    &.contrast{
-        background: @color-contrast;
-        border: 1px solid @color-contrast;
-    }
-
     &.shadowWhite{
         background: transparent;
         color : #fff;
@@ -449,8 +451,8 @@ button{
     }
 
     &.contrast{
-        background: @color-raspberry;
-        border: 1px solid @color-raspberry;
+        background: @color-contrast;
+        border: 1px solid @color-contrast;
         color: #fff;
 
         &:hover{
@@ -494,7 +496,6 @@ button{
 
 textarea{
     color: @color-black2;
-    border: 1px solid @color-gray-border;
 }
 
 .psselect,
@@ -2871,7 +2872,7 @@ input[type=radio].radio:checked + label {
 
     &.complete{
         >div{
-            background: @color-contrast!important;
+            background: #F0433A!important;
         }
     }
 }
@@ -4175,7 +4176,7 @@ input[type=radio].radio:checked + label {
 
         .vc_inputWrapper{
 
-            border : 1px solid  @color-gray-border;
+            border : 1px solid  @color-gray-light;
             border-right: 0;
             border-radius: 2px;
             border-top-right-radius: 0;
@@ -4183,7 +4184,7 @@ input[type=radio].radio:checked + label {
 
             input{
                 background: transparent;
-                border : 0;
+                border : 0!important;
                 width: 100%;
                 height: 100%;
 

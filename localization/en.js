@@ -367,7 +367,7 @@ ____loclib.noMoneyError  = "You can't doing actions with zero account balance";
 
 ____loclib.waitConf = "You have to wait for your previous transaction to clear in the blockchain";
 ____loclib.postWaitConf = "Post is waiting for a blockchain confirmation";
-
+____loclib.actionWaitConf = "Action is waiting for a blockchain confirmation";
 
 
 // notifications
@@ -567,7 +567,7 @@ ____loclib.e13133 = "Share"
 ____loclib.e13134 = "There aren't any results for this search string"
 ____loclib.e13135 = "User haven't private key"
 ____loclib.e13136 = "All Posts"
-____loclib.e13137 = "Your Pocket" // This is the equivalent of a ‘News feed’. Don’t change the word ‘Pocket’ however, it’s a feature of Pocketnet.
+____loclib.e13137 = "Your Pocket"
 ____loclib.e13138 = "Top posts"
 ____loclib["Top Posts Over"] = "Top Posts Over"
 ____loclib.topnext = "Next"
@@ -577,7 +577,7 @@ ____loclib.e13139 = "Search on Pocketnet"
 ____loclib.e13140 = "Search on"
 ____loclib.notifications = "Notifications"
 ____loclib.showall = "Show all"
-____loclib.e13141 = "You have no notifications"
+____loclib.e13141 = "You haven't notifications"
 
 ____loclib.recommendations = "Recommendations"
 ____loclib.e13142 = "I saved my key, do not remind me anymore"
@@ -608,7 +608,7 @@ ____loclib.repost = "Repost"
 ____loclib.e13160 = "Hello Pocketeers!"
 
 ____loclib.e13161 = "Add Tags For Your Post"
-____loclib.e13162 = "You can enter less than 5 tags"
+____loclib.e13162 = "You can enter less that 5 tags"
 ____loclib.e13163 = "There aren't changes in Post"
 ____loclib.e13164 = "Please add a few words to tell Pocketpeople about your link. What is it about? Why is it important? What is your opinion?"
 ____loclib.e13165 = 'Your link to video is invalid. Please load valid video URL.'
@@ -646,7 +646,7 @@ ____loclib.e13192 = "Level"
 ____loclib.e13193 = "BONUS"
 ____loclib.e13194 = "Reputation and Rewards"
 ____loclib.e13195 = "Limitations"
-____loclib.с= "It much take up"
+____loclib.e13196 = "It much take up"
 ____loclib.e13197 = "Recieve Pocketcoins"
 ____loclib.e13198 = "Approximate waiting time is"
 ____loclib.e13199 = "Join Pocketnet Now"
@@ -755,7 +755,7 @@ ____loclib.e13285 = 'Ask before post from telegram'
 ____loclib.e13286 = 'Ask before send to telegram'
 ____loclib.e13287 = "Send to telegram channel"
 ____loclib.video = "Video"
-____loclib.e13288 = "Main Widgets Page"
+____loclib.e13288 = "Main Page Vidgets"
 ____loclib.e13289 = "Integration with Telegram"
 
 ____loclib.system = "System"
@@ -853,12 +853,12 @@ ____loclib.e14020 = 'Yes! It is in the works 2-3 weeks as the beta test progress
 ____loclib.e14021 = 'Where do you save the video content?'
 ____loclib.e14022 = 'We are working on video storage, in the meantime you can share from Bitchute, Youtube, Vimeo and other video sources.'
 ____loclib.e14023 = 'Is there a mobile app?'
-____loclib.e14024 = 'Yes. But we strongly encourage everyone to also download the desktop app, since, unlike Android or iPhone app, it cannot be taken away from you by Google or Apple.'
+____loclib.e14024 = 'Mobile app is not ready yet. We plan it for July 2019. But we strongly encourage everyone to also download the desktop app, since, unlike Android or iPhone app, it cannot be taken away from you by Google or Apple.'
 ____loclib.e14025 = 'Can you tell me what is the limit for posting each day or hour?'
 ____loclib.e14026 = 'We do have some limitations, but after testing it we have increased our limits. At the outset you can make 15 posts and issue 100 ratings every 24 hours. Once your reputation grows above 50, you will be able to make up to 30 posts and 200 ratings every 24 hours.'
 ____loclib.e14027 = 'What is reputation and how is it calculated?'
 ____loclib.e14028 = 'Your reputation is the sum of your ratings calculated in the following way. Note, that users with reputation below 50 do not affect anyone`s reputation or coin winnings. They can rate the content, but it does not affect reputation.'
-____loclib.e14029 = 'So, if you have two 5 star ratings and one 1 star rating, the total will be'
+____loclib.e14029 = 'So, if you have two 5 start ratings and one 1 star rating, the total will be'
 ____loclib.e14030 = 'Is there a way to delete or edit a post?'
 ____loclib.e14031 = 'Not at this point, as it is baked into blockchain. However, we are working on a feature to create an overwrite transaction as well &#10075;hide&#10076; transaction, which would effectively translate to edit or delete.'
 ____loclib.e14032 = 'Is there a way to search for a user?'
@@ -994,3 +994,24 @@ ____loclib.period182day = "Half of year";
 
 ____loclib.shareBareLink = "Share Video Link";
 ____loclib.videoCopied = "Video link successfully copied to clipboard";
+
+____loclib.editWallpaper = "Change Wallpaper";
+____loclib.removeVideo = "Remove Video";
+
+____loclib.removeVideoDialog = 'Are you sure you want to delete this video?'
+
+____loclib.pterror_meta = 'Peertube: Undefined request'
+____loclib.pterror_host = 'Peertube: Peertube server not found'
+____loclib.pterror_link = 'Peertube: Unknown Peertube link'
+____loclib.pterror_removeerror = 'Peertube: Unable to remove video. Pleasy try again'
+____loclib.pterror_updateempty = 'Peertube: No changes found to update'
+____loclib.pterror_uploaderror = 'Peertube: Video has not been uploaded'
+____loclib.pterror_dailyquotalimit = 'Peertube: You have reached your video upload limit'
+____loclib.pterror_videoQuotaUsedDaily = 'Peertube: Failed to get channel information (quota)'
+____loclib.pterror_usersMe = 'Peertube: Failed to get channel information'
+____loclib.pterror_oauthClientsLocal = 'Peertube: Failed to get oAuth information from server'
+____loclib.pterror_pocketnetAuth = 'Peertube: Peertube-Pocketnet authorization failed'
+____loclib.pterror_getToken = 'Peertube: Unable to get Token'
+____loclib.pterror_videonotselected = 'Peertube: Video not Selected'
+
+

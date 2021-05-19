@@ -55,7 +55,7 @@ __map =  {
 		"js/satolist.js",
 		"js/messenger2/clientrtc.js",
 		"peertube/video-embed.bundle.js",
-		"js/peertube-master.js",
+		"js/peertube.js",
 		"js/app.js",
 		"js/main.js",
 	],
@@ -434,7 +434,7 @@ __map =  {
 
 		},
 
-		messenger : {
+		/*messenger : {
 			uri : "messenger",
 			href : "messenger",
 			add : {
@@ -446,7 +446,7 @@ __map =  {
 			},
 			
 			
-		},
+		},*/
 
 		uploadpeertube : {
 			uri : "uploadpeertube",
