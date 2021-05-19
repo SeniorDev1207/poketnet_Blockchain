@@ -367,7 +367,7 @@ ____loclib.noMoneyError  = "You can't doing actions with zero account balance";
 
 ____loclib.waitConf = "You have to wait for your previous transaction to clear in the blockchain";
 ____loclib.postWaitConf = "Post is waiting for a blockchain confirmation";
-____loclib.actionWaitConf = "Action is waiting for a blockchain confirmation";
+
 
 
 // notifications
@@ -994,24 +994,3 @@ ____loclib.period182day = "Half of year";
 
 ____loclib.shareBareLink = "Share Video Link";
 ____loclib.videoCopied = "Video link successfully copied to clipboard";
-
-____loclib.editWallpaper = "Change Wallpaper";
-____loclib.removeVideo = "Remove Video";
-
-____loclib.removeVideoDialog = 'Are you sure you want to delete this video?'
-
-____loclib.pterror_meta = 'Peertube: Undefined request'
-____loclib.pterror_host = 'Peertube: Peertube server not found'
-____loclib.pterror_link = 'Peertube: Unknown Peertube link'
-____loclib.pterror_removeerror = 'Peertube: Unable to remove video. Pleasy try again'
-____loclib.pterror_updateempty = 'Peertube: No changes found to update'
-____loclib.pterror_uploaderror = 'Peertube: Video has not been uploaded'
-____loclib.pterror_dailyquotalimit = 'Peertube: You have reached your video upload limit'
-____loclib.pterror_videoQuotaUsedDaily = 'Peertube: Failed to get channel information (quota)'
-____loclib.pterror_usersMe = 'Peertube: Failed to get channel information'
-____loclib.pterror_oauthClientsLocal = 'Peertube: Failed to get oAuth information from server'
-____loclib.pterror_pocketnetAuth = 'Peertube: Peertube-Pocketnet authorization failed'
-____loclib.pterror_getToken = 'Peertube: Unable to get Token'
-____loclib.pterror_videonotselected = 'Peertube: Video not Selected'
-
-

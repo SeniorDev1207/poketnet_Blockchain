@@ -86,8 +86,8 @@ var Cache = function(p){
             block : 0,
         },
 
-        peertubevideos: {
-            time : 2020,
+        listVideos: {
+            time : 120,
         },
 
         estimatesmartfee: {

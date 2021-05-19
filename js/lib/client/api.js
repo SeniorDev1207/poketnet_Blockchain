@@ -53,7 +53,7 @@ var ProxyRequest = function(app = {}){
         })
     }
 
-    var direct = function(url, data, p){
+    var direct = function(url, data){
         var controller = (new AbortController())
 
         var time = 30000
@@ -63,39 +63,33 @@ var ProxyRequest = function(app = {}){
         }
 
 
-        return timeout(time, directclear(url, data, controller.signal, p), controller)
+        return timeout(time, directclear(url, data, controller.signal), controller)
     }
 
-    var directclear = function(url, data, signal, p){
-
-        if(!p) p = {}
+    var directclear = function(url, data, signal){
 
         if(!data) 
             data = {}
 
-        var headers = _.extend({
-            'Accept': 'application/json',
-            'Content-Type': 'application/json;charset=utf-8'
-        }, p.headers || {})
-
-        /*if (data.bearer){
-            headers.Authorization = `Bearer ${data.bearer}`
-            delete data.bearer
-        }*/
-
         var er = false
+
+        
 
         return fetch(url, {
 
-            method: p.method || 'POST',
+            method: 'POST',
             mode: 'cors', 
-            headers: headers,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=utf-8'
+            },
             signal : signal,
             body: JSON.stringify(sign(data))
 
         }).then(r => {
 
             signal.dontabortable = true
+
 
             if(!r.ok){
                 er = true
@@ -105,13 +99,14 @@ var ProxyRequest = function(app = {}){
 
         }).then(result => {
 
+
             if (er){
                 return Promise.reject(result.error)
             }
 
             return Promise.resolve(result.data || {})
-
         }).catch(e => {
+
 
             if (e.code == 20){
                 return Promise.reject({
@@ -141,8 +136,8 @@ var ProxyRequest = function(app = {}){
 
     }
 
-    self.fetch = function(url, path, data, p){
-        return direct(url + '/' + path, data, p)
+    self.fetch = function(url, path, data){
+        return direct(url + '/' + path, data)
     }
 
     return self
@@ -500,7 +495,7 @@ var Api = function(app){
     var proxies = [];
     var nodes = []
 
-    var current = null
+    var current = null // 'localhost:8888:8088' //null;///'pocketnet.app:8899:8099'
     var useproxy = true;
     var inited = false;
     var fixednode = null;
@@ -642,7 +637,7 @@ var Api = function(app){
                     }).then(() => {
 
                         if(!current && proxies.length){
-                            current = 'pocketnet.app:8899:8099' //proxies[0].id ??
+                            current = 'pocketnet.app:8899:8099' //proxies[0].id
                         }
 
                         inited = true

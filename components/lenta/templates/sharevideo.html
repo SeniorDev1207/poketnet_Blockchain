@@ -170,17 +170,17 @@ var metadisplay = function(){ %>
 				<div class="paddingWrapper showMorePW">
 					<div class="showMore">
 						<div class="showmoretable table">
-							<div class="linecell">
+							<!-- <div class="linecell">
 								<div class="line"></div>
-							</div>
+							</div> -->
 							<div class="buttoncell">
 								<button>
 									<%=e('showmore')%>
 								</button>
 							</div>
-							<div class="linecell">
+							<!-- <div class="linecell">
 								<div class="line"></div>
-							</div>
+							</div> -->
 						</div>
 						
 
@@ -214,19 +214,11 @@ var metadisplay = function(){ %>
 
 } %>
 
-
 	<div class="work">
 
-		<% 
+		<div class="shareTable <%-subscribed%> <%-view%> <% if(emptywithrepost) { %> emptywithrepost <% } else { %> truerepost <% } %>" address="<%-share.address%>" stxid="<%-share.txid%>">
 
-			var info = app.platform.sdk.videos.storage[share.url || "undefined"] || {}
-			var aspectRatio = deep(info, 'data.aspectRatio') || 0
-
-		%>
-
-		<div class="shareTable  <%-subscribed%> <%-view%> <% if(emptywithrepost) { %> emptywithrepost <% } else { %> truerepost <% } %>" address="<%-share.address%>" stxid="<%-share.txid%>">
-
-			<div class="cntswrk forurl <%- (aspectRatio < 1) && (aspectRatio > 0) ? 'verticalVideo' : ''%>">
+			<div class="cntswrk forurl">
 
 				<% var a = ["u"] %>
 
@@ -374,15 +366,9 @@ var metadisplay = function(){ %>
 							<% } %>
 
 						</div>
-
-
-
-						
 					</div>
 
 				<% } %>
-
-
 
 			</div>
 		</div>
@@ -406,21 +392,17 @@ var metadisplay = function(){ %>
 		<i class="fa fa-times" aria-hidden="true"></i>
 	</div>
 
+	<% if(!emptywithrepost) {%>
 
-		<% if(!emptywithrepost) {%>
+		<% if(typeof repost == 'undefined' || !repost || fromempty) {%>
 
-			<% if(typeof repost == 'undefined' || !repost || fromempty) {%>
-	
-				<div class="commentsWrapperHb">
-					
-					<div class="commentsWrapper">
-					</div>
-	
+			<div class="commentsWrapperHb">
+				<div class="commentsWrapper">
 				</div>
-	
-			<% } %>
-	
+			</div>
+
 		<% } %>
 
+	<% } %>
 
 <% } %>

@@ -1,305 +1,428 @@
 var uploadpeertube = (function () {
-	var self = new nModule();
+  var self = new nModule();
 
-	var essenses = {};
+  var essenses = {};
 
-	var ed = {};
+  var ed = {};
 
-	var Essense = function (p) {
-		var primary = deep(p, 'history');
+  var Essense = function (p) {
+    var primary = deep(p, 'history');
 
-		var el;
+    var el;
 
-		var wnd;
-		var wndObj;
+    var wnd;
+    var wndObj;
 
-		var xhrRequest;
+    var xhrRequest;
 
-		var actions = {};
+    var actions = {};
 
-		var events = {};
+    var events = {};
 
-		var renders = {};
+    var renders = {};
 
-		var videoId, loadedImage = null;
+    var videoId, loadedImage = null;
 
-		var state = {
-			save: function () { },
-			load: function () { },
-		};
+    var state = {
+      save: function () {},
+      load: function () {},
+    };
 
 
-		var resizeImage = function (base64, clbk) {
+    var resizeImage = function(base64, clbk){
 
-			var images = [{
-				original: base64,
-				index: 0
-			}]
+      var images = [{
+        original : base64,
+        index : 0
+      }]
 
-			self.nav.api.load({
-				open: true,
-				id: 'imageGalleryEdit',
-				inWnd: true,
+      self.nav.api.load({
+        open : true,
+        id : 'imageGalleryEdit',
+        inWnd : true,
 
-				essenseData: {
-					edit: true,
-					initialValue: 0,
-					images: images,
-					apply: true,
-					crop: {
-						aspectRatio: 16 / 9,
-						style: 'apply',
-						autoCropArea: 0.9,
-					},
+        essenseData : {
+          edit : true,
+          initialValue : 0,
+          images : images,
+          apply : true,
+          crop : {
+            aspectRatio : 16 / 9,
+            style : 'apply',
+            autoCropArea : 0.9,
+          },
 
-					success: function (i, editclbk) {
+          success : function(i, editclbk){
 
-						resize(images[0].original, 1920, 1080, function (resized) {
-							var r = resized.split(',');
+            resize(images[0].original, 1920, 1080, function(resized){
+              var r = resized.split(',');
 
-							if (r[1]) {
+              if (r[1]){
 
-								editclbk()
+                editclbk()
 
-								if (clbk)
-									clbk(resized)
+                if (clbk)
+                    clbk(resized)
 
-							}
+              }
+              
+            })
 
-						})
+          }
+        }
+      })
+    }
 
-					}
-				}
-			})
-		}
+    var initEvents = function () {
+      el.videoInput.change(function (evt) {
+        var fileName = evt.target.files[0].name;
+        el.videoError.text(
+          fileName.slice(0, 20) + (fileName.length > 20 ? '...' : ''),
+        );
+        el.videoError.removeClass('error-message');
 
-		var initEvents = function () {
-			el.videoInput.change(function (evt) {
-				var fileName = evt.target.files[0].name;
+        var filesWrittenObject = {};
 
-				el.videoError.text(
-					fileName.slice(0, 20) + (fileName.length > 20 ? '...' : ''),
-				);
+        var videoInputFile = el.videoInput.prop('files');
 
-				el.videoError.removeClass('error-message');
-				var videoInputFile = el.videoInput.prop('files');
-				var videoName = wnd.find('.upload-video-name').val();
-				var nameError = wnd.find('.name-type-error');
+        var videoWallpaperFile = el.videoWallpaper.prop('files');
+        // var wallpaperError = wnd.find('.wallpaper-type-error');
 
-				nameError.text('');
+        var videoName = wnd.find('.upload-video-name').val();
+        var nameError = wnd.find('.name-type-error');
 
-				// validation
-				if (!videoInputFile[0]) {
-					el.videoError.text('No video selected');
-					el.videoError.addClass('error-message');
+        nameError.text('');
 
-					return;
-				}
-				if (!videoInputFile[0].type.includes('video')) {
-					el.videoError.text('Incorrect video format');
-					el.videoError.addClass('error-message');
+        // validation
+        if (!videoInputFile[0]) {
+          el.videoError.text('No video selected');
+          el.videoError.addClass('error-message');
 
-					return;
-				}
+          return;
+        }
+        if (!videoInputFile[0].type.includes('video')) {
+          el.videoError.text('Incorrect video format');
+          el.videoError.addClass('error-message');
 
-				ed.uploadInProgress = true;
-				el.header.removeClass('activeOnRolled');
-				el.uploadButton.prop('disabled', true);
-				el.uploadProgress.removeClass('hidden');
+          return;
+        }
 
-				var data = {
-					video : videoInputFile[0]
-				}
+        filesWrittenObject.video = videoInputFile[0];
 
-				if (videoName) {
-					data.name = videoName;
-				}
+        if (videoWallpaperFile[0]) {
+          if (
+            videoWallpaperFile[0].type !== 'image/jpeg' &&
+            videoWallpaperFile[0].type !== 'image/jpg'
+          ) {
+            el.wallpaperError.text(
+              'Incorrect wallpaper format. Supported: .jpg, .jpeg',
+            );
+            el.wallpaperError.addClass('error-message');
 
-				var options = {}
+            return;
+          }
 
-				options.progress = function(percentComplete){
-					var formattedProgress = percentComplete.toFixed(2);
+          filesWrittenObject.image = loadedImage.resized || videoWallpaperFile[0];
+        }
+
+        if (videoName) {
+          filesWrittenObject.name = videoName;
+        }
+
+        filesWrittenObject.uploadFunction = function (percentComplete) {
+          var formattedProgress = percentComplete.toFixed(2);
 
-					el.uploadProgress
-						.find('.upload-progress-bar')
-						.css('width', formattedProgress + '%');
-					el.uploadProgress
-						.find('.upload-progress-percentage')
-						.text(formattedProgress + '%');
-				}
+          el.uploadProgress
+            .find('.upload-progress-bar')
+            .css('width', formattedProgress + '%');
+          el.uploadProgress
+            .find('.upload-progress-percentage')
+            .text(formattedProgress + '%');
+        };
 
-				options.cancel = function (cancel) {
+        filesWrittenObject.successFunction = function (response) {
+          el.uploadButton.prop('disabled', false);
+          el.header.addClass('activeOnRolled');
+          el.uploadProgress.addClass('hidden');
+
+          ed.uploadInProgress = false;
+
+          if (response.error) {
+            el.videoInput.val('');
+            el.wallpaperError.text('');
+
+            if (axios.isCancel(response.error)) {
+              sitemessage('Uploading canceled');              
+            } else {
+              var message = findResponseError(response);
+
+              sitemessage(message || 'Uploading error');
+            }
 
-					const cancelCloseFunction = () => {
-						if (typeof cancel === 'function') cancel();
+            return;
+          }
 
-						wndObj.close();
-					};
+          videoId = response.split('/').pop();
 
-					ed.cancelCloseFunction = cancelCloseFunction;
+          actions.added(response, wnd.find('.upload-video-name').val());
+        };
 
-					el.cancelButton.on('click', () => {
-						el.uploadProgress.addClass('hidden');
-						el.cancelButton.addClass('hidden');
-						ed.uploadInProgress = false;
-						cancel();
+        filesWrittenObject.cancelClbk = function (cancel) {
+          const cancelCloseFunction = () => {
+            if (typeof cancel === 'function') cancel();
+            wndObj.close();
+          };
 
-					});
+          ed.cancelCloseFunction = cancelCloseFunction;
 
-					el.cancelButton.removeClass('hidden');
-				};
+          el.cancelButton.on('click', () => {
+            el.uploadProgress.addClass('hidden');
+            el.cancelButton.addClass('hidden');
+            ed.uploadInProgress = false;
+            cancel();
+          });
+          el.cancelButton.removeClass('hidden');
+        };
 
-				self.app.peertubeHandler.api.videos.upload(data, options).then(response => {
+        ed.uploadInProgress = true;
 
-					el.uploadButton.prop('disabled', false);
-					el.header.addClass('activeOnRolled');
-					el.uploadProgress.addClass('hidden');
+        el.header.removeClass('activeOnRolled');
 
-					ed.uploadInProgress = false;
+        el.uploadButton.prop('disabled', true);
+        el.uploadProgress.removeClass('hidden');
 
-					if (response.error) {
-						return;
-					}
+        self.app.peertubeHandler.uploadVideo(filesWrittenObject);
 
-					videoId = response.split('/').pop();
+      });
 
-					actions.added(response, wnd.find('.upload-video-name').val());
-					wndObj.close();
+      el.videoWallpaper.change(async function (evt) {
+        var fileName = evt.target.files[0].name;
 
-				}).catch(e => {
+        loadedImage = {
+          original: evt.target.files[0],
+        }
 
-					console.log("ERROR", e)
+        var fileBase64 = await toDataURL(evt.target.files[0]);
 
-					el.videoInput.val('');
-					el.wallpaperError.text('');
+        resizeImage(fileBase64, (img) => {
+          loadedImage.resized = dataURLtoFile(img);
+        });
 
-					if (e.cancel) {
-						sitemessage('Uploading canceled');
-					} 
-					else {
-						var message = e.text || findResponseError(e) || 'Uploading error';
+        el.wallpaperError.text(
+          fileName.slice(0, 20) + (fileName.length > 20 ? '...' : ''),
+        );
+        el.wallpaperError.removeClass('error-message');
+      });
 
-						sitemessage(message);
-					}
+      el.importUrl.change(() => {
+        if (el.importUrl.val()) {
+          el.videoLabel.addClass('disabledInput');
+          el.videoInput.prop('disabled', true);
 
-				})
+          el.wallpaperLabel.addClass('disabledInput');
+          el.videoWallpaper.prop('disabled', true);
+        } else {
+          el.videoLabel.removeClass('disabledInput');
+          el.videoInput.prop('disabled', false);
 
-				console.log(data, options)
+          el.wallpaperLabel.removeClass('disabledInput');
+          el.videoWallpaper.prop('disabled', false);
+        }
+      });
 
-			
+      el.uploadButton.on('click', () => {
+        
+        var filesWrittenObject = {};
 
-			});
+        if (el.importUrl.val()) {
+          filesWrittenObject.uploadFunction = function (percentComplete) {
+            var formattedProgress = percentComplete.toFixed(2);
 
+            el.uploadProgress
+              .find('.upload-progress-bar')
+              .css('width', formattedProgress + '%');
+            el.uploadProgress
+              .find('.upload-progress-percentage')
+              .text(formattedProgress + '%');
+          };
 
-			el.importUrl.change(() => {
-				if (el.importUrl.val()) {
-					el.videoLabel.addClass('disabledInput');
-					el.videoInput.prop('disabled', true);
+          filesWrittenObject.successFunction = function (response) {
+            ed.uploadInProgress = false;
 
-					el.wallpaperLabel.addClass('disabledInput');
-					el.videoWallpaper.prop('disabled', true);
-				} else {
-					el.videoLabel.removeClass('disabledInput');
-					el.videoInput.prop('disabled', false);
+            el.uploadButton.prop('disabled', false);
+            el.header.addClass('activeOnRolled');
+            el.uploadProgress.addClass('hidden');
 
-					el.wallpaperLabel.removeClass('disabledInput');
-					el.videoWallpaper.prop('disabled', false);
-				}
-			});
+            if (response.error) {
+              var error = deep(response, 'error.responseJSON.errors') || {};
 
-		};
+              var message = (Object.values(error)[0] || {}).msg;
 
-		return {
-			primary: primary,
+              sitemessage(message || 'Uploading error');
 
-			getdata: function (clbk, p) {
-				ed = p.settings.essenseData;
+              wndObj.close();
 
-				actions = ed.actions;
+              return;
+            }
 
-				var data = {};
+            actions.added(`${response}?imported=true`, filesWrittenObject.name);
+            wndObj.close();
+          };
 
-				clbk(data);
-			},
+          filesWrittenObject.url = el.importUrl.val();
 
-			destroy: function () {
-				el = {};
-			},
+          ed.uploadInProgress = true;
+          el.header.removeClass('activeOnRolled');
+          el.uploadButton.prop('disabled', true);
 
-			init: function (p) {
-				state.load();
+          wndObj.hide();
+          el.uploadProgress.removeClass('hidden');
+          self.app.peertubeHandler.importVideo(filesWrittenObject);
 
-				el = {};
-				el.c = p.el.find('#' + self.map.id);
-				el.videoInput = el.c.find('.upload-video-file');
-				el.videoWallpaper = el.c.find('.upload-video-wallpaper');
+          return;
+        }
 
-				el.videoError = el.c.find('.file-type-error');
-				el.wallpaperError = el.c.find('.wallpaper-type-error');
+        if (!videoId) {
+          return sitemessage('Select a video file')
+        }
 
-				el.videoLabel = el.c.find('.upload-video-file-label');
-				el.wallpaperLabel = el.c.find('.upload-video-wallpaper-label');
+        var videoWallpaperFile = el.videoWallpaper.prop('files');
 
-				el.uploadProgress = el.c.find('.upload-progress-container');
-				el.importUrl = el.c.find('.import-video-link');
+        var videoName = wnd.find('.upload-video-name').val();
 
-				el.uploadButton = el.c.find('.uploadButton');
-				el.cancelButton = el.c.find('.cancelButton');
+        if (videoWallpaperFile[0]) {
+          if (
+            videoWallpaperFile[0].type !== 'image/jpeg' &&
+            videoWallpaperFile[0].type !== 'image/jpg'
+          ) {
+            el.wallpaperError.text(
+              'Incorrect wallpaper format. Supported: .jpg, .jpeg',
+            );
+            el.wallpaperError.addClass('error-message');
 
-				el.header = el.c.find('.upload-header');
+            return;
+          }
 
-				initEvents();
+          filesWrittenObject.thumbnailfile = loadedImage.resized || videoWallpaperFile[0];
+        }
 
-				p.clbk(null, p);
-			},
+        if (videoName) {
+          filesWrittenObject.name = videoName;
+        }
 
-			wnd: {
-				header: '',
-				close: function () {
-					if (ed.closeClbk) {
-						ed.closeClbk();
-					}
-				},
-				postRender: function (_wnd, _wndObj, clbk) {
-					wndObj = _wndObj;
-					wnd = _wnd;
+        globalpreloader(true);
 
-					if (clbk) {
-						clbk();
-					}
-				},
-				offScroll: true,
-				noInnerScroll: true,
-				class: 'uploadpeertube',
-				allowHide: true,
-				noCloseButton: true,
-				noButtons: true,
+        self.app.peertubeHandler
+          .updateVideo(videoId, filesWrittenObject)
+          .then(() => {
+            wndObj.close();
+            globalpreloader(false);
+          })
+          .catch((err) => {
+            if (axios.isCancel(err)) {
+              sitemessage('Uploading canceled');
+            } else {
+              var message = findResponseError({ error: err });
 
-				swipeClose: true,
-				swipeCloseDir: 'right',
-				swipeMintrueshold: 30,
-			},
-		};
-	};
+              sitemessage(message || 'Uploading error');
+            }
 
-	self.run = function (p) {
-		var essense = self.addEssense(essenses, Essense, p);
+            globalpreloader(false);
+          });
+      });
+    };
 
-		self.init(essense, p);
-	};
+    return {
+      primary: primary,
 
-	self.stop = function () {
-		_.each(essenses, function (essense) {
-			essense.destroy();
-		});
-	};
+      getdata: function (clbk, p) {
+        ed = p.settings.essenseData;
 
-	return self;
+        actions = ed.actions;
+
+        var data = {};
+
+        clbk(data);
+      },
+
+      destroy: function () {
+        el = {};
+      },
+
+      init: function (p) {
+        state.load();
+
+        el = {};
+        el.c = p.el.find('#' + self.map.id);
+        el.videoInput = el.c.find('.upload-video-file');
+        el.videoWallpaper = el.c.find('.upload-video-wallpaper');
+
+        el.videoError = el.c.find('.file-type-error');
+        el.wallpaperError = el.c.find('.wallpaper-type-error');
+
+        el.videoLabel = el.c.find('.upload-video-file-label');
+        el.wallpaperLabel = el.c.find('.upload-video-wallpaper-label');
+
+        el.uploadProgress = el.c.find('.upload-progress-container');
+        el.importUrl = el.c.find('.import-video-link');
+
+        el.uploadButton = el.c.find('.uploadButton');
+        el.cancelButton = el.c.find('.cancelButton');
+
+        el.header = el.c.find('.upload-header');
+
+        initEvents();
+
+        p.clbk(null, p);
+      },
+
+      wnd: {
+        header: '',
+        close: function () {
+          if (ed.closeClbk) {
+            ed.closeClbk();
+          }
+        },
+        postRender: function (_wnd, _wndObj, clbk) {
+          wndObj = _wndObj;
+          wnd = _wnd;
+
+          if (clbk) {
+            clbk();
+          }
+        },
+        offScroll: true,
+        noInnerScroll: true,
+        class: 'uploadpeertube',
+        allowHide: true,
+        noCloseButton: true,
+        noButtons: true,
+
+        swipeClose: true,
+        swipeCloseDir: 'right',
+        swipeMintrueshold: 30,
+      },
+    };
+  };
+
+  self.run = function (p) {
+    var essense = self.addEssense(essenses, Essense, p);
+
+    self.init(essense, p);
+  };
+
+  self.stop = function () {
+    _.each(essenses, function (essense) {
+      essense.destroy();
+    });
+  };
+
+  return self;
 })();
 
 if (typeof module != 'undefined') {
-	module.exports = uploadpeertube;
+  module.exports = uploadpeertube;
 } else {
-	app.modules.uploadpeertube = {};
-	app.modules.uploadpeertube.module = uploadpeertube;
+  app.modules.uploadpeertube = {};
+  app.modules.uploadpeertube.module = uploadpeertube;
 }

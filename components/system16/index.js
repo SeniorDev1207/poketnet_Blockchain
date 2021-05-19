@@ -32,10 +32,6 @@ var system16 = (function(){
 				wallets : {
 					type : 'distribution'
 				},
-
-				peertube : {
-					type : 'allcount'
-				},
 			}
 		}
 
@@ -461,7 +457,6 @@ var system16 = (function(){
 					if (el.c){
 						renders.nodecontentstate(el.c)
 						renders.nodescontenttable(el.c)
-						renders.peertubeinstancestable(el.c)
 						renders.webadminscontent(el.c)
 						renders.webdistributionwallets(el.c)
 						renders.webserverstatus(el.c)
@@ -768,14 +763,11 @@ var system16 = (function(){
 					var scenarios = [{
 						name : "Pageload",
 						key : 'pageload'
-					}, {
-						name : "Limits",
-						key : 'limits'
 					}]
 
 					var items = _.map(scenarios, function(scenario){
 						return {
-							text : scenario.name,
+							text : "Pageload",
 							action : function(clbk){
 								proxy.fetch('nodes/test', {
 									scenario : scenario.key,
@@ -924,39 +916,6 @@ var system16 = (function(){
 							path : "statistic.success",
 							type: 'areaspline',
 							id : 'cp'
-						}
-					]
-				}
-			},
-
-			peertube : {
-				responsetime : {
-					caption : "Instance Median Response Time",
-
-					series : [
-						{
-							name : "Median Response Time",
-							path : "stats.averageTime",
-							id : 'sa'
-						}
-					]
-				},
-				
-				allcount : {
-					caption : "Count of requestes",
-
-					series : [
-						{
-							name : "Count of requestes",
-							path : "stats.count",
-							type : 'spline',
-							id : 'sc'
-						},
-						{
-							name : "Success Count",
-							path : "stats.success",
-							type: 'areaspline',
-							id : 'ss'
 						}
 					]
 				}
@@ -1171,51 +1130,6 @@ var system16 = (function(){
 						
 					})
 				}
-				
-
-				return {
-					meta : lmeta,
-					series : series
-				}
-			},
-
-			peertube : function(data){
-
-				var subtype = settings.charts.peertube.type
-
-				var meta = cpsub.peertube[subtype]
-
-				var lmeta = {
-					type : 'spline',
-					xtype : 'datetime',
-					caption : meta.caption
-				}
-
-
-				var series = {}
-				var i = 0
-
-				if (info.peertube){
-					_.each(info.peertube, function(instance, key){
-
-						_.each(meta.series, function(smeta){
-							series[smeta.id + key] = {
-	
-								name : smeta.name + ": " + key,
-								path : "peertube.'" + key + "'." + smeta.path,
-								color : colors[ i % colors.length ],
-								type : smeta.type
-		
-							}
-		
-							i++
-						})
-	
-						
-					})
-				}
-
-				console.log('series', series)
 				
 
 				return {
@@ -2107,7 +2021,6 @@ var system16 = (function(){
 	
 						renders.servercontent(p.el)
 						renders.nodescontent(p.el)
-						renders.peertubecontent(el.c)
 						renders.nodecontent(p.el)
 						renders.bots(p.el)
 	
@@ -2697,65 +2610,6 @@ var system16 = (function(){
 				})
 				
 			},
-
-
-			peertubecontent : function(elc, clbk){
-
-				if(!info){
-					if(clbk) clbk()
-
-					return
-				}
-
-				self.shell({
-					inner : html,
-					name : 'peertubecontent',
-					data : {
-						info : info,
-						proxy : proxy,
-						admin : actions.admin(),
-						
-					},
-
-					el : elc.find('.peertubeWrapper')
-
-				},
-				function(){
-
-
-					renders.peertubeinstancestable(elc)
-
-					if (clbk)
-						clbk()
-				})
-			},
-			peertubeinstancestable : function(elc, clbk){
-
-				console.log("info", info)
-
-				self.shell({
-					inner : html,
-					name : 'peertubeinstancestable',
-					data : {
-						info : info,
-						proxy : proxy,
-						admin : actions.admin(),
-						fixedinstance : null,
-						currentinstance : null
-					},
-
-					el : elc.find('.peertubeWrapper .instances')
-
-				},
-				function(p){
-
-
-					if (clbk)
-						clbk()
-				})
-			},
-
-
 			nodescontent : function(elc, clbk){
 
 				if(!info){
@@ -2877,7 +2731,7 @@ var system16 = (function(){
 
 					p.el.find('.name').on('click', function(){
 
-						
+						return
 
 						var key = $(this).closest('.node').attr('node')
 
@@ -2912,7 +2766,6 @@ var system16 = (function(){
 						clbk()
 				})
 			},
-
 			nodecontent : function(elc, clbk){
 
 				if(actions.admin()){
@@ -3318,7 +3171,6 @@ var system16 = (function(){
 				renders.nodecontentmanage(el.c)
 				renders.nodecontentstate(el.c)
 				renders.nodescontenttable(el.c)
-				renders.peertubeinstancestable(el.c)
 				renders.webadminscontent(el.c)
 				renders.webdistributionwallets(el.c)
 				renders.webserveradmin(el.c)
@@ -3330,7 +3182,7 @@ var system16 = (function(){
 					chart.make('server', stats, null, update)
 					chart.make('nodes', stats, null, update)
 					chart.make('wallets', stats, null,  update)
-					chart.make('peertube', stats, null, update)
+
 					
 				}
 

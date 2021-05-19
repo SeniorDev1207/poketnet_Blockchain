@@ -22,15 +22,13 @@ Platform = function (app, listofnodes) {
         'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y' : true,
         'PCVt7H4vgjBDxifLz3uokbc1tD3MZwWwQh' : true,
         'PJ3nv2jGyW2onqZVDKJf9TmfuLGpmkSK2X' : true,
-        'PLH8biT5rMdvE1zXFhsvNkzphVRK6cNM7p' : true,
-        'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux' : true,
-        'PXUYsENSv6QkQZEdiJTsfJmu3XxZvVmVfQ' : true
+        'PLH8biT5rMdvE1zXFhsvNkzphVRK6cNM7p' : true
 
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
     
 
-    self.testaddresses = ['PHr8g7b4gJdSkiJFmQeoND2X8tRUKvB2An', 'PEwL86dE6MuKKaGPxooGyFCKocUP8B6jw8', 'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2', 'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y', 'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux', 'PSWxzYS4Y37tmnZ9oxKfm9ffVqLRBbFbjH', 'PHvQEGtYYpDpmHYuUwA4gF4ey1YitF2NRW', 'PA6biduJbWcQ97n5jz2jUqWHtenLpWTH7s', 'PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PQsvaeBWB5WX3BsdWcNFmP1wy61P3gpRKf', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PHNKYionoaBRVudUhqWzNrJyqxVxaDYqT7', 'PVCUYATJxi4yNM2sqThPxd3P6jJDrvuWJs', 'PLJvEixJkj85C4jHM3mt5u1ATwZE9zgFaA', 'PShAyCoM32HEEHqrdEYvQ1wRjeqZsmWqDa', 'PKLWLXN6kwmdkbYG981gyPj5jb7bgzhstj', 'PHdW4pwWbFdoofVhSEfPSHgradmrvZdbE5', 'P9jDYvkXHw4FtRZof661ddzmMyFRqGUjwN', 'P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PSRFH9Ctq4wV1THes39izo3J4dHybLyT32', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
+    self.testaddresses = ['PEwL86dE6MuKKaGPxooGyFCKocUP8B6jw8', 'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2', 'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y', 'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux', 'PSWxzYS4Y37tmnZ9oxKfm9ffVqLRBbFbjH', 'PHvQEGtYYpDpmHYuUwA4gF4ey1YitF2NRW', 'PA6biduJbWcQ97n5jz2jUqWHtenLpWTH7s', 'PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PQsvaeBWB5WX3BsdWcNFmP1wy61P3gpRKf', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PHNKYionoaBRVudUhqWzNrJyqxVxaDYqT7', 'PVCUYATJxi4yNM2sqThPxd3P6jJDrvuWJs', 'PLJvEixJkj85C4jHM3mt5u1ATwZE9zgFaA', 'PShAyCoM32HEEHqrdEYvQ1wRjeqZsmWqDa', 'PKLWLXN6kwmdkbYG981gyPj5jb7bgzhstj', 'PHdW4pwWbFdoofVhSEfPSHgradmrvZdbE5', 'P9jDYvkXHw4FtRZof661ddzmMyFRqGUjwN', 'P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PSRFH9Ctq4wV1THes39izo3J4dHybLyT32', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
 
     self.testchataddresses = ['P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
 
@@ -39,12 +37,7 @@ Platform = function (app, listofnodes) {
     self.online = undefined;
     self.avblocktime = 45;
     self.repost = true;
-    self.videoenabled = true;
-
-
-    //////////////
-    self.test = false;
-    //////////////
+    self.videoenabled = false;
 
     var onlinetnterval;
     var unspentoptimizationInterval = null;
@@ -64,15 +57,6 @@ Platform = function (app, listofnodes) {
             staking : true
         }
     }
-
-    /*self.network = function(){
-        if(self.test){
-            return bitcoin.networks.testnet
-        }
-        else{
-            return bitcoin.networks.bitcoin
-        }
-    }*/
 
     self.mp = {
         dollars: function (value, p) {
@@ -1797,7 +1781,6 @@ Platform = function (app, listofnodes) {
                             repost: p.repost,
                             level: p.level,
                             fromempty: p.fromempty,
-                            nocommentcaption : p.nocommentcaption,
                             eid: id + (p.eid || ""),
                             comments : p.comments,
                             video : p.video,
@@ -2671,6 +2654,7 @@ Platform = function (app, listofnodes) {
             },
 
             htls : function(id){
+                console.log(' self.app.platform.ui.wallet.sen')
                 self.app.platform.ui.wallet.send({id : id}, function(){
 					
 				})
@@ -2684,7 +2668,6 @@ Platform = function (app, listofnodes) {
                 var temp = _.find(self.sdk.node.transactions.temp.share, function (s) {
                     return s.txid == id
                 })
-                
                 if (temp){
                     share = new pShare();
                     share._import(temp);
@@ -6391,8 +6374,7 @@ Platform = function (app, listofnodes) {
                                 allunspents.push(unspent)
                         })
                     })
-
-
+                    
                     var totalInWallet = _.reduce(allunspents, function (m, u) {
                         return m + Number(u.amount)
                     }, 0)
@@ -6527,8 +6509,10 @@ Platform = function (app, listofnodes) {
                     }
 
                     else{
+                        
+
                         if (clbk)
-                            clbk(null, txid)
+                            clbk(null, d)
                     }
                 })  
             },  
@@ -6537,10 +6521,56 @@ Platform = function (app, listofnodes) {
 
                 self.sdk.wallet.txbaseFeesMeta(
                     address, outputs, keyPair, feerate, 
-                    self.sdk.wallet.txbase, 
+                    self.app.platform.sdk.node.transactions.create.wallet, 
                 clbk)
-               
+
+               /* self.sdk.wallet.txbase([address], _.clone(outputs), null, null, function (err, inputs, _outputs) {
+
+                    if (err) {
+                        if (clbk)
+                            clbk(err)
+                    }
+
+                    else {
+                        var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
+                        var totalFees = Math.min(tx.virtualSize() * feerate, 0.0999);
+
+                        self.app.platform.sdk.wallet.txbase([address], _.clone(outputs), totalFees, null, function (err, inputs, _outputs) {
+
+                            if (err) {
+                                if (clbk)
+                                    clbk(err)
+                            }
+                            else {
+                                var tx = self.app.platform.sdk.node.transactions.create.wallet(inputs, _outputs, keyPair)
+
+                                self.app.platform.sdk.node.transactions.send(tx, function (d, err) {
+
+                                    if (err) {
+                                        if (clbk)
+                                            clbk(err)
+                                    }
+
+                                    else {
+                                        var ids = _.map(inputs, function (i) {
+                                            return {
+                                                txid: i.txId,
+                                                vout: i.vout
+                                            }
+                                        })
+
+                                        self.app.platform.sdk.node.transactions.clearUnspents(ids)
+
+                                        if (clbk)
+                                            clbk(null, d, inputs, _outputs)
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }, true)*/
             },
+
 
             embed: function (outputs, embdedtext) {
                 if (embdedtext) {
@@ -6554,6 +6584,7 @@ Platform = function (app, listofnodes) {
                         address: embed.output,
                         amount: 0
                     })
+
 
                 }
             },
@@ -8538,7 +8569,9 @@ Platform = function (app, listofnodes) {
 
                 if (ao) address = ao.address
 
-                self.app.api.rpc('getlastcomments', ['7', '', self.app.localization.key]).then(d => {
+                self.app.api.rpc('getlastcomments', ['7', '', self.app.localization.key], {
+                    proxy : 'pocketnet.app:8899:8099'
+                }).then(d => {
 
                     d = _.filter(d, function (d) {
                         return !d.deleted
@@ -9842,7 +9875,7 @@ Platform = function (app, listofnodes) {
                             p.address = self.sdk.address.pnet().address;
                         }
 
-                        var key = p.count + (p.address || "") + "_" + (p.lang || "") + "_" + /*(p.height || "")  +*/ "_" + (p.tagsfilter.join(',')) + "_" + (p.begin || "") + (p.video ? "video" : '')
+                        var key = p.count + (p.address || "") + "_" + (p.lang || "") + "_" + (p.height || "")  + "_" + (p.tagsfilter.join(',')) + "_" + (p.begin || "") + (p.video ? "video" : '')
 
                         var storage = self.sdk.node.shares.storage;
                         var s = self.sdk.node.shares;
@@ -9871,8 +9904,6 @@ Platform = function (app, listofnodes) {
                         }
                         else {
                             if (!storage[key] || cache == 'clear') storage[key] = [];
-
-          
 
                             if (!p.txid) {
                                 if (storage[key].length) {
@@ -9903,8 +9934,6 @@ Platform = function (app, listofnodes) {
                                 p.tagsfilter = ['video']
                             }
 
-
-                            console.log('cache', cache, p)
                             ////
 
                             var parameters = [Number(p.height), p.txid, p.count, p.lang, p.tagsfilter, p.video && self.videoenabled ? 'video' : ''];
@@ -9923,7 +9952,6 @@ Platform = function (app, listofnodes) {
                                 p.blocknumber = blocknumber
 
                                 if (shares) {
-
 
                                     self.sdk.node.shares.loadvideoinfoifneed(shares, p.video, function(){
 
@@ -10357,6 +10385,11 @@ Platform = function (app, listofnodes) {
 
                     /*return*/
 
+
+                    if (dbg)
+                        console.log('txid, vout', txid, vout)
+
+
                     _.each(t, function (ts, w) {
                         
 
@@ -10602,6 +10635,8 @@ Platform = function (app, listofnodes) {
 
                             if (r) {
 
+                                console.log("BLOCK", r)
+
                                 r.block = true
 
                             }
@@ -10626,6 +10661,8 @@ Platform = function (app, listofnodes) {
                             })
 
                             if (r) {
+
+                                console.log("UNBLOCK", r)
 
                                 delete r.block
 
@@ -10939,7 +10976,6 @@ Platform = function (app, listofnodes) {
                                         clbk(a)
         
                                 }).catch(e => {
-
                                     if (!s.unspent)
                                         s.unspent = {};
 
@@ -11144,54 +11180,28 @@ Platform = function (app, listofnodes) {
 
                             //lock = 10
 
-                            var time = 965504 + 200 //item.time  self.currentBlock + lock
+                            var time = 1161545 + 200 //item.time  self.currentBlock + lock
 
                             var address = item.address
 
-                            var {txb, payment} = self.sdk.node.transactions.htls.create(inputs, dummyoutputs, id, address, amount, time)
+                            var {txb, payment, hash} = self.sdk.node.transactions.htls.create(inputs, dummyoutputs, id, address, amount, time)
 
                             if (clbk) clbk(txb, {
                                 address,
                                 time,
-                                //lock,
+                                lock,
                                 payment,
-                                htlc : payment.htlc,
-                                //hash,
+                                hash,
                                 tdif : time - self.currentBlock
                             })
 
                         })
                     },
-
                     create : function(inputs, dummyoutputs, id, reciever, amount, time){
-
-                        var multisha = function(str, count){
-
-                            if(!count) count = 100
-                    
-                            var h = Buffer.from(str)
-                    
-                            for (var i = 0; i < count; i++){
-                                h = bitcoin.crypto.sha256(h)
-                            }
-                    
-                            return h.toString('hex')
-                        }
-                    
-                        var createhash = function(key, seed){
-                    
-                            var str = multisha(multisha(key) + '_' + seed, 10)
-                    
-                            return str
-                        }
-                    
-                        var crrc = function(key, txid){
-                            return createhash(key, txid)
-                        }
 
                         var keyPair = self.app.user.keys()
                         var privatekey = keyPair.privateKey
-                        var secret = crrc(privatekey.toString('hex'), id)
+                        var secret = self.htls.hash(privatekey.toString('hex'), id)
 
                         var payment = bitcoin.payments.htlc({
                             htlc : {
@@ -11202,82 +11212,25 @@ Platform = function (app, listofnodes) {
                             }
                         });
 
-                        var htlcout = _.find(dummyoutputs, function(dout){
-                            return dout.key == 'htlc'
-                        })
-
-                        if(!htlcout){
-                            return Promise.reject('htlcout')
-                        }
+                        /*var payment = self.htls.createPayment(privatekey.toString('hex'), id, time, reciever, sender)
+                        var hash = self.htls.hash(privatekey.toString('hex'), id)*/
                         
+                        console.log('payment', payment)
+
                         var outputs = [{ 
                             scriptPubKey : payment.output, 
-                            amount : htlcout.amount
+                            amount 
                         }]
 
                         var indexes = {}
 
                         _.each(dummyoutputs, function(dop){
-                            if(dop.address) {
-                                indexes[outputs.push(dop) - 1] = true
-
-                                //dop.amount = dop.amount - 0.02
-                            }
+                            if(dop.address) indexes[outputs.push(dop) - 1] = true
                         })
-
-                        console.log("htlc",{
-                            secret,
-                            lock : time,
-                            reciever,
-                            sender : self.sdk.address.pnetsimple(keyPair.publicKey).address
-                        })
-                        
 
                         var txb = self.sdk.node.transactions.create.wallet(inputs, outputs, null, true)
 
                         return {txb, payment, secret}
-                    },
-
-                    withdrawal : function(prevoutputs, destination, fees, htlc){
-                        if(!htlc) htlc = {}
-
-                        var total = 0
-
-                        if(!fees) fees = 0
-
-                        var inputs = _.map(prevoutputs, function(output){
-
-                            total += output.value
-
-                            return {
-                                vout : output.n,
-                                scriptPubKey : output.scriptPubKey.hex,
-                                amount : output.value,
-                                type : output.scriptPubKey.type,
-                                txid : output.txid
-                            }
-                        })
-
-                        var outputs = [{
-                            address : destination,
-                            amount : total - fees
-                        }]
-
-                        var tx = self.sdk.node.transactions.create.wallet(inputs, outputs, null, false, htlc)
-
-                        console.log('tx', tx)
-
-                        self.sdk.node.transactions.send(tx, function(d, err){
-
-                            console.log("err", err)
-
-                            if(err){
-                                sitemessage(err)
-                            }
-
-                        })
-
-
                     }
                 },
 
@@ -11380,61 +11333,65 @@ Platform = function (app, listofnodes) {
                         }, deep(p, 'address.address'), p.update, telegram)
                     },
 
-                    wallet: function (inputs, outputs, _kp, unfinalize, htlc) {
-
-                        if(!htlc) htlc = {}
+                    wallet: function (inputs, ouputs, _kp, unfinalize) {
 
                         var keyPair = _kp || self.app.user.keys()
-                        var txb = new bitcoin.TransactionBuilder();
-                            txb.addNTime(self.timeDifference || 0)
-                        var k = smulti;
 
-                        console.log('inputs', inputs)
+                        var txb = new bitcoin.TransactionBuilder();
+
+                        txb.addNTime(self.timeDifference || 0)
+
+                        var k = smulti;
 
                         _.each(inputs, function (i) {
 
-                            if (i.type == 'htlc'){
-                                txb.addInput(i.txid, i.vout, null, Buffer.from(i.scriptPubKey, 'hex'), htlc)
-                            }
-                            else{
+
+                            if (i.address.indexOf("P") == 0) {
                                 txb.addInput(i.txid, i.vout, null, Buffer.from(i.scriptPubKey, 'hex'))
                             }
 
-                            
+                            else {
+
+                                var index = _.indexOf(self.sdk.addresses.storage.addresses, i.address);
+
+                                if (index > -1) {
+
+                                    var address = self.sdk.addresses.storage.addressesobj[index];
+                                  
+                                    txb.addInput(i.txid, i.vout, null, Buffer.from(i.scriptPubKey, 'hex'))
+
+                                }
+
+                                else {
+                         
+                                    return
+                                }
+
+                            }
+
                         })
 
-                        _.each(outputs, function (o) {
+                        _.each(ouputs, function (o) {
                             txb.addOutput(o.scriptPubKey || o.address, Number((k * o.amount).toFixed(0)));
                         })
 
                         _.each(inputs, function (i, inputindex) {
 
-                            if (i.type == 'htlc'){
-
-
-                                txb.sign({
-                                    prevOutScript: Buffer.from(i.scriptPubKey, 'hex'),
-                                    prevOutScriptType: 'htlc',
-                                    vin: inputindex,
-                                    keyPair
-                                });
-
-
-                                return
-                            }
-
                             if (i.address.indexOf("P") == 0) {
                                 txb.sign(inputindex, keyPair);
-                                return
                             }
 
-                            if (i.address.indexOf("Z") == 0) {
-                                
+                            else {
                                 var index = _.indexOf(self.sdk.addresses.storage.addresses, i.address);
 
                                 if (index > -1) {
+
+                                    index = index
+
                                     var p2sh = self.sdk.addresses.storage.addressesobj[index];
+
                                     var dumped = self.sdk.address.dumpKeys(index)
+                                    
                                     txb.sign({
                                         prevOutScriptType: 'p2sh-p2wpkh',
                                         redeemScript : p2sh.redeem.output,
@@ -11442,19 +11399,20 @@ Platform = function (app, listofnodes) {
                                         keyPair : dumped,
                                         witnessValue : Number((k * i.amount).toFixed(0))
                                     });
+
                                 }
-                                return
+
+                                else {
+                                    return
+                                }
+
                             }
-
-                                
-
                         })
-
-                        console.log('txb', txb)
 
                         if(unfinalize) return txb
 
                         var tx = txb.build()
+                        console.log("WALLET TX", tx)
 
                         return tx;
 
@@ -11540,7 +11498,7 @@ Platform = function (app, listofnodes) {
                             amount = amount * smulti;
 
                             var data = Buffer.from(bitcoin.crypto.hash256(obj.serialize()), 'utf8');
-                            var optype = obj.typeop ? obj.typeop(self) : obj.type
+                            var optype = obj.typeop ? obj.typeop() : obj.type
                             var optstype = optype
 
                             if (obj.optstype && obj.optstype(self)) optstype = obj.optstype(self)
@@ -15000,20 +14958,6 @@ Platform = function (app, listofnodes) {
                 return self.sdk.videos.info(links)
 
             },
-            clearstorage : function(link){
-
-                if(!link) return
-
-                delete this.storage[link]
-
-                var meta = parseVideo(link)
-
-                if (meta.type == 'peertube'){
-                    delete window.peertubeglobalcache[meta.id]
-                }
-
-                
-            },
             info : function(links){
 
                 var s = self.sdk.videos.storage
@@ -15067,30 +15011,6 @@ Platform = function (app, listofnodes) {
                 })
             },
 
-            paddingplaceholder : function(url, middle, clbk, elf){
-                return self.sdk.videos.info([url]).catch((e)=>{
-                    return Promise.resolve()
-                }).then(() => {
-
-                    middle(function(p){
-
-                        if(self.sdk.videos.storage[url]){
-                            var info = self.sdk.videos.storage[url].data;
-        
-                            var loadingPlayer = elf ? elf() : p.el.find('.jsPlayerLoading');
-        
-                            var width = loadingPlayer.width();
-                            
-                            loadingPlayer.css('padding-top', `${width / (2 * info.aspectRatio)}px`);
-                            loadingPlayer.css('padding-bottom', `${width / (2 * info.aspectRatio)}px`);
-                        }
-
-                        if(clbk) clbk(p)
-                    })
-
-                })
-            },
-
             types : {
                 youtube : function(links){
                     var result = _.map(links, function(l){
@@ -15113,34 +15033,23 @@ Platform = function (app, listofnodes) {
 
                 peertube : async function(links){
 
-                    console.log('links', links)
 
-                    return self.app.api.fetch('peertube/videos', {
-                        urls: links.map(link => link.link),
-                    }).then(linksInfo => {
+                    const linksInfo = await self.app.api.fetch('peertube/listVideos', {
+                        ids: links.map(link => link.link),
+                    });
 
-                        if(!window.peertubeglobalcache)
-                            window.peertubeglobalcache = {}
+                    links.forEach(link => {
+                        const linkInfo = linksInfo[link.link];
 
-                        links.forEach(link => {
-                            
-                            const linkInfo = linksInfo[link.link];
-    
-                            linkInfo ? link.data = {
-                                image : 'https://' + linkInfo.from + linkInfo.previewPath,
-                                views : linkInfo.views,
-                                duration : linkInfo.duration,
-                                aspectRatio : linkInfo.aspectRatio,
-                            } : '';
+                        linkInfo ? link.data = {
+                            image : linkInfo.previewPath,
+                            views : linkInfo.views,
+                            duration : linkInfo.duration,
+                            aspectRatio : linkInfo.aspectRatio,
+                        } : '';
+                    });
 
-                            window.peertubeglobalcache[link.meta.id] = linkInfo
-                        });
-
-                        return Promise.resolve(links);
-                    })
-
-
-                  
+                    return Promise.resolve(links);
                 },
 
                 bitchute : function(links){
@@ -16652,6 +16561,8 @@ Platform = function (app, listofnodes) {
                     var s = platform.sdk.node.transactions;
 
                     var dif = platform.currentBlock - data.block
+
+                    console.log("dif", dif)
 
                     platform.currentBlock = data.block;
 
@@ -18190,6 +18101,7 @@ Platform = function (app, listofnodes) {
                     });
                 }
 
+
             },
 
             keyForAes: function (key, clbk) {
@@ -19029,7 +18941,6 @@ Platform = function (app, listofnodes) {
 
         fast ? self.clearStorageFast() : self.clearStorage()
 
-        if(app.peertubeHandler) app.peertubeHandler.clear()
 
         self.sdk.node.transactions.clearUnspentoptimizationInterval()
 
@@ -19124,35 +19035,7 @@ Platform = function (app, listofnodes) {
         }
     }
 
-    self.tst = function(){
-
-        return
-
-        console.log('6bfc49fae021294b3f899d7fb59cc16afb25dc2b7101a44076da30a1e3bdc23f')
-
-        self.app.api.rpc('getrawtransaction', ['823617ba029ae0f963df6b8b3e4d3bf6409b29f38ceaac896fd8e05f23c31a13', 1]).then(d => {
-
-
-            console.log("D", d)
-
-            /*var prev = _.clone(d.vout[0])
-
-            prev.txid = d.txid*/
-
-            /*self.sdk.node.transactions.htls.withdrawal([prev], 'PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 0.01, {
-                secret : '9adebcaac15d6158981434361e7a1a41f703af1d3689ebaa4491b9c75a5ded54'
-            })*/
-
-            
-
-
-        })
-
-    }
-
     self.prepare = function (clbk, state) {
-
-        
 
         self.preparing = true;
 
@@ -19212,8 +19095,6 @@ Platform = function (app, listofnodes) {
 
             self.sdk.node.get.time(function () {
 
-
-                self.tst()
 
                 self.preparing = false;
 
@@ -19284,7 +19165,7 @@ Platform = function (app, listofnodes) {
 
                     if (addresses.indexOf(a) > -1) {
 
-                        return
+                        
                         if (!isMobile()){
 
                             self.matrixchat.inited = true
@@ -19337,12 +19218,6 @@ Platform = function (app, listofnodes) {
                 self.app.user.features.telegram = 0;
             }
         }
-
-        if (typeof PeerTubePocketnet != 'undefined'){
-
-			self.app.peertubeHandler = new PeerTubePocketnet(self.app);
-			self.app.peertubeHandler.init()
-		}
 
         app.user.isState(function(state){
 

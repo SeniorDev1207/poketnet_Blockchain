@@ -2990,16 +2990,9 @@ video[src], .vjs-fullscreen {
   height: 100%;
 }
 
-.video-js {
-  background: transparent;
-}
-
 .video-js .vjs-tech {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
+  height: auto;
 }
 
 .standalone-video-embed .video-js .vjs-tech {
@@ -3033,15 +3026,9 @@ video[src], .vjs-fullscreen {
 .video-js {
   width: 100%;
   overflow: hidden;
-  height: auto !important;
 }
 .video-js .vjs-poster {
   background-size: 100% auto;
-  left: -1px;
-  top: -1px;
-  bottom: -1px;
-  right: -1px;
-  height: auto;
 }
 @media screen and (max-width: 350px) {
   .video-js .vjs-play-control {
@@ -3059,26 +3046,22 @@ video[src], .vjs-fullscreen {
   }
 }
 
-/*
 .verticalVideo {
   width: auto;
-
-  .vjs-tech {
-    width: auto;
-    height: 100%;
-  }
+}
+.verticalVideo .vjs-tech {
+  width: auto;
+  height: 100%;
 }
 
-.url {
-  .verticalVideo {
-    width: auto;
+.url .verticalVideo {
+  width: auto;
+}
+.url .verticalVideo .vjs-tech {
+  width: 100%;
+  height: 100%;
+}
 
-    .vjs-tech {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}*/
 #placeholder-preview {
   position: absolute;
   top: 0;
@@ -3110,18 +3093,7 @@ video[src], .vjs-fullscreen {
 
 .js-player {
   position: relative;
-}
-.js-player .error-block {
-  height: 300px;
-  display: flex;
-  align-items: center;
-  background: #000;
-  color: #bebebe;
-}
-.js-player .error-block > div {
-  margin: 0 auto;
-  text-align: center;
-  padding: 50px;
+  background-color: black;
 }
 
 .js-player,
@@ -3241,10 +3213,6 @@ video[src], .vjs-fullscreen {
 .video-js-wrapper .vjs-time-divider {
   display: block;
 }
-.js-player .vjs_video_3-dimensions,
-.video-js-wrapper .vjs_video_3-dimensions {
-  height: auto;
-}
 .js-player .pocketnet-logo-video-player .icon.icon-full-logo-transparent,
 .video-js-wrapper .pocketnet-logo-video-player .icon.icon-full-logo-transparent {
   background: url(./logo.svg) no-repeat;
@@ -3290,46 +3258,12 @@ video[src], .vjs-fullscreen {
   position: absolute;
 }
 
-.video-js.video-js-contributor .vjs-remaining-time {
-  display: none;
-}
-.video-js.video-js-contributor .vjs-picture-in-picture-control {
-  display: none;
-}
-
 @media screen and (max-width: 300px) {
   #error-block {
     font-size: 36px;
   }
   #error-block #error-content {
     font-size: 14px;
-  }
-}
-@media screen and (max-width: 640px) {
-  .video-js.video-js-contributor .vjs-fullscreen-control {
-    display: none;
-  }
-
-  .video-js .vjs-control-bar {
-    font-size: 1.4em;
-    /*.vjs-mute-control{
-      display: none;
-    }*/
-  }
-  .video-js .vjs-control-bar .vjs-time-divider,
-.video-js .vjs-control-bar .vjs-time-control {
-    padding-left: 0.1em;
-    padding-right: 0.1em;
-    min-width: 0;
-  }
-  .video-js .vjs-control-bar .vjs-volume-control {
-    display: none;
-  }
-  .video-js .vjs-control-bar .vjs-icon-settings {
-    display: none;
-  }
-  .video-js .pocketnet-logo-video-player {
-    display: none;
   }
 }
 

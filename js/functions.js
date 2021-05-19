@@ -9147,7 +9147,6 @@
     			dropZone.removeClass('focus');
 
     			input.val('');
-				input[0].value = ''
 		    }
 
 		    _.each(files, function(file){
@@ -10642,8 +10641,8 @@ getBase64 = function (file) {
 
 findResponseError = (response) => {
 	const ERRORS_PATHS = [
-		'response.data.errors',
-		'response.data.error',
+		'error.response.data.errors',
+		'error.response.data.error',
 	];
 
 	const error = ERRORS_PATHS.map(path => deep(response, path)).filter(error => error)[0] || {};
