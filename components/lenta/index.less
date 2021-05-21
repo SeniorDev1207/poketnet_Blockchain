@@ -2346,7 +2346,7 @@ html.stblack{
 			}
 	
 			.commentsWrapper{			
-				background: @color-gray3;
+				background: #0a0c17;
 			}
 	
 	
@@ -2682,7 +2682,10 @@ html.stblack{
 		}	
 
 	
-		.zero,
+		.zero {
+			color : @color-gray-mlight;
+			background: @color-block;
+		}
 		.ended{
 			color : @color-gray-mlight;
 			background: @color-gray3;
@@ -2706,6 +2709,46 @@ html.stblack{
 			i{
 				color : fade(@color-main, 15);
 			}
+		}
+
+		&.mainvideo{
+			.loader,
+			.zero,
+			.ended,
+			.seemore,
+			.loadprev,
+			.loadmore{
+				background: transparent;
+			}
+			
+			.shares{
+	
+			
+				.authorgroup{
+					
+					.share{
+						background: transparent;
+					}
+
+					.url span{
+						color : @color-gray-light;
+					}
+	
+					
+				}
+	
+				.shareTable{
+					.authorTable{
+						>div{
+							&.authorCell{
+								color : @color-gray-light; 
+							}
+						}
+					}
+				}
+			}
+
+	
 		}
 	
 	}
