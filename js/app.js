@@ -426,9 +426,9 @@ Application = function(p)
 	self.map = __map;
 	self.modules = {};
 
-	/*if (self.test){
+	if (self.test){
 		$('html').addClass('testpocketnet')
-	}*/
+	}
 
 	self.curation = function(){
 		if(typeof isios != 'undefined' && isios()) return true
@@ -643,7 +643,6 @@ Application = function(p)
 						}
 					}
 
-					hideSplashScreen();
 					
 					self.nav.init(p.nav);
 
