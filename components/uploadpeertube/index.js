@@ -118,11 +118,7 @@ var uploadpeertube = (function () {
 				var options = {}
 
 				options.progress = function(percentComplete){
-					var formattedProgress = percentComplete.toFixed(2);
-
-					if (formattedProgress === '100.00' && el.preloaderElement.hasClass('hidden')) {
-						el.preloaderElement.removeClass('hidden');
-					}
+					var formattedProgress = (percentComplete * 0.9).toFixed(2);
 
 					el.uploadProgress
 						.find('.upload-progress-bar')
@@ -158,8 +154,6 @@ var uploadpeertube = (function () {
 					el.uploadButton.prop('disabled', false);
 					el.header.addClass('activeOnRolled');
 					el.uploadProgress.addClass('hidden');
-
-					el.preloaderElement.addClass('hidden');
 
 					ed.uploadInProgress = false;
 
@@ -257,8 +251,6 @@ var uploadpeertube = (function () {
 				el.cancelButton = el.c.find('.cancelButton');
 
 				el.header = el.c.find('.upload-header');
-
-				el.preloaderElement = el.c.find('.iconwr');
 
 				initEvents();
 

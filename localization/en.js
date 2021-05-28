@@ -946,7 +946,7 @@ ____loclib.e14109 = 'Where do I download the Android App?'
 ____loclib.e14110 = 'Google Play Market'
 
 
-____loclib.peertubeAddVideo = 'Add video to post'
+____loclib.peertubeAddVideo = 'Upload Video'
 ____loclib.peertubeAddStream = 'Add live stream to post'
 
 ____loclib.e14111 = "There was a problem with loading images"
@@ -1013,12 +1013,5 @@ ____loclib.pterror_oauthClientsLocal = 'Peertube: Failed to get oAuth informatio
 ____loclib.pterror_pocketnetAuth = 'Peertube: Peertube-Pocketnet authorization failed'
 ____loclib.pterror_getToken = 'Peertube: Unable to get Token'
 ____loclib.pterror_videonotselected = 'Peertube: Video not Selected'
-
-
-____loclib.videoUploadingFinish = 'Finishing uploading...'
-____loclib.uploadNewVideo = 'Upload New Pocketvideo'
-____loclib.selectVideoFile = 'Select video file'
-____loclib.uploadVideoProgress = 'Progress:'
-
 
 
