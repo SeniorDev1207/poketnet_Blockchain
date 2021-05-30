@@ -534,6 +534,9 @@ html.testpocketnet #main.testpocketnetbg {
   }
 }
 @media only screen and (max-width: 768px) {
+  html.hideOverflow {
+    overflow-y: hidden;
+  }
   #main .addbutton {
     display: none!important;
   }

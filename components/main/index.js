@@ -933,6 +933,8 @@ var main = (function(){
 				videomain = false
 
 				self.app.el.footer.removeClass('workstation')
+
+				$('html').removeClass('hideOverflow');
 			},
 			
 			init : function(p){
@@ -959,6 +961,11 @@ var main = (function(){
 				el.w = $(window)
 
 				self.app.el.footer.addClass('workstation')
+
+				// Add a specific class to hide overflow on mobile
+				// (for iOS mobile devices)
+				if (isMobile())
+					$('html').addClass('hideOverflow');
 
 				var wordsRegExp = /[,.!?;:() \n\r]/g
 
