@@ -26,7 +26,8 @@ Platform = function (app, listofnodes) {
         'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux' : true,
         'PXUYsENSv6QkQZEdiJTsfJmu3XxZvVmVfQ' : true,
         'PXXaSczoZcuJEwxYKhaC9pV1JBvwi6UjSw' : true,
-        'PLoFgXDPL5dCYkFCGLwH4n29TehLnfQ4w6' : true
+        'PLoFgXDPL5dCYkFCGLwH4n29TehLnfQ4w6' : true,
+        'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2' : true
 
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
@@ -1747,6 +1748,76 @@ Platform = function (app, listofnodes) {
     }
 
     self.papi = {
+        horizontalLenta : function(el, clbk, p){
+
+            if(!p) p = {}
+
+            p.horizontal = true
+
+            var tpl = `<div class="horizontalLentaWrapper"><div class="horizontalLentacaption"><span>`+(p.caption || '')+`</span></div><div class="showmorebywrapper"><div class="showmoreby"></div></div>
+            <div class="controlleft controlhor" dir="left"><i class="fas fa-chevron-left"></i></div><div class="controlright controlhor"><i class="fas fa-chevron-right"></i></div>
+            </div>`
+
+            el.html(tpl)
+
+            p.window = el.find('.showmorebywrapper')
+
+            var _el = el.find('.showmoreby')
+
+            self.papi.clenta(_el, clbk, p)
+
+            el.find('.controlhor').on('click', function(){
+                var dir = $(this).attr('dir') || 'right'
+
+                var curscroll = p.window.scrollLeft()
+                var width = p.window.width()
+
+                var to = width * 0.9
+
+                if(dir == 'left') to = -to
+
+                to = curscroll + to
+
+                p.window.animate({ scrollLeft: to }, 100);
+            })
+        },
+        clenta : function(el, clbk, p){
+
+            if(!p) p = {}
+
+            var id = p.id || makeid()
+
+            app.nav.api.load({
+
+                open : true,
+                id : 'lenta',
+                el : el,
+                eid : id,
+                mid : id,
+                animation : false,
+                essenseData : {
+
+                    author : p.author,
+                    video : p.video,
+                    comments : p.comments,
+                    enterFullScreenVideo : p.fullscreenvideo,
+                    openapi : p.openapi,
+                    renderclbk : p.renderclbk,
+                    ready : p.ready,
+                    window : p.window,
+                    horizontal : p.horizontal,
+                    second : true,
+                    loaderkey : p.loaderkey,
+                    hasshares : p.hasshares,
+                    opensvi : p.opensvi,
+                    from : p.from,
+                    compact : p.compact
+
+                },
+                
+                clbk : clbk
+            })
+        },
         lenta : function(ids, el, clbk, p){
 
             if(!p) p = {}
@@ -1763,7 +1834,7 @@ Platform = function (app, listofnodes) {
                 mid : id,
                 animation : false,
                 essenseData : {
-                   // byauthor : true,
+                    
                     notscrollloading : true,
                     txids : ids,
                     comments : p.comments,
@@ -1803,7 +1874,8 @@ Platform = function (app, listofnodes) {
                             eid: id + (p.eid || ""),
                             comments : p.comments,
                             video : p.video,
-                            autoplay : p.autoplay
+                            autoplay : p.autoplay,
+                            opensvi : p.opensvi
                         }
                     })
 
@@ -9645,14 +9717,50 @@ Platform = function (app, listofnodes) {
                             
                             //parameters = ['30', '259200', '', self.app.localization.key];
 
+                            if(p.video){
+                                parameters.push('video')
+                                parameters.push('video')
+                            }
+
                             self.sdk.node.shares.get(parameters, function (shares, error) {
 
                                 if (shares) {
 
-                                    storage[key] = shares;
+                                    self.sdk.node.shares.loadvideoinfoifneed(shares, p.video, function(){
 
-                                    if (clbk)
-                                        clbk(storage[key], error, p)
+                                        if (state) {
+                                            _.each(self.sdk.relayTransactions.withtemp('blocking'), function (block) {
+                                                _.each(shares, function (s) {
+                                                    if (s.address == block.address) s.blocking = true;
+                                                })
+                                            })
+                                        }
+
+
+
+                                        if(p.video){
+                                            shares = _.filter(shares, function(share){
+
+                                                if(!share.url) return
+
+                                                var meta = app.platform.parseUrl(share.url);
+
+                                                if((meta.type == 'youtube') || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){ 
+
+                                                    if (self.sdk.videos.storage[share.url] && self.sdk.videos.storage[share.url].data)
+                                                        return true
+                                                }
+                                            })
+                                        }
+
+                                        storage[key] = shares;
+
+                                        if (clbk)
+                                            clbk(storage[key], error, p)
+
+                                    })
+
+                                    
                                 }
 
                                 else {
@@ -9820,7 +9928,16 @@ Platform = function (app, listofnodes) {
                     })
                 },
 
-                hierarchical: function (p, clbk, cache) {
+                getusercontents : function(p, clbk, cache){
+
+                    self.app.platform.sdk.node.shares.hierarchical(p, clbk, cache, {
+                        method : 'getusercontents'
+                    })
+                },
+
+                hierarchical: function (p, clbk, cache, methodparams) {
+
+                    if(!methodparams) methodparams = {}
 
                     /*
 
@@ -9848,6 +9965,8 @@ Platform = function (app, listofnodes) {
                         }
 
                         var key = p.count + (p.address || "") + "_" + (p.lang || "") + "_" + /*(p.height || "")  +*/ "_" + (p.tagsfilter.join(',')) + "_" + (p.begin || "") + (p.video ? "video" : '')
+
+                        if(p.author) key = key + p.author
 
                         var storage = self.sdk.node.shares.storage;
                         var s = self.sdk.node.shares;
@@ -9913,6 +10032,9 @@ Platform = function (app, listofnodes) {
 
                             var parameters = [Number(p.height), p.txid, p.count, p.lang, p.tagsfilter, p.video && self.videoenabled ? 'video' : ''];
 
+                            if(p.author) parameters.unshift(p.author)
+
+
                             s.getex(parameters, function (data, error) {
 
                                 var shares = data.contents || []
@@ -9949,7 +10071,6 @@ Platform = function (app, listofnodes) {
 
                                                 var meta = app.platform.parseUrl(share.url);
 
-
                                                 if((meta.type == 'youtube') || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){ 
 
                                                     if (self.sdk.videos.storage[share.url] && self.sdk.videos.storage[share.url].data)
@@ -9982,7 +10103,7 @@ Platform = function (app, listofnodes) {
                                         clbk(shares, error, p)
                                 }
 
-                            }, 'gethierarchicalstrip')
+                            }, methodparams.method || 'gethierarchicalstrip')
 
 
                         }
