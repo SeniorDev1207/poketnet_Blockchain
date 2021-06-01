@@ -10,7 +10,7 @@
 
         <!-- <title>POCKETNET</title> -->
         <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, user-scalable=no">
         <meta name="fragment" content="!">
         <meta name="keywords" content="" />
 
@@ -25,6 +25,7 @@
 
         <link rel="manifest" href="manifest.json">
         <link rel="apple-touch-icon" href="https://pocketnet.app/img/res/blue_pad_250.png" sizes="250x250">
+        <meta name="theme-color" content="#011621" />
 
         <link rel="stylesheet" href="css/normalize.css?v=136">
         <!-- Place favicon.ico in the root directory -->        
@@ -227,6 +228,8 @@
         <script join src="js/app.js?v=322676503798"></script>
         <script join src="js/main.js?v=723212304292"></script>       
        
+       <!-- Service worker used to enable the PWA features -->
+       <script src="js/pwa-service-worker.js"></script>
 
     </body>
 </html>
