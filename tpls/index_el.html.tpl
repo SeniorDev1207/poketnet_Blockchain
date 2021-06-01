@@ -10,7 +10,7 @@
 
         <!-- <title>POCKETNET</title> -->
         <meta name="description" content="">
-        <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="fragment" content="!">
         <meta name="keywords" content="" />
 
@@ -23,7 +23,8 @@
         font-src 'self' file: data: https://fonts.gstatic.com https://static-v.tawk.to https://use.fontawesome.com;
         media-src blob: *">
 
-      
+        <link rel="manifest" href="manifest.json">
+        <link rel="apple-touch-icon" href="https://pocketnet.app/img/res/blue_pad_250.png" sizes="250x250">
 
         <link rel="stylesheet" href="css/normalize.css?v=136">
         <!-- Place favicon.ico in the root directory -->        
