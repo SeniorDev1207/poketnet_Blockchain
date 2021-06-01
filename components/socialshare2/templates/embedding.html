@@ -32,10 +32,7 @@
 
     <div class="wrk">
         <div class="embeddingSettings">
-            <% _.each(embeddingSettings, function(parameter){ 
-                
-                if(parameter.hidden) return
-                %>
+            <% _.each(embeddingSettings, function(parameter){ %>
 
                 <div class="parameterMaketWrapper <%-parameter.pid%>" parameter="<%-parameter.id%>">
                     <div class="parameter table <%-parameter.type%>">

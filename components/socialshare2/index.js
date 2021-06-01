@@ -49,15 +49,8 @@ var socialshare2 = (function(){
 			}),
 
 			fullscreenvideo : new Parameter({
-				name: "Remove Description",
+				name: "Fullscreen Video",
 				id: 'fullscreenvideo',
-				type: "BOOLEAN",
-				value: false
-			}),
-
-			onlyvideo : new Parameter({
-				name: "Only video",
-				id: 'onlyvideo',
 				type: "BOOLEAN",
 				value: false
 			}),
@@ -93,12 +86,6 @@ var socialshare2 = (function(){
 							if((meta.type == 'youtube') || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){
 								s.push('fullscreenvideo')
 							}
-
-							
-						}
-
-						if(share.itisvideo()){
-							s.unshift('onlyvideo')
 						}
 					}
 
@@ -164,24 +151,14 @@ var socialshare2 = (function(){
 				var emeta = embedding[ed.embedding.type]
 				var settings = []
 
+				console.log('emeta', emeta)
+
 				emeta.settings(ed.embedding.id).then(settingsm => {
 					settings = {}
 					
 					_.each(settingsm, function(i){
 						settings[i] = embeddingSettings[i]
 					})
-
-					if(settings.onlyvideo && settings.onlyvideo.value){
-						_.each(settings, function(s){
-							if (s.id != 'onlyvideo')
-								s.hidden = true
-						})
-					}
-					else{
-						_.each(settings, function(s){
-							s.hidden = false
-						})
-					}
 
 					return Promise.resolve()
 				}).then(() => {
@@ -259,33 +236,6 @@ var socialshare2 = (function(){
 					}
 				}
 				
-
-				if(p.onlyvideo){
-
-					
-
-					var share = self.app.platform.sdk.node.shares.storage.trx[actionid];
-
-
-					if (share && share.url && action && actionid){
-
-						var hid = app.peertubeHandler.parselink(share.url)
-
-						var info = self.app.platform.sdk.videos.storage[share.url] || self.app.platform.sdk.videos.storage[hid.id] || {}
-
-						var aspectRatio = (info.data || {}).aspectRatio || 1.77
-
-						var width = 640
-						var height = (width / aspectRatio).toFixed(0)
-
-						return '<iframe width="'+width+'" height="'+height+'" src="https://pocketnet.app/embedVideo.php?embed=true&s='+actionid+'&host='+hid.host+'&id='+hid.id+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-					}	
-					
-					
-					
-					return ''
-
-				}
 
 				p = hexEncode(JSON.stringify(p))
 
