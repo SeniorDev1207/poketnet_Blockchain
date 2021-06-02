@@ -953,7 +953,7 @@ var main = (function(){
 				fixeddirection = null
 				self.app.el.footer.removeClass('workstation')
 
-				$('html').removeClass('nooverflow');
+				$('html').removeClass('hideOverflow');
 			},
 			
 			init : function(p){
@@ -985,7 +985,7 @@ var main = (function(){
 				// Add a specific class to hide overflow on mobile
 				// (for iOS mobile devices)
 				if (isMobile())
-					$('html').addClass('nooverflow');
+					$('html').addClass('hideOverflow');
 
 				var wordsRegExp = /[,.!?;:() \n\r]/g
 
