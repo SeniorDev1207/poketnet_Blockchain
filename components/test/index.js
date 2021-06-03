@@ -207,13 +207,7 @@ var test = (function(){
 
 						userInfo.ref.set(deep(ref, 'address') || '');
 
-						userInfo.keys.set(_.map(self.app.user.cryptoKeys(), function(k){
-							return k.public
-						}))
-
-
-						console.log('userInfo', userInfo)
-
+					
 
 					var err  = userInfo.validation()
 

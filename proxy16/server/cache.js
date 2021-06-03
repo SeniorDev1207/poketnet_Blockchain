@@ -45,10 +45,7 @@ var Cache = function(p){
             time : 460,
             block : 0
         },
-        getusercontents: {
-            time : 460,
-            block : 0
-        },
+
         gethierarchicalstrip: {
             time : 460,
             block : 0
@@ -90,7 +87,7 @@ var Cache = function(p){
         },
 
         peertubevideo: {
-            time : 300,
+            time : 2020,
         },
 
         estimatesmartfee: {

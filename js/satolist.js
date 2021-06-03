@@ -26,11 +26,7 @@ Platform = function (app, listofnodes) {
         'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux' : true,
         'PXUYsENSv6QkQZEdiJTsfJmu3XxZvVmVfQ' : true,
         'PXXaSczoZcuJEwxYKhaC9pV1JBvwi6UjSw' : true,
-        'PLoFgXDPL5dCYkFCGLwH4n29TehLnfQ4w6' : true,
-        'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2' : true,
-        'PTcArXMkhsKMUrzQKn2SXmaVZv4Q7sEpBt' : true,
-        'PL9U1q1JmJezPh8GQb5dj5h5GavuCGcjYk' : true,
-        'PS4pYW4tpu6fwviz63CHLMxPA37fJ3GLvn' : true
+        'PLoFgXDPL5dCYkFCGLwH4n29TehLnfQ4w6' : true
 
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
@@ -1751,82 +1747,6 @@ Platform = function (app, listofnodes) {
     }
 
     self.papi = {
-        horizontalLenta : function(el, clbk, p){
-
-            if(!p) p = {}
-
-            p.horizontal = true
-
-            var tpl = `<div class="horizontalLentaWrapper"><div class="horizontalLentacaption"><span>`+(p.caption || '')+`</span></div><div class="showmorebywrapper"><div class="showmoreby"></div></div>
-            <div class="controlleft controlhor" dir="left"><i class="fas fa-chevron-left"></i></div><div class="controlright controlhor"><i class="fas fa-chevron-right"></i></div>
-            </div>`
-
-            el.html(tpl)
-
-            p.window = el.find('.showmorebywrapper')
-
-            var _el = el.find('.showmoreby')
-
-            self.papi.clenta(_el, clbk, p)
-
-            el.find('.controlhor').on('click', function(){
-                var dir = $(this).attr('dir') || 'right'
-
-                var curscroll = p.window.scrollLeft()
-                var width = p.window.width()
-
-                var to = width * 0.9
-
-                if(dir == 'left') to = -to
-
-                to = curscroll + to
-
-                p.window.animate({ scrollLeft: to }, 100);
-            })
-        },
-        clenta : function(el, clbk, p){
-
-            if(!p) p = {}
-
-            var id = p.id || makeid()
-
-            console.log("PAPI", p)
-
-            app.nav.api.load({
-
-                open : true,
-                id : 'lenta',
-                el : el,
-                eid : id,
-                mid : id,
-                animation : false,
-                essenseData : {
-
-                    author : p.author,
-                    video : p.video,
-                    comments : p.comments,
-                    enterFullScreenVideo : p.fullscreenvideo,
-                    openapi : p.openapi,
-                    renderclbk : p.renderclbk,
-                    ready : p.ready,
-                    window : p.window,
-                    horizontal : p.horizontal,
-                    second : true,
-                    loaderkey : p.loaderkey,
-                    hasshares : p.hasshares,
-                    opensvi : p.opensvi,
-                    from : p.from,
-                    compact : p.compact,
-                    r : p.r,
-                    shuffle : p.shuffle,
-                    page : p.page,
-                    period : p.period
-
-                },
-                
-                clbk : clbk
-            })
-        },
         lenta : function(ids, el, clbk, p){
 
             if(!p) p = {}
@@ -1843,7 +1763,7 @@ Platform = function (app, listofnodes) {
                 mid : id,
                 animation : false,
                 essenseData : {
-                    
+                   // byauthor : true,
                     notscrollloading : true,
                     txids : ids,
                     comments : p.comments,
@@ -1883,8 +1803,7 @@ Platform = function (app, listofnodes) {
                             eid: id + (p.eid || ""),
                             comments : p.comments,
                             video : p.video,
-                            autoplay : p.autoplay,
-                            opensvi : p.opensvi
+                            autoplay : p.autoplay
                         }
                     })
 
@@ -6020,52 +5939,6 @@ Platform = function (app, listofnodes) {
             }
         },
 
-        newmaterials : {
-            storage : {},
-
-            clbks : {
-                update : {}
-            },
-
-            update : function(data){
-
-                var counts = {
-                    sub : data['sharesSubscr'] || 0,
-                    video : deep(data, 'contentsLang.video.' + self.app.localization.key)|| 0,
-                    common : deep(data, 'sharesLang.' + self.app.localization.key) || ( (deep(data, 'contentsLang.share.' + self.app.localization.key) || 0) + (deep(data, 'contentsLang.video.' + self.app.localization.key)|| 0))
-                }
-
-                _.each(counts, function(c, i){
-                    // c = rand(1,3)
-                    self.sdk.newmaterials.storage[i] = (self.sdk.newmaterials.storage[i] || 0) + c
-                })
-
-                _.each(self.sdk.newmaterials.clbks.update, function(u){
-                    u(self.sdk.newmaterials.storage)
-                })
-
-
-            },
-
-            clear : function(){
-
-                self.sdk.newmaterials.storage = {}
-
-                _.each(self.sdk.newmaterials.clbks.update, function(u){
-                    u(self.sdk.newmaterials.storage)
-                })
-            },
-
-            see : function(key){
-
-                self.sdk.newmaterials.storage[key] = 0
-
-                _.each(self.sdk.newmaterials.clbks.update, function(u){
-                    u(self.sdk.newmaterials.storage)
-                })
-            }
-        },
-
         captcha: {
             storage: {},
             current: null,
@@ -6974,9 +6847,6 @@ Platform = function (app, listofnodes) {
             },
             path: function (n) {
                 return "m/44'/0'/0'/" + n + "'"
-            },
-            path33: function (n) {
-                return "m/33'/0'/0'/" + n + "'"
             },
             pnetsimple: function (pubkey) {
 
@@ -9743,8 +9613,6 @@ Platform = function (app, listofnodes) {
                 recommended: function (p, clbk, cache) {
 
 
-                    console.log("P", p)
-
                     if (!p) p = {};
 
                     self.app.user.isState(function (state) {
@@ -9767,7 +9635,7 @@ Platform = function (app, listofnodes) {
                         else {
                             //var parameters = ['30', '259200', 600000, self.app.localization.key];
 
-                            var period = p.period || self.sdk.node.shares.parameters.stor.period || '259200' ///self.sdk.node.shares.parameters.defaults.period 
+                            var period = self.sdk.node.shares.parameters.stor.period || '259200' ///self.sdk.node.shares.parameters.defaults.period 
 
                             var page = p.page || 0
                             
@@ -9777,49 +9645,14 @@ Platform = function (app, listofnodes) {
                             
                             //parameters = ['30', '259200', '', self.app.localization.key];
 
-                            if(p.video){
-                                parameters.push('video')
-                            }
-
                             self.sdk.node.shares.get(parameters, function (shares, error) {
 
                                 if (shares) {
 
-                                    self.sdk.node.shares.loadvideoinfoifneed(shares, p.video, function(){
+                                    storage[key] = shares;
 
-                                        if (state) {
-                                            _.each(self.sdk.relayTransactions.withtemp('blocking'), function (block) {
-                                                _.each(shares, function (s) {
-                                                    if (s.address == block.address) s.blocking = true;
-                                                })
-                                            })
-                                        }
-
-
-
-                                        if(p.video){
-                                            shares = _.filter(shares, function(share){
-
-                                                if(!share.url) return
-
-                                                var meta = app.platform.parseUrl(share.url);
-
-                                                if((meta.type == 'youtube') || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){ 
-
-                                                    if (self.sdk.videos.storage[share.url] && self.sdk.videos.storage[share.url].data)
-                                                        return true
-                                                }
-                                            })
-                                        }
-
-                                        storage[key] = shares;
-
-                                        if (clbk)
-                                            clbk(storage[key], error, p)
-
-                                    })
-
-                                    
+                                    if (clbk)
+                                        clbk(storage[key], error, p)
                                 }
 
                                 else {
@@ -9987,16 +9820,7 @@ Platform = function (app, listofnodes) {
                     })
                 },
 
-                getusercontents : function(p, clbk, cache){
-
-                    self.app.platform.sdk.node.shares.hierarchical(p, clbk, cache, {
-                        method : 'getusercontents'
-                    })
-                },
-
-                hierarchical: function (p, clbk, cache, methodparams) {
-
-                    if(!methodparams) methodparams = {}
+                hierarchical: function (p, clbk, cache) {
 
                     /*
 
@@ -10024,8 +9848,6 @@ Platform = function (app, listofnodes) {
                         }
 
                         var key = p.count + (p.address || "") + "_" + (p.lang || "") + "_" + /*(p.height || "")  +*/ "_" + (p.tagsfilter.join(',')) + "_" + (p.begin || "") + (p.video ? "video" : '')
-
-                        if(p.author) key = key + p.author
 
                         var storage = self.sdk.node.shares.storage;
                         var s = self.sdk.node.shares;
@@ -10091,9 +9913,6 @@ Platform = function (app, listofnodes) {
 
                             var parameters = [Number(p.height), p.txid, p.count, p.lang, p.tagsfilter, p.video && self.videoenabled ? 'video' : ''];
 
-                            if(p.author) parameters.unshift(p.author)
-
-
                             s.getex(parameters, function (data, error) {
 
                                 var shares = data.contents || []
@@ -10130,6 +9949,7 @@ Platform = function (app, listofnodes) {
 
                                                 var meta = app.platform.parseUrl(share.url);
 
+
                                                 if((meta.type == 'youtube') || meta.type == 'vimeo' || meta.type == 'bitchute' || meta.type == 'peertube'){ 
 
                                                     if (self.sdk.videos.storage[share.url] && self.sdk.videos.storage[share.url].data)
@@ -10162,7 +9982,7 @@ Platform = function (app, listofnodes) {
                                         clbk(shares, error, p)
                                 }
 
-                            }, methodparams.method || 'gethierarchicalstrip')
+                            }, 'gethierarchicalstrip')
 
 
                         }
@@ -16858,11 +16678,6 @@ Platform = function (app, listofnodes) {
 
                     localStorage['lastblock'] = platform.currentBlock
 
-                    console.log("IM HERE")
-
-                    if (dif)
-                        platform.sdk.newmaterials.update(data)
-
                     //self.reconnected = platform.currentBlock;
 
                     platform.sdk.notifications.wsBlock(data.height)
@@ -16904,8 +16719,6 @@ Platform = function (app, listofnodes) {
 
                 loadMore: function (data, clbk) {
 
-                    console.log("IM HERE", data, platform.currentBlock)
-
                     if (data.height <= platform.currentBlock) return
 
                     var s = platform.sdk.node.transactions;
@@ -16927,8 +16740,6 @@ Platform = function (app, listofnodes) {
 
                         })
                     })
-
-                    platform.sdk.newmaterials.update(data)
 
                     platform.sdk.user.subscribeRef()
 
@@ -19218,8 +19029,6 @@ Platform = function (app, listofnodes) {
 
     self.clearlocal = function(){
         self.sdk.tags.storage.cloud = null
-
-        self.sdk.newmaterials.clear()
     }
 
     self.clear = function (fast) {
@@ -19420,9 +19229,6 @@ Platform = function (app, listofnodes) {
             self.sdk.tags.getfastsearch()
 
 
-           
-
-
             self.sdk.node.get.time(function () {
 
 
@@ -19582,9 +19388,7 @@ Platform = function (app, listofnodes) {
                     self.sdk.node.shares.parameters.load
                 ], function () {
 
-                    /*console.log('sdsd', _.map(self.app.user.cryptoKeys(), function(k){
-                        return k.public
-                    }))*/
+                   
 
                     self.sdk.node.transactions.setUnspentoptimizationInterval()
 
