@@ -73,6 +73,32 @@ var lenta = (function(){
 		}
 
 		var actions = {
+			newmaterials : function(data){
+				if(making || beginmaterial || essenseData.author || essenseData.txids) return
+
+				if(!data) data = {}
+
+				if(recommended == 'sub'){
+					
+					shownewmaterials(data['sharesSubscr'])
+				}
+				else
+				{
+
+					if (data.sharesLang){
+						return shownewmaterials(deep(data, 'sharesLang.' + self.app.localization.key))
+					}
+
+					if (video){
+						return shownewmaterials(deep(data, 'contentsLang.video.' + self.app.localization.key))
+					}
+
+					return shownewmaterials(
+						(deep(data, 'contentsLang.video.' + self.app.localization.key) || 0) + 
+						(deep(data, 'contentsLang.share.' + self.app.localization.key) || 0) 
+					)
+				}
+			},
 			scrollmode : function(m){
 				if(m){
 					$('html').addClass('scrollmodedown')
@@ -185,12 +211,11 @@ var lenta = (function(){
 
 				if (el.shares && isotopeinited){
 					el.shares.isotope('destroy')
-
-					
-
 				}
 
 				isotopeinited = false
+
+				clearnewmaterials()	
 
 				actions.clear()
 				
@@ -766,9 +791,8 @@ var lenta = (function(){
 
 			opensvi : function(id){
 
-				console.log("ID", id)
 				if (essenseData.opensvi){
-					essenseData.opensvi(id)
+					essenseData.opensvi(id, deep(self, 'app.platform.sdk.node.shares.storage.trx.' + id))
 				}
 			},
 
@@ -1344,15 +1368,32 @@ var lenta = (function(){
 			},	
 			loadmorescroll : function(){
 
-				if (
+				if(!essenseData.horizontal){
+					if (
 
-					(el.w.scrollTop() + el.w.height() > el.c.height() - 2000) 
-
-					&& !loading && !ended && recommended != 'recommended') {
-
-					actions.loadmore()
-
+						(el.w.scrollTop() + el.w.height() > el.c.height() - 2000) 
+	
+						&& !loading && !ended && recommended != 'recommended'&& recommended != 'hot') {
+	
+						actions.loadmore()
+	
+					}
 				}
+				else{
+
+					if (
+
+						(el.w.scrollLeft() + el.w.width() > el.c.width() - 400) 
+	
+						&& !loading && !ended && recommended != 'recommended' && recommended != 'hot') {
+
+	
+						actions.loadmore()
+	
+					}
+				}	
+
+				
 			},
 			sharesInview : function(e){
 
@@ -2238,7 +2279,7 @@ var lenta = (function(){
 
 				var tpl = 'groupshares';
 
-				if (essenseData.author || recommended || essenseData.txids || essenseData.search){
+				if (essenseData.author || recommended || essenseData.horizontal || essenseData.txids || essenseData.search){
 					tpl = 'shares'
 				}
 
@@ -2300,7 +2341,7 @@ var lenta = (function(){
 
 					if(video && !isMobile()){
 
-						if(!isotopeinited){
+						if(!isotopeinited && !essenseData.horizontal){
 							el.shares.isotope({
 
 								layoutMode: 'packery',
@@ -2836,12 +2877,21 @@ var lenta = (function(){
 		
 								}
 
+								
 		
 								////// SHIT
 								if (!shares.length || shares.length < pr.count && (recommended || author || essenseData.search))
 		
 									ended = true
 							}
+
+							if (shares.length){
+
+								if (essenseData.hasshares){
+									essenseData.hasshares(shares)
+								}
+							}
+
 
 						}
 
@@ -2920,11 +2970,14 @@ var lenta = (function(){
 								loader = 'txids'
 							}
 
+							if (essenseData.loaderkey) loader = essenseData.loaderkey
+							if (essenseData.from) _beginmaterial = essenseData.from
+
 							var tagsfilter = self.app.platform.sdk.categories.gettags()
 
 							if (essenseData.tags) tagsfilter = essenseData.tags
 
-							var page = parameters().page || 0
+							var page = essenseData.page || parameters().page || 0
 
 							self.app.platform.sdk.node.shares[loader]({
 
@@ -2935,7 +2988,8 @@ var lenta = (function(){
 								tagsfilter : tagsfilter,
 								video : video || essenseData.videomobile,
 								count : video ? 20 : 10,
-								page : page
+								page : page,
+								period : essenseData.period
 
 							}, function(shares, error, pr){
 
@@ -2951,6 +3005,10 @@ var lenta = (function(){
 
 									shares = _.filter(shares, essenseData.filter)
 
+								}
+								
+								if (essenseData.shuffle) {
+									shares = _.shuffle(shares)
 								}
 
 								load.sstuff(shares, error, pr, clbk)				
@@ -2976,6 +3034,8 @@ var lenta = (function(){
 		var getloader = function(){
 			var loader = 'common';
 			var author = essenseData.author;
+
+			if(essenseData.loaderkey) return essenseData.loaderkey
 
 			if(!author){
 				loader = 'hierarchical'
@@ -3011,6 +3071,33 @@ var lenta = (function(){
 			},
 			load : function(){
 				
+			}
+		}
+
+		var shownewmaterials = function(c){
+			if(!beginmaterial && recommended != 'recommended' && !essenseData.author && !essenseData.search){
+
+				var ts =  _.toArray(self.sdk.node.transactions.temp.share || {})
+
+				var a = 0;
+				
+				if (ts.length && !recommended){
+
+					a = a - ts.length;
+				}
+
+
+				if(((c || 0) + a > 0)){
+
+					newmaterials = newmaterials + (c || 0) + a;
+
+					el.c.addClass('showprev')
+
+					el.c.find('.countnew').html( "(" + newmaterials + ")" )
+
+					if (essenseData.renderclbk)
+						essenseData.renderclbk()
+				}
 			}
 		}
 
@@ -3192,40 +3279,10 @@ var lenta = (function(){
 
 			el.c.on('click', '.commentsAction', events.toComments)
 
-			var shownewmaterials = function(c){
-				if(!beginmaterial && recommended != 'recommended' && !essenseData.author && !essenseData.search){
-
-					var ts =  _.toArray(self.sdk.node.transactions.temp.share || {})
-
-					var a = 0;
-					
-					if (ts.length && !recommended){
-
-						a = a - ts.length;
-					}
-
-
-					if(((c || 0) + a > 0)){
-
-						newmaterials = newmaterials + (c || 0) + a;
-
-						el.c.addClass('showprev')
-
-						el.c.find('.countnew').html( "(" + newmaterials + ")" )
-
-						if (essenseData.renderclbk)
-							essenseData.renderclbk()
-					}
-				}
-			}
-
-			
-			
 			
 
-			
 
-			if(!essenseData.openapi){
+			if(!essenseData.openapi && !essenseData.second){
 
 				if(!essenseData.txids){
 					self.app.platform.sdk.node.shares.clbks.added.lenta = function(share){
@@ -3334,7 +3391,7 @@ var lenta = (function(){
 
 				self.app.platform.clbks._focus.lenta = function(time){
 
-					if ((window.cordova || isInStandaloneMode()) && !essenseData.txids && !making && time > 120){
+					if ((window.cordova || isInStandaloneMode()) && !essenseData.txids && !making && time > 120 && !essenseData.second){
 
 						actions.loadprev()
 						_scrollTop(0)
@@ -3345,38 +3402,13 @@ var lenta = (function(){
 
 				if(!essenseData.txids){
 
-					self.app.platform.ws.messages["newblocks"].clbks.newsharesLenta = function(data){
+					self.app.platform.ws.messages["newblocks"].clbks.newsharesLenta = 
+					self.app.platform.ws.messages["new block"].clbks.newsharesLenta = actions.newmaterials
 
-						if(making || beginmaterial || essenseData.author || essenseData.txids) return
-						
-						if(recommended == 'sub'){
-							
-							shownewmaterials(data.cntsubscr)
-						}
-						else
-						{
-							shownewmaterials(data.cntposts)
-						}
-					}
-
-					self.app.platform.ws.messages["new block"].clbks.newsharesLenta = function(data){
-
-						if(making || beginmaterial || essenseData.author || essenseData.txids) return
-
-						if(recommended == 'sub'){
-							
-							shownewmaterials(data['sharesSubscr'])
-						}
-						else
-						{
-							shownewmaterials(deep(data, 'sharesLang.' + self.app.localization.key))
-						}
-						
-					}
 					self.app.platform.sdk.categories.clbks.tags.lenta =
 					self.app.platform.sdk.categories.clbks.selected.lenta = function(data){
 
-						if(getloader() == 'hierarchical'){
+						if(getloader() == 'hierarchical'&& !essenseData.second){
 							//_scrollTop(0)
 							actions.loadprev()
 							
@@ -3466,6 +3498,8 @@ var lenta = (function(){
 				cache = 'cache'
 			}
 
+			
+
 			if (essenseData.contents){
 
 				el.c.find('.shares').html('')
@@ -3479,9 +3513,16 @@ var lenta = (function(){
 
 			var p = parameters()
 
-			if(video && p.v){
-				actions.opensvi(p.v)
+
+			if(!essenseData.second){
+				
+				if (video && p.v){
+					actions.opensvi(p.v)
+				}
 			}
+
+			
+
 
 			load.shares(function(shares, error){
 
@@ -3529,49 +3570,53 @@ var lenta = (function(){
 
 							var p = parameters()
 
-							if (p.s){
-								if(!isMobile())
-
-									actions.openPost(p.s, function(){
+							if(!essenseData.second){
+								if (p.s){
+									if(!isMobile())
+	
+										actions.openPost(p.s, function(){
+											actions.scrollToPost(p.p)
+										})
+								}
+	
+								if (p.i){
+									var share = deep(self.app.platform, 'sdk.node.shares.storage.trx.' + p.i)
+									var src = null;
+	
+									if (share){
+	
+										if(p.num){
+											src = deep(share, 'images.' + p.num)
+										}
+	
+										actions.openGalleryRec(share, src)
+									}
+	
+										
+								}
+	
+								if(p.v){
+	
+									//actions.scrollToPost(p.v)
+	
+									if(video){
+									}
+									else{	
+	
+										if(!isMobile())
+											actions.fullScreenVideo(p.v, function(){})
+									}
+									
+								}
+	
+								if (p.p){
+									actions.postscores(p.p, function(){
 										actions.scrollToPost(p.p)
 									})
-							}
-
-							if (p.i){
-								var share = deep(self.app.platform, 'sdk.node.shares.storage.trx.' + p.i)
-								var src = null;
-
-								if (share){
-
-									if(p.num){
-										src = deep(share, 'images.' + p.num)
-									}
-
-									actions.openGalleryRec(share, src)
 								}
-
-									
 							}
 
-							if(p.v){
-
-								actions.scrollToPost(p.v)
-
-								if(video){
-								}
-								else{	
-
-									if(!isMobile())
-										actions.fullScreenVideo(p.v, function(){})
-								}
-								
-							}
-
-							if (p.p){
-								actions.postscores(p.p, function(){
-									actions.scrollToPost(p.p)
-								})
-							}
+							
 
 							if (clbk){
 								clbk()
@@ -3598,7 +3643,28 @@ var lenta = (function(){
 
 			}, cache)
 
-						
+					
+		}
+
+		var clearnewmaterials = function(){
+
+			if (!essenseData.goback && !essenseData.second && !essenseData.author && !beginmaterial) {
+				var key = 'common'
+
+				if (video){
+					key = 'video'
+				}
+
+				if(recommended == 'sub'){
+					key = 'sub'
+				}
+
+				if(recommended == 'recommended') return
+
+
+				self.app.platform.sdk.newmaterials.see(key)
+			}
+
 		}
 
 		return {
@@ -3627,6 +3693,11 @@ var lenta = (function(){
 				else 		recommended = false;		
 
 				if (typeof essenseData.r != 'undefined' && essenseData.r != null) recommended = essenseData.r;
+
+
+				if (essenseData.second){
+					beginmaterial = null
+				}
 
 
 				if (essenseData.txids && recommended != 'b'){
@@ -3780,14 +3851,24 @@ var lenta = (function(){
 				el.lentacnt = el.c.find('.lentacell .cnt')
 				el.w = essenseData.window || $(window)
 
+
+				if (essenseData.horizontal){
+					el.c.addClass('horizontal')
+				}
+
+				if (essenseData.compact){
+					el.c.addClass('compact')
+				}
+
 				initEvents();
+
+				clearnewmaterials()	
 
 				make(null, p);
 
 				if (video){
 					el.c.addClass('mainvideo')
 				}
-
 
 				if(!essenseData.goback)
 

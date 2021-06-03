@@ -16,7 +16,7 @@ var main = (function(){
 
 		var upbutton = null, upbackbutton = null, plissing = null, searchvalue = '', searchtags = null, result, fixedBlock, openedpost = null;
 
-		var currentMode = 'common', hsready = false, fixeddirection = null;
+		var currentMode = 'common', hsready = false, fixeddirection = null, external = null;
 
 		var lastscroll = 0
 
@@ -197,13 +197,21 @@ var main = (function(){
 			},
 
 			backtolenta : function(){
+				actions.backtolentaClear()
+				_scrollTop(lastscroll, null, 5)
+				
+
+			},
+
+			backtolentaClear : function(){
+
+				console.log("backtolentaClear")
+				
 				self.nav.api.history.removeParameters(['v'])
 
 				el.c.removeClass('opensvishowed')
 
 				renders.post(null)
-
-				_scrollTop(lastscroll, null, 5)
 
 				setTimeout(function(){
 
@@ -211,12 +219,10 @@ var main = (function(){
 					
 					actions.refreshSticky()
 
-					
-
-				}, 500)
+				}, 350)
 
 				if(lenta && lenta.update) lenta.update()
-			}
+			}	
 		}
 
 		var events = {
@@ -337,6 +343,75 @@ var main = (function(){
 				}else{
 					el.c.addClass('wshar')
 				}
+			},
+
+			topvideos: function (show) {
+
+				
+
+				var showmoreby = el.topvideos
+
+				showmoreby.removeClass('hasshares')
+
+				if (show){
+					self.app.platform.papi.horizontalLenta(showmoreby, function (e,p) {
+
+						external = p
+	
+					}, {
+						caption : self.app.localization.e("Top videos") ,
+						video: true,
+						r : 'hot',
+						loaderkey : 'recommended',
+						shuffle : true,
+						period : '259200',
+						page : 0,
+						hasshares : function(shares){
+	
+							if (shares.length > 2){
+								showmoreby.addClass('hasshares')
+							}
+							
+						},
+	
+						opensvi : function(id, share){
+
+							if(isMobile() && share){
+								self.nav.api.load({
+									open : true,
+									href : 'author?address='+share.address+'&v=' + id,
+									history : true,
+									handler : true
+								})
+							}
+							else{
+								self.nav.api.load({
+									open : true,
+									href : 'index?video=1&v=' + id,
+									history : true,
+									handler : true
+								})
+							}
+
+							
+						},
+
+						compact : true
+	
+					})
+				}
+
+				else{
+					if(external){
+						external.destroy()
+						external = null
+					}
+
+					showmoreby.html('')
+					showmoreby.removeClass('hasshares')
+				}
+
+				
 			},
 
 			leftpanel: function(){
@@ -514,10 +589,14 @@ var main = (function(){
 
 							el.c.addClass('opensvishowed')
 
+							
+
 							if (upbutton) upbutton.destroy()
 							
 							if (upbackbutton) upbackbutton.destroy()
 
+
+							setTimeout(function(){
 								upbackbutton = self.app.platform.api.upbutton(el.upbackbutton, {
 									top : function(){
 										return '65px'
@@ -532,6 +611,10 @@ var main = (function(){
 									class : 'bright',
 									text : 'Back'
 								})	
+							}, 50)
+
+								
+
 								
 							setTimeout(function(){
 								upbackbutton.apply()
@@ -591,12 +674,30 @@ var main = (function(){
 				}
 
 				else{
+					
 					self.app.platform.papi.post(id, el.c.find('.renderposthere'), function(e, p){
 						openedpost = p
 					}, {
 						video : true,
 						autoplay : true,
-						nocommentcaption : true
+						nocommentcaption : true,
+						r : 'recommended',
+						
+						opensvi : function(id){
+
+
+							if (openedpost){
+						
+								openedpost.destroy()
+								openedpost = null
+							}
+		
+							el.c.find('.renderposthere').html('')
+
+							renders.post(id)
+
+							_scrollTop(0)
+						}
 					})
 				}
 
@@ -749,6 +850,8 @@ var main = (function(){
 
 			renders.smallpanel()
 
+			if (currentMode == 'common' && !videomain)
+				renders.topvideos(true)
 
 			/*
 			if(!isMobile()){
@@ -802,8 +905,6 @@ var main = (function(){
 				if (currentMode != ncurrentMode){
 
 					currentMode = ncurrentMode
-
-					
 				}
 
 				var _vm = parameters().video ? true : false
@@ -812,6 +913,8 @@ var main = (function(){
 				if(_vm != videomain){
 					videomain = _vm
 				}
+
+				renders.topvideos(currentMode == 'common' && !videomain)
 
 				if (videomain){
 
@@ -824,7 +927,7 @@ var main = (function(){
 				}
 				else{
 					el.c.removeClass('videomain')
-					actions.backtolenta()
+					actions.backtolentaClear()
 					makePanel()
 				}
 				
@@ -939,6 +1042,11 @@ var main = (function(){
 					panel.destroy()
 				}
 
+				if (external){
+					external.destroy()
+					external = null
+				}
+
 				if (leftpanel){
 					leftpanel.destroy()
 				}
@@ -953,7 +1061,7 @@ var main = (function(){
 				fixeddirection = null
 				self.app.el.footer.removeClass('workstation')
 
-				$('html').removeClass('nooverflow');
+				$('html').removeClass('hideOverflow');
 			},
 			
 			init : function(p){
@@ -977,7 +1085,7 @@ var main = (function(){
 				el.addbutton = el.c.find('.addbutton')
 				el.columnnavigationWrapper = el.c.find('.columnnavigationWrapper')
 				el.slwork = el.c.find('.maincntwrapper >div.work')
-
+				el.topvideos = el.c.find('.topvideosWrapper')
 				el.w = $(window)
 
 				self.app.el.footer.addClass('workstation')
@@ -985,7 +1093,7 @@ var main = (function(){
 				// Add a specific class to hide overflow on mobile
 				// (for iOS mobile devices)
 				if (isMobile())
-					$('html').addClass('nooverflow');
+					$('html').addClass('hideOverflow');
 
 				var wordsRegExp = /[,.!?;:() \n\r]/g
 
@@ -1021,8 +1129,12 @@ var main = (function(){
 				if(isMobile()){
 
 					el.c.find('.maincntwrapper').swipe({
-						allowPageScroll: "vertical", 
+						allowPageScroll: "auto", 
 						swipeStatus : function(e, phase, direction, distance){
+
+							if(el.topvideos.has(e.target).length > 0){
+								return true
+							}
 
 							actions.swipe(phase, direction, distance)
 
