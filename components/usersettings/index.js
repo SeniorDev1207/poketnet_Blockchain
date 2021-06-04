@@ -189,8 +189,7 @@ var usersettings = (function(){
 
 					telegramInputWrapper.setAttribute("style", "display: flex");
 
-					// div.setAttribute("style", `color:${color}; display:inline-block; font-size:30px; padding: 5px; margin-left: 1em`);
-					div.classList = 'tokenResult ' + color
+					div.setAttribute("style", `color:${color}; display:inline-block; font-size:30px; padding: 5px; margin-left: 1em`);
 					i.classList.add("fa");
 					i.classList.add(icon);
 					div.appendChild(i);
@@ -200,10 +199,10 @@ var usersettings = (function(){
 			}
 
 			if (check){
-				addIcon("fa-check-circle", "success");
+				addIcon("fa-check-circle", "green");
 
 			} else {
-				addIcon("fa-times", "failed");	
+				addIcon("fa-times", "red");	
 			}
 
 
