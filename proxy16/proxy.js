@@ -550,16 +550,14 @@ var Proxy = function (settings, manage, test) {
 	self.peertube = {
 		init: function () {
 
-			var ins = {5 : ['pocketnetpeertube5.nohost.me'], 6 : ['pocketnetpeertube6.nohost.me']}
+			var ins = ['pocketnetpeertube5.nohost.me']
 
 			if (test){
-				ins = {3 : ['pocketnetpeertube3.nohost.me'], 6 : ['pocketnetpeertube6.nohost.me']}
+				ins = ['pocketnetpeertube5.nohost.me']
 			}
 
-			console.log('ins', ins)
-
 			return peertube.init({
-				roys : ins
+				urls : ins
 			})
 		},
 
