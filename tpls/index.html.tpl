@@ -17,15 +17,16 @@
 
         <meta http-equiv="Content-Security-Policy" content="
         default-src https: 'self'; 
-        connect-src https: wss: data: blob:;
+        connect-src https: wss: data:;
         img-src 'self' data: https:;
-        script-src 'self' blob: https://__VAR__.domain https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js?v=119 https://player.vimeo.com https://www.youtube.com https://s.ytimg.com https://cdn.rawgit.com https://embed.tawk.to https://cdn.jsdelivr.net 'unsafe-eval' 'unsafe-inline';
+        script-src 'self' blob: https://__VAR__.domain https://player.vimeo.com https://www.youtube.com https://s.ytimg.com https://cdn.rawgit.com https://embed.tawk.to https://cdn.jsdelivr.net 'unsafe-eval' 'unsafe-inline';
         style-src 'self'  https://use.fontawesome.com https://fonts.googleapis.com https://cdn.jsdelivr.net 'unsafe-inline';
         font-src 'self' data: https://fonts.gstatic.com https://static-v.tawk.to https://use.fontawesome.com;
         media-src blob: *">
 
         <link rel="manifest" href="manifest.json">
-        <link rel="apple-touch-icon" href="https://pocketnet.app/img/res/blue_pad_250.png" sizes="250x250">
+        <link rel="apple-touch-icon" href="https://__VAR__.domain/img/res/blue_pad_250.png" sizes="250x250">
+        <meta name="theme-color" content="#011621" />
 
         __CSS__
 
@@ -157,9 +158,8 @@
             
         </script>
 
-        
-
-       
+        <!-- Service worker used to enable the PWA features -->
+        <script src="js/pwa-service-worker.js"></script>
 
     </body>
 </html>

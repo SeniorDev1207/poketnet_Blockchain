@@ -364,20 +364,8 @@ var main = (function(){
 						r : 'hot',
 						loaderkey : 'recommended',
 						shuffle : true,
-						period : '4320',
+						period : '259200',
 						page : 0,
-						afterload : function(ed, s, e){
-
-							if(e || !s.length) return
-
-							ed.page++
-						},
-						ended : function(s){
-
-							if(!s.length) return true
-							return false
-
-						},
 						hasshares : function(shares){
 	
 							if (shares.length > 2){
@@ -408,7 +396,7 @@ var main = (function(){
 							
 						},
 
-						compact : isMobile() ? true : false
+						compact : true
 	
 					})
 				}
@@ -1073,7 +1061,7 @@ var main = (function(){
 				fixeddirection = null
 				self.app.el.footer.removeClass('workstation')
 
-				$('html').removeClass('hideOverflow');
+				$('html').removeClass('nooverflow');
 			},
 			
 			init : function(p){
@@ -1105,7 +1093,7 @@ var main = (function(){
 				// Add a specific class to hide overflow on mobile
 				// (for iOS mobile devices)
 				if (isMobile())
-					$('html').addClass('hideOverflow');
+					$('html').addClass('nooverflow');
 
 				var wordsRegExp = /[,.!?;:() \n\r]/g
 

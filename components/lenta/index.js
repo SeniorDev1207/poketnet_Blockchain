@@ -22,7 +22,6 @@ var lenta = (function(){
 		var w, essenseData, recomended = [], recommended, mestate, initedcommentes = {}, canloadprev = false,
 		video = false, isotopeinited = false, videosVolume = 0;
 
-
 		var commentsInited = {},
 			shareInitedMap = {},
 			shareInitingMap = {},
@@ -259,7 +258,6 @@ var lenta = (function(){
 				shareheights = {}
 
 				initedcommentes = {}
-
 
 				fullscreenvideoShowed = false;
 
@@ -1375,7 +1373,7 @@ var lenta = (function(){
 
 						(el.w.scrollTop() + el.w.height() > el.c.height() - 2000) 
 	
-						&& !loading && !ended && recommended != 'recommended' && recommended != 'hot') {
+						&& !loading && !ended && recommended != 'recommended'&& recommended != 'hot') {
 	
 						actions.loadmore()
 	
@@ -1385,11 +1383,11 @@ var lenta = (function(){
 
 					if (
 
-						(el.w.scrollLeft() + el.w.width() > el.c.find('.shares').width() - 2000) 
+						(el.w.scrollLeft() + el.w.width() > el.c.width() - 400) 
 	
-						&& !loading &&  (!ended && recommended != 'recommended')  ) {
+						&& !loading && !ended && recommended != 'recommended' && recommended != 'hot') {
 
-
+	
 						actions.loadmore()
 	
 					}
@@ -2879,27 +2877,12 @@ var lenta = (function(){
 		
 								}
 
-								console.log(shares.length, pr.count, essenseData.ended)
+								
 		
 								////// SHIT
-								if (!shares.length || shares.length < pr.count && (recommended || author || essenseData.search)){
-
-									if(essenseData.ended) {
-										ended = essenseData.ended(shares)
-
-										console.log('ended', ended)
-									}
-
-									else
-										ended = true
-
-								}
+								if (!shares.length || shares.length < pr.count && (recommended || author || essenseData.search))
 		
-									
-							}
-
-							if (essenseData.filter) {
-								shares = _.filter(shares, essenseData.filter)
+									ended = true
 							}
 
 							if (shares.length){
@@ -2910,11 +2893,6 @@ var lenta = (function(){
 							}
 
 
-
-						}
-
-						if (essenseData.afterload){
-							essenseData.afterload(essenseData, shares, error || error2)
 						}
 
 						el.loader.fadeOut()
@@ -3001,9 +2979,6 @@ var lenta = (function(){
 
 							var page = essenseData.page || parameters().page || 0
 
-
-							console.log("LOAD", page, essenseData)
-
 							self.app.platform.sdk.node.shares[loader]({
 
 								author : author,
@@ -3026,7 +3001,11 @@ var lenta = (function(){
 										shares.unshift(bs)
 								})
 
-								
+								if (essenseData.filter) {
+
+									shares = _.filter(shares, essenseData.filter)
+
+								}
 								
 								if (essenseData.shuffle) {
 									shares = _.shuffle(shares)
