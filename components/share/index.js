@@ -269,7 +269,35 @@ var share = (function(){
 
 				if(m) return true;
 			},
-		
+			embeding20 : function(value){
+
+				var storage = currentShare.export(true)
+
+				self.nav.api.load({
+					open : true,
+					id : 'embeding20',
+					inWnd : true,
+
+					essenseData : {
+						storage : storage,
+						value : value,
+						on : {
+							added : function(value){
+
+								if(type == 'url' && value && actions.checkUrlForImage(value)){
+
+									type = 'images';
+									value = value
+								}
+								currentShare[type].set(value)
+
+								if (renders[type])
+									renders[type]();
+							}
+						}
+					}
+				})
+			},
 			embeding : function(type, value){
 				var storage = currentShare.export(true)
 
@@ -282,6 +310,8 @@ var share = (function(){
 
 						return
 					}
+
+					if (external) external.container.close();
 
 					globalpreloader(true);
 
@@ -363,20 +393,22 @@ var share = (function(){
 
 				if (type === 'addStream') {
 
+					if (external && external.id == 'streampeertube'){
+						external.container.show()
+
+						return;
+					}
+
+					if (external) external.container.close();
+
 					globalpreloader(true);
 
-					
+					var serverLink = currentShare.url ? self.app.peertubeHandler.parselink(currentShare.url.v).host : null;
 
-					self.app.peertubeHandler.authentificateUser(function(response) {
+					self.app.peertubeHandler.api.user.auth(serverLink || self.app.peertubeHandler.active(), true)
+					  .then(r => {
 						globalpreloader(false);
 
-						if (!response) response = {};
-						
-						if (response.error) {
-
-							return sitemessage(response.error);
-						}
-	
 						self.nav.api.load({
 							open : true,
 							id : 'streampeertube',
@@ -389,10 +421,15 @@ var share = (function(){
 								value : value,
 								currentLink : currentShare.url ? currentShare.url.v : '',
 								actions : {
-									added : function(link){
+									added : function(link, name){
 										var type = 'url';
 	
 										var result = currentShare[type].set(link)
+
+										currentShare.settings.a = ["i", "u", "cm", "p"]
+										currentShare.caption.set(name)
+										currentShare.images.set()
+										currentShare.repost.set()
 	
 										if(!essenseData.share){
 											state.save()
@@ -404,31 +441,40 @@ var share = (function(){
 	
 										}								
 	
-										if (renders[type])
-											renders[type]();
+										make();	
 									}
 								},
 	
 								closeClbk : function() {
-									el.peertubeLiveStream.removeClass('disabledShare');
-									
-									
-
-									if (!self.app.peertubeHandler.checklink(currentShare.url.v)) {
-										if (el.peertube) {
-											el.peertube.removeClass('disabledShare');
+									if(!self.app.peertubeHandler.checklink(currentShare.url.v)){
+										if (el.peertube && el.peertubeLiveStream) {
 										}
 									}
+
+									external = null
+
+									make();
 								}
 							},
 	
-							clbk : function(p){
-								external = p
+							clbk : function(p, element){
+								external = element;
+
+								videoUploadData = element.essenseData;
+
+								console.log('external', element)
 							}
 						});
 
-						return true;
-					});
+
+					}).catch(e => {
+
+						console.log("E", e)
+
+						globalpreloader(false);
+
+						return sitemessage(e.text || "Undefined Error");
+					})
 				} 
 
 				if(type == 'article'){
@@ -1360,7 +1406,13 @@ var share = (function(){
 					return
 				}
 
-				actions.embeding(type)
+				if (type == 'embeding20'){
+					actions.embeding20()
+				}
+				else
+				{
+					actions.embeding(type)
+				}
 
 				
 			},
