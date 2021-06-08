@@ -83,7 +83,7 @@
         <div class="topPreloader" id="_topPreloader">
         </div>
 
-        <div id="splashScreen">
+        <div id="splashScreen" class="cssanimation">
             <img src="img/splashscreen/pocketnet-logo-19.svg" class="zoom-in">
             <h1 class="fade-in">POCKETNET</h1>
         </div>
@@ -199,8 +199,6 @@
         <script join src="js/lib/client/api.js?v=4"></script>       
         <script src="js/vendor/pbkdf2.js"></script>
         <script src="js/vendor/sha1.js"></script>   
-        <!-- <script src="js/vendor/jdenticon.js"></script>
-        <script src="js/vendor/isotope.pkgd.js"></script>-->
 
         <script src="js/vendor/paste.js"></script> 
         <script src="js/vendor/jquery.md5.js?v=136"></script>

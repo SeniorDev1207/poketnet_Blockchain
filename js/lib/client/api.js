@@ -141,7 +141,11 @@ var ProxyRequest = function(app = {}, proxy){
             if (options)
                 data.options = options
 
-        return direct(url + '/rpc/' + method, data)
+        var route = 'rpc'
+
+        if (options.ex) route = 'rpc-ex'
+
+        return direct(url + '/'+route+'/' + method, data)
 
     }
 
@@ -299,7 +303,7 @@ var Proxy16 = function(meta, app, api){
 
             var promise = null
 
-            if(!self.ping || self.ping.addSeconds(5) < new Date){
+            if(!self.ping || self.ping.addSeconds(50) < new Date){
                 promise = self.api.ping()
             }
             else{
@@ -377,8 +381,6 @@ var Proxy16 = function(meta, app, api){
         if (self.current){
             options.node = self.current.key
         }
-
-        
 
         var promise = null
 
@@ -477,6 +479,11 @@ var Proxy16 = function(meta, app, api){
     }
 
     self.refreshNodes = function(){
+
+        return self.api.nodes.select().catch(e => {
+            return Promise.resolve()
+        })
+
         return self.api.nodes.get().then(r => {
             return self.api.nodes.select()
         }).catch(e => {
@@ -791,7 +798,7 @@ var Api = function(app){
         use : () => {
 
             return useproxy ? _.filter(proxies, proxy => { 
-                return proxy.ping && proxy.get.nodes().length 
+                return proxy.ping
             }).length || !proxies.length : false
 
         },
@@ -799,7 +806,7 @@ var Api = function(app){
         useexternal : () => {
 
             return useproxy ? _.filter(proxies, proxy => { 
-                return proxy.ping && proxy.get.nodes().length && !proxy.direct
+                return proxy.ping && !proxy.direct
             }).length || !proxies.length : false
             
         },
@@ -810,7 +817,7 @@ var Api = function(app){
 
             if(!key) key = 'use'
 
-            return pretry(self.ready[key], 50, total)
+            return pretry(self.ready[key], 20, total)
         }
     }
 
