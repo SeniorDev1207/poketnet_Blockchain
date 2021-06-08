@@ -1049,9 +1049,7 @@ var post = (function () {
 						
 
 						
-					},
-
-					compact : true
+					}
 				})
 			},
 
