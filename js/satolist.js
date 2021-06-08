@@ -3546,7 +3546,7 @@ Platform = function (app, listofnodes) {
         theme: {
             all: {
                 white: {
-                    name: self.app.localization.e('e13266'), ////ch
+                    name: self.app.localization.e('e13266'),
                     class: "stwhite"
                 },
 
@@ -7913,6 +7913,21 @@ Platform = function (app, listofnodes) {
                     }
                 })
 
+                /*self.app.ajax.rpc({
+                    method: 'gettags',
+                    parameters: parameters,
+                    success: function (d) {
+
+                        
+
+                    },
+                    fail: function (d, e) {
+
+                        
+
+                    }
+
+                })*/
             },
 
             filterEx: function (tags) {
@@ -8877,6 +8892,7 @@ Platform = function (app, listofnodes) {
 
             }
         },
+
 
         node: {
             storage: {
@@ -14953,6 +14969,209 @@ Platform = function (app, listofnodes) {
 
         },
 
+        proxy: {
+            userlist: [],
+
+            makeid: function (proxy) {
+                var i = proxy.host + ":" + proxy.port + ":" + proxy.ws + ":"
+
+                if (proxy.user) i = i + 'user'
+
+                return i
+            },
+
+            all: function () {
+                var all = self.app.options.listofproxies.concat(this.userlist)
+
+                return all;
+            },
+
+            load: function () {
+
+
+
+                var p = {};
+
+                try {
+                    p = JSON.parse(localStorage['proxies'] || '{}');
+                }
+                catch (e) {
+
+                }
+
+
+                this.userlist = p.list || []
+
+                self.dontuseapiproxy = p.dontuseapiproxy || false;
+
+                var all = this.all()
+
+                if (p.id) {
+                    self.apiproxy = _.find(all, function (_p) {
+                        return p.id == _p.id
+                    })
+                }
+
+                if (!self.apiproxy) {
+
+                    if (all && all.length) {
+                        self.apiproxy = all[0]
+                    }
+
+                }
+            },
+
+            find: function (id) {
+                return _.find(this.all(), function (p) {
+                    return p.id == id
+                })
+            },
+
+            save: function () {
+                localStorage['proxies'] = JSON.stringify({
+
+                    list: this.userlist,
+                    id: deep(self.apiproxy, 'id') || '',
+                    dontuseapiproxy: self.dontuseapiproxy
+
+                })
+            },
+
+            remove: function (id) {
+
+                var ch = false;
+
+                removeEqual(this.userlist, {
+                    id: id
+                })
+
+                if (self.apiproxy && self.apiproxy.id == id) {
+                    self.apiproxy = null
+
+                    if (!self.app.platform.dontuseapiproxy)
+                        ch = true
+                }
+
+                this.save()
+
+                return ch
+            },
+
+            create: function (proxy) {
+
+                var ch = false;
+
+                this.userlist.push(proxy);
+
+                if (!self.apiproxy) {
+                    self.apiproxy = proxy
+
+                    if (!self.app.platform.dontuseapiproxy)
+                        ch = true
+                }
+
+                this.save()
+
+                return ch
+            },
+
+            update: function (proxy, id) {
+                var ch = false;
+
+                var _proxy = _.find(this.userlist, function (p) {
+                    return id == p.id
+                })
+
+                if (_proxy) {
+                    _proxy.host = proxy.host
+                    _proxy.port = proxy.port
+                    _proxy.ws = proxy.ws
+                    _proxy.id = this.makeid(proxy)
+                }
+
+                if (self.apiproxy && self.apiproxy.id == id) {
+                    self.apiproxy = _proxy
+
+                    if (!self.app.platform.dontuseapiproxy)
+                        ch = true
+                }
+
+                this.save()
+
+                return ch
+            },
+
+            changeWithDialog: function (proxy, clbk) {
+
+                var c = self.app.platform.sdk.proxy.change
+
+                if (self.dontuseapiproxy) {
+                    dialog({
+                        html: self.app.localization.e('e13327'),
+                        class: 'zindex',
+                        success: function () {
+
+                            self.dontuseapiproxy = false
+
+                            c(proxy, clbk)
+                        }
+                    })
+                }
+                else {
+                    c(proxy, clbk)
+                }
+            },
+
+            change: function (proxy, clbk) {
+
+                self.apiproxy = proxy
+
+                self.app.platform.nodeid = null;
+                self.app.platform.nodes = null;
+
+                self.app.platform.sdk.proxy.save()
+
+                self.app.platform.restart(function () {
+
+                    app.reload(function () {
+
+                    })
+
+                    if (clbk)
+                        clbk()
+                })
+
+
+
+            },
+
+            info: function (clbk, m) {
+
+                self.app.ajax.api({
+                    action: 'info',
+
+                    main: m,
+
+                    success: function (d) {
+
+                        var info = deep(d, 'data.info')
+
+                        if (info && info.repost) {
+                            self.repost = true
+                        }
+
+                        if (clbk)
+                            clbk(info)
+                    },
+                    fail: function (d, e) {
+
+                        if (clbk)
+                            clbk(null, e)
+
+                    }
+                })
+            }
+        },
 
         videos : {
             storage : {},
@@ -15169,6 +15388,8 @@ Platform = function (app, listofnodes) {
         }
     }
 
+    self.apiproxy = null;
+    self.dontuseapiproxy = false;
 
     self.Firebase = function (platform) {
 
@@ -17458,6 +17679,7 @@ Platform = function (app, listofnodes) {
 
             })
 
+            //var ws = 'wss://' + platform.apiproxy.host + ":" + platform.apiproxy.ws
 
             
         }
@@ -18059,6 +18281,14 @@ Platform = function (app, listofnodes) {
         /////////
 
         self.init = function (clbk) {
+
+            if (!platform.apiproxy) {
+
+                if (clbk)
+                    clbk()
+
+                return
+            }
 
             closing = false;
             self.onlineCheck = true;
@@ -19175,12 +19405,10 @@ Platform = function (app, listofnodes) {
         self.applications = self.__applications()
 
         self.sdk.theme.load()
+        self.sdk.proxy.load()
         self.app.platform.sdk.node.sys.load()
 
-        setTimeout(function(){
-            self.initSounds();
-        }, 3000)
-        
+        self.initSounds();
 
         self.sdk.system16.init()
 
@@ -19190,7 +19418,15 @@ Platform = function (app, listofnodes) {
 
         initOnlineListener()
 
-        self.app.api.wait.ready('use', 3000).then(r => {
+        //self.sdk.proxy.info()
+
+        self.app.api.initIf().then(r => {
+
+            return self.app.api.wait.ready('use', 3000)
+
+        }).then(r => {
+
+            console.log("REA", r)
 
             return new Promise((resolve, reject) => {
                 setTimeout(function(){
@@ -19210,7 +19446,7 @@ Platform = function (app, listofnodes) {
                         resolve()
 
                     }).catch(reject)
-                }, 50)
+                }, 500)
             })
 
         }).then(r => {
@@ -19232,14 +19468,16 @@ Platform = function (app, listofnodes) {
 
             self.sdk.captcha.load()
             self.sdk.tags.getfastsearch()
-            self.sdk.node.get.time() /// /?
 
-            self.tst()
+            self.sdk.node.get.time(function () {
 
-            self.preparing = false;
+                self.tst()
 
-            self.prepareUser(clbk, state);
+                self.preparing = false;
 
+                self.prepareUser(clbk, state);
+
+            })
 
 
         }).catch(e => {
@@ -19360,7 +19598,11 @@ Platform = function (app, listofnodes) {
             }
         }
 
-        
+        if (typeof PeerTubePocketnet != 'undefined'){
+
+			self.app.peertubeHandler = new PeerTubePocketnet(self.app);
+			self.app.peertubeHandler.init()
+		}
 
         app.user.isState(function(state){
 
@@ -19370,48 +19612,48 @@ Platform = function (app, listofnodes) {
 
                     self.sdk.node.transactions.loadTemp,
                     self.sdk.addresses.init,
-                    
+                    self.cryptography.prepare,
+                    self.sdk.pool.init,
                     self.sdk.ustate.me,
                     self.sdk.usersettings.init,
+                    self.sdk.articles.init,
                     self.sdk.imagesH.load,
+                    self.sdk.chats.load,
                     self.sdk.user.subscribeRef,
                     self.ws.init,
                     self.firebase.init,
-                    
-                    //self.sdk.exchanges.load,
+                    self.sdk.tempmessenger.init,
+                    self.sdk.exchanges.load,
                     self.sdk.categories.load,
                     self.sdk.activity.load,
-                    self.sdk.node.shares.parameters.load,
-                    self.sdk.node.transactions.checkTemps,
-                    self.sdk.user.get
+                    self.sdk.node.shares.parameters.load
                 ], function () {
+
+                    /*console.log('sdsd', _.map(self.app.user.cryptoKeys(), function(k){
+                        return k.public
+                    }))*/
 
                     self.sdk.node.transactions.setUnspentoptimizationInterval()
 
-                    self.sdk.relayTransactions.send()
+                    self.sdk.node.transactions.checkTemps(function () {
 
-                    self.matrixchat.init()
+                        self.sdk.relayTransactions.send()
 
-                    self.preparingUser = false;
+                        self.sdk.user.get(function (u) {
 
-                    self.loadingWithErrors = !_.isEmpty(self.app.errors.state)
+                            self.matrixchat.init()
 
-                    if (clbk)
-                        clbk()
+                            self.preparingUser = false;
 
-                    setTimeout(function(){
-                        lazyActions([
-                            self.cryptography.prepare,
-                            self.sdk.pool.init,
-                            self.sdk.articles.init,
-                            self.sdk.tempmessenger.init,
-                            self.sdk.chats.load
-                        ], function(){
-            
+                            self.loadingWithErrors = !_.isEmpty(self.app.errors.state)
+
+                            if (clbk)
+                                clbk()
+
                         })
-                        
-                    }, 2000)
-                    
+
+
+                    })
 
                 })
             }
@@ -19424,13 +19666,6 @@ Platform = function (app, listofnodes) {
             }
 
         })
-
-        if (typeof PeerTubePocketnet != 'undefined'){
-			self.app.peertubeHandler = new PeerTubePocketnet(self.app);
-			self.app.peertubeHandler.init()
-		}
-
-        
     }
 
 

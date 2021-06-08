@@ -10,7 +10,6 @@ Localization = function(app){
 		self.key = (window.navigator.userLanguage || window.navigator.language || 'en').split("-")[0];
 	}
 
-	self.loading = {}
 
 	//self.key = 'en'
 
@@ -144,60 +143,39 @@ Localization = function(app){
 
 	self.init = function(clbk){
 
-		if(typeof loclib == 'undefined' || !loclib) loclib = {};
+		if(typeof loclib == 'undefined' || !loclib)
+			loclib = {};
 
 		var prms = parameters();
+
 
 		self.key = prms.loc || localStorage['loc'] || (window.navigator.userLanguage || window.navigator.language || 'en').split("-")[0];
 		
 		self.locSave();
 
-		lazyActions([
-			self.import,
-			function(c){
-				self.import(c, 'en')
-			}
-		], clbk)
-
+		self.import(function(){
+			self.import(clbk);
+		}, 'en')
+		
 
 	}
 
 	self.import = function(clbk, _key){
 
-		var __k = _key || self.key
-
-		console.log(self.loaded[__k], self.loading[__k], __k)
-
-		if(self.loaded[__k])
+		if(self.loaded[_key || self.key])
 		{
 			if (clbk)
 				clbk();
 		}
 		else
 		{
-
-			if(self.loading[__k]){
-				retry(function(){
-					return !self.loading[__k]
-				}, function(){
-					
-					self.import(clbk, __k)
-					
-				})
-
-				return
-			}
-
-			var src = 'localization/' + (__k) + '.js'
-
-			self.loading[__k] = true
+			var src = 'localization/' + (_key || self.key) + '.js?v=2'
 
 			importScript(src, function(){
 
-				self.loaded[__k] = true;
-				self.loading[__k] = false;
+				self.loaded[_key || self.key] == true;
 
-				____loclib = loclib[__k] || {};
+				____loclib = loclib[_key || self.key] || {};
 
 				if (clbk)
 					clbk();

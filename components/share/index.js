@@ -269,7 +269,35 @@ var share = (function(){
 
 				if(m) return true;
 			},
-		
+			embeding20 : function(value){
+
+				var storage = currentShare.export(true)
+
+				self.nav.api.load({
+					open : true,
+					id : 'embeding20',
+					inWnd : true,
+
+					essenseData : {
+						storage : storage,
+						value : value,
+						on : {
+							added : function(value){
+
+								if(type == 'url' && value && actions.checkUrlForImage(value)){
+
+									type = 'images';
+									value = value
+								}
+								currentShare[type].set(value)
+
+								if (renders[type])
+									renders[type]();
+							}
+						}
+					}
+				})
+			},
 			embeding : function(type, value){
 				var storage = currentShare.export(true)
 
@@ -1360,7 +1388,13 @@ var share = (function(){
 					return
 				}
 
-				actions.embeding(type)
+				if (type == 'embeding20'){
+					actions.embeding20()
+				}
+				else
+				{
+					actions.embeding(type)
+				}
 
 				
 			},

@@ -4377,11 +4377,6 @@ input[type=radio].radio:checked + label {
             background: rgb(16, 16, 66);
             border-radius: 10px;
         }
-
-        &::-webkit-scrollbar{
-            display: none!important;
-        }
-        
         .anothercntswrk{
             padding-left: 0!important;
             padding-right: 0!important;
@@ -5490,6 +5485,7 @@ input[type=radio].radio:checked + label {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    display: none;
 
     h1 {
         color: white;
@@ -5520,13 +5516,6 @@ input[type=radio].radio:checked + label {
             animation: zoom-out 0.5s ease-in both;
         }
         &.rotate {
-            -webkit-animation: rotate 1s ease-in-out infinite both;
-            animation: rotate 1s ease-in-out infinite both;
-        }
-    }
-
-    &.cssanimation{
-        img{
             -webkit-animation: rotate 1s ease-in-out infinite both;
             animation: rotate 1s ease-in-out infinite both;
         }
