@@ -11,7 +11,7 @@ self.skipWaiting();
 core.clientsClaim();
 
 core.setCacheNameDetails({
-  prefix: 'test.pocketnet.app',
+  prefix: 'pocketnet.app',
   suffix: 'v0.2.19'
 });
 

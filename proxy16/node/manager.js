@@ -335,6 +335,7 @@ var Nodemanager = function(p){
             }).catch(e => {
                 //console.log("E", e, node.host)
 
+                return Promise.reject(e)
             })
         })
 

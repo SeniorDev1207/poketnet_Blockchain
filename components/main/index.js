@@ -205,7 +205,6 @@ var main = (function(){
 
 			backtolentaClear : function(){
 
-
 				console.log("backtolentaClear")
 				
 				self.nav.api.history.removeParameters(['v'])
@@ -545,8 +544,7 @@ var main = (function(){
 				var loader = null
 				var fp = false
 
-				if (lenta) {
-					console.log("HERE")
+				if(lenta) {
 					lenta.destroy()
 				}
 
@@ -945,11 +943,8 @@ var main = (function(){
 					makePanel()
 				}
 				
-				console.log("HANDLER!!!")
-				if (lenta) {
-					lenta.destroy()
-					lenta = null
-				}
+
+				if(lenta) lenta.destroy()
 
 				renders.lentawithsearch()
 
@@ -1048,7 +1043,6 @@ var main = (function(){
 
 
 				if (lenta){
-					console.log("lenta.destrlenta.destr")
 					lenta.destroy()
 				}
 
@@ -1075,7 +1069,6 @@ var main = (function(){
 				panel = null
 				roller = null
 				lenta = null
-				share = null
 				videomain = false
 				fixeddirection = null
 				self.app.el.footer.removeClass('workstation')
