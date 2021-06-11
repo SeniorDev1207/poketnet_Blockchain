@@ -4,8 +4,6 @@ if(typeof require != 'undefined' && typeof __map == 'undefined')
 	var __map = require("./_map.js");
 }*/
 
-if (typeof _OpenApi == 'undefined') _OpenApi = false;
-
 if(typeof _Electron != 'undefined' && _Electron){
 
 	imagesLoaded = require('imagesloaded');
@@ -635,7 +633,6 @@ Application = function(p)
 
 		self.options.fingerPrint = hexEncode('fakefingerprint');
 
-		console.log("IMHERE")
 
 		self.localization.init(function(){
 			newObjects(p);
@@ -644,9 +641,6 @@ Application = function(p)
 			lazyActions([
 				self.platform.prepare
 			], function(){
-
-
-				console.log("IMHERE", hideSplashScreen)
 
 
 				self.realtime();
@@ -663,8 +657,7 @@ Application = function(p)
 				if (p.clbk) 
 					p.clbk();
 
-				if(!_OpenApi)
-					self.showuikeysfirstloading()
+				self.showuikeysfirstloading()
 
 			})
 		})
