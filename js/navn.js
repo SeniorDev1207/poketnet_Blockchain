@@ -555,28 +555,21 @@ Nav = function(app)
 
 					if (current.module && !p.inWnd){
 
-						try{
+						var stop = current.module.stop(p.href);
 
-							var stop = current.module.stop(p.href);
+						if (stop && _.isObject(stop)){
 
-							if (stop && _.isObject(stop)){
-
-								if (stop.action){
-									stop.action(function(){
-										core.open(p)
-									})
-								}
-
-								return
+							if (stop.action){
+								stop.action(function(){
+									core.open(p)
+								})
 							}
 
-							if (stop && typeof stop == 'function'){
-								p.preshell = stop;
-							}
-
+							return
 						}
-						catch(e){
-							console.error("CANT DESTROY", p.href, current.module)
+
+						if (stop && typeof stop == 'function'){
+							p.preshell = stop;
 						}
 					}
 

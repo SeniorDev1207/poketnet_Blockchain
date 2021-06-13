@@ -6084,13 +6084,7 @@
 		{
 			var scrollTop = ofssetObj.top + offset;
 
-			if (el) {
-				try{
-					scrollTop = scrollTop + el.scrollTop() - el.offset().top + offset
-				}
-				catch(e){}
-				
-			}
+			if (el) scrollTop = scrollTop + el.scrollTop() - el.offset().top + offset
 
 			_scrollTop(scrollTop, el, time);
 		}

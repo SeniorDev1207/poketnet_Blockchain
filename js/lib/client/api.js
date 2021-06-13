@@ -14,6 +14,7 @@ var ProxyRequest = function(app = {}, proxy){
 
         if (proxy && proxy.session) session = proxy.session
 
+
         if (app.user && app.user.getstate() == 1){
             try{ signature = app.user.signature(session) } catch(e){}
         }
@@ -88,19 +89,13 @@ var ProxyRequest = function(app = {}, proxy){
 
         var er = false
 
-        if (p.auth)
-            data = sign(data)
-        else{
-            if (app.user && app.user.getstate() == 1){ data.state = 1 }
-        }
-
         return fetch(url, {
 
             method: p.method || 'POST',
             mode: 'cors', 
             headers: headers,
             signal : signal,
-            body: JSON.stringify(data)
+            body: JSON.stringify(sign(data))
 
         }).then(r => {
 
@@ -419,28 +414,21 @@ var Proxy16 = function(meta, app, api){
 
     var wait = {}
 
-    self.fetch = function(path, data, p){
+    self.fetch = function(path, data, waiting){
 
         var promise = null
 
         if (self.direct){
-            promise = self.system.fetch(path, data, p)
+            promise = self.system.fetch(path, data)
         }
         else{
-            promise = request.fetch(self.url.https(), path, data, p)
+            promise = request.fetch(self.url.https(), path, data)
         }
 
         return promise.then(r => {
             return Promise.resolve(r)
         })
        
-    }
-
-    self.fetchauth = function(path, data, p){
-        if(!p) p = {}
-        p.auth = true
-
-        return self.fetch(path, data, p)
     }
 
     self.get = {
@@ -453,11 +441,11 @@ var Proxy16 = function(meta, app, api){
         },
 
         info : function(){
-            return self.fetchauth('info')
+            return self.fetch('info')
         },
 
         stats : function(){
-            return self.fetchauth('stats')
+            return self.fetch('stats')
         }
     }
 
