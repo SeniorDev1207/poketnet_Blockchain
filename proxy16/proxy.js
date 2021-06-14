@@ -3,7 +3,7 @@ var _ = require('underscore')
 var fs = require('fs');
 var path = require('path');
 
-
+const { performance } = require('perf_hooks');
 ////////////
 var f = require('./functions');
 var svgCaptcha = require('svg-captcha');
@@ -553,7 +553,7 @@ var Proxy = function (settings, manage, test) {
 			var ins = {1 : ['pocketnetpeertube1.nohost.me'], 5 : ['pocketnetpeertube5.nohost.me'], 6 : ['pocketnetpeertube4.nohost.me', 'pocketnetpeertube6.nohost.me']}
 
 			if (test){
-				ins = {6 : ['pocketnetpeertube4.nohost.me']}
+				ins = {3 : ['pocketnetpeertube3.nohost.me'], 6 : ['pocketnetpeertube4.nohost.me', 'pocketnetpeertube6.nohost.me']}
 			}
 
 			console.log('ins', ins)
@@ -800,8 +800,6 @@ var Proxy = function (settings, manage, test) {
 
 					result = r
 
-				
-
 				var withvideos = _.filter(posts, p => {
 					return p.type == 'video' && p.u
 				})
@@ -818,28 +816,35 @@ var Proxy = function (settings, manage, test) {
 					return p.address == u
 				})})
 
-				console.log('users', users, videos)
+				return Promise.resolve()
 
-				return rpc({
+			}).then(() => {
+
+				var userPr = rpc({
 					method : 'getuserprofile',
 					parameters : [users, '1'],
 					options, U
+				}).then(users => {
+					result.data.users = users.data
+
+					return Promise.resolve()
 				})
 
-			}).then(users => {
-				result.data.users = users.data
-
-				return videosapi({
+				var videosPr = videosapi({
 					urls : videos
+				}).then(videos => {
+					result.data.videos = videos.data
+
+					return Promise.resolve()
 				})
-				
+
+				return Promise.all([userPr, videosPr])
+
 			}).then(videos => {
-				result.data.videos = videos.data
 
 				return Promise.resolve(result)
 			}).catch(e => {
 
-				console.log("E", e)
 				return Promise.reject(e)
 			})
 		}
@@ -1487,6 +1492,34 @@ var Proxy = function (settings, manage, test) {
 
 	self.wallet.events()
 
+
+	/////////tests
+
+	/*var ids = []
+
+	var c = 3000000
+
+	for(var i = 0 ; i < c; i++){
+		ids.push(f.makeid())
+	}
+
+	var time = performance.now()
+	
+	for(var i = 0 ; i < c; i++){
+		f.rot13(ids[i])
+	}
+
+	var difference = performance.now() - time;
+	
+
+	var time = performance.now()
+
+	for(var i = 0 ; i < c; i++){
+		f.hash(ids[i])
+	}
+	var difference = performance.now() - time;*/
+
+		
 	return self
 
 }

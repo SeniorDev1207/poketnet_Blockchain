@@ -75,7 +75,7 @@ Application = function(p)
 		url : url,
 
 		nav : {
-			navPrefix : window.pocketnetpublicpath || '/pocketnet',
+			navPrefix : window.pocketnetpublicpath || '/',
 		},
 
 		name : 'PCRB',
