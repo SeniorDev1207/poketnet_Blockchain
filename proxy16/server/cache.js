@@ -35,11 +35,6 @@ var Cache = function(p){
             time : 160,
             block : 0
         },
-
-        getrawtransactionwithmessagebyid: {
-            time : 460,
-            block : 0
-        },
        
         getrawtransactionwithmessage: {
             time : 460,
@@ -107,7 +102,7 @@ var Cache = function(p){
         
         if (ckeys[key]){
 
-            var k = f.rot13(JSON.stringify(params))
+            var k = f.hash(JSON.stringify(params))
 
             if(!storage[key])
                 storage[key] = {}
@@ -146,7 +141,7 @@ var Cache = function(p){
                 return self.getsmart(key, params)
             }
 
-            var k = f.rot13(JSON.stringify(params))
+            var k = f.hash(JSON.stringify(params))
 
             var sd = f.deep(storage, key + "." + k)
 
@@ -187,7 +182,7 @@ var Cache = function(p){
 
         var waitid = f.makeid()
 
-        var k = f.rot13(JSON.stringify(params))
+        var k = f.hash(JSON.stringify(params))
 
 
         if(!waiting[key])

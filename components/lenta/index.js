@@ -36,7 +36,6 @@ var lenta = (function(){
 			prevscroll = 0,
 			lastscroll = 0,
 			playVideoTimer,
-			sharesPreInitVideoTimer,
 			ascroll = 0,
 			ascrollel = null,
 			newmaterials = 0,
@@ -45,7 +44,6 @@ var lenta = (function(){
 			shareheights = {},
 			_reposts = {},
 			fixedblock = 0,
-			delay = null,
 			fullscreenvideoShowed = false;
 
 		var countshares = 0;
@@ -204,30 +202,6 @@ var lenta = (function(){
 				}, shareid)
 
 			},
-			cleardelay : function(){
-				if(delay){
-					clearTimeout(delay)
-					delay = null
-				}
-				
-				if (el.c)
-					el.c.removeClass('rebuilding')
-			},
-			rebuilddelay : function(){
-
-				if (el.c)
-					el.c.addClass('rebuilding')
-
-				delay = slowMade(function(){
-
-					_scrollToTop(el.shares, null, 10, -80)
-
-					actions.loadprev()
-				}, delay, 600)	
-
-					
-			},
-
 			loadprev : function(clbk){
 				el.c.find('.shares').html('<div class="bspacer"></div>')
 				el.c.removeClass('showprev')
@@ -258,8 +232,7 @@ var lenta = (function(){
 				})
 
 				_.each(players, function(p){
-					if (p.p)
-						p.p.destroy()
+					p.p.destroy()
 				})
 
 				_.each(initedcommentes, function(c){
@@ -300,24 +273,7 @@ var lenta = (function(){
 				mscrolling = false
 				rendering = false
 				prevscroll = 0
-
-				if(getPreviewTimer){
-					clearTimeout(getPreviewTimer)
-					getPreviewTimer = null
-				}
-
-				if(playVideoTimer){
-					clearTimeout(playVideoTimer)
-					playVideoTimer = null
-				}
-
-				if(sharesPreInitVideoTimer){
-					clearTimeout(sharesPreInitVideoTimer)
-					sharesPreInitVideoTimer = null
-					
-				}
-
-
+				playVideoTimer = null
 				ascroll = 0
 				ascrollel = null
 				beginmaterial = null
@@ -518,46 +474,26 @@ var lenta = (function(){
 				})
 			},
 			destroyVideo : function(share){
-				if (!players[share.txid]){
+				if (!players[share.txid] || players[share.txid].error){
 					return
 				}
-
-				if (players[share.txid].p)
-					players[share.txid].p.destroy()
+				
+				players[share.txid].p.destroy()
 
 				delete players[share.txid]
 
 				renders.urlContent(share)
 			},
-			initVideo : function(el, share, clbk, shadow){
+			initVideo : function(el, share, clbk){
 
-				if(!share || !share.txid) return
+				if(!share) return
 
-				var pels = el.find('.js-player');
-				var vel = el.find('.videoWrapper')
-
-
-				if (shadow && !players[share.txid]){
-
-					players[share.txid] = {
-						shadow : true,
-						el : vel,
-						txid : share.txid
-					}
+				if (players[share.txid] && !players[share.txid].error){
 
 					if(clbk) clbk(true)
 
 					return
 				}
-
-				if (players[share.txid] && !players[share.txid].error && !players[share.txid].shadow){
-
-					if(clbk) clbk(true)
-
-					return
-				}
-
-				
 
 				if (self.app.platform.sdk.usersettings.meta.embedvideo && !
 					self.app.platform.sdk.usersettings.meta.embedvideo.value) {
@@ -567,7 +503,8 @@ var lenta = (function(){
 						return
 					}
 				
-			
+				var pels = el.find('.js-player');
+				var vel = el.find('.videoWrapper')
 
 
 				if (pels.length && pels[0].getAttribute)
@@ -593,7 +530,6 @@ var lenta = (function(){
 							players[share.txid].initing = true
 							players[share.txid].el = vel
 							players[share.txid].id = vel.attr('pid')
-							players[share.txid].shadow = false
 
 							actions.setVolume(players[share.txid])
 
@@ -613,6 +549,9 @@ var lenta = (function(){
 								error : true
 							}
 						}
+
+						
+
 						
 					};
 
@@ -626,6 +565,7 @@ var lenta = (function(){
 						},
 
 						volumeChange : function(v){
+							console.log('videosVolume', v)
 							videosVolume = v
 						}
 					}
@@ -951,6 +891,8 @@ var lenta = (function(){
 
 				//player.p.muted = true;
 
+				console.log('videosVolume', videosVolume)
+
 				actions.setVolume(players[id], videosVolume)
 
 				self.app.nav.api.history.removeParameters(['v'])
@@ -1203,11 +1145,6 @@ var lenta = (function(){
 			},
 
 			///
-			scrollToPost : function(id){
-			
-				_scrollTo($('#' + id))
-				
-			},
 
 			videosInview : function(players, action, nvaction){				
 
@@ -1251,8 +1188,6 @@ var lenta = (function(){
 
 							if (player){
 
-								
-
 								setTimeout(function(){
 
 									var inv = inView(vel, {
@@ -1288,10 +1223,17 @@ var lenta = (function(){
 				}
 
 			},
+
+			scrollToPost : function(id){
+			
+				_scrollTo($('#' + id))
+				
+			},
 			
 			sharesInview : function(shares, action, nvaction){
 
 				var cscroll = w.scrollTop();
+
 
 				if (shares.length && !mscrolling)
 
@@ -1384,7 +1326,7 @@ var lenta = (function(){
 
 				const metaInfo = self.app.platform.parseUrl(share.url);
 
-				const peertubeLink = `https://`+self.app.options.url+`/embedVideo.php?host=${metaInfo.host_name}&id=${metaInfo.id}&embed=true&s=${share.txid}`;
+				const peertubeLink = `https://`+self.app.options.url+`/embedVideo.php?host=${metaInfo.host_name}&id=${metaInfo.id}&embed=true&sLink=${share.txid}`;
 
 				(metaInfo.type === 'peertube') ? copycleartext(peertubeLink) : copycleartext(share.url);
 
@@ -1406,48 +1348,93 @@ var lenta = (function(){
 		}
 
 		var events = {
-			sharesPreInitVideo : function(){
+			repost : function(){
+				var shareId = $(this).closest('.share').attr('id');
 
-				var shadowVideos = {} 
-				
-				_.each(players, function(p){
-					if (p.shadow && p.txid){
-						shadowVideos[p.txid] = true
-					}
-				})
-
-				var shadowShares = _.filter(sharesInview, function(s){
-					return shadowVideos[s.txid]
-				})
-
-				if(shadowShares.length){
-
-					sharesPreInitVideoTimer = slowMade(function(){
-
-						if(!el.c) return
-
-						var st = el.w.scrollTop()
-
-						_.each(shadowShares, function(share){
-							var _el = el.c.find('#' + share.txid)
-
-							if (_el.length){
-
-								if(st + 1500 > _el.offset().top){
-									actions.initVideo(_el, share)
-								}
-							}	
-						})
-
-					}, sharesPreInitVideoTimer, 30)
-					
-				}
-
+				actions.repost(shareId);
 			},
 
-			sharesInview : function(e){
+			scrolldirection : function(){
+
+				return
+
+				var st = $(this).scrollTop();
+
+					if (st > lastscroll && st > 150){
+
+						if (window.cordova)
+							actions.scrollmode(true)	
+						// downscroll code
+					} else {
+						actions.scrollmode(false)
+						// upscroll code
+					}
 
 				
+				lastscroll = st;
+			},
+
+			showmorebyauthor : function(){
+
+				$(this).closest('.authorgroup').find('.share').removeClass('hidden')
+
+				$(this).remove()
+
+				renders.sharesInview(sharesInview, function(shares){
+
+				}, function(){
+
+				})
+
+			},
+			metmenu : function(){
+				var _el = $(this);
+				var id = $(this).closest('.share').attr('id');
+
+				self.app.platform.api.metmenu(_el, id, actions)
+
+			},
+			resize : function(){
+
+				var _el = el.c.find('.fullScreenVideo');
+
+				if (_el.length > 0){
+					actions.videoPosition(_el)
+				}
+
+				
+			},	
+			loadmorescroll : function(){
+
+				if(!essenseData.horizontal){
+					if (
+
+						(el.w.scrollTop() + el.w.height() > el.c.height() - 2000) 
+	
+						&& !loading && !ended && recommended != 'recommended' && recommended != 'hot') {
+	
+						actions.loadmore()
+	
+					}
+				}
+				else{
+
+					if (
+
+						(el.w.scrollLeft() + el.w.width() > el.c.find('.shares').width() - 2000) 
+	
+						&& !loading &&  (!ended && recommended != 'recommended')  ) {
+
+
+						actions.loadmore()
+	
+					}
+				}	
+
+				
+			},
+			sharesInview : function(e){
+
 				
 				actions.sharesInview(sharesInview, function(invshares, els, clbk){
 
@@ -1488,6 +1475,8 @@ var lenta = (function(){
 				
 			},
 
+			
+
 			videosInview : function(e){
 
 				actions.videosInview(players, function(player, el, clbk){	
@@ -1495,33 +1484,22 @@ var lenta = (function(){
 					if (self.app.platform.sdk.usersettings.meta.videoautoplay && !
 						self.app.platform.sdk.usersettings.meta.videoautoplay.value) return
 
-					var _el = el.closest('.share')
-
 					if(!el.closest('.share').hasClass('showAdditional')){
 
+						if(player.p.getState && player.p.getState() == 'ended') return
 
-						console.log("PLAY")
+						if(!player.p.playing){
+							player.p.play()
 
-						actions.initVideo(_el, share = self.app.platform.sdk.node.shares.storage.trx[_el.attr('id')], function(){
+							console.log("setVolume", videosVolume)
 
-							console.log("PLAY2")
+							actions.setVolume(player)
 
-							if(player.p.getState && player.p.getState() == 'ended') return
-
-							if(!player.p.playing){
-								player.p.play()
-
-								actions.setVolume(player)
-
-								//if (isMobile()){
+							//if (isMobile()){
 
 
-								//}
-							}
-
-						})
-
-						
+							//}
+						}
 
 						
 					}
@@ -1553,75 +1531,6 @@ var lenta = (function(){
 
 				
 			},
-
-			repost : function(){
-				var shareId = $(this).closest('.share').attr('id');
-
-				actions.repost(shareId);
-			},
-
-			showmorebyauthor : function(){
-
-				$(this).closest('.authorgroup').find('.share').removeClass('hidden')
-
-				$(this).remove()
-
-				renders.sharesInview(sharesInview, function(shares){
-
-				}, function(){
-
-				})
-
-			},
-			metmenu : function(){
-				var _el = $(this);
-				var id = $(this).closest('.share').attr('id');
-
-				self.app.platform.api.metmenu(_el, id, actions)
-
-			},
-			resize : function(){
-
-				var _el = el.c.find('.fullScreenVideo');
-
-				if (_el.length > 0){
-					actions.videoPosition(_el)
-				}
-
-				
-			},	
-			loadmorescroll : function(){
-
-				if(!essenseData.horizontal){
-					if (
-
-						(el.w.scrollTop() + el.w.height() > el.c.height() - 2000) 
-	
-						&& !loading && !ended && (recommended != 'recommended' || isMobile())) {
-	
-						actions.loadmore()
-	
-					}
-				}
-				else{
-
-					if (
-
-						(el.w.scrollLeft() + el.w.width() > el.c.find('.shares').width() - 2000) 
-	
-						&& !loading &&  (!ended && recommended != 'recommended')  ) {
-
-
-						actions.loadmore()
-	
-					}
-				}	
-
-				
-			},
-
-
-			
 
 			commentLike : function(){
 				
@@ -2140,7 +2049,7 @@ var lenta = (function(){
 					var hw = _el.find('.work').outerHeight()
 
 					if (players[share.txid] && players[share.txid].inited){
-						
+
 						players[share.txid].p.destroy()
 						players[share.txid].el = null
 						players[share.txid].inited = false
@@ -2174,7 +2083,7 @@ var lenta = (function(){
 				shareInitingMap[share.txid] = true;
 
 				self.shell({
-					name : video ? 'sharevideolight' :  'share',
+					name : video ? 'sharevideo' :  'share',
 					el : _el,
 					data : {
 						share : share,
@@ -2188,10 +2097,22 @@ var lenta = (function(){
 
 					var work = _el.find('.work');
 
-				
+					/*if (ah){
+
+						work.outerHeight(ah)
+					}
+*/
 					shareInitedMap[share.txid] = true;	
 					
 					shareheights[share.txid] = actions.applyheightEl(shareheights[share.txid], _el, 'share')
+
+					/*if(!isMobile())
+
+						p.el.find('.tooltip').tooltipster({
+			                theme: 'tooltipster-light',
+			                maxWidth : 600,
+			                zIndex : 20,
+			            }); */
 
 					renders.stars(share)
 
@@ -2212,7 +2133,7 @@ var lenta = (function(){
 							}
 
 							if(!video)
-								actions.initVideo(p.el, share, null, true)
+								actions.initVideo(p.el, share)
 
 
 							if(isotopeinited) el.shares.isotope()
@@ -2950,6 +2871,7 @@ var lenta = (function(){
 
 			begin : function(clbk){
 
+				console.log("beginbeginbeginbegin")
 				if(beginmaterial && !beginmaterialloaded && (!recommended || recommended == 'sub')){
 			
 					self.app.platform.sdk.node.shares.getbyid(beginmaterial, function(shares){
@@ -2972,6 +2894,8 @@ var lenta = (function(){
 			},	
 
 			sstuff : function(shares, error, pr, clbk, bshares){
+
+				console.log("bshares", bshares, shares)
 
 				if(!bshares) bshares = []
 
@@ -3091,6 +3015,8 @@ var lenta = (function(){
 
 				loading = true;
 
+				console.log("LOADDADADDD", essenseData)
+
 				if (essenseData.loader){
 					essenseData.loader(function(shares, error, pr){
 						load.sstuff(shares, error, pr, clbk)
@@ -3102,7 +3028,11 @@ var lenta = (function(){
 
 					self.app.user.isState(function(state){
 
+						console.log('state', state)
+
 						load.begin(function(bshares){
+
+							console.log("HERE", essenseData.loaderkey, recommended)
 
 							var author = essenseData.author;
 
@@ -3119,8 +3049,6 @@ var lenta = (function(){
 								if(recommended == 'recommended'){
 									loader = 'recommended'
 								}
-
-								else
 
 								if(recommended == 'hot'){
 								}
@@ -3159,6 +3087,9 @@ var lenta = (function(){
 							if (essenseData.tags) tagsfilter = essenseData.tags
 
 							var page = essenseData.page || parameters().page || 0
+
+
+							console.log('loaderloaderloaderloader', loader)
 
 
 							self.app.platform.sdk.node.shares[loader]({
@@ -3246,6 +3177,8 @@ var lenta = (function(){
 		}
 
 		var shownewmaterials = function(c){
+
+			console.log("shownewmaterials", c)
 
 			if(/*!beginmaterial && */recommended != 'recommended' && !essenseData.author && !essenseData.search){
 
@@ -3372,13 +3305,10 @@ var lenta = (function(){
 
 			if(!essenseData.openapi){
 
+				
+				el.w.on('scroll', events.scrolldirection);
+				el.w.on('scroll', events.videosInview);
 				el.w.on('resize', events.resize);
-				
-				if(!essenseData.horizontal){
-					el.w.on('scroll', events.videosInview);
-					el.w.on('scroll', events.sharesPreInitVideo);
-				}
-				
 
 				if(!essenseData.notscrollloading){
 					el.w.on('scroll', events.sharesInview);
@@ -3584,8 +3514,7 @@ var lenta = (function(){
 					self.app.platform.sdk.categories.clbks.selected.lenta = function(data){
 
 						if(getloader() == 'hierarchical' && !essenseData.second){
-
-							actions.rebuilddelay()
+							actions.loadprev()
 						}
 						
 					}
@@ -3665,8 +3594,6 @@ var lenta = (function(){
 
 			making = true;
 
-			actions.cleardelay()
-
 			var cache = 'clear';
 			var clear = true;
 
@@ -3724,7 +3651,12 @@ var lenta = (function(){
 				else
 				{
 
-					
+					/*if(beginmaterial && !recommended){
+						el.c.addClass('showprev')
+
+						if (essenseData.renderclbk)
+							essenseData.renderclbk()
+					}*/
 
 					if (clear)
 						el.c.find('.shares').html('')
@@ -3736,8 +3668,6 @@ var lenta = (function(){
 							making = false;
 
 							events.sharesInview()
-							events.sharesPreInitVideo()
-							events.videosInview()
 
 							var p = parameters()
 
@@ -3936,8 +3866,6 @@ var lenta = (function(){
 					
 				}
 
-				actions.cleardelay()
-
 				actions.scrollmode(false)
 
 				isotopeinited = false
@@ -3992,15 +3920,10 @@ var lenta = (function(){
 				video = false					
 
 				if (el.w){
-
-
-						el.w.off('scroll', events.sharesPreInitVideo);
-						el.w.off('scroll', events.videosInview);
-						el.w.off('scroll', events.sharesInview);
-
-
-
+					el.w.off('scroll', events.videosInview);
+					el.w.off('scroll', events.sharesInview);
 					el.w.off('scroll', events.loadmorescroll);
+					el.w.off('scroll', events.scrolldirection);
 					el.w.off('resize', events.resize);
 				}
 				

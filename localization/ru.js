@@ -228,10 +228,6 @@ ____loclib.aynofollowers = "У вас еще нет подписчиков";
 ____loclib.anofollowing = "этот пользователь еще ни на кого не подписан";
 ____loclib.aynofollowing = "Вы еще ни на кого не подписаны";
 
-____loclib.blockedusers = "Заблокированные";
-____loclib.anoblocked = "Этот пользователь еще никого не заблокировал";
-____loclib.aynoblocked = "Вы еще никого не заблокировали";
-
 //lenta
 ____loclib.lloadmore = "Загрузить больше публикаций!";
 ____loclib.lloadprev = "Загрузить свежие материалы"
@@ -863,3 +859,6 @@ ____loclib.pbp_11 = 'По вопросам обращайтесь'
 
 ____loclib["Top videos"] = 'Лучшие видео'
 ____loclib["More videos by this author"] = 'Другие видео от этого автора'
+
+____loclib.goLive = 'Начать Трансляцию'
+____loclib.streamInfo = 'Ключи Трансляции'

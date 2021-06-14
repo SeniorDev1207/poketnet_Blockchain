@@ -4334,12 +4334,7 @@ Platform = function (app, listofnodes) {
 
                 var adrref = localStorage[adr + 'subscribeRef'];
 
-                
-
                 if (adrref) {
-
-                    delete localStorage['ref'];
-                    
                     self.sdk.users.get(adrref, function () {
 
                         var r = self.sdk.usersl.storage[adrref]
@@ -5184,7 +5179,6 @@ Platform = function (app, listofnodes) {
 
         contents: {
             storage: {},
-            loading : {},
 
             groups: [{
                 key: 'art',
@@ -5245,31 +5239,19 @@ Platform = function (app, listofnodes) {
 
             get: function (address, clbk) {
 
-                var st = self.sdk.contents.storage
-                var ld = self.sdk.contents.loading
-                var gt = self.sdk.contents.get
+                var st = this.storage
 
                 var timecache = deep(st, address + ".time")
 
-                if (timecache && timecache.addMinutes(100) > (new Date())) {
+
+
+                if (timecache && timecache.addMinutes(10) > (new Date())) {
 
                     if (clbk)
                         clbk(deep(this, 'storage.' + address + ".data"))
 
                     return
                 }
-
-                if (ld[address]){
-                    retry(function(){
-                        return !ld[address]
-                    }, function(){
-                        gt(address, clbk)
-                    })
-
-                    return
-                }
-
-                ld[address] = true
 
                 self.app.api.rpc('getcontents', [address]).then(d => {
 
@@ -5279,7 +5261,9 @@ Platform = function (app, listofnodes) {
 
                         if (!d.content) return
 
+
                         try {
+
 
                             var c = {
                                 caption: filterXSS(decodeURIComponent(d.content), {
@@ -5289,8 +5273,10 @@ Platform = function (app, listofnodes) {
                                 time: new Date(d.time),
                                 txid: d.txid,
                                 settings: JSON.parse(d.settings),
+
                                 scoreCnt: Number(d.scoreCnt),
                                 scoreSum: Number(d.scoreSum),
+
                             }
 
                             c.score = 0;
@@ -5311,8 +5297,6 @@ Platform = function (app, listofnodes) {
                         time: new Date()
                     }
 
-                    ld[address] = false
-
                     if (clbk)
                         clbk(list)
         
@@ -5320,6 +5304,15 @@ Platform = function (app, listofnodes) {
                     
                 })
 
+
+                /*self.app.ajax.rpc({
+                    method: 'getcontents',
+                    parameters: [address],
+                    success: function (d) {
+
+                        
+                    }
+                })*/
 
             }
         },
@@ -5612,7 +5605,7 @@ Platform = function (app, listofnodes) {
                                 captcha: self.sdk.captcha.done
                             }
 
-                            self.app.api.fetchauth('free/registration', prms).then(d => {
+                            self.app.api.fetch('free/registration', prms).then(d => {
                                 if (clbk)
                                         clbk(true)
 
@@ -5991,8 +5984,29 @@ Platform = function (app, listofnodes) {
                                 clbk(null, e)
                             }
                         })
-                        
+
+                        /*self.app.ajax.rpc({
+                            method: 'getuseraddress',
+                            parameters: [name],
+                            success: function (d) {
+
+
+                                var r = deep(d, '0.address');
+
+                                if (clbk)
+                                    clbk(r || null)
+                            },
+                            fail: function (d, e) {
+
+                                if (clbk) {
+                                    clbk(null, e)
+                                }
+
+                            }
+                        })*/
                     }
+
+
 
                 }
 
@@ -6161,7 +6175,7 @@ Platform = function (app, listofnodes) {
 
             make: function (text, clbk) {
 
-                self.app.api.fetchauth('makecaptcha', {
+                self.app.api.fetch('makecaptcha', {
                     captcha: this.current || null,
                     text: text
                 }).then(d => {
@@ -9804,9 +9818,7 @@ Platform = function (app, listofnodes) {
                         else {
                             //var parameters = ['30', '259200', 600000, self.app.localization.key];
 
-                            console.log(p.period, self.sdk.node.shares.parameters.defaults.period, self.sdk.node.shares.parameters.stor.period)
-
-                            var period = p.period || self.sdk.node.shares.parameters.stor.period || self.sdk.node.shares.parameters.defaults.period || '4320' ///self.sdk.node.shares.parameters.defaults.period 
+                            var period = p.period || self.sdk.node.shares.parameters.stor.period || '259200' ///self.sdk.node.shares.parameters.defaults.period 
 
                             var page = p.page || 0
                             
@@ -15135,6 +15147,7 @@ Platform = function (app, listofnodes) {
                             views : linkInfo.views,
                             duration : linkInfo.duration,
                             aspectRatio : linkInfo.aspectRatio || 1,
+                            isLive : linkInfo.isLive,
                         } : '';
 
                         window.peertubeglobalcache[link.meta.id] = linkInfo

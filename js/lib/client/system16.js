@@ -207,10 +207,7 @@ var System16 = function(app, proxy, direct){
         }
 
         else{
-
-            console.log("FETCH AUTH")
-
-            return proxy.fetchauth('manage', rdata)
+            return proxy.fetch('manage', rdata)
         } 
             
     }

@@ -411,7 +411,7 @@ var main = (function(){
 							
 						},
 
-						compact : true
+						compact : isMobile() ? true : false
 	
 					})
 				}
@@ -599,15 +599,6 @@ var main = (function(){
 						video : videomain && !isMobile(),
 						videomobile : videomain && isMobile(),
 						window : isMobile() ? el.c.find('.lentacell') : el.w,
-						page : 0,
-						afterload : function(ed, s, e){
-
-							if(!isMobile()) return
-
-							if(e || !s.length) return
-
-							ed.page++
-						},
 						opensvi : function(id){
 
 							lastscroll = el.w.scrollTop()
@@ -879,7 +870,7 @@ var main = (function(){
 
 			console.log('currentMode', currentMode,videomain )
 
-			if (currentMode == 'common' && !videomain && !searchvalue && !searchtags)
+			if (currentMode == 'common' && !videomain)
 				renders.topvideos(true)
 
 			/*
@@ -943,7 +934,7 @@ var main = (function(){
 					videomain = _vm
 				}
 
-				renders.topvideos(currentMode == 'common' && !videomain && !searchvalue && !searchtags)
+				renders.topvideos(currentMode == 'common' && !videomain)
 
 				if (videomain){
 
@@ -1132,8 +1123,6 @@ var main = (function(){
 				var wordsRegExp = /[,.!?;:() \n\r]/g
 
 				initEvents();
-
-				
 
 				if(!p.goback){
 					searchvalue = parameters().ss || ''

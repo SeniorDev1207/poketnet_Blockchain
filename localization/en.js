@@ -224,10 +224,6 @@ ____loclib.aynofollowers = "You have no followers";
 ____loclib.anofollowing = "This user is not following anyone";
 ____loclib.aynofollowing = "You are not following anyone";
 
-____loclib.blockedusers = "Blocked Users";
-____loclib.anoblocked = "This user is not blocked anyone";
-____loclib.aynoblocked = "You are not blocked anyone";
-
 //lenta
 ____loclib.lloadmore = "Load More Awesome Posts!";
 ____loclib.lloadprev = "Load New Awesome Posts";
@@ -1042,3 +1038,7 @@ ____loclib["Top Videos"] = 'Top Videos'
 ____loclib["More videos by this author"] = 'More videos by this author'
 
 ____loclib["pdirectdialog"] = 'External proxies are not responding, would you like to switch to a local proxy?'
+
+
+____loclib.goLive = 'Go Live'
+____loclib.streamInfo = 'Stream Info'
