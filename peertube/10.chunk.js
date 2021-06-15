@@ -21,7 +21,7 @@ var lib = __webpack_require__(516);
 var p2p_media_loader_core_lib = __webpack_require__(220);
 
 // EXTERNAL MODULE: ./src/assets/player/utils.ts + 3 modules
-var utils = __webpack_require__(3);
+var utils = __webpack_require__(4);
 
 // EXTERNAL MODULE: ./node_modules/hls.js/dist/hls.js
 var hls = __webpack_require__(330);
@@ -200,6 +200,7 @@ class hls_plugin_Html5Hlsjs {
     }
     _handleNetworkError(error) {
         setTimeout(() => this.hls.startLoad(), 1000);
+        return;
         if (this.errorCounts[hls["ErrorTypes"].NETWORK_ERROR] <= 1) {
             console.info('trying to recover network error');
             // Wait 1 second and retry
@@ -211,7 +212,7 @@ class hls_plugin_Html5Hlsjs {
             return;
         }
         console.info('bubbling network error up to VIDEOJS');
-        // this.hls.destroy()
+        this.hls.destroy();
         this.tech.error = () => error;
         this.tech.trigger('error');
     }
@@ -235,7 +236,7 @@ class hls_plugin_Html5Hlsjs {
             this._handleMediaError(error);
         }
         else {
-            // this.hls.destroy()
+            this.hls.destroy();
             this.tech.error = () => error;
             this.tech.trigger('error');
         }
@@ -598,18 +599,15 @@ class p2p_media_loader_plugin_P2pMediaLoaderPlugin extends Plugin {
             });
             Object(lib["initVideoJsContribHlsJsPlayer"])(player);
         }
-        if (options) {
-            this.startTime = Object(utils["j" /* timeToInt */])(options.startTime);
-            player.src({
-                type: options.type,
-                src: options.src
-            });
-        }
+        this.startTime = Object(utils["i" /* timeToInt */])(options.startTime);
+        player.src({
+            type: options.type,
+            src: options.src
+        });
         player.ready(() => {
             this.initializeCore();
             if (core_default.a.Html5Hlsjs) {
-                if (options)
-                    this.initializePlugin();
+                this.initializePlugin();
             }
         });
     }

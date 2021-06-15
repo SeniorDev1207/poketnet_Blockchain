@@ -228,32 +228,10 @@ var author = (function(){
 				render : 'followers',
 				history : true,
 				count : function(){
-
-					var u = _.map(deep(author, 'data.subscribers') || [], function(a){
-						return a
-					})
-	
-					var blocked = deep(author, 'data.blocking') || []
-	
-					u = _.filter(u, function(a){
-						return _.indexOf(blocked, a) == -1
-					})
 					
-					return u.length
+					return deep(author, 'data.subscribers.length') || 0 
 				
 				}
-			},
-
-			contents : {
-				name : self.app.localization.e('followers').toUpperCase(),
-				mobile : '<i class="fas fa-users"></i>',
-				id : 'contents',
-				render : 'contents',
-				history : true,
-				if : function(){
-					return false
-				}
-				
 			},
 
 			following : {
@@ -263,35 +241,7 @@ var author = (function(){
 				render : 'following',
 				history : true,
 				count : function(){
-
-					var u = _.map(deep(author, 'data.subscribes') || [], function(a){
-						return a.adddress
-					})
-	
-					var blocked = deep(author, 'data.blocking') || []
-	
-					u = _.filter(u, function(a){
-						return _.indexOf(blocked, a) == -1
-					})
-
-					return u.length
-				}
-			},
-
-			blocking : {
-				name : self.app.localization.e('blockedusers').toUpperCase(),
-				id : 'blocking',
-				mobile : '<i class="fas fa-user-slash"></i>',
-				render : 'blocking',
-				history : true,
-				if : function(){
-					if(self.user.isItMe(author.address)) return true
-				},
-				count : function(){
-
-					var blocked = deep(author, 'data.blocking') || []
-
-					return blocked.length
+					return deep(author, 'data.subscribes.length') || 0 
 				}
 			},
 
@@ -382,23 +332,34 @@ var author = (function(){
 		}
 
 		var renders = {
-			contents : function(_el, report){
+			contents : function(contents, clbk){
 
-				self.app.platform.sdk.contents.get(author.address, function(contents){
+				var selected = parameters().mt
 
-					var selected = parameters().mt
+				var pp = {
 
-					var pp = {
-						name :  'contents',
-						el :   _el,
-						data : {
-							contents : contents,
-							author : author,
-							selected : selected
-						},
-					}
+					name :  'contents',
+					el :   el.contents,
 
-					self.shell(pp, function(p){})
+					data : {
+						contents : contents,
+						author : author,
+						selected : selected
+					},
+
+				}
+
+
+				self.shell(pp, function(p){
+
+
+
+					p.el.find('.hasmore .captiontable').on('click', function(){
+						$(this).closest('.hasmore').toggleClass('showedmore')
+					})
+
+					if (clbk)
+						clbk();
 
 				})
 			},
@@ -513,10 +474,9 @@ var author = (function(){
 
 					renders.menulight()
 
-					/*if(!isMobile())
-						self.app.platform.sdk.contents.get(author.address, function(contents){
-							renders.contents(contents)	
-						})*/
+					self.app.platform.sdk.contents.get(author.address, function(contents){
+						renders.contents(contents)	
+					})
 				}
 				
 			},
@@ -610,38 +570,26 @@ var author = (function(){
 
 			info : function(_el){
 
-				self.sdk.ustate.get(author.address, function(){
+				self.shell({
 
-					author.state = self.sdk.ustate.storage[author.address]
+					name :  'info',
+					el :   _el,
 
-					self.shell({
+					data : {
+						author : author
+					},
 
-						name :  'info',
-						el :   _el,
+					animation : 'fadeIn',
 
-						data : {
-							author : author
-						},
+				}, function(p){
 
-						animation : 'fadeIn',
+					p.el.find('.showmoreabout').on('click', actions.showmoreabout)
 
-					}, function(p){
+					p.el.find('.copyaddress').on('click', function(){
+						copyText($(this))
 
-						p.el.find('.showmoreabout').on('click', actions.showmoreabout)
-
-						p.el.find('.copyaddress').on('click', function(){
-							copyText($(this))
-
-							sitemessage(self.app.localization.e('successcopied'))
-						})
-
-						p.el.find('.postcnt').on('click', function(){
-
-							renders.report(reports.contents)
-
-						})
+						sitemessage(self.app.localization.e('successcopied'))
 					})
-
 				})
 			},
 
@@ -651,19 +599,13 @@ var author = (function(){
 					return a
 				})
 
-				var blocked = deep(author, 'data.blocking') || []
-
-				u = _.filter(u, function(a){
-					return _.indexOf(blocked, a) == -1
-				})
-
 				var e = self.app.localization.e('anofollowers');
 
 				if(self.user.isItMe(author.address)){
 					e = self.app.localization.e('aynofollowers')
 				}
 
-				renders.userslist(_el, u, e, self.app.localization.e('followers'), function(e, p){
+				renders.userslist(_el, u, e, "Followers", function(e, p){
 					report.module = p;
 				})
 			},
@@ -674,36 +616,13 @@ var author = (function(){
 					return a.adddress
 				})
 
-				var blocked = deep(author, 'data.blocking') || []
-
-				u = _.filter(u, function(a){
-					return _.indexOf(blocked, a) == -1
-				})
-
 				var e = self.app.localization.e('anofollowing');
 
 				if(self.user.isItMe(author.address)){
 					e = self.app.localization.e('aynofollowing')
 				}
 
-				renders.userslist(_el, u, e, self.app.localization.e('following'), function(e, p){
-					report.module = p;
-				})
-			},
-
-			blocking : function(_el, report){
-
-				var u = _.map(deep(author, 'data.blocking') || [], function(a){
-					return a
-				})
-
-				var e = self.app.localization.e('anoblocked');
-
-				if(self.user.isItMe(author.address)){
-					e = self.app.localization.e('aynoblocked')
-				}
-
-				renders.userslist(_el, u, e, self.app.localization.e('blockedusers'), function(e, p){
+				renders.userslist(_el, u, e, "Following", function(e, p){
 					report.module = p;
 				})
 			},
@@ -712,7 +631,7 @@ var author = (function(){
 
 				var id = parameters().mt
 
-				//self.app.platform.sdk.contents.get(author.address, function(contents){
+				self.app.platform.sdk.contents.get(author.address, function(contents){
 
 					var _contents = self.app.platform.sdk.contents.getsorteditems(contents)
 
@@ -760,7 +679,7 @@ var author = (function(){
 						})
 	
 					})
-				//})
+				})
 
 				
 
@@ -1160,8 +1079,6 @@ var author = (function(){
 
 		var make = function(ini){
 
-			console.log("make!")
-
 			var r = parameters().report || 'shares'
 
 				reports[r].active = true;
@@ -1195,9 +1112,9 @@ var author = (function(){
 			})	
 
 
-			/*self.app.platform.sdk.contents.get(author.address, function(contents){
+			self.app.platform.sdk.contents.get(author.address, function(contents){
 				renders.contents(contents)	
-			})*/
+			})
 			
 
 			if(!isMobile())
@@ -1251,63 +1168,60 @@ var author = (function(){
 				result = null
 
 
-				console.log("GETDATA", p.address)
-
-
-
 				self.sdk.users.addressByName(p.address, function(address){
 
-					console.log("GETDATA2", address)
-
-				
 
 
 					if (address){
 						author.address = address
 
+						self.sdk.activity.adduser('visited', address)
 
 						self.sdk.users.get(author.address, function(){
 
-							if(!self.app.platform.sdk.address.pnet() || author.address != self.app.platform.sdk.address.pnet().address){
-								reports.shares.name = self.app.localization.e('uposts')
+							self.sdk.ustate.get(author.address, function(){
 
-								if(self.app.curation()){
-									self.nav.api.load({
-										open : true,
-										href : 'userpage',
-										history : true
-									})
-				
-									return
+								if(!self.app.platform.sdk.address.pnet() || author.address != self.app.platform.sdk.address.pnet().address){
+									reports.shares.name = self.app.localization.e('uposts')
+
+									if(self.app.curation()){
+										self.nav.api.load({
+											open : true,
+											href : 'userpage',
+											history : true
+										})
+					
+										return
+									}
 								}
-							}
-							else
-							{
-								reports.shares.name = self.app.localization.e('myuposts')
+								else
+								{
+									reports.shares.name = self.app.localization.e('myuposts')
 
 
-								if(!self.app.user.validate()){
+									if(!self.app.user.validate()){
 
-									self.nav.api.go({
-										href : 'userpage?id=test',
-										history : true,
-										open : true
-									})
+										self.nav.api.go({
+											href : 'userpage?id=test',
+											history : true,
+											open : true
+										})
 
-									return;
+										return;
+									}
 								}
 							
-							}
 
-							author.data = self.sdk.users.storage[author.address]
-							//author.state = self.sdk.ustate.storage[author.address]
+								author.data = self.sdk.users.storage[author.address]
+								author.state = self.sdk.ustate.storage[author.address]
 
-							var data = {
-								author : author
-							};
+								var data = {
+									author : author
+								};
 
-							clbk(data);
+								clbk(data);
 
+							})
 						})
 					}
 
@@ -1356,6 +1270,20 @@ var author = (function(){
 
 				
 
+				/*setTimeout(function(){
+					var c = deep(self, 'app.modules.menu.module.initauthorsearch')
+
+					if (c && isMobile()){
+
+						author.clear = clearsearch
+
+						c(author)
+					}
+
+				}, 300)*/
+
+					
+
 				state.load();
 
 				el = {};
@@ -1373,11 +1301,8 @@ var author = (function(){
 
 				el.info = el.c.find('.authorinfoWrapper')
 
-
 				make(true);
 				initEvents();
-
-				self.sdk.activity.adduser('visited', author.address)
 
 				if(self.user.isItMe(author.address)){
 					self.app.nav.api.backChainClear()

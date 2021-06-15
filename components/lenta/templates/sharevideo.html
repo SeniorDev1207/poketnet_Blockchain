@@ -46,7 +46,10 @@ var metadisplay = function(){ %>
         
                                 <div class="icon">
                                     <div class="usericon usericonsbsa another" image="<%-src || ''%>">
-                                     
+                                        <% if(!src) {%>
+                                            <svg width="30" height="30" data-jdenticon-value="<%-share.address%>"></svg>
+                                        <% } %>
+
 										<% if(deep(app, 'platform.real.'+share.address)) {%>
 											<div class="realperson">
 		

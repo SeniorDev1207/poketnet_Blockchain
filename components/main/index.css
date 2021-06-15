@@ -16,7 +16,6 @@
 }
 #main .topvideosWrapper .horizontalLentaWrapper {
   padding: 1em;
-  padding-bottom: 0;
 }
 #main .topvideosWrapper .horizontalLentacaption {
   padding: 1em 0;
@@ -27,11 +26,6 @@
 }
 #main .topvideosWrapper #lenta.mainvideo .shares .authorgroup .share {
   padding: 0;
-}
-#main .topvideosWrapper .durationWrapper,
-#main .topvideosWrapper .statswrapper {
-  top: 0.5em;
-  bottom: auto!important;
 }
 #main.videomain {
   background: #fcfcfc;

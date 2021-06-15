@@ -149,16 +149,14 @@ var Peertube = function(settings){
                         return Promise.reject({error : true})
                     }
 
+                    console.log("HASCACHE")
+
                     return Promise.resolve(cached);
                 }
 
                 return self.inner.video(parsed).then(r => {
 
-                    var ontime = null
-
-                    if (r && r.isLive) ontime = 60
-
-                    cache.set(cachekey, cacheparameters, r, null, ontime);
+                    cache.set(cachekey, cacheparameters, r);
 
                     return Promise.resolve(r)
                 })
