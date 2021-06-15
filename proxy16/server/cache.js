@@ -35,6 +35,11 @@ var Cache = function(p){
             time : 160,
             block : 0
         },
+
+        getrawtransactionwithmessagebyid: {
+            time : 460,
+            block : 0
+        },
        
         getrawtransactionwithmessage: {
             time : 460,
@@ -98,11 +103,11 @@ var Cache = function(p){
     }
 
 
-    self.set = function(key, params, data, block){
+    self.set = function(key, params, data, block, ontime){
         
         if (ckeys[key]){
 
-            var k = f.hash(JSON.stringify(params))
+            var k = f.rot13(JSON.stringify(params))
 
             if(!storage[key])
                 storage[key] = {}
@@ -110,6 +115,10 @@ var Cache = function(p){
             storage[key][k] = {
                 data : data,
                 time : f.now()
+            }
+
+            if(ontime){
+                storage[key][k].ontime = ontime
             }
 
             if (typeof ckeys[key].block != undefined){
@@ -141,12 +150,12 @@ var Cache = function(p){
                 return self.getsmart(key, params)
             }
 
-            var k = f.hash(JSON.stringify(params))
+            var k = f.rot13(JSON.stringify(params))
 
             var sd = f.deep(storage, key + "." + k)
 
             if (sd){
-                var t = f.date.addseconds(sd.time, ckeys[key].time)
+                var t = f.date.addseconds(sd.time, sd.ontime || ckeys[key].time)
 
                 if (t > f.now()){
                     return sd.data
@@ -182,7 +191,7 @@ var Cache = function(p){
 
         var waitid = f.makeid()
 
-        var k = f.hash(JSON.stringify(params))
+        var k = f.rot13(JSON.stringify(params))
 
 
         if(!waiting[key])

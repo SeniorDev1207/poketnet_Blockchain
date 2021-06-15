@@ -210,6 +210,7 @@ var filluserfast = (function(){
 						else
 						{
 
+
 							self.nav.api.go({
 								href : 'index?r=recommended',
 								history : true,
@@ -219,8 +220,15 @@ var filluserfast = (function(){
 						}
 
 
+						if(isMobile()){
+							self.app.platform.ui.showmykey()
+						}
+						else{
+							self.app.platform.ui.showmykeyfast()
+						}
+
 						
-						self.app.platform.ui.showmykeyfast()
+						
 						
 					}
 
