@@ -39642,6 +39642,7 @@ class PeerTubeEmbedApi {
                 if (e && e.toString) {
                     e = e.toString();
                     if (e && e.indexOf('request was interrupted') > -1) {
+                        console.log("HERER");
                         this.mute();
                         this.embed.player.play();
                     }
@@ -42963,7 +42964,6 @@ class embed_PeerTubeEmbed {
         this.enableApi = false;
         this.startTime = 0;
         this.scope = "peertube";
-        this.playnottranscoded = false;
         this.headers = new Headers();
         this.LOCAL_STORAGE_OAUTH_CLIENT_KEYS = {
             CLIENT_ID: "client_id",
