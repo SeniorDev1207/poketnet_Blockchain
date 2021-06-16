@@ -2578,108 +2578,99 @@ var lenta = (function(){
 
 				}
 
-				console.log('_el', _el)
 
-				window.requestAnimationFrame(function(){
+				_el.imagesLoaded({ background: true }, function(image) {
 
-					_el.imagesLoaded({ background: true }, function(image) {
+					if(s.settings.v != "a"){
 
-						console.log("IMAGES LOADED", image)
+						_.each(image.images, function(img, n){
 
-						if(s.settings.v != "a"){
+							var _img = img.img;
 
-							_.each(image.images, function(img, n){
+							var el = $(image.elements[n]).closest('.imagesWrapper');
+							var ac = '';
 
-								var _img = img.img;
+							var _w = el.width();
+							var _h = el.height()
 
-								var el = $(image.elements[n]).closest('.imagesWrapper');
-								var ac = '';
+							if(_img.width > _img.height && (!isMobile() && window.innerWidth > 640)){
+								ac = 'w2'
 
-								console.log('window.innerWidth', window.innerWidth)
+								var w = _w * (_img.width / _img.height);
 
-								var _w = el.width();
-								var _h = el.height()
+								if (w > images.width()){
+									w = images.width()
 
-								if(_img.width > _img.height && (!isMobile() && window.innerWidth > 768)){
-									ac = 'w2'
+									h = w * ( _img.height / _img.width) 
 
-									var w = _w * (_img.width / _img.height);
-
-									if (w > images.width()){
-										w = images.width()
-
-										h = w * ( _img.height / _img.width) 
-
-										el.height(h);
-									}
-
-									el.width(w);
+									el.height(h);
 								}
 
-								if(_img.height > _img.width || isMobile() || window.innerWidth <= 768){
-									ac = 'h2'
+								el.width(w);
+							}
 
-									el.height(_w * (_img.height / _img.width))
-								}
+							if(_img.height > _img.width || isMobile() || window.innerWidth <= 640){
+								ac = 'h2'
 
-								if(ac){
-									el.addClass(ac)
-								}
-								
-							})
+								el.height(_w * (_img.height / _img.width))
+							}
 
-						}
+							if(ac){
+								el.addClass(ac)
+							}
+							
+						})
 
+					}
+
+
+					shareheights[share.txid] = actions.applyheightEl(shareheights[share.txid], sel)
+
+					var isclbk = function(){
+						images.addClass('active')
+
+						_el.addClass('active')
 
 						shareheights[share.txid] = actions.applyheightEl(shareheights[share.txid], sel)
 
-						var isclbk = function(){
-							images.addClass('active')
+						if (essenseData.renderclbk)
+							essenseData.renderclbk()
 
-							_el.addClass('active')
+						if (clbk)
+							clbk()
+					}
 
-							shareheights[share.txid] = actions.applyheightEl(shareheights[share.txid], sel)
+					if(s.settings.v != 'a' && image.images.length > 1){
 
-							if (essenseData.renderclbk)
-								essenseData.renderclbk()
+						var gutter = 20;
 
-							if (clbk)
-								clbk()
-						}
+						if (isMobile) gutter = 5
 
-						if(s.settings.v != 'a' && image.images.length > 1){
+						images.isotope({
 
-							var gutter = 20;
+							layoutMode: 'packery',
+							itemSelector: '.imagesWrapper',
+							packery: {
+								gutter: gutter
+							},
+							initLayout: false
+						});
 
-							if (isMobile) gutter = 5
-
-							images.isotope({
-
-								layoutMode: 'packery',
-								itemSelector: '.imagesWrapper',
-								packery: {
-									gutter: gutter
-								},
-								initLayout: false
-							});
-
-							images.on('arrangeComplete', function(){
-								isclbk()
-							});
-
-							images.isotope()
-
-							
-						}
-						else
-						{
+						images.on('arrangeComplete', function(){
 							isclbk()
-						}
-					
+						});
 
-					});
+						images.isotope()
 
-				})
+						
+					}
+					else
+					{
+						isclbk()
+					}
+				
+
+				});
 				
 			},
 
