@@ -43,11 +43,6 @@ Localization = function(app){
 		ru : {
 			name : "Русский",
 			key : 'ru'
-		},
-
-		cmn : {
-			name : "官話",
-			key : 'cmn'
 		}
 
 	}
