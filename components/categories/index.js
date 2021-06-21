@@ -279,7 +279,6 @@ var categories = (function(){
 
 		var initEvents = function(){
 			
-			self.app.platform.sdk.categories.clbks.tags.mainmodule =
 			self.app.platform.sdk.categories.clbks.selected.mainmodule = function(id, value, l){
 
 
