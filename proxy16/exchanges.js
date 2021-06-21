@@ -36,14 +36,12 @@ var Exchanges = function(){
 
     var keys = {
         'mercatox' : 'last_price',
-        'bilaxy' : 'close',
-        'bitforex' : 'last'
+        'bilaxy' : 'close'
     }
 
     var apis = {
         'mercatoxPrices' : 'https://mercatox.com/api/public/v1/ticker',
-        'bilaxy' : 'https://newapi.bilaxy.com/v1/ticker/24hr',
-        'bitforex' : 'https://www.bitforex.com/server/market.act?cmd=searchTickers&type=all'
+        'bilaxy' : 'https://newapi.bilaxy.com/v1/ticker/24hr'
     }
 
     var followInterval = null
@@ -72,21 +70,7 @@ var Exchanges = function(){
 
                     return Promise.reject('notfound')
                 })
-            },
-
-            // bitforex : function(){
-            //     return axios.post(apis.bitforex).then(function(response) {
-            //         
-            //         const formatted_data = f.formatExchageKeys(response.data.data)
-                    
-            //         return f.getPkoinPrice(formatted_data, 'last')
-                
-            //     }).catch(e => {
-
-
-            //         return Promise.reject('notfound')
-            //     })
-            // },
+            }
         }
        
     }
@@ -168,7 +152,7 @@ var Exchanges = function(){
                     return Promise.resolve()
 
                 }).catch(e => {
-                    console.log('FAILED TO CALL A FUNCTION: ', e)
+
                     return Promise.resolve()
                 })
 
