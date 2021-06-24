@@ -74,8 +74,6 @@ Application = function(p)
 		
 		url : url,
 
-		matrix : p.matrix,
-
 		nav : {
 			navPrefix : window.pocketnetpublicpath || '/pocketnet',
 		},
