@@ -83,7 +83,7 @@ __map =  {
 		"css/stblack.css",
 		"css/plyr.css",
 		"js/vendor/DateTimePicker.min.css",
-		/*"css/swiper-bundle.min.css",*/
+		"css/swiper-bundle.min.css",
 		"peertube/video-embed.css",
 		"js/vendor/emojionearea.min.css"
 	],
@@ -401,10 +401,11 @@ __map =  {
 			add : {
 				el : 'content'
 			},
-			redirect : {
+			anonimus : true,
+			/*redirect : {
 				auth : 'authorization',
 				//validate : 'filluser'
-			},
+			},*/
 		
 		},
 
@@ -904,9 +905,10 @@ __map =  {
 			add : {
 				el : 'content'
 			},
-			redirect : {
+			anonimus : true,
+			/*redirect : {
 				auth : 'authorization'
-			}
+			}*/
 			
 		},
 		oldchat : {
@@ -1165,6 +1167,7 @@ __map =  {
 		},
 		now : true,
 		renew : true,
+		anonimus : true,
 		reload : true
 	},
 

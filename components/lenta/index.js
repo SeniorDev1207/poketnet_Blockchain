@@ -1318,7 +1318,7 @@ var lenta = (function(){
 											action(player, vel)
 										}
 
-									}, 320)
+									}, 520)
 
 									
 
@@ -1442,7 +1442,7 @@ var lenta = (function(){
 
 				const metaInfo = self.app.platform.parseUrl(share.url);
 
-				const peertubeLink = `https://`+self.app.options.url+`/embedVideo.php?host=${metaInfo.host_name}&id=${metaInfo.id}&embed=true&s=${share.txid}`;
+				const peertubeLink = `https://`+self.app.options.url+`/embedVideo.php?host=${metaInfo.host_name}&id=${metaInfo.id}&embed=true&sLink=${share.txid}`;
 
 				(metaInfo.type === 'peertube') ? copycleartext(peertubeLink) : copycleartext(share.url);
 
@@ -1563,7 +1563,7 @@ var lenta = (function(){
 
 					if(!el.closest('.share').hasClass('showAdditional')){
 
-						actions.initVideo(_el, self.app.platform.sdk.node.shares.storage.trx[_el.attr('id')], function(){
+						actions.initVideo(_el, share = self.app.platform.sdk.node.shares.storage.trx[_el.attr('id')], function(){
 
 							if(player.p.getState && player.p.getState() == 'ended') return
 
@@ -2224,15 +2224,9 @@ var lenta = (function(){
 			},
 			share : function(share, clbk, all){
 
-				if(!share) return
-
-				var _el = el.share[share.txid] //el.shares.find("#" + share.txid);
-
-				//if(!_el) return
+				var _el = el.shares.find("#" + share.txid);
 
 				shareheights[share.txid] = 0;
-
-				
 				
 				if (_el[0])
 					shareheights[share.txid] = _el[0].offsetHeight
@@ -2278,10 +2272,9 @@ var lenta = (function(){
 								p.el.find('.canmark').mark(essenseData.searchValue);
 
 							}
-							
 
 							if(!video)
-								actions.initVideo(p.el, share, null, !essenseData.openapi)
+								actions.initVideo(p.el, share, null, true)
 
 
 							if(isotopeinited) el.shares.isotope()
@@ -2456,14 +2449,22 @@ var lenta = (function(){
 				if(!p.inner) {
 					p.inner = function(el, html){
 
+
 						if(isotopeinited){
+
 							var content = $(html)
 
+
 							el.append( content ).isotope( 'appended', content )
+
 						}
 						else
+
 						return append(el, html)
 					}
+
+
+
 				}
 
 				var tpl = 'groupshares';
@@ -2487,6 +2488,8 @@ var lenta = (function(){
 						})
 					})
 					
+
+				
 				
 				self.shell({
 					name :  tpl,
@@ -2524,7 +2527,7 @@ var lenta = (function(){
 					_.each(shares, function(s){
 						el.share[s.txid] = el.c.find('#' + s.txid)
 					})
-
+					
 					if (essenseData.renderclbk)
 						essenseData.renderclbk()
 
@@ -3058,7 +3061,7 @@ var lenta = (function(){
 
 						if(!error && !error2){
 
-							if(!shares || !shares.length || ((shares.length < pr.count) || recommended == 'recommended')){								
+							if(!shares || !shares.length || ((shares.length < pr.count) || recommended == 'recommended')){							
 
 								if(!beginmaterial && !countshares){
 									el.c.addClass("sharesZero")
@@ -3066,7 +3069,7 @@ var lenta = (function(){
 								else
 								{
 		
-									if ( !essenseData.txids && (shares.length < pr.count || recommended == 'recommended') && (recommended || author || essenseData.search || essenseData.tags) ){
+									if ( (shares.length < pr.count || recommended == 'recommended') && (recommended || author || essenseData.search || essenseData.tags) ){
 		
 										setTimeout(function(){
 											if (el.c)
@@ -3078,7 +3081,7 @@ var lenta = (function(){
 								}
 
 								////// SHIT
-								if ((!shares.length || shares.length < pr.count) && (recommended || author || essenseData.search)){
+								if (!shares.length || shares.length < pr.count && (recommended || author || essenseData.search)){
 
 									if(essenseData.ended) {
 										ended = essenseData.ended(shares)
@@ -3188,8 +3191,6 @@ var lenta = (function(){
 
 							if (recommended){
 
-								
-
 								if(recommended == 'recommended'){
 									loader = 'recommended'
 								}
@@ -3233,6 +3234,7 @@ var lenta = (function(){
 							if (essenseData.tags) tagsfilter = essenseData.tags
 
 							var page = essenseData.page || parameters().page || 0
+
 
 							self.app.platform.sdk.node.shares[loader]({
 
@@ -3348,7 +3350,11 @@ var lenta = (function(){
 
 		var initEvents = function(){			
 
+			
+
 			if(isMobile() && canloadprev && !essenseData.openapi){
+
+				
 
 				/*var cc = el.c.find('.circularprogress');
 				var maxheight = 220;
@@ -3730,6 +3736,9 @@ var lenta = (function(){
 					addressEl.removeClass('blocking');
 				}
 
+
+			
+
 			}	
 			
 		}
@@ -3746,6 +3755,8 @@ var lenta = (function(){
 			if (essenseData.goback) {
 				cache = 'cache'
 			}
+
+			
 
 			if (essenseData.contents){
 
@@ -3767,6 +3778,8 @@ var lenta = (function(){
 					actions.opensvi(p.v)
 				}
 			}
+
+			
 
 
 			load.shares(function(shares, error){
@@ -3792,6 +3805,7 @@ var lenta = (function(){
 				}
 				else
 				{
+
 					
 
 					if (clear)
@@ -3867,6 +3881,7 @@ var lenta = (function(){
 							}
 
 							if(essenseData.notscrollloading && essenseData.txids){
+
 								renders.txidall(essenseData.txids)
 							}
 						
@@ -4001,6 +4016,10 @@ var lenta = (function(){
 
 			destroy : function(){
 
+				/*if (essenseData.window){
+					essenseData.window.off('scroll')
+				}*/
+
 				if (el.shares && isotopeinited){
 					el.shares.isotope('destroy')
 					
@@ -4093,7 +4112,7 @@ var lenta = (function(){
 			},
 			
 			init : function(p){
-
+				
 				w = $(window)
 
 				state.load();

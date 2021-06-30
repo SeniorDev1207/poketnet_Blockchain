@@ -150,8 +150,6 @@ fs.exists(mapJsPath, function (exists) {
 									passes: 2
 								}
 							})
-
-							
 							
 
 							if(!minified.error && uglify){
@@ -304,7 +302,7 @@ fs.exists(mapJsPath, function (exists) {
 										throw err;
 									}
 
-									currentcssdata = currentcssdata + "\n" + "/*" + path +"*/ \n" + data;
+									currentcssdata = currentcssdata + '\n' + data;
 
 									p.success();
 								});
@@ -328,7 +326,7 @@ fs.exists(mapJsPath, function (exists) {
 							exported.data = exported.data.split('\n')
 
 							exported.data = exported.data.map(item => {
-								return item.replace(/\(max-width:640px\)|\(max-width:768px\)|\(max-width:1024px\)/g, '(max-width:1920px)')
+								return item.replace(/\(max-width:640px\)/g, '(max-width:1920px)')
 							})
 
 							exported.data = exported.data.join('\n')
@@ -346,14 +344,14 @@ fs.exists(mapJsPath, function (exists) {
 								clbk();				
 							});
 
-							/*fs.writeFile(exported.path, exported.data, function(err) {
+							fs.writeFile(exported.path, exported.data, function(err) {
 
 								if (err) {
 
 									console.log("Access not permitted (LESS) " +  exported.path) 
 								}
 										
-							});*/
+							});
 						}
 					}
 				})
@@ -619,12 +617,6 @@ fs.exists(mapJsPath, function (exists) {
 
 							if(args.path){
 								JSENV += '<script>window.pocketnetpublicpath = "'+args.path+'";</script>';
-							}
-
-							console.log("___ _args.domain", VARS.domain)
-
-							if(VARS.domain){
-								JSENV += '<script>window.pocketnetdomain = "' + VARS.domain + '";</script>';
 							}
 	
 							if(args.prodaction)
