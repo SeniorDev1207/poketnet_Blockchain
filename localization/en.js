@@ -420,7 +420,7 @@ ____loclib.info = "Info"
 ____loclib.e13023 = "Do you really want to unblock user?"
 ____loclib.e13024 = "Your Private Login Key"
 ____loclib.e13025 = "Create a new account"
-____loclib.e13026 = "Join Pocketnet"
+____loclib.e13026 = "Join Pocketnet - The Future of the Free Web"
 
 ____loclib.e13027 = "Stay Signed"
 ____loclib.e13028 = "You entered not valid private key"
@@ -1055,5 +1055,11 @@ ____loclib.importHeading = 'Import Video from YouTube'
 ____loclib.importInputPlaceholder = 'Paste link to your YouTube video'
 ____loclib.importInputLabel = 'Video Url'
 
+____loclib.capitalWarning = 'WARNING'
+____loclib.streamSettingsWarn = 'For optimal performance, please use streaming settings no higher than following: 2000 kb/s bitrate, 1920x1080p resolution'
+____loclib.streamSettingsResult = 'Otherwise your live could be terminated or unstable.'
+
 
 ____loclib.keygeneration = 'Cryptography keys generation'
+
+____loclib.failedStreamGeneration = 'Unable to start stream'

@@ -225,6 +225,7 @@ var authorization = (function(){
 
 							qrscanner.q.callback = function(data){
 
+								console.log('data', data)
 
 								if(data == 'error decoding QR Code'){
 									sitemessage(self.app.localization.e('filedamaged'))
@@ -313,7 +314,7 @@ var authorization = (function(){
 					clbk : function(e, p){
 
 						/*setTimeout(function(){
-							_scrollToTop(el.c.find('.userpart'), el.c.find('.scrollmaketpart'))
+							_scrollToTop(el.c.find('.newCustomer'), el.c.find('.scrollmaketpart'))
 						}, 400)		*/				
 
 						ext = p

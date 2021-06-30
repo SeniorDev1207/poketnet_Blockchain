@@ -56,6 +56,7 @@ Localization = function(app){
 
 	}
 
+	var ____loclib = {};
 
 	self.current = function(){
 		return self.available[self.key] || {}
@@ -201,7 +202,7 @@ Localization = function(app){
 				self.loaded[__k] = true;
 				self.loading[__k] = false;
 
-				loclib[__k] || {};
+				____loclib = loclib[__k] || {};
 
 				if (clbk)
 					clbk();
