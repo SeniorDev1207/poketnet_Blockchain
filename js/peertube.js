@@ -456,6 +456,8 @@ PeerTubePocketnet = function (app) {
           .then((data) => {
             if (!data.host) return Promise.reject(error('host'));
 
+            console.log('data.host', data.host)
+
             return Promise.resolve(data.host);
           })
           .catch((e) => {

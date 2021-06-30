@@ -74,6 +74,8 @@ Application = function(p)
 		
 		url : url,
 
+		matrix : p.matrix,
+
 		nav : {
 			navPrefix : window.pocketnetpublicpath || '/pocketnet',
 		},
@@ -448,7 +450,7 @@ Application = function(p)
 		},
 		userpage : {
 			href : 'userpage',
-			childrens : ['userpage', 'share', 'author', 'post', 'authorization', 'registration']
+			childrens : ['userpage', 'share', 'author', 'post']
 		}
 
 	}
@@ -636,6 +638,8 @@ Application = function(p)
 
 		self.options.fingerPrint = hexEncode('fakefingerprint');
 
+		console.log("IMHERE")
+
 		self.localization.init(function(){
 			newObjects(p);
 
@@ -643,6 +647,10 @@ Application = function(p)
 			lazyActions([
 				self.platform.prepare
 			], function(){
+
+
+				console.log("IMHERE", hideSplashScreen)
+
 
 				self.realtime();
 
@@ -913,10 +921,6 @@ Application = function(p)
 			}
 		})
 
-	}
-
-	self.scrolling = {
-		clbks : {}
 	}
 
 	self.name = self.options.name;

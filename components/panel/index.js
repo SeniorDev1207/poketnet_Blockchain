@@ -421,6 +421,8 @@ var panel = (function(){
 					tags = null;
 				}
 
+				console.log("DESTROY", comments)
+
 				if (comments){
 					comments.destroy()
 					comments = null;
