@@ -65,8 +65,6 @@ class OG {
 
     public function is_bot() {
 
-        
-
         if (isset($_SERVER['HTTP_USER_AGENT'])){
             if(preg_match('/mozila|gekko|safari|chrome|khtml|webkit/i', $_SERVER['HTTP_USER_AGENT'])){
                 return false;
@@ -75,7 +73,7 @@ class OG {
             return true;
         }
         
-        return true;
+        return false;
 
     }
 

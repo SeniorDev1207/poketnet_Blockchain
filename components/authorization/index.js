@@ -225,7 +225,6 @@ var authorization = (function(){
 
 							qrscanner.q.callback = function(data){
 
-								console.log('data', data)
 
 								if(data == 'error decoding QR Code'){
 									sitemessage(self.app.localization.e('filedamaged'))
