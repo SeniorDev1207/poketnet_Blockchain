@@ -339,7 +339,6 @@ var imagegallery = (function(){
 						var imageElement = p.el.find('img')[0];
 						// Prepare our main zoom object
 						zoomData = {
-							fullContainer: $(imageContainer).closest('.imageContainer')[0],
 							imageContainerParent: $(imageContainer).parent(),
 							imageContainer: imageContainer,
 							imageElement: imageElement,
@@ -405,6 +404,7 @@ var imagegallery = (function(){
 						hammertime.on('doubletap', function(e) {
 							// How much we want to zoom when doubletapping
 							var scaleFactor = (zoomData.current.z > 1) ? -zoomData.current.z + 1 : 2;
+							// Check scale factor limits
 							zoomData.imageContainer.style.transition = "0.3s";
 							// setTimeout(function() {
 							// 	zoomData.imageContainer.style.transition = "none";
@@ -447,12 +447,13 @@ var imagegallery = (function(){
 						});
 						hammertime.on('pinch', function(e) {
 							var d = helpers.scaleFrom(zoomData.pinchZoomOrigin, zoomData.last.z, zoomData.last.z * e.scale);
-							// Update only if not reaching limits
-							if ((d.z + zoomData.last.z) <= zoomData.maxZoomAllowed && (d.z + zoomData.last.z) >= zoomData.minZoomAllowed) {
-								zoomData.current.x = d.x + zoomData.last.x;
-								zoomData.current.y = d.y + zoomData.last.y;
-								zoomData.current.z = d.z + zoomData.last.z;
-							}
+							zoomData.current.x = d.x + zoomData.last.x + e.deltaX;
+							zoomData.current.y = d.y + zoomData.last.y + e.deltaY;
+							zoomData.current.z = d.z + zoomData.last.z;
+							if (zoomData.current.z > zoomData.maxZoomAllowed)
+								zoomData.current.z = zoomData.last.z = zoomData.maxZoomAllowed;
+							if (zoomData.current.z < zoomData.minZoomAllowed)
+								zoomData.current.z = zoomData.last.z = zoomData.minZoomAllowed;
 							zoomData.lastEvent = 'pinch';
 							helpers.updateZoomedImage();
 						});
@@ -461,11 +462,6 @@ var imagegallery = (function(){
 							zoomData.last.y = zoomData.current.y;
 							zoomData.last.z = zoomData.current.z;
 							zoomData.lastEvent = 'pinchend';
-							// Temporarily disable panning
-							hammertime.get('pan').set({ enable: false });
-							setTimeout(() => {
-								hammertime.get('pan').set({ enable: true });
-							}, 200);
 						});
 
 						// Event to zoom with mouse wheel
@@ -490,23 +486,6 @@ var imagegallery = (function(){
 							zoomData.last.z = zoomData.current.z;
 							helpers.updateZoomedImage();
 						}, false);
-
-						// Instance a second hammer instance for the swipping outside of the image
-						var hammertime2 = new Hammer(zoomData.fullContainer);
-						hammertime2.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-						// Event for the swipe left and right outside the image
-						hammertime2.on('swipeleft swiperight', function(e) {
-							// Check if we need to go to previous or next image
-							if (e.deltaX < 0)
-								actions.next();
-							else
-								actions.back();
-						});
-						// Event for the swipe up and down outside the image
-						hammertime2.on('swipeup swipedown', function(e) {
-							// Close the gallery
-							self.closeContainer();
-						});
 
 					});
 
