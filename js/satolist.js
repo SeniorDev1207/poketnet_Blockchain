@@ -4264,9 +4264,6 @@ Platform = function (app, listofnodes) {
 
             init : function(){
 
-
-                return Promise.reject('notnow')
-                
                 return self.sdk.keys.need().then(me => {
 
                     if(self.loadingWithErrors){
@@ -20214,8 +20211,6 @@ Platform = function (app, listofnodes) {
                     var a = pnet.address;
 
                     var addresses = self.testchataddresses;
-
-                    return
 
                     if (addresses.indexOf(a) > -1 || window.testpocketnet) {
 
