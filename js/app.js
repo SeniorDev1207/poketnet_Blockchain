@@ -611,7 +611,11 @@ Application = function(p)
 
 
 				if (self.platform.sdk.registrations.showprivate()){
+
+					
+					
 					self.platform.ui.showmykey()
+					
 				}
 			}
 
