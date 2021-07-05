@@ -20258,9 +20258,7 @@ Platform = function (app, listofnodes) {
 
                     var addresses = self.testchataddresses;
 
-                    if (/*addresses.indexOf(a) > -1 || */window.testpocketnet) {
-
-
+                    if (window.testpocketnet) {
 
                             self.matrixchat.import(function(){
 
@@ -20523,6 +20521,12 @@ Platform = function (app, listofnodes) {
 
     var initOnlineListener = function () {
 
+        return
+
+        if(onlinetnterval){
+            clearInterval(onlinetnterval)
+        }
+
         onlinetnterval = retry(function () {
 
             var online = deep(window, 'navigator.onLine');
@@ -20551,7 +20555,7 @@ Platform = function (app, listofnodes) {
 
             initOnlineListener();
 
-        }, 50)
+        }, 500)
 
     }
 
