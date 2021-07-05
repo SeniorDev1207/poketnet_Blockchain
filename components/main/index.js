@@ -62,10 +62,12 @@ var main = (function(){
 					}
 					
 
-					if(phase == 'end'){
-						
+					if(phase == 'end' && window.cordova){
+						if(direction == 'down'){
+							$('html').removeClass('scrollmodedown')
+						}
 
-						if(direction == 'up' && el.lentacell.scrollTop() > 200){
+						if(direction == 'up'){
 							$('html').addClass('scrollmodedown')
 						}
 					}
@@ -812,12 +814,6 @@ var main = (function(){
 				if (self.app.scrolling){
 	
 					el.lentacell.on('scroll', function(){
-
-
-						if (!el.lentacell || el.lentacell.scrollTop() < 200){
-							$('html').removeClass('scrollmodedown')
-						}
-
 						_.each(self.app.scrolling.clbks, function(c){
 							if (el.lentacell)
 								c(el.lentacell.scrollTop())
