@@ -754,9 +754,7 @@ Application = function(p)
 			toppanel : 		$('#panelWrapper'),
 			navigation : 	$('#navigationWrapper'),
 			footer : 		$('#footerWrapper'),
-			chats : 		$('.chats'),
-			html : 			$('html'),
-			window : 		$(window)
+			chats : 		$('.chats')
 		};
 	
 		if (self.test){
