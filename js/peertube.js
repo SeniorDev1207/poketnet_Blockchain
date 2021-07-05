@@ -663,10 +663,7 @@ PeerTubePocketnet = function (app) {
                   id: existingStream.id,
                   uuid: existingStream.uuid,
                   host: options.host,
-                  formattedLink: self.composeLink(
-                    options.host,
-                    existingStream.uuid,
-                  ),
+                  formattedLink: self.composeLink(options.host, existingStream.uuid),
                 });
               });
           }),
@@ -677,29 +674,16 @@ PeerTubePocketnet = function (app) {
           uuid: data.id,
         })),
 
-      checkQuota: function (size = 0) {
+      checkQuota: function (size) {
         return self.api.user.me().then((rme) => {
           return self.api.videos.quota().then((rqu) => {
-            const sizeNumbered = Number(size) || 0;
-
-            const videoQuotaDaily = Number(rme.videoQuotaDaily) || 0;
-            const videoQuotaUsedDaily = Number(rqu.videoQuotaUsedDaily) || 0;
-
-            const videoQuota = Number(rme.videoQuota) || 0;
-            const videoQuotaUsed = Number(rqu.videoQuotaUsed) || 0;
-
-            if (!size || !videoQuotaDaily || !videoQuota) {
-              return Promise.resolve(rme);
-            }
-
             if (
-              sizeNumbered + videoQuotaUsedDaily <
-                videoQuotaDaily + VIDEO_QUOTA_CORRECTION ||
-              videoQuotaDaily < 0
-              //   &&
-              // (sizeNumbered + videoQuotaUsed <
-              //   videoQuota + VIDEO_QUOTA_CORRECTION ||
-              //   videoQuota < 0)
+              (size + rqu.videoQuotaUsedDaily <
+                rme.videoQuotaDaily + VIDEO_QUOTA_CORRECTION ||
+                rme.videoQuotaDaily < 0) &&
+              (size + rqu.videoQuotaUsed <
+                rme.videoQuota + VIDEO_QUOTA_CORRECTION ||
+                rme.videoQuota < 0)
             ) {
               return Promise.resolve(rme);
             }
@@ -757,7 +741,7 @@ PeerTubePocketnet = function (app) {
         if (host && sessions[host]) {
           if (renew) {
             if (sessions[host].date > utcnow().addMinutes(-15)) {
-              return self.api.user.getToken(sessions[host], { host });
+              return self.api.user.getToken(sessions[host]);
             }
           } else {
             return Promise.resolve(sessions[host]);
@@ -801,17 +785,19 @@ PeerTubePocketnet = function (app) {
             return Promise.resolve(data);
           })
           .then((data) => {
-            return self.api.user.getToken(data, {
-              host,
-            });
+            return self.api.user.getToken(data);
           });
       },
 
-      getToken: function (data = {}, options = {}) {
+      getToken: function (data) {
+        if (!data) data = {};
+
         data.response_type = 'code';
 
         if (data.refresh_token) data.grant_type = 'refresh_token';
         else data.grant_type = 'password';
+
+        var options = {};
 
         return request('getToken', data, options)
           .then(({ access_token, refresh_token }) => {
