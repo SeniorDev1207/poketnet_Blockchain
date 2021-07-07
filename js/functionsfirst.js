@@ -136,6 +136,7 @@ retry = function(_function, clbk, time, totaltime){
 
     var interval = setInterval(function(){
 
+
         if(_function() || (totaltime && totaltime <= totalTimeCounter)){
 
             clearInterval(interval);

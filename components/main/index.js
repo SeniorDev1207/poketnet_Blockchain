@@ -63,12 +63,10 @@ var main = (function(){
 					
 
 					if(phase == 'end'){
-						if(direction == 'down'){
-							self.app.el.html.removeClass('scrollmodedown')
-						}
+						
 
 						if(direction == 'up' && el.lentacell.scrollTop() > 200){
-							self.app.el.html.addClass('scrollmodedown')
+							$('html').addClass('scrollmodedown')
 						}
 					}
 					
@@ -737,7 +735,7 @@ var main = (function(){
 				renders.columnnavigation()
 
 				setTimeout(function(){
-					self.app.el.html.removeClass('scrollmodedown')
+					$('html').removeClass('scrollmodedown')
 				}, 300)
 				
 
@@ -815,21 +813,15 @@ var main = (function(){
 	
 					el.lentacell.on('scroll', function(){
 
-						if (el.lentacell){
 
-							var st = el.lentacell.scrollTop()
-
-							if (st < 200){
-								self.app.el.html.removeClass('scrollmodedown')
-							}
-	
-							_.each(self.app.scrolling.clbks, function(c){
-								c(st)
-							})
+						if (!el.lentacell || el.lentacell.scrollTop() < 200){
+							$('html').removeClass('scrollmodedown')
 						}
 
-
-						
+						_.each(self.app.scrolling.clbks, function(c){
+							if (el.lentacell)
+								c(el.lentacell.scrollTop())
+						})
 					})
 	
 				}
@@ -1054,7 +1046,7 @@ var main = (function(){
 				if (el.w)
 					el.w.off('scroll', actions.addbuttonscroll)
 					
-					self.app.el.html.removeClass('scrollmodedown')
+				$('html').removeClass('scrollmodedown')
 
 				renders.post(null)
 
@@ -1111,8 +1103,8 @@ var main = (function(){
 				fixeddirection = null
 				self.app.el.footer.removeClass('workstation')
 
-				self.app.el.html.removeClass('nooverflow');
-				self.app.el.html.removeClass('showmain');
+				$('html').removeClass('nooverflow');
+
 				el = {}
 				
 				if (self.app.scrolling){
@@ -1154,9 +1146,9 @@ var main = (function(){
 				// Add a specific class to hide overflow on mobile
 				// (for iOS mobile devices)
 				if (isMobile())
-					self.app.el.html.addClass('nooverflow');
+					$('html').addClass('nooverflow');
 
-					self.app.el.html.addClass('showmain');
+				
 
 				initEvents();
 
@@ -1195,7 +1187,7 @@ var main = (function(){
 						allowPageScroll: "auto", 
 						swipeStatus : function(e, phase, direction, distance){
 
-							if(self.app.el.html.hasClass('fullvideoshowedanimblock')) return
+							if($('html').hasClass('fullvideoshowedanimblock')) return
 
 							if(el.topvideos.has(e.target).length > 0){
 								return true

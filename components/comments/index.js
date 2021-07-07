@@ -960,14 +960,8 @@ var comments = (function(){
 				
 			},
 			scrollToComment : function(el) {
-				if (el && el.length > 0 && el[0].scrollIntoView && isMobile() && $(window).width() <= 768) {
+				if (el && el.length > 0 && el[0].scrollIntoView && isMobile() && $(window).width() <= 768)
 					el[0].scrollIntoView(true);
-					// Scroll until the comment section is at 120 px from the top
-					var container = ($('html').hasClass('showmain')) ? $('.lentacell') : $('html');
-					var offset = 120 - el[0].getBoundingClientRect().top;
-					if (offset > 0)
-						container.animate({scrollTop: '-=' + offset + 'px'}, 0);
-				}
 			}
 		}
 
@@ -1012,7 +1006,7 @@ var comments = (function(){
 
 				actions.replies(id, true, function() {
 					// Scroll comment section to top of the screen
-					actions.scrollToComment(el.list.find('.answer.active'));
+					actions.scrollToComment(el.list.find('.answer'));
 				});
 
 				var c = $(this).closest('.comment');
@@ -1273,11 +1267,6 @@ var comments = (function(){
 						
 					},
 
-					focus : function() {
-						// Scroll comment section to top of the screen
-						actions.scrollToComment(_p.el);
-					},
-
 					onLoad : function(c, d){
 
 						var a = this
@@ -1307,6 +1296,9 @@ var comments = (function(){
 								
 							}
 						}
+
+						// Scroll comment section to top of the screen
+						actions.scrollToComment(_p.el);
 
 						if (clbk)
 							clbk(this, _p.el.find('.emojionearea-editor'));

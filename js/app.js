@@ -607,11 +607,15 @@ Application = function(p)
 
 			if(state && self.platform.sdk.address.pnet()){
 
+				var addr = self.platform.sdk.address.pnet().address
 				self.user.usePeertube = self.platform.sdk.usersettings.meta.enablePeertube ? self.platform.sdk.usersettings.meta.enablePeertube.value : false;
 
+				var regs = self.platform.sdk.registrations.storage[addr];
 
-				if (self.platform.sdk.registrations.showprivate()){
+				if (regs && regs >= 5){
+					
 					self.platform.ui.showmykey()
+					
 				}
 			}
 
@@ -754,23 +758,21 @@ Application = function(p)
 			toppanel : 		$('#panelWrapper'),
 			navigation : 	$('#navigationWrapper'),
 			footer : 		$('#footerWrapper'),
-			chats : 		$('.chats'),
-			html : 			$('html'),
-			window : 		$(window)
+			chats : 		$('.chats')
 		};
 	
 		if (self.test){
 			$('html').addClass('testpocketnet')
 		}
 
-		/*if(isMobile()){
+		if(isMobile()){
 			self.el.app.swipe({
 				longTap : function(e, phase, direction, distance){
 					$('html').toggleClass('scrollmodedown')
 					e.preventDefault()
 				},
 			})
-		}*/
+		}
 		
 		
 

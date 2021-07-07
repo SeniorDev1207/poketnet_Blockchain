@@ -12291,16 +12291,7 @@ Platform = function (app, listofnodes) {
 
                         }
 
-                        console.log("obj", obj)
 
-                        if (obj.checkloaded && obj.checkloaded()){
-                            console.log("HERE")
-                            if (clbk) {
-                                clbk(null, 'resourses')
-                            }
-
-                            return;
-                        }
 
                         self.sdk.node.transactions.get.unspent(function (unspent) {
 
@@ -20163,7 +20154,7 @@ Platform = function (app, listofnodes) {
                             self.sdk.chats.load,
                             self.sdk.user.subscribeRef
                         ], function(){
-                            //app.notifications.subscribe()
+                            app.notifications.subscribe()
                         })
 
 
@@ -20258,7 +20249,9 @@ Platform = function (app, listofnodes) {
 
                     var addresses = self.testchataddresses;
 
-                    if (window.testpocketnet) {
+                    if (/*addresses.indexOf(a) > -1 || */window.testpocketnet) {
+
+
 
                             self.matrixchat.import(function(){
 
@@ -20521,12 +20514,6 @@ Platform = function (app, listofnodes) {
 
     var initOnlineListener = function () {
 
-        return
-
-        if(onlinetnterval){
-            clearInterval(onlinetnterval)
-        }
-
         onlinetnterval = retry(function () {
 
             var online = deep(window, 'navigator.onLine');
@@ -20555,7 +20542,7 @@ Platform = function (app, listofnodes) {
 
             initOnlineListener();
 
-        }, 500)
+        }, 50)
 
     }
 
