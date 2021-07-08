@@ -4321,7 +4321,7 @@ Platform = function (app, listofnodes) {
             
                                         if(!tx){
 
-                                            self.sdk.keys.error(self.sdk.errorHandler(error).text())
+                                            self.sdk.keys.error(self.errorHandler(error).text())
             
                                             reject(error)
             
@@ -16414,11 +16414,15 @@ Platform = function (app, listofnodes) {
 
         self.destroy = function (clbk) {
 
-            if(using){
-                return self.revokeall.then(clbk).catch(e => {})
+            currenttoken = null
+
+            if (using){
+                self.revokeall().then(clbk).catch(e => {})
+
+                return
             }
 
-            currenttoken = null
+            
 
             if (clbk)
                 clbk()
