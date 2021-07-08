@@ -111,15 +111,11 @@ var share = (function(){
 
 				}).then(img => {
 
-					var urlMeta = self.app.peertubeHandler.parselink(shareUrl);
-
-					var host = urlMeta.host || null;
-
 					parameters.image = {
 						data : img
 					}
 
-					return self.app.peertubeHandler.api.videos.update(shareUrl, parameters, { host })
+					return self.app.peertubeHandler.api.videos.update(shareUrl, parameters, {})
 
 				}).catch(e => {
 
@@ -877,13 +873,9 @@ var share = (function(){
 					if (currentShare.message.v) options.description = `Watch more exciting videos at https://pocketnet.app/! \n ${currentShare.message.v}`;
 					if (currentShare.caption.v) options.name = currentShare.caption.v;
 
-					var urlMeta = self.app.peertubeHandler.parselink(currentShare.url.v);
-					options.host = urlMeta.host;
 		
 					return self.app.peertubeHandler.api.videos.update(currentShare.url.v, options).then(SAVE).catch((e) => {
-						// console.error(e);
 
-						// SAVE();
 						var message = e.text || findResponseError(e) || 'Updating error';
 
 						sitemessage(message);
@@ -891,6 +883,8 @@ var share = (function(){
 						el.c.removeClass('loading')
 
 						topPreloader(100)
+
+
             		});
 
 				} else {

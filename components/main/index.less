@@ -44,7 +44,7 @@
 
 		.durationWrapper,
 		.statswrapper{
-			top : @rhythm;
+			top : 0;
 			bottom : auto!important;
 		}
 	}
@@ -766,7 +766,26 @@ html {
 }
 }
 
-@media only screen and (max-width: 768px) {
+/*t*/ @media only screen and (max-width: 768px){
+
+	html.toppanelshowed{
+		#main{
+	
+			.maincntwrapper{
+	
+				
+				>div{
+					&.work{
+						max-width: none;
+						padding: 0;
+						>div{
+							padding-top : 120px;
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	#main{
 		.addbutton{
@@ -792,6 +811,7 @@ html {
 			}
 	
 			.horizontalLentacaption{
+				display: none;
 				padding : 2 * @rhythm;
 	
 				span{
@@ -826,8 +846,10 @@ html {
 			background: #011621;
 			position: absolute;
 			left : 0;
-			top : 120px;
+			top : 0;
 			bottom : 0;
+			
+
 			
 			>div{
 				&.work{
@@ -841,6 +863,9 @@ html {
 	
 					.transition(0.3s);
 					
+					>div{
+						padding-top : 65px;
+					}
 				}
 			}
 			
@@ -1031,3 +1056,4 @@ html {
 		}
 	}
 }
+

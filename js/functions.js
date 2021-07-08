@@ -6851,6 +6851,8 @@
 
 			var prop = directiontoprop(direction);
 
+			if(direction == 'up' || direction == 'left') value = -value
+
 			if (prop == 'x'){
 				p.el.css("transform","translate3d("+(value || 0)+"px, 0, 0)");
 			}
@@ -6890,8 +6892,6 @@
 			p.el.swipe({
 				allowPageScroll : p.allowPageScroll,
 				swipeStatus : function(e, phase, direction, distance){
-
-					console.log('direction', direction, phase)
 
 					if (mainDirection && mainDirection.i != direction){
 						phase = 'cancel'
