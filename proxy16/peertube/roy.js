@@ -2,22 +2,6 @@ var _ = require('underscore');
 var f = require('../functions');
 const Instance = require('./instance');
 
-const metricsList = require('./metricsList');
-const PerformanceMetric = require('./PerformanceMetric');
-
-//Creating metrics object
-const getBestByType = Object.entries(metricsList).reduce(
-  (output, [metricName, metricData]) => {
-    const newMetric = new PerformanceMetric(
-      metricData.ratings,
-      metricData.calculator,
-    );
-    output[metricName] = newMetric;
-    return output;
-  },
-  {},
-);
-
 var Roy = function (parent) {
   var self = this;
 
@@ -64,20 +48,20 @@ var Roy = function (parent) {
     inited = false;
   };
 
-  self.bestlist = function (type) {
+  self.bestlist = function () {
     var _instances = _.filter(instances, function (instance) {
       return instance.canuse() || self.useall;
     });
 
-    return _.sortBy(_instances, (instance) => {
-      return getBestByType[type] ?  getBestByType[type].calculate(instance) : -10;
+    return _.sortBy(_instances, function (instance) {
+      return -instance.stats().k;
     });
   };
 
-  self.best = function (type = 'responseSpeed') {
-    var bestlist = self.bestlist(type);
+  self.best = function () {
+    var bestlist = self.bestlist();
 
-    if (bestlist.length) return [...bestlist].pop();
+    if (bestlist.length) return bestlist[0];
 
     return null;
   };
@@ -147,9 +131,12 @@ var Roy = function (parent) {
   };
 
   self.performance = () => {
-    const promises = instances.map((inst) => inst.performance());
+    const promises = instances.map((inst) => inst.stats());
 
-    return Promise.all(promises);
+    return Promise.all(promises).then((data) => {
+      console.log(data);
+      return data;
+    });
   };
 
   return self;

@@ -101,15 +101,14 @@ var Peertube = function (settings) {
       return keys[f.rand(0, keys.length - 1)];
     },
 
-    best: function ({ roy, type }) {
-
+    best: function ({ roy }) {
       if (!roy) roy = self.api.randroykey();
 
       roy = getroy(roy);
 
       if (!roy) return Promise.reject('roy');
 
-      var best = roy.best(type);
+      var best = roy.best();
 
       if (!best) return Promise.reject('best');
 
@@ -194,16 +193,7 @@ var Peertube = function (settings) {
     stats() {
       const servers = Object.values(roys).map((roy) => roy.performance());
 
-      return Promise.all(servers).then((data) => {
-        console.log(data.flat());
-        return data.flat().reduce(
-          (accumulator, currVal) => ({
-            ...accumulator,
-            [currVal.host]: currVal.data,
-          }),
-          {},
-        );
-      });
+      return Promise.resolve(servers);
     },
   };
 
