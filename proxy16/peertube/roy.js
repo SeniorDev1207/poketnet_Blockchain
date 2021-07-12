@@ -131,9 +131,12 @@ var Roy = function (parent) {
   };
 
   self.performance = () => {
-    const promises = instances.map((inst) => inst.performance());
+    const promises = instances.map((inst) => inst.stats());
 
-    return Promise.all(promises);
+    return Promise.all(promises).then((data) => {
+      console.log(data);
+      return data;
+    });
   };
 
   return self;
