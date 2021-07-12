@@ -4013,18 +4013,6 @@ var lenta = (function(){
 
 			},
 
-			hasplayingvideos : function(){
-				var ap = _.filter(players, function(player){
-
-					if(player.p && player.el && player.inited && player.p.playing) return true
-
-				})
-
-				console.log('players', ap)
-
-				return ap.length
-			},
-
 			destroy : function(){
 
 				/*if (essenseData.window){

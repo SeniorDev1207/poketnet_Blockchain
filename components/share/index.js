@@ -260,7 +260,7 @@ var share = (function(){
 			},
 			checkUrlForImage : function(url){
 
-				var ex = ['jpg', 'gif', 'png', 'jpeg',  'webp', 'jfif']
+				var ex = ['.jpg', '.gif', '.png', '.jpeg']
 
 
 				url = url.split("?")[0].toLowerCase();
@@ -1655,7 +1655,7 @@ var share = (function(){
 							initUpload({
 								el : el.urlWrapper.find('.uploadpeertubewp'),
 					
-								ext : ['png', 'jpeg', 'jpg', 'webp', 'jfif'],
+								ext : ['png', 'jpeg', 'jpg', 'webp'],
 		
 								dropZone : el.urlWrapper,
 		
