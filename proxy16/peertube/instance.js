@@ -23,7 +23,7 @@ var instance = function(host, Roy){
 
         lastStat = null
 
-        if (logs.length > 300){
+        if (logs.length > 3000){
             logs.splice(0, 300)
         }
 
@@ -164,6 +164,7 @@ var instance = function(host, Roy){
 
         return inited && s.averageTime && s.k
     }
+
 
     self.init = function(){
 
