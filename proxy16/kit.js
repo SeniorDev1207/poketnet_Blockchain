@@ -590,7 +590,7 @@ var kit = {
 	
 				firebase : {
 					clear : function(){
-						settings.firebase.id = ''
+						settings.firebase = ''
 						settings.firebase.key = ''
 
 						return state.saverp().then(proxy => {

@@ -2004,13 +2004,6 @@ var wallet = (function(){
 												self.app.platform.sdk.wallet.saveTempInfoWallet(d, inputs, _outputs)
 												sendpreloader(false)
 												sitemessage(self.app.localization.e('wssuccessfully'))
-
-
-												self.app.platform.matrixchat.transaction(d, essenseData.roomid)
-
-												if(essenseData.sendclbk) essenseData.sendclbk({
-													txid : d
-												})
 												
 											}
 										})	
@@ -2419,72 +2412,68 @@ var wallet = (function(){
 
 				var w = $(window)
 
-				if(!essenseData.api){
-					var parallax = new SwipeParallaxNew({
+				var parallax = new SwipeParallaxNew({
 
-						el : el.c.find('.ntf'),
+					el : el.c.find('.ntf'),
+
+					allowPageScroll : 'vertical',
 	
-						allowPageScroll : 'vertical',
-		
-						directions : {
-							down : {
-								cancellable : true,						
-	
-								positionclbk : function(px){
-									var percent = Math.abs(px) / trueshold;
-	
-	
-									console.log("PX", px)
-	
-									if (px >= 0){
-	
-										progress.options.text = {
-											value: ''
-										};
-										cc.fadeIn(1)
-										progress.update(percent * 100);
-	
-	
-										cc.height((maxheight * percent)+ 'px')								
-	
-										//tp.css('opacity', 1 -  (4 * percent))
-	
-									}
-									else{
-										progress.renew()
-										cc.fadeOut(1)
-									}
-	
-								},
-	
-								constraints : function(){
-									if(w.scrollTop() <= 0){
-										return true;
-									}
-								},
-	
-								restrict : true,
-								trueshold : trueshold,
-								clbk : function(){
-	
-									progress.update(0);
-									cc.fadeOut(1)
-									self.app.platform.sdk.notifications.getNotifications()
-	
-									self.app.platform.sdk.node.transactions.get.allBalanceUpdate(function(){
-										make()
-									})
-	
+					directions : {
+						down : {
+							cancellable : true,						
+
+							positionclbk : function(px){
+								var percent = Math.abs(px) / trueshold;
+
+
+								console.log("PX", px)
+
+								if (px >= 0){
+
+									progress.options.text = {
+										value: ''
+									};
+									cc.fadeIn(1)
+									progress.update(percent * 100);
+
+
+									cc.height((maxheight * percent)+ 'px')								
+
+									//tp.css('opacity', 1 -  (4 * percent))
+
 								}
-		
-							}
-						}
-						
-		
-					}).init()
-				}
+								else{
+									progress.renew()
+									cc.fadeOut(1)
+								}
 
-				
+							},
+
+							constraints : function(){
+								if(w.scrollTop() <= 0){
+									return true;
+								}
+							},
+
+							restrict : true,
+							trueshold : trueshold,
+							clbk : function(){
+
+								progress.update(0);
+								cc.fadeOut(1)
+								self.app.platform.sdk.notifications.getNotifications()
+
+								self.app.platform.sdk.node.transactions.get.allBalanceUpdate(function(){
+									make()
+								})
+
+							}
+	
+						}
+					}
+					
+	
+				}).init()
 			}
 		}
 
@@ -2668,7 +2657,6 @@ var wallet = (function(){
 				var _p = _.extend(parameters(), essenseData)
 
 				charts = {};
-
 
 				state.load();
 

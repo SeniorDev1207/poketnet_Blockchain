@@ -801,8 +801,6 @@ var many = __webpack_require__("ecec");
 
 
 
-
-
 /* harmony default export */ var userspic = ({
   name: 'userspic',
   props: {
@@ -813,9 +811,7 @@ var many = __webpack_require__("ecec");
     m_chat: {}
   },
   data: function data() {
-    return {
-      convertedUsers: []
-    };
+    return {};
   },
   components: {
     many: many["a" /* default */]
@@ -828,83 +824,32 @@ var many = __webpack_require__("ecec");
     },
     info: function info(state) {},
     roomMembers: function roomMembers() {
-      var _this = this;
-
       var pUsers = this.$store.state.users;
       var self = this;
-      var my = functions["a" /* default */].getmatrixid(this.core.mtrx.client.credentials.userId);
 
-      if (this.m_chat._selfMembership === 'invite') {
-        var names = index_all["default"].map(self.chat.members, function (member) {
-          return member.name;
-        });
+      if (this.chat.members !== 0) {
+        var test = _.map(self.chat.members, function (member) {
+          var userInfo = {};
 
-        this.core.user.usersInfo(names).then(function (r) {
-          _this.convertedUsers = index_all["default"].map(r, function (user) {
-            if (user.id !== my) {
-              var data = {};
-
-              index_all["default"].map(self.chat.members, function (member) {
-                if (self.chat.members.length > 2 && member.name === user.id) {
-                  return data = {
-                    id: user.id,
-                    name: user.name,
-                    image: user.image,
-                    status: member.status,
-                    source: user.source
-                  };
-                }
-
-                if (self.chat.members.length === 2 && user.id !== my && member.name === user.id) {
-                  return data = {
-                    id: user.id,
-                    name: user.name,
-                    image: user.image,
-                    status: member.status,
-                    source: user.source
-                  };
-                }
-              });
-
-              return data;
+          _.each(pUsers, function (user) {
+            if (functions["a" /* default */].getmatrixid(member.state_key) === user.id) {
+              // console.log(user.id, user.name, "WTF")
+              return userInfo = {
+                id: user.id,
+                status: member.content.membership,
+                image: user.image,
+                name: user.name,
+                source: user.source
+              };
             }
-          }).filter(function (n) {
-            return n;
           });
-        }).catch(function (e) {
-          console.log(e, "eeerror name");
+
+          return userInfo;
         });
-      }
+      } // console.log(test, "TEEEEST")
 
-      if (this.m_chat._selfMembership === 'join') {
-        this.convertedUsers = index_all["default"].map(self.chat.members, function (member) {
-          var userID = functions["a" /* default */].getmatrixid(member.userId);
 
-          if (self.chat.members.length > 2) {
-            return {
-              id: userID,
-              status: member.membership,
-              name: pUsers[userID].name,
-              image: pUsers[userID].image,
-              source: pUsers[userID].source
-            };
-          }
-
-          if (self.chat.members.length === 2 && userID !== my) {
-            return {
-              id: userID,
-              status: member.membership,
-              name: pUsers[userID].name,
-              image: pUsers[userID].image,
-              source: pUsers[userID].source
-            };
-          }
-        }).filter(function (n) {
-          return n;
-        }); // console.log(this.convertedUsers, "Test")
-      }
-
-      return this.chat.members;
+      return test;
     }
   }),
   methods: {}

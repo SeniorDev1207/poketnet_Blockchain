@@ -9,11 +9,6 @@ if (typeof _Electron != 'undefined') {
     $('html').addClass('electron')
 }
 
-/*
-
-Pocketnet[51792:5059590] [connection] nw_endpoint_handler_set_adaptive_write_handler [C6.1.1 64.235.46.85:443 ready channel-flow (satisfied (Path is satisfied), viable, interface: pdp_ip0, ipv4, dns, expensive)] unregister notification for write_timeout failed
-*/
-
 
 Platform = function (app, listofnodes) {
 
@@ -44,8 +39,7 @@ Platform = function (app, listofnodes) {
         'PUYo1a6LxjnnBVi6uBjHUsZQS4FnbUwdAN' : true,
         'PLFtS8H7ATooK53xRTw7YHsuK7jsn5tHgi' : true,
         'PVJDtKPnxcaRDoQhqQj7FMNu46ZwB4nXVa' : true,
-        'PVjvMwapTA29biRTsksXUBuVVf2HVwY7ps' : true,
-        'PKSV2KXCdEtTtYb8rF3xMMgiiKe1oDstXR' : true
+        'PVjvMwapTA29biRTsksXUBuVVf2HVwY7ps' : true
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
     
@@ -2111,7 +2105,6 @@ Platform = function (app, listofnodes) {
         },
 
         wallet : {
-            
             send : function(p, clbk, el){
 
                 if(!p) p = {}
@@ -2124,38 +2117,22 @@ Platform = function (app, listofnodes) {
                 p.class = 'api'
                 p.api = true
 
-                var es = null
+                app.nav.api.load({
+                    open : true,
+                    id : 'wallet',
+                    inWnd : el ? false : true,
+                    el : el ? el : null,
+                    eid : id,
+                    mid : id,
+                    animation : false,
+                    essenseData : p,
+                    clbk : function(e, p){
 
-                return new Promise((resolve, reject) => {
-                    
-                    p.sendclbk = function(p){
-                        resolve(p)
+                        globalpreloader(false)
 
-                        if(es) es.closeContainer()
+                        if(clbk) clbk(e, p)
                     }
-
-                    app.nav.api.load({
-                        open : true,
-                        id : 'wallet',
-                        inWnd : el ? false : true,
-                        el : el ? el : null,
-                        eid : id,
-                        mid : id,
-                        animation : false,
-                        essenseData : p,
-                        clbk : function(e, p){
-
-                            es = p
-    
-                            globalpreloader(false)
-    
-                            if(clbk) clbk(e, p)
-                        }
-                    })
-
                 })
-
-                
                 
             }
         }
@@ -20833,9 +20810,7 @@ Platform = function (app, listofnodes) {
                 if (self.matrixchat.el)
                     self.matrixchat.el.removeClass('active')
 
-                if (self.matrixchat.core){ 
-                    self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
-                }
+                if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = true }
 
 
                 if (link){
@@ -20902,20 +20877,6 @@ Platform = function (app, listofnodes) {
             var c = deep(app, 'nav.clbks.history.navigation')
 
             if (c) c()
-        },
-
-
-        transaction : function(id, roomid){
-
-            if(!self.matrixchat.core) return
-
-            if(!roomid){
-                /// get roomid
-            }
-
-            if(!roomid) return
-
-            self.matrixchat.core.mtrx.transaction(roomid, id)
         }
     }
 

@@ -14,29 +14,26 @@
 
 		<div class="tspacer"></div>
 
-		<% if(!app.curation()) {%>
+		<div class="loadmore"><button><%=e('lloadmore')%></button></div>
 
-			<div class="loadmore"><button><%=e('lloadmore')%></button></div>
+		<% if(recommended == 'recommended') {%>	
 
-			<% if(recommended == 'recommended') {%>	
+			<!--<div class="seemore">
+				<a href="index" handler="true">
+					<button><%=e('lloadmore')%></button>
+				</a>
+			</div>-->
 
-				<!--<div class="seemore">
-					<a href="index" handler="true">
-						<button><%=e('lloadmore')%></button>
-					</a>
-				</div>-->
+		<% } else { %> 
 
-			<% } else { %> 
-
-				<div class="ended">
-					<a href="index?r=recommended">
-						<button style="border-radius: 50px;"><%=e('e13124')%></button>
-					</a>
-				</div>
-
-			<% } %>
+			<div class="ended">
+				<a href="index?r=recommended">
+					<button style="border-radius: 50px;"><%=e('e13124')%></button>
+				</a>
+			</div>
 
 		<% } %>
+
 
 
 			<div class="zero">
@@ -65,8 +62,15 @@
 					%>
 
 					<a href="<%-h%>?newshare=1">
+
+
 						<div class="tou">
+
+
+
 							<i class="fas fa-share"></i> <%=e('zeroy')%> 
+
+						
 						</div>
 					</a>
 				<% } %>		

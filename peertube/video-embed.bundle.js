@@ -43,7 +43,7 @@
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "" + ({}[chunkId]||chunkId) + ".chunk.js?v=1922"
+/******/ 		return __webpack_require__.p + "" + ({}[chunkId]||chunkId) + ".chunk.js?v=1935"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -43465,14 +43465,9 @@ class embed_PeerTubeEmbed {
     }
     isTranscodingStatusMessage() {
         // @ts-ignore
-        let appconnection = window.checkConnection ? checkConnection() : '';
-        // @ts-ignore
-        let type = appconnection || (navigator.connection || navigator.mozConnection || navigator.webkitConnection || {}).type || '';
-        console.log('type', type);
-        //let type = connection && connection.type ? connection.type : '';
-        //if (type == 'cellular') {
-        //let type = checkConnection ? checkConnection() : '' 
-        if (type == '2G' || type == '3G' || type == '4G' || type == '4G' || type == 'cellular') {
+        let connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        let type = connection && connection.effectiveType ? connection.effectiveType : '';
+        if (type !== 'wifi') {
             let exists_min_resolution = false;
             let all_resolutions = [];
             if (this.details && this.details.streamingPlaylists && this.details.streamingPlaylists[0] && this.details.streamingPlaylists[0].files && this.details.streamingPlaylists[0].files.length) {
@@ -43489,7 +43484,7 @@ class embed_PeerTubeEmbed {
                 !this.details.isLive &&
                 !this.playnottranscoded &&
                 !exists_min_resolution) {
-                this.displayError(min && typeof min === 'number' && min !== Infinity ? `Video is only available in ${min} resolution` : `The video is being processed and is available only in high quality. You can continue playback or wait until the end of processing and watch with lower quality`, null, undefined, true); // true is transcoding
+                this.displayError(min ? `Video is only available in ${min} resolution` : `The video is being processed and is available only in high quality. You can continue playback or wait until the end of processing and watch with lower quality`, null, undefined, true); // true is transcoding
                 return true;
             }
         }
