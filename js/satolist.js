@@ -2105,7 +2105,6 @@ Platform = function (app, listofnodes) {
         },
 
         wallet : {
-            
             send : function(p, clbk, el){
 
                 if(!p) p = {}
@@ -2118,38 +2117,22 @@ Platform = function (app, listofnodes) {
                 p.class = 'api'
                 p.api = true
 
-                var es = null
+                app.nav.api.load({
+                    open : true,
+                    id : 'wallet',
+                    inWnd : el ? false : true,
+                    el : el ? el : null,
+                    eid : id,
+                    mid : id,
+                    animation : false,
+                    essenseData : p,
+                    clbk : function(e, p){
 
-                return new Promise((resolve, reject) => {
-                    
-                    p.sendclbk = function(p){
-                        resolve(p)
+                        globalpreloader(false)
 
-                        if(es) es.closeContainer()
+                        if(clbk) clbk(e, p)
                     }
-
-                    app.nav.api.load({
-                        open : true,
-                        id : 'wallet',
-                        inWnd : el ? false : true,
-                        el : el ? el : null,
-                        eid : id,
-                        mid : id,
-                        animation : false,
-                        essenseData : p,
-                        clbk : function(e, p){
-
-                            es = p
-    
-                            globalpreloader(false)
-    
-                            if(clbk) clbk(e, p)
-                        }
-                    })
-
                 })
-
-                
                 
             }
         }
@@ -20894,20 +20877,6 @@ Platform = function (app, listofnodes) {
             var c = deep(app, 'nav.clbks.history.navigation')
 
             if (c) c()
-        },
-
-
-        transaction : function(id, roomid){
-
-            if(!self.matrixchat.core) return
-
-            if(!roomid){
-                /// get roomid
-            }
-
-            if(!roomid) return
-
-            self.matrixchat.core.mtrx.transaction(roomid, id)
         }
     }
 
