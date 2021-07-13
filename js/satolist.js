@@ -9,6 +9,11 @@ if (typeof _Electron != 'undefined') {
     $('html').addClass('electron')
 }
 
+/*
+
+Pocketnet[51792:5059590] [connection] nw_endpoint_handler_set_adaptive_write_handler [C6.1.1 64.235.46.85:443 ready channel-flow (satisfied (Path is satisfied), viable, interface: pdp_ip0, ipv4, dns, expensive)] unregister
+*/
+
 
 Platform = function (app, listofnodes) {
 
@@ -45,7 +50,7 @@ Platform = function (app, listofnodes) {
     }
     
 
-    self.testaddresses = ['PGiQ8j6fdtAJSH2sA7rZMB17GzqBTUVLCm', 'PF1umexG4Kvm8bkow1JiRF3s1vcBkYvKeg', 'PJJbtb1AEcRopQuuBiRbQbiec7WHNtAEsF', 'PSmGDYWzcPrrhvqFnGVxnhPbpsTK6LCZYd', 'PDQaeB3fGY3en5qMaq8AKZvev34Hgyx5UE', 'PAdUsDtP9onjpwHHxhbxxRcjtxD9fsW9Su', 'PRaYPD2NAVMcEXcUu2GsEQwqsG8md8H2dr', 'PHr8g7b4gJdSkiJFmQeoND2X8tRUKvB2An', 'PEwL86dE6MuKKaGPxooGyFCKocUP8B6jw8', 'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2', 'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y', 'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux', 'PSWxzYS4Y37tmnZ9oxKfm9ffVqLRBbFbjH', 'PHvQEGtYYpDpmHYuUwA4gF4ey1YitF2NRW', 'PA6biduJbWcQ97n5jz2jUqWHtenLpWTH7s', 'PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PQsvaeBWB5WX3BsdWcNFmP1wy61P3gpRKf', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PHNKYionoaBRVudUhqWzNrJyqxVxaDYqT7', 'PVCUYATJxi4yNM2sqThPxd3P6jJDrvuWJs', 'PLJvEixJkj85C4jHM3mt5u1ATwZE9zgFaA', 'PShAyCoM32HEEHqrdEYvQ1wRjeqZsmWqDa', 'PKLWLXN6kwmdkbYG981gyPj5jb7bgzhstj', 'PHdW4pwWbFdoofVhSEfPSHgradmrvZdbE5', 'P9jDYvkXHw4FtRZof661ddzmMyFRqGUjwN', 'P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PSRFH9Ctq4wV1THes39izo3J4dHybLyT32', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
+    self.testaddresses = ['PDQaeB3fGY3en5qMaq8AKZvev34Hgyx5UE', 'PAdUsDtP9onjpwHHxhbxxRcjtxD9fsW9Su', 'PRaYPD2NAVMcEXcUu2GsEQwqsG8md8H2dr', 'PHr8g7b4gJdSkiJFmQeoND2X8tRUKvB2An', 'PEwL86dE6MuKKaGPxooGyFCKocUP8B6jw8', 'PFV4UT9fhHsqkmCGsWsSCr55Pr1SMX6NL2', 'PRTugzBefzB1AA2Rw8VTBKf3BBPDjQND8y', 'P92gc46iqLhCswPsbLxH7wjTfh9rhhNSux', 'PSWxzYS4Y37tmnZ9oxKfm9ffVqLRBbFbjH', 'PHvQEGtYYpDpmHYuUwA4gF4ey1YitF2NRW', 'PA6biduJbWcQ97n5jz2jUqWHtenLpWTH7s', 'PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PQsvaeBWB5WX3BsdWcNFmP1wy61P3gpRKf', 'PKerxto9tFT8dZJrNWFsimA3sBdBAkXsrE', 'PHNKYionoaBRVudUhqWzNrJyqxVxaDYqT7', 'PVCUYATJxi4yNM2sqThPxd3P6jJDrvuWJs', 'PLJvEixJkj85C4jHM3mt5u1ATwZE9zgFaA', 'PShAyCoM32HEEHqrdEYvQ1wRjeqZsmWqDa', 'PKLWLXN6kwmdkbYG981gyPj5jb7bgzhstj', 'PHdW4pwWbFdoofVhSEfPSHgradmrvZdbE5', 'P9jDYvkXHw4FtRZof661ddzmMyFRqGUjwN', 'P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PSRFH9Ctq4wV1THes39izo3J4dHybLyT32', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
 
     self.testchataddresses = ['P9EkPPJPPRYxmK541WJkmH8yBM4GuWDn2m', 'PFnN8SExxLsUjMKzs2avdvBdcA3ZKXPPkF', 'PVgqi72Qba4aQETKNURS8Ro7gHUdJvju78', 'P9tRnx73Sw1Ms9XteoxYyYjvqR88Qdb8MK', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEHrffuK9Qiqs5ksqeFKHgkk9kwQN2NeuS', 'PP582V47P8vCvXjdV3inwYNgxScZCuTWsq', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz','PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM', 'PK6Kydq5prNj13nm5uLqNXNLFuePFGVvzf', 'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s', 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc', 'PEkKrb7WJgfU3rCkkU9JYT8jbGiQsw8Qy8', 'PBHvKTH5TGQYDbRHgQHTTvaBf7tuww6ho7', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd']
 
@@ -3834,6 +3839,19 @@ Platform = function (app, listofnodes) {
                     id: 'telegram',
                     placeholder: self.app.localization.e('e13282'),
                     value: (JSON.parse(localStorage.getItem('telegrambot')) && JSON.parse(localStorage.getItem('telegrambot')).token) || "",
+                    _onChange: function (value) {
+
+                        if (value && self.app.user.features.telegram && value){
+
+
+                            self.app.platform.sdk.system.get.telegramGetMe(value, true);
+                            
+                        }
+
+                    }
+
+
+
                 },
 
                 tgfrom: {
@@ -4029,6 +4047,7 @@ Platform = function (app, listofnodes) {
                             const idx = m[i].possibleValues.indexOf(String(v));
                             m[i].value = m[i].possibleValuesLabels[idx];
                             m[i].valueId = Number(v);
+                            // setTimeout(() => {$(`div[pid=${i}] input`).val(m[i].possibleValuesLabels[idx])}, 0)
 
                         }
 
@@ -4084,39 +4103,14 @@ Platform = function (app, listofnodes) {
 
                 var values = {};
 
-                var meta = self.sdk.usersettings.meta;
-
-                _.each(meta, function (o, i) {
+                _.each(self.sdk.usersettings.meta, function (o, i) {
 
                     if (o.type === "VALUES") {
 
-                        if (i === 'tgto' || i === 'tgfrom'){
-
-                            var tgToken = meta.telegram && meta.telegram.value;
-
-                            if (tgToken){
-
-                                values[i] = {
-                                    ...meta[i],
-                                    [tgToken] : {
-                                        possibleValues : o.possibleValues && o.possibleValues.map(i => String(i)),
-                                        possibleValuesLabels : o.possibleValuesLabels,
-                                        value : o.value
-                                    }
-                                }
-                                
-                            }
-
-
-                        } else {
-
-                            values[i] = {};
-                            values[i].possibleValues = o.possibleValues && o.possibleValues.map(i => String(i));
-                            values[i].possibleValuesLabels = o.possibleValuesLabels;
-                            values[i].value = o.value;
-                            
-                        }
-
+                        values[i] = {};
+                        values[i].possibleValues = o.possibleValues && o.possibleValues.map(i => String(i));
+                        values[i].possibleValuesLabels = o.possibleValuesLabels;
+                        values[i].value = o.value;
 
                     } else {
 
@@ -4151,15 +4145,6 @@ Platform = function (app, listofnodes) {
                 var values = self.sdk.usersettings.load();
                 var m = self.sdk.usersettings.meta;
 
-                if (self.app.platform.sdk.address.pnet() && self.istest()){
-
-                    self.app.user.features.telegram = 1;
-
-                } else {
-
-                    self.app.user.features.telegram = 0;
-
-                }                
 
                 _.each(values, function (v, i) {
 
@@ -4169,32 +4154,9 @@ Platform = function (app, listofnodes) {
 
                         if (m && m[i]){
 
-
-                            if (i === 'tgto' || i === 'tgfrom'){
-
-                                var tgToken = m.telegram && m.telegram.value;
-
-                                if (tgToken){
-
-                                    m[i] = v;
-                                    m[i].value = v[tgToken].value;
-                                    m[i].possibleValues = v[tgToken].possibleValues && v[tgToken].possibleValues.map(function(i){
-                                        return String(i);
-                                    })
-                                    m[i].possibleValuesLabels = v[tgToken].possibleValuesLabels;
-
-                                }
-
-                            } else {
-
-                                m[i].value = v.value;
-                                m[i].possibleValues = v.possibleValues && v.possibleValues.map(function(i){
-                                    return String(i);
-                                })
-                                m[i].possibleValuesLabels = v.possibleValuesLabels;
-
-                            }
-
+                            m[i].value = v.value;
+                            m[i].possibleValues = v.possibleValues && v.possibleValues.map(i => String(i));
+                            m[i].possibleValuesLabels = v.possibleValuesLabels;
                         }
 
 
@@ -4203,13 +4165,15 @@ Platform = function (app, listofnodes) {
 
                     }
 
-
                     if (i === "telegram") {
 
 
                         if(self.app.platform.sdk.address.pnet()){
+                            var a = self.app.platform.sdk.address.pnet().address
 
-                            if (self.istest()) {
+                            if (self.istest() || (a == 'PCAyKXa52WTBhBaRWZKau9xfn93XrUMW2s') || (a == 'PCBpHhZpAUnPNnWsRKxfreumSqG6pn9RPc') || (a == 'PJJbtb1AEcRopQuuBiRbQbiec7WHNtAEsF') || (a == 'PVCUYATJxi4yNM2sqThPxd3P6jJDrvuWJs')) {
+
+                                self.app.user.features.telegram = 1;
 
                                 var href = location.href;
 
@@ -4219,6 +4183,12 @@ Platform = function (app, listofnodes) {
                                     self.app.platform.sdk.system.get.telegramGetMe(v.value);
 
                                 }
+
+
+                            } else {
+
+
+                                self.app.user.features.telegram = 0;
 
 
                             }
@@ -12428,7 +12398,7 @@ Platform = function (app, listofnodes) {
 
                             }, p, telegram)
 
-                        }, deep(p, 'address.address'), p.update)
+                        }, deep(p, 'address.address'), p.update, telegram)
                     },
 
                     wallet: function (inputs, outputs, _kp, unfinalize, htlc) {
@@ -12509,7 +12479,46 @@ Platform = function (app, listofnodes) {
 
                     },
 
-                    common: function (inputs, obj, fees, clbk, p) {
+                    common: function (inputs, obj, fees, clbk, p, fromTG) {
+
+                        const savedObj = JSON.parse(JSON.stringify(obj));
+
+                        if (!fromTG && self.app.user.features.telegram) {
+
+                            const {
+                                meta
+                            } = self.sdk.usersettings;
+
+                            if (obj.caption){
+
+                                if (!meta.tgtoask.value) {
+
+                                    this.telegramSend(obj, meta)
+    
+                                } else {
+    
+                                    // this.telegramSend = this.telegramSend.bind(this)
+    
+                                    dialog({
+                                        html: self.app.localization.e('e13291'),
+                                        btn1text: self.app.localization.e('send'),
+                                        btn2text:self.app.localization.e('ucancel'),
+    
+                                        class: 'zindex',
+    
+                                        success: () => {
+    
+                                            this.telegramSend(savedObj, meta)
+    
+                                        }
+                                    })
+    
+                                }
+                            }
+
+
+                        }
+
 
                         if (!p) p = {};
 
@@ -12758,7 +12767,7 @@ Platform = function (app, listofnodes) {
                                 return newHtml;
                             }
 
-                            const allowedTags = ['b', 'strong', 'i', 'em', 'u', 'ins', 's', 'strike', 'del', 'code', 'pre'];
+                            const allowedTags = ['b', 'strong', 'i', 'em', 'u', 'ins', 's', 'strike', 'del', 'a', 'code', 'pre'];
 
 
                             const options = {
@@ -12780,14 +12789,13 @@ Platform = function (app, listofnodes) {
                             return removeEmptyHref(sanitizedHtml);
                         }
 
-                        console.log('message', message);
-
                         const token = meta.telegram.value;
 
                         const channelIdx = meta.tgto.possibleValuesLabels.indexOf(meta.tgto.value);
                         const channel = Number(meta.tgto.possibleValues[channelIdx]);
 
                         const parameters = {
+                            method: 'POST',
                             chat_id: channel,
                             parse_mode: 'HTML'
                         }
@@ -12801,10 +12809,6 @@ Platform = function (app, listofnodes) {
                         caption = caption.replace(/<br>|<br\/>/g, '\n');
                         caption = caption.replace(/<\/p>/g, "</p>\n");
                         caption = filterHtml(caption);
-
-                        if (message.url.v && caption.indexOf(message.url.v) === -1){
-                            caption += '\n\n' + message.url.v;
-                        }
 
                         let action = 'sendMessage';
                         let captionName = 'text';
@@ -12845,66 +12849,19 @@ Platform = function (app, listofnodes) {
                         // const parameters = `?chat_id=${channel}${media}&${captionName}=${caption}&parse_mode=HTML`
 
                         let query = `https://api.telegram.org/bot${token}/${action}`;
-                        // const paramStr = $.param(parameters);
+                        const paramStr = $.param(parameters);
 
 
-                        fetch(query, {
-                            method: 'POST',
-                            mode: 'cors', 
-                            cache: 'no-cache',
-                            credentials: 'same-origin',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            referrerPolicy: 'no-referrer',
-                            body: JSON.stringify(parameters)
-                        })
-                        .then(function(data){
-                            return data.json();
-                        }) 
-                        .then(function(result){
-
-                            if (!result.ok){
-
-                                sitemessage('Telegram error. ' + result.description)
-                            }
-
-                        })
-                        .catch(err => sitemessage('Telegram error'))
-
-
-
+                        fetch(query + '?' + paramStr)
+                            .then(data => data.json())
+                            .then(result => {
+                            })
 
                     },
 
                     share: function (inputs, share, clbk, p, fromTG) {
 
-                        var savedShare = JSON.parse(JSON.stringify(share));
-                      
-                        if (!fromTG && self.app.user.features.telegram) {
-                            
-                          var meta = self.sdk.usersettings.meta;
-
-                      
-                          if (!meta.tgtoask.value) {
-
-                            this.telegramSend(share, meta);
-
-                          } else {
-                            // this.telegramSend = this.telegramSend.bind(this)
-                            dialog({
-                              html: "Do you really want send message to Telegram?",
-                              btn1text: "Send",
-                              btn2text: "Cancel",
-                              class: 'zindex',
-                              success: () => {
-                                this.telegramSend(savedShare, meta);
-                              }
-                            });
-                          }
-                        }
-
-                        this.common(inputs, share, TXFEE, clbk, p)
+                        this.common(inputs, share, TXFEE, clbk, p, fromTG)
                     },
 
                     userInfo: function (inputs, userInfo, clbk, p) {
@@ -15178,33 +15135,29 @@ Platform = function (app, listofnodes) {
 
                 applyMessagesFromTG: function (messages, acceptPosting, currentChannelId, renderClbk) {
 
-                    var meta = self.sdk.usersettings.meta;
-
-                    var tgToken = meta.telegram && meta.telegram.value;
+                    let {
+                        meta
+                    } = self.sdk.usersettings;
 
                     messages.forEach(messager => {
 
                         const addValue = (dropdownName, channelName, channelId) => {
+
 
                             if (meta[dropdownName].possibleValues.indexOf(String(channelId)) === -1) {
 
                                 meta[dropdownName].possibleValues.push(String(channelId));
                                 meta[dropdownName].possibleValuesLabels.push(channelName);
 
-                                if (!meta[dropdownName][tgToken] || !meta[dropdownName][tgToken].possibleValues){
+                                const $tgDropdown = $(`div[parameter='${dropdownName}'] .vc_selectInput`);
 
-                                    meta[dropdownName][tgToken] = {};
-                                    meta[dropdownName][tgToken].possibleValues = [String(channelId)];
-                                    meta[dropdownName][tgToken].possibleValuesLabels = [channelName];
+                                const newValue = `<div class="vc_value" value=${channelId}>${channelName}</div>`;
+                                const newValueHTML = $.parseHTML(newValue);
+                                $tgDropdown.append(newValueHTML);
 
-                                } else {
-
-                                    meta[dropdownName][tgToken].possibleValues.push(String(channelId));
-                                    meta[dropdownName][tgToken].possibleValuesLabels.push(String(channelName));
-                                    
-                                }
 
                             }
+
 
                         }
 
@@ -15546,11 +15499,11 @@ Platform = function (app, listofnodes) {
                         addValue("tgto", channelName, chat.id);
                         addValue("tgfrom", channelName, chat.id);
 
-                        console.log('renderClbk', renderClbk);
-
                         if (renderClbk){
+
                             renderClbk();
                         }
+
 
 
                         // meta.tgfrom.possibleValues = [...new Set(meta.tgfrom.possibleValues)];
@@ -15804,7 +15757,8 @@ Platform = function (app, listofnodes) {
                     }
 
 
-                    const current = document.querySelector("div[parameter='telegram'].iWrapper");          
+                    const current = document.querySelector("div[parameter='telegram'] .iWrapper");
+          
 
                     if (current) {
                         current.remove();
@@ -15835,7 +15789,10 @@ Platform = function (app, listofnodes) {
                                     this.dialogOfTG(JSON.parse(localStorage.getItem("telegramMessages") || "[]"), currentChannelId);
                                     this.telegramUpdates(null, make);
 
+  
+
                                 } 
+
 
                             })
                             .catch(err => {
@@ -15848,6 +15805,7 @@ Platform = function (app, listofnodes) {
                 },
 
                 openedDialog: false
+
 
             },
 
@@ -20565,9 +20523,7 @@ Platform = function (app, listofnodes) {
             }
 
             if (addresses.indexOf(a) > -1) {
-
                 self.app.user.features.telegram = 1;
-                
             } else {
                 self.app.user.features.telegram = 0;
             }
