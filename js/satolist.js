@@ -20837,7 +20837,6 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.core.hiddenInParent = true
                 }
 
-                self.app.actions.onScroll()
 
                 if (link){
 
@@ -20854,9 +20853,6 @@ Platform = function (app, listofnodes) {
             core.apptochat = function(){
                 if (self.matrixchat.el)
                     self.matrixchat.el.addClass('active')
-
-                    self.app.actions.offScroll()
-                    
 
                 if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = false }
             }
