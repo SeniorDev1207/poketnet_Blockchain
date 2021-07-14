@@ -20738,7 +20738,7 @@ Platform = function (app, listofnodes) {
                 if(isMobile()){
 
 					self.matrixchat.el.swipe({
-						allowPageScroll: "auto", 
+						allowPageScroll: "none", 
 						swipeLeft : function(e, phase, direction, distance){
 
                             if (self.matrixchat.core)
@@ -20837,6 +20837,7 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.core.hiddenInParent = true
                 }
 
+                //self.app.actions.onScroll()
 
                 if (link){
 
@@ -20853,6 +20854,9 @@ Platform = function (app, listofnodes) {
             core.apptochat = function(){
                 if (self.matrixchat.el)
                     self.matrixchat.el.addClass('active')
+
+                    //self.app.actions.offScroll()
+                    
 
                 if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = false }
             }
