@@ -20738,10 +20738,10 @@ Platform = function (app, listofnodes) {
                 if(isMobile()){
 
 					self.matrixchat.el.swipe({
-						allowPageScroll: "auto", 
+						allowPageScroll: "none", 
 						swipeLeft : function(e, phase, direction, distance){
 
-                            if (self.matrixchat.core)
+                            if (self.matrixchat.core && (!self.matrixchat.core.canback || self.matrixchat.core.canback()))
                                 self.matrixchat.core.backtoapp()
 						},
 					})
@@ -20834,9 +20834,10 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.el.removeClass('active')
 
                 if (self.matrixchat.core){ 
-                    self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
+                    self.matrixchat.core.hiddenInParent = true
                 }
 
+                //self.app.actions.onScroll()
 
                 if (link){
 
@@ -20854,11 +20855,14 @@ Platform = function (app, listofnodes) {
                 if (self.matrixchat.el)
                     self.matrixchat.el.addClass('active')
 
+                    //self.app.actions.offScroll()
+                    
+
                 if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = false }
             }
 
             self.matrixchat.core = core
-            self.matrixchat.core.hiddenInParent = true
+            self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
 
             core.externalLink(self.matrixchat)
 
