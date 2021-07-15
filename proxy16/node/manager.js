@@ -482,9 +482,6 @@ var Nodemanager = function(p){
   
             return node.peers().then(nodes => {
 
-
-                
-
                 nodes = _.filter(nodes, function(n){
                     return !self.nodesmap[n.key]
                 })

@@ -45,9 +45,7 @@ Platform = function (app, listofnodes) {
         'PLFtS8H7ATooK53xRTw7YHsuK7jsn5tHgi' : true,
         'PVJDtKPnxcaRDoQhqQj7FMNu46ZwB4nXVa' : true,
         'PVjvMwapTA29biRTsksXUBuVVf2HVwY7ps' : true,
-        'PKSV2KXCdEtTtYb8rF3xMMgiiKe1oDstXR' : true,
-        'PUqq6vksrmoMPRrRjZxCVQefqGLpuaqWii' : true,
-        'PMtmtctmBD9nHJFzmfXJR1G2busp8CjASs' : true
+        'PKSV2KXCdEtTtYb8rF3xMMgiiKe1oDstXR' : true
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
     
@@ -1928,20 +1926,6 @@ Platform = function (app, listofnodes) {
             })
         },
 
-        transaction : function(txid, el, clbk, p){
-            app.nav.api.load({
-                open: true,
-                href: 'transactionview',
-                el: el,
-                eid: makeid(),
-                clbk: clbk,
-
-                essenseData: {
-                    txid : txid
-                }
-            })
-        },
-
         comment : function(id, el, clbk, p){
 
             app.nav.api.load({
@@ -2139,23 +2123,15 @@ Platform = function (app, listofnodes) {
                 p.action = p.htls ? 'htls' : 'send'
                 p.class = 'api'
                 p.api = true
-                
 
                 var es = null
 
                 return new Promise((resolve, reject) => {
                     
-                    p.sendclbk = function(d){
+                    p.sendclbk = function(p){
+                        resolve(p)
 
-                        console.log(d, p)
-
-                        if (p.roomid && d.txid){
-                            self.matrixchat.shareInChat.url(p.roomid, 'pocketnet://i?stx=' + d.txid)
-                        }
-
-                        resolve(d)
-
-                        if(es && es.container) es.container.close()
+                        if(es) es.closeContainer()
                     }
 
                     app.nav.api.load({
@@ -2167,17 +2143,13 @@ Platform = function (app, listofnodes) {
                         mid : id,
                         animation : false,
                         essenseData : p,
-                        clbk : function(e, _p){
+                        clbk : function(e, p){
 
-                            console.log('dsdsds', _p)
-
-                            ////pocketnet://i?stx=
-
-                            es = _p
+                            es = p
     
                             globalpreloader(false)
     
-                            if(clbk) clbk(e, _p)
+                            if(clbk) clbk(e, p)
                         }
                     })
 
@@ -2236,14 +2208,6 @@ Platform = function (app, listofnodes) {
             if (name) return encodeURIComponent(name.toLowerCase());
 
             else return 'author?address=' + address
-        },
-
-        authororexplorerlink: function (address) {
-            var name = deep(app, 'platform.sdk.usersl.storage.' + address + '.name');
-
-            if (name) return encodeURIComponent(name.toLowerCase());
-
-            else return 'https://pocketnet.app/blockexplorer/address/' + address
         },
 
         upbutton: function (el, p) {
@@ -3747,8 +3711,6 @@ Platform = function (app, listofnodes) {
                     h.addClass(t.all[value].class)
 
                     t.current = value
-
-                    self.matrixchat.changeTheme()
 
                     t.save()
                 }
@@ -17608,7 +17570,6 @@ Platform = function (app, listofnodes) {
 
                         data.cointype = platform.sdk.node.transactions.getCoibaseTypeN(data.txinfo, platform.sdk.address.pnet().address) 
 
-                        
 
 
 
@@ -18225,7 +18186,7 @@ Platform = function (app, listofnodes) {
                                             data.share.scnt = Number(data.share.scnt) + 1
                                         }
                                     }
-                                    if(!data.electronSettings) data.electronSettings = {}
+
                                     data.electronSettings.size = 'medium'
 
                                     clbk()
@@ -18986,7 +18947,7 @@ Platform = function (app, listofnodes) {
                     }
                 }
 
-                if (data.txid) {
+                /*if (data.txid) {
 
                     if (txidstorage[data.txid]) return;
 
@@ -18994,7 +18955,7 @@ Platform = function (app, listofnodes) {
 
 
                     if (platform.sdk.notifications.find(data.txid)) return
-                }
+                }*/
 
 
 
@@ -19320,7 +19281,7 @@ Platform = function (app, listofnodes) {
 
         setTimeout(function(){
 
-            //platform.matrixchat.notify.event()
+            platform.matrixchat.notify.event()
 
             /*self.messageHandler({
                 addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM",
@@ -19397,7 +19358,6 @@ Platform = function (app, listofnodes) {
 
 		}, 6000)
     }
-    
     
     
     self.convertUTCSS = function (str) {
@@ -20669,7 +20629,6 @@ Platform = function (app, listofnodes) {
             ALL_NOTIFICATIONS_COUNT : {},
             NOTIFICATION : {}
         },
-
         destroy : function(){
             if (window.matrixchat){
                 window.matrixchat.destroy()
@@ -20697,6 +20656,13 @@ Platform = function (app, listofnodes) {
 
                 if(electron){
                     console.log("HERE")
+                    /*try{
+                        require('./chat/matrix-element.min.js')
+                    }
+                    catch(e){
+                        console.error(e)
+                    }
+                    */
 
                     if(clbk) clbk()
                 }
@@ -20745,7 +20711,6 @@ Platform = function (app, listofnodes) {
                                         privatekey="${privatekey}"
                                         pocketnet="`+(isMobile() ? '' : 'true')+`"
                                         mobile="`+(isMobile() ? 'true' : '')+`" 
-                                        ctheme="`+self.sdk.theme.current+`"
                                     >
                                     </matrix-element>
                                 </div>`
@@ -20755,19 +20720,16 @@ Platform = function (app, listofnodes) {
                                 self.matrixchat.el = $('.matrixchatwrapper')
                                 self.matrixchat.initevents()
 
+
                                 
                             }, null, app);
 
+                                  
+                            
         
                     }
                 }
             })
-        },
-        
-        changeTheme : function(){
-            if(self.matrixchat.el){
-                self.matrixchat.el.find('matrix-element').attr('ctheme', self.sdk.theme.current)
-            }
         },
 
         initevents : function(){
@@ -20776,7 +20738,7 @@ Platform = function (app, listofnodes) {
                 if(isMobile()){
 
 					self.matrixchat.el.swipe({
-						allowPageScroll: "vertical", 
+						allowPageScroll: "none", 
 						swipeLeft : function(e, phase, direction, distance){
 
                             if (self.matrixchat.core && (!self.matrixchat.core.canback || self.matrixchat.core.canback()))
@@ -20859,46 +20821,6 @@ Platform = function (app, listofnodes) {
             }
         },
 
-        shareInChat : {
-            url : function(id, url){
-                if (self.matrixchat.core){
-
-                    self.matrixchat.core.apptochat()
-
-                    return self.matrixchat.core.mtrx.shareInChat(id, {
-                        urls : [url]
-                    }).catch(e => {
-                        
-                        self.matrixchat.core.backtoapp()
-
-                        return Promise.reject(e)
-                    })
-                }
-
-                return Promise.reject('matrixchat.core')
-            }
-        },
-
-        share : {
-            url : function(url){
-                if (self.matrixchat.core){
-
-                    self.matrixchat.core.apptochat()
-
-                    return self.matrixchat.core.share({
-                        urls : [url]
-                    }).catch(e => {
-
-                        self.matrixchat.core.backtoapp()
-
-                        return Promise.reject(e)
-                    })
-                }
-
-                return Promise.reject('matrixchat.core')
-            }
-        },
-
         link : function(core){
 
             core.update({
@@ -20912,7 +20834,7 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.el.removeClass('active')
 
                 if (self.matrixchat.core){ 
-                    self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
+                    self.matrixchat.core.hiddenInParent = true
                 }
 
                 //self.app.actions.onScroll()
