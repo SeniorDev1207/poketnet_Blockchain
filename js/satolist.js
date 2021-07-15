@@ -45,9 +45,7 @@ Platform = function (app, listofnodes) {
         'PLFtS8H7ATooK53xRTw7YHsuK7jsn5tHgi' : true,
         'PVJDtKPnxcaRDoQhqQj7FMNu46ZwB4nXVa' : true,
         'PVjvMwapTA29biRTsksXUBuVVf2HVwY7ps' : true,
-        'PKSV2KXCdEtTtYb8rF3xMMgiiKe1oDstXR' : true,
-        'PUqq6vksrmoMPRrRjZxCVQefqGLpuaqWii' : true,
-        'PMtmtctmBD9nHJFzmfXJR1G2busp8CjASs' : true
+        'PKSV2KXCdEtTtYb8rF3xMMgiiKe1oDstXR' : true
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
     
@@ -3713,8 +3711,6 @@ Platform = function (app, listofnodes) {
                     h.addClass(t.all[value].class)
 
                     t.current = value
-
-                    self.matrixchat.changeTheme()
 
                     t.save()
                 }
@@ -18190,7 +18186,7 @@ Platform = function (app, listofnodes) {
                                             data.share.scnt = Number(data.share.scnt) + 1
                                         }
                                     }
-                                    if(!data.electronSettings) data.electronSettings = {}
+
                                     data.electronSettings.size = 'medium'
 
                                     clbk()
@@ -18951,7 +18947,7 @@ Platform = function (app, listofnodes) {
                     }
                 }
 
-                if (data.txid) {
+                /*if (data.txid) {
 
                     if (txidstorage[data.txid]) return;
 
@@ -18959,7 +18955,7 @@ Platform = function (app, listofnodes) {
 
 
                     if (platform.sdk.notifications.find(data.txid)) return
-                }
+                }*/
 
 
 
@@ -19285,7 +19281,7 @@ Platform = function (app, listofnodes) {
 
         setTimeout(function(){
 
-            //platform.matrixchat.notify.event()
+            platform.matrixchat.notify.event()
 
             /*self.messageHandler({
                 addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM",
@@ -19362,7 +19358,6 @@ Platform = function (app, listofnodes) {
 
 		}, 6000)
     }
-    
     
     
     self.convertUTCSS = function (str) {
@@ -20634,7 +20629,6 @@ Platform = function (app, listofnodes) {
             ALL_NOTIFICATIONS_COUNT : {},
             NOTIFICATION : {}
         },
-
         destroy : function(){
             if (window.matrixchat){
                 window.matrixchat.destroy()
@@ -20662,6 +20656,13 @@ Platform = function (app, listofnodes) {
 
                 if(electron){
                     console.log("HERE")
+                    /*try{
+                        require('./chat/matrix-element.min.js')
+                    }
+                    catch(e){
+                        console.error(e)
+                    }
+                    */
 
                     if(clbk) clbk()
                 }
@@ -20710,7 +20711,6 @@ Platform = function (app, listofnodes) {
                                         privatekey="${privatekey}"
                                         pocketnet="`+(isMobile() ? '' : 'true')+`"
                                         mobile="`+(isMobile() ? 'true' : '')+`" 
-                                        ctheme="`+self.sdk.theme.current+`"
                                     >
                                     </matrix-element>
                                 </div>`
@@ -20720,19 +20720,16 @@ Platform = function (app, listofnodes) {
                                 self.matrixchat.el = $('.matrixchatwrapper')
                                 self.matrixchat.initevents()
 
+
                                 
                             }, null, app);
 
+                                  
+                            
         
                     }
                 }
             })
-        },
-        
-        changeTheme : function(){
-            if(self.matrixchat.el){
-                self.matrixchat.el.find('matrix-element').attr('ctheme', self.sdk.theme.current)
-            }
         },
 
         initevents : function(){
@@ -20741,10 +20738,10 @@ Platform = function (app, listofnodes) {
                 if(isMobile()){
 
 					self.matrixchat.el.swipe({
-						allowPageScroll: "vertical", 
+						allowPageScroll: "auto", 
 						swipeLeft : function(e, phase, direction, distance){
 
-                            if (self.matrixchat.core && (!self.matrixchat.core.canback || self.matrixchat.core.canback()))
+                            if (self.matrixchat.core)
                                 self.matrixchat.core.backtoapp()
 						},
 					})
@@ -20824,25 +20821,6 @@ Platform = function (app, listofnodes) {
             }
         },
 
-        share : {
-            url : function(url){
-                if(self.matrixchat.core){
-                    self.matrixchat.core.apptochat()
-
-                    return self.matrixchat.core.share({
-                        urls : [url]
-                    }).catch(e => {
-                        console.log("E", e)
-                        self.matrixchat.core.backtoapp()
-
-                        return Promise.reject(e)
-                    })
-                }
-
-                return Promise.reject('matrixchat.core')
-            }
-        },
-
         link : function(core){
 
             core.update({
@@ -20859,7 +20837,6 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
                 }
 
-                //self.app.actions.onScroll()
 
                 if (link){
 
@@ -20877,14 +20854,11 @@ Platform = function (app, listofnodes) {
                 if (self.matrixchat.el)
                     self.matrixchat.el.addClass('active')
 
-                    //self.app.actions.offScroll()
-                    
-
                 if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = false }
             }
 
             self.matrixchat.core = core
-            self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
+            self.matrixchat.core.hiddenInParent = true
 
             core.externalLink(self.matrixchat)
 
