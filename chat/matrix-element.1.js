@@ -1727,7 +1727,6 @@ var list_component = Object(componentNormalizer["a" /* default */])(
     }*/
 
     this.init();
-    console.log("READING", this.chat);
 
     if (this.chat) {
       this.readAll();
@@ -1929,12 +1928,11 @@ var list_component = Object(componentNormalizer["a" /* default */])(
     readAll: function readAll() {
       var _this6 = this;
 
-      console.log('this.core.hiddenInParent', this.core.hiddenInParent, this.chat.getJoinedMemberCount(), this.chat.getUnreadNotificationCount());
-      if (!this.core.hiddenInParent && this.chat && this.chat.getJoinedMemberCount() > 0 && this.chat.getUnreadNotificationCount() !== 0) setTimeout(function () {
+      console.log('this.core.hiddenInParent', this.core.hiddenInParent);
+      if (!this.core.hiddenInParent && this.chat && this.chat.getJoinedMemberCount() > 1 && this.chat.getUnreadNotificationCount() !== 0) setTimeout(function () {
         if (!_this6.chat) return;
-        console.log("setRoomReadMarkers");
 
-        _this6.core.mtrx.client.setRoomReadMarkers(_this6.chat.currentState.roomId, _this6.chat.timeline[_this6.chat.timeline.length - 1].eventId, _this6.chat.timeline[_this6.chat.timeline.length - 1]).then(function (r) {
+        _this6.core.mtrx.client.setRoomReadMarkers(_this6.chat.currentState.roomId, _this6.chat['_receipts']['m.read'][_this6.chat.myUserId].eventId, _this6.chat.timeline[_this6.chat.timeline.length - 1]).then(function (r) {
           return r;
         });
       }, 1000);
@@ -2132,9 +2130,6 @@ var es_string_split = __webpack_require__("1276");
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/web.dom-collections.for-each.js
 var web_dom_collections_for_each = __webpack_require__("159b");
-
-// EXTERNAL MODULE: ./node_modules/core-js/modules/es.string.replace.js
-var es_string_replace = __webpack_require__("5319");
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.object.to-string.js
 var es_object_to_string = __webpack_require__("d3b7");
@@ -2637,7 +2632,6 @@ var release = __webpack_require__("3db6");
 
 
 
-
 var enc = 'm.olm.v1.curve25519-aes-sha2';
 /* harmony default export */ var input_vue_type_script_lang_js_ = ({
   name: 'chatInput',
@@ -2850,23 +2844,17 @@ var enc = 'm.olm.v1.curve25519-aes-sha2';
                     chat = _chat;
                     _this3.$store.state.globalpreloader = false;
 
+                    _this3.$emit("newchat", chat);
+
                     var m_chat = _this3.core.mtrx.client.getRoom(_chat.room_id);
 
                     var event = m_chat.currentState.getStateEvents("m.room.power_levels");
-                    return _this3.core.mtrx.client.setPowerLevel(chat.room_id, matrixId, 100, event[0]).catch(function (e) {});
+                    return _this3.core.mtrx.client.setPowerLevel(chat.room_id, matrixId, 100, event[0]).then(function (r) {});
                   }).then(function (r) {
                     _this3.creating = false;
                   }).catch(function (e) {
                     _this3.creating = false;
                     _this3.$store.state.globalpreloader = false;
-
-                    if (e && e.errcode == 'M_ROOM_IN_USE') {
-                      return _this3.core.mtrx.client.joinRoom('#' + id + ':' + _this3.core.mtrx.baseUrl.replace("https://", "")).then(function () {
-                        console.log("JOINED");
-                      }).catch(function (e) {});
-                    }
-
-                    return Promise.resolve(e);
                   });
                 }
 
