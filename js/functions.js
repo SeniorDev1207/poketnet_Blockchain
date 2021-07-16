@@ -3492,124 +3492,120 @@
 						}
 					}
 
-					if(!parameter.disabled){
+					if(parameter.type == 'valuescustom' || parameter.autoSearch)
+					{
+						_el.find('.vc_iconWrapper').on('click', function(){
+							open()
 
-						if(parameter.type == 'valuescustom' || parameter.autoSearch)
-						{
-							_el.find('.vc_iconWrapper').on('click', function(){
-								open()
+							if (parameter.autoSearch){
 
-								if (parameter.autoSearch){
+								setTimeout(function(){
+									input.focus();
+									bkp = input.val()
+									input.val('')
 
-									setTimeout(function(){
-										input.focus();
-										bkp = input.val()
-										input.val('')
+								}, 200)
+								
+							}
+						})
 
-									}, 200)
-									
-								}
-							})
+						_el.find('input').on('focus', function(){
+							$(this).select();
+						})
 
-							_el.find('input').on('focus', function(){
-								$(this).select();
-							})
+						
+					}
 
-							
-						}
-
-						if(parameter.type == 'values' && !parameter.autoSearch)
-						{
-							_el.find('.vc_textInput').on('click', function(){
-								open()
-							})
-						}
+					if(parameter.type == 'values' && !parameter.autoSearch)
+					{
+						_el.find('.vc_textInput').on('click', function(){
+							open()
+						})
+					}
 
 
-						_el.find('.vc_value').on('click', function(){
+					_el.find('.vc_value').on('click', function(){
+						bkp = null;
+
+						var value = $(this).attr('value');
+
+							input.val(value);
+							input.change();
+
+						take().removeClass('opened');
+						take().removeClass('error')
+					})
+
+					_el.find('.vc_selected_value_icon').on('click', function(){
+						var value = $(this).closest('.vc_selected_value').attr('value');
+
+						parameter.set(value);
+
+						_el.parent().html(parameter.input())
+
+						ParametersLive([parameter], el, p)
+					})
+
+
+					if (parameter.autoSearch){
+
+						input.focus(function(){
+							this.select();
+						});
+
+						input.on('keyup', function(e){
 							bkp = null;
 
-							var value = $(this).attr('value');
+							var value = $(this).val().toLowerCase(); 
 
-								input.val(value);
-								input.change();
+							if(!take().hasClass('opened')){
+								open();		
+							}
 
-							take().removeClass('opened');
-							take().removeClass('error')
-						})
+							if ((e.keyCode || e.which) == 13) {
 
-						_el.find('.vc_selected_value_icon').on('click', function(){
-							var value = $(this).closest('.vc_selected_value').attr('value');
+								var firstel = _el.find('.vc_value:not(.hidden)');
 
-							parameter.set(value);
-
-							_el.parent().html(parameter.input())
-
-							ParametersLive([parameter], el, p)
-						})
-
-
-						if (parameter.autoSearch){
-
-							input.focus(function(){
-								this.select();
-							});
-
-							input.on('keyup', function(e){
-								bkp = null;
-
-								var value = $(this).val().toLowerCase(); 
-
-								if(!take().hasClass('opened')){
-									open();		
+								if (firstel.length > 0){
+									value = firstel.attr('value')
 								}
 
-								if ((e.keyCode || e.which) == 13) {
+								$(this).val(value);
+								$(this).change();
 
-									var firstel = _el.find('.vc_value:not(.hidden)');
 
-									if (firstel.length > 0){
-										value = firstel.attr('value')
+								return false;
+								
+							}	
+
+							if(!value){
+								_el.find('.vc_value').removeClass('hidden')
+							}
+
+							else
+							{
+
+								$.each(_el.find('.vc_value'), function(){
+
+									var el = $(this);
+
+									var _value = el.attr('value').toLowerCase();
+									var text = el.text().toLowerCase();
+
+									if (_value.indexOf(value) > -1 || text.indexOf(value) > -1){
+										el.removeClass('hidden')
 									}
 
-									$(this).val(value);
-									$(this).change();
-
-
-									return false;
-									
-								}	
-
-								if(!value){
-									_el.find('.vc_value').removeClass('hidden')
-								}
-
-								else
-								{
-
-									$.each(_el.find('.vc_value'), function(){
-
-										var el = $(this);
-
-										var _value = el.attr('value').toLowerCase();
-										var text = el.text().toLowerCase();
-
-										if (_value.indexOf(value) > -1 || text.indexOf(value) > -1){
-											el.removeClass('hidden')
-										}
-
-										else
-										{
-											el.addClass('hidden')
-										}
+									else
+									{
+										el.addClass('hidden')
+									}
 
 
 
-									})
-								}
-							})
-						}
-
+								})
+							}
+						})
 					}
 
 					var _change = function(){
@@ -4604,9 +4600,9 @@
 				if (self.type == 'values' && !self.autoSearch)
 				{
 					disabled = 'disabled';
-				}
 
-				if(self.disabled) disabled = 'disabled'
+					
+				}
 
 				if (self.type == 'values' || self.type == 'valuescustom'){
 					displayValue = self.labelByValue(self.value)
@@ -10608,6 +10604,18 @@ stringEqTrig = function(s1, s2){
 	return c / m;
 
 
+}
+
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 /* */
 
