@@ -45,12 +45,8 @@ var streampeertube = (function () {
 
         filesWrittenObject.name = videoName;
 
-        var options = {
-          type: 'liveStream',
-        };
-
         self.app.peertubeHandler.api.videos
-          .live(filesWrittenObject, options)
+          .live(filesWrittenObject)
           .then((response) => {
             var resultElement = wnd.find('.result-section');
 
