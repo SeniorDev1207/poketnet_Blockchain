@@ -43,7 +43,7 @@
 /******/
 /******/ 	// script path function
 /******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "" + ({}[chunkId]||chunkId) + ".chunk.js?v=5819"
+/******/ 		return __webpack_require__.p + "" + ({}[chunkId]||chunkId) + ".chunk.js?v=3247"
 /******/ 	}
 /******/
 /******/ 	// The require function
@@ -43510,7 +43510,12 @@ class embed_PeerTubeEmbed {
             this.wrapperElement.appendChild(this.playerElement);
             this.loadParams(videoInfo);
             this.liveStatusMessage();
-            //this.isTranscodingStatusMessage()
+            try {
+                this.isTranscodingStatusMessage();
+            }
+            catch (e) {
+                console.log('isTranscodingStatusMessage', e);
+            }
             const options = {
                 common: {
                     // Autoplay in playlist mode
