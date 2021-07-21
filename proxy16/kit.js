@@ -25,20 +25,39 @@ var test = _.indexOf(process.argv, '--test') > -1
 
 
 var testnodes = [
-	{
-		host : '157.90.235.121',
+
+	/*{
+		host : '188.187.45.218',
 		port : 36061,
 		ws : 6067,
-		name : 'test.1.pocketnet.app',
+		name : 'CryptoserverTest',
 		stable : true
 	},
+
 	{
-		host : '157.90.228.34',
+		host : '65.21.56.203',
 		port : 36061,
 		ws : 6067,
-		name : 'test.2.pocketnet.app',
+		name : 'CryptoserverTest2',
+		stable : true
+	}*/
+
+	{
+		host : '216.108.231.28',
+		port : 36061,
+		ws : 6067,
+		name : 'CryptoserverTest',
+		stable : true
+	},
+
+	{
+		host : '64.235.46.85',
+		port : 36061,
+		ws : 6067,
+		name : 'CryptoserverTest2',
 		stable : true
 	}
+	
 ]
 
 var activenodes = [
