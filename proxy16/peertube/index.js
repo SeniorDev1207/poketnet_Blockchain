@@ -102,6 +102,7 @@ var Peertube = function (settings) {
     },
 
     best: function ({ roy, type }) {
+
       if (!roy) roy = self.api.randroykey();
 
       roy = getroy(roy);
@@ -128,6 +129,7 @@ var Peertube = function (settings) {
           resolve(waitstatus);
         });
       })
+
         .then((waitstatus) => {
           var cached = cache.get(cachekey, cacheparameters);
 
@@ -184,38 +186,24 @@ var Peertube = function (settings) {
               return Promise.resolve();
             });
         }),
-      )
-        .then(() => {
-          return Promise.resolve(result);
-        })
-        .catch((e = {}) =>
-          Promise.reject({
-            error: e,
-            code: e.code || 500,
-          }),
-        );
+      ).then(() => {
+        return Promise.resolve(result);
+      });
     },
 
     stats() {
       const servers = Object.values(roys).map((roy) => roy.performance());
 
-      return Promise.all(servers)
-        .then((data) => {
-          console.log(data.flat());
-          return data.flat().reduce(
-            (accumulator, currVal) => ({
-              ...accumulator,
-              [currVal.host]: currVal.data,
-            }),
-            {},
-          );
-        })
-        .catch((e = {}) =>
-          Promise.reject({
-            error: e,
-            code: e.code || 500,
+      return Promise.all(servers).then((data) => {
+        console.log(data.flat());
+        return data.flat().reduce(
+          (accumulator, currVal) => ({
+            ...accumulator,
+            [currVal.host]: currVal.data,
           }),
+          {},
         );
+      });
     },
   };
 
