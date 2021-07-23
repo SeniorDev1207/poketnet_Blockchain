@@ -85,7 +85,6 @@ var publics = {
     getaddressinfo: true,
     getaddresstransactions: true,
     gettransactions: true,
-    getblock: true,
     getblocks: true,
     getlastblocks: true,
     checkstringtype: true,
