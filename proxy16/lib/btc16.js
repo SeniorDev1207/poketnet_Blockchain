@@ -6613,9 +6613,6 @@
           }
       };
   }
-
-
-
   const HIGHEST_BIT = 0x80000000;
   const UINT31_MAX = Math.pow(2, 31) - 1;
   function BIP32Path(value) {
@@ -36486,7 +36483,7 @@
   (typeof window !== 'undefined' && window.testpocketnet)
     ? {
         messagePrefix: '\x18Bitcoin Signed Message:\n',
-        bech32: 'tb',
+        bech32: 'bc',
         bip32: {
           public: 0x043587cf,
           private: 0x04358394,

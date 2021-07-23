@@ -515,6 +515,7 @@ var Node = function(options, manager){
 
         return self.rpcs('getPeerInfo').then(result => {
 
+            console.log('result', result, self.export())
 
             var nodes = _.map(result || [], function(peer){
 

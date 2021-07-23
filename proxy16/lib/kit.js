@@ -415,6 +415,7 @@ var Comment = function(txid){
 		
 										self.images.v[index] = 'https://pocketnet.app:8092/i/' + deep(data, 'data.ident');
 
+										console.log('self.images.v[index]', self.images.v[index])
 										p.success();
 		
 									},
@@ -494,6 +495,7 @@ var Comment = function(txid){
 			})
 		}
 
+		console.log('self.images.v', self.images.v)
 
 		if(self.id){
 			r.id = self.id
@@ -516,6 +518,7 @@ var Comment = function(txid){
 			return decodeURIComponent(i)
 		}))
 
+		console.log("v.msgparsed", v.msgparsed)
 
 		if (v.txid || v.id)
 			self.id = v.txid || v.id
@@ -888,6 +891,7 @@ var Share = function(lang){
 			}
 			
 			_.each(self.on.change || {}, function(f){
+				console.log('poll', f);
 				f('poll', this.v)
 			})
 
@@ -1352,6 +1356,7 @@ var Share = function(lang){
 		return self.type
 	}
 
+	console.log("SAD")
 
 	if(lang) self.language.set(lang)
 

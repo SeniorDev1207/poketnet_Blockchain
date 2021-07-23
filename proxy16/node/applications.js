@@ -183,6 +183,7 @@ var Applications = function(settings) {
 
             r.asset = asset
 
+            console.log(' r.asset',  r.asset)
 
             return f.downloadgitrelease(r.asset.name, {
                 //dest : dest,

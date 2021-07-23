@@ -113,9 +113,13 @@ var accounts = (function(){
 					essenseData : {
 						success : function(mnemonic){
 
+							console.log("mnemonic", mnemonic)
 
 							self.app.platform.sdk.pool.expand(pack, function(expandedPack){
+								console.log("IMHERE", mnemonic)
 								self.app.platform.sdk.pool.add(expandedPack, mnemonic, function(expandedPack, error){
+
+									console.log("IMHERE", expandedPack)
 
 									if (error){
 										dialog({
@@ -126,6 +130,8 @@ var accounts = (function(){
 									else
 									{
 										self.app.platform.sdk.pool.export(expandedPack, function(_pack){
+
+											console.log("HERE")
 
 											self.app.platform.sdk.pool.current.packs[id] = _pack;
 											self.app.platform.sdk.pool.save()
