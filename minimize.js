@@ -13,8 +13,7 @@ var args = {
 	test : false,
 	prodaction : true,
 	vendor : 89,
-    path : '/',
-    makewebnode: false
+	path : '/'
 }
 
 var uglify = true
@@ -128,11 +127,6 @@ fs.exists(mapJsPath, function (exists) {
 			
 		})
 
-
-		var webnode = {
-			path : './web',
-			copy : ['chat', 'components', 'css', 'images', 'img', 'js', 'localization', 'peertube', 'res', 'sounds', 'browserconfig.xml', 'crossdomain.xml', 'favicon.svg', 'indexwebnode.html', 'LICENSE', 'README.md']
-		}
 	
 
 		/*JOIN MODULES*/
@@ -742,14 +736,10 @@ fs.exists(mapJsPath, function (exists) {
 
 		makePocketnet(function(){
 
-			copycontent(cordova, function(){
+			copycordova(cordova, function(){
 				copycordovaios(cordovaiosfast)
 			})
-            
-            if(args.makewebnode)
-            {
-                copycontent(webnode, () => {})
-            }
+			
 
 		})
 
@@ -802,28 +792,38 @@ var helpers = {
 	}
 }
 
-var copycontent = function(options, clbk) {
-	helpers.clearfolder(options.path, function() {
+var copycordova = function(options, clbk){
+	helpers.clearfolder(options.path, function(){
 		lazyEach({
 			sync : true,
 			array : options.copy,
 			action : function(p){
+	
+	
 				ncp(p.item, options.path + '/' + p.item, function (err) {
+	
 					if (err) {
 					  console.error(err);
 					}
 	
 					p.success();
+					
 				});
+	
 			},
+			
 			all : {
 				success : function(){
-					console.log(options.path + ' ready')
+	
+					console.log('cordova ready')
+	
 					if(clbk) clbk()
+	
 				}
 			}
 		})
 	})
+	
 }
 
 var copycordovaios = function(options, clbk){

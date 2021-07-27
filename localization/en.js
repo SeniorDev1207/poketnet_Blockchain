@@ -1003,7 +1003,7 @@ ____loclib.period182day = "Half of year";
 ____loclib.shareBareLink = "Share Video Link";
 ____loclib.videoCopied = "Video link successfully copied to clipboard";
 
-____loclib.editWallpaper = "Change Preview Image";
+____loclib.editWallpaper = "Change Wallpaper";
 ____loclib.removeVideo = "Remove Video";
 
 ____loclib.removeVideoDialog = 'Are you sure you want to delete this video?'
@@ -1078,7 +1078,3 @@ ____loclib.createnewcontinue = "Continue creating account";
 
 
 ____loclib.transactionnotfound = "Transaction not found";	
-
-____loclib.donateself = "You can't donate yourself";
-____loclib.e131101 = "Enter donation amount"
-____loclib.donated = 'donated'
