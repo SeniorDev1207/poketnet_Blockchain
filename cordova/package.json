@@ -105,8 +105,8 @@
       "cordova-universal-links-plugin": {}
     },
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ]
   }
 }
