@@ -501,8 +501,6 @@
 
 	wnd = function(p){
 
-		console.log('wnd!!!', p);
-
 		if(!p) p = {};
 
 		var self = this,
@@ -5872,7 +5870,7 @@
 	    }
 	}
 
-	saveAs = function(p) {
+	p_saveAs = function(p) {
 		if (GetBrowser().toLowerCase() == 'msie') {
 			message('Internet Explorer does not support this operation.');
 			return false;
@@ -5923,7 +5921,7 @@
 		return blob;
 	}
 
-	saveAsWithCordova = function(file, name, clbk){
+	p_saveAsWithCordova = function(file, name, clbk){
 
 
 		var storageLocation = 'file:///storage/emulated/0/';
