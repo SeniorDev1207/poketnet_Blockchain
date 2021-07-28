@@ -121,7 +121,7 @@ var pkview = (function(){
 
 						var text = p.el.find('.qrcode img').attr('src')
 
-						p_saveAs({
+						saveAs({
 							file : text,
 							format : 'png',
 							name : 'pocketnetkey'
@@ -145,7 +145,7 @@ var pkview = (function(){
 											var image = b64toBlob(qr._oDrawing._elImage.currentSrc.split(',')[1], 'image/png', 512);		
 											
 
-											p_saveAsWithCordova(image, 'pkey'+self.app.platform.currentTime()+'.png', function(){
+											saveAsWithCordova(image, 'pkey'+self.app.platform.currentTime()+'.png', function(){
 												clbk()
 											})
 

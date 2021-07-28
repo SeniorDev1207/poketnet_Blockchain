@@ -100,6 +100,7 @@ var menu = (function(){
 			},
 			ahnotify : function(el, c, type){
 
+				console.log('el, c, type', el, c, type, notifications)
 
 				if(!c) c = 0
 
@@ -1341,6 +1342,7 @@ var menu = (function(){
 
 			showsearch : function(v, _searchBackAction){
 
+				console.log('showsearch', v, _searchBackAction)
 
 				if(v){
 					el.c.addClass('searchactive')
