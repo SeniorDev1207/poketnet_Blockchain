@@ -882,6 +882,3 @@ ____loclib.streamSettingsWarn = 'Для корректной работы тра
 ____loclib.streamSettingsResult = 'В противном случае ваш стрим может работать нестабильно.'
 
 ____loclib.failedStreamGeneration = 'Unable to start stream'
-
-____loclib.donateself = "Вы не можете отправить пожертвование самому себе";
-____loclib.donated = 'пожертвовал'

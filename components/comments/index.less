@@ -22,41 +22,6 @@
 		white-space: nowrap;
 	}
 
-	.donateEmbWr{
-
-		.donatecntWrapper{
-			padding-top: @rhythm * 2;
-			padding-bottom: @rhythm * 2;
-
-			.removedonate{
-				border-radius: 50%;
-				height: 30px;
-				width: 30px;
-				line-height: 30px;
-				text-align: center;
-				cursor: pointer;
-				.transition(0.3s);
-				color : @color-bad;
-
-				&:hover{
-					background : @color-gray-slight;
-				}
-			}
-
-			.donatecnt{
-				.value, .removeWrapper{
-					display: inline-block;
-				}
-
-				.removeWrapper{
-					position: relative; 
-					top: -10px
-				}
-			}
-
-		}
-	}
-
 	&.preview{
 		.post{
 			.txt{
@@ -421,19 +386,6 @@
 					.usericon{
 						position: relative;
 						/*margin : 0 auto;*/
-
-						@keyframes rotation {
-							from {
-								transform: rotate(0deg);
-							}
-							to {
-								transform: rotate(359deg);
-							}
-						}
-
-						.donated{
-							animation: rotation 3s infinite linear;
-						}
 					}
 				}
 
@@ -485,18 +437,6 @@
 
 				&.author{
 					color : @color-gray;
-				}
-
-				.donate{
-					display: inline;
-					border-radius: 25px;
-					padding: @rhythm;
-					color: white;
-					margin-left: @rhythm;
-					font-size: .8em;
-					font-weight: 500;
-					background: @color-main;
-					
 				}
 
 				.date{	
@@ -918,8 +858,6 @@
 					float: none;
 					.usericon{
 						position: relative;
-												
-
 						/*margin : 0 auto;*/
 					}
 				}
@@ -1095,7 +1033,6 @@
 			padding : 8px;
 			padding-left : 2 * @rhythm;
 			padding-right : 66px;
-			padding-right : 94px;
 			outline: none;
 			border : 0;
 			min-height: 36px;
@@ -1109,20 +1046,6 @@
 		.embedimages{
 			position: absolute;
 			right : 12px;
-			top : 2px;
-			padding : 6px;
-			cursor: pointer;
-			color : @color-gray-light;
-			.transition(0.3s);
-
-			&:hover{
-				color : @color-black2;
-			}
-		}
-
-		.embeddonate{
-			position: absolute;
-			right : 70px;
 			top : 2px;
 			padding : 6px;
 			cursor: pointer;
@@ -1744,13 +1667,6 @@ html.stblack{
 							margin : 0;
 						}
 					}
-				}
-			}
-
-			&.commentBody{
-				.donate{
-					display: block;
-					margin-left: 0;
 				}
 			}
 
