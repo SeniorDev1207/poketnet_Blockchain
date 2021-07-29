@@ -1078,7 +1078,3 @@ ____loclib.createnewcontinue = "Continue creating account";
 
 
 ____loclib.transactionnotfound = "Transaction not found";	
-
-____loclib.donateself = "You can't donate yourself";
-____loclib.donated = 'commented your post and donated'
-____loclib.incoins = "Enough coins"
