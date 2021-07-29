@@ -94,9 +94,9 @@
 		return result.join(":")
  	}
 
-	/*isios = function () {
+	isios = function () {
 		return typeof window != 'undefined' && window.cordova && window.device && deep(window, 'device.platform') == 'iOS'
-	}*/
+	}
 
  
 	currentYear = function(){
@@ -500,6 +500,8 @@
 	}, 3000)*/
 
 	wnd = function(p){
+
+		console.log('wnd!!!', p);
 
 		if(!p) p = {};
 
@@ -5870,7 +5872,7 @@
 	    }
 	}
 
-	p_saveAs = function(p) {
+	saveAs = function(p) {
 		if (GetBrowser().toLowerCase() == 'msie') {
 			message('Internet Explorer does not support this operation.');
 			return false;
@@ -5921,7 +5923,7 @@
 		return blob;
 	}
 
-	p_saveAsWithCordova = function(file, name, clbk){
+	saveAsWithCordova = function(file, name, clbk){
 
 
 		var storageLocation = 'file:///storage/emulated/0/';
@@ -8901,7 +8903,7 @@
 
 		var readFile = function(reader, error, file, files, clbk){
 
-			reader.onloadend = (function(theFile) {
+			reader.onload = (function(theFile) {
 				return function(e) {
 
 					var name = theFile.name.split('.');
@@ -9060,7 +9062,7 @@
 
 		var autorotation = function(file, image, clbk){
 
-			if((file.type == 'image/jpeg' || file.type == 'image/png'|| file.type == 'image/jfif') && !p.notexif && typeof EXIF != 'undefined' && !isios()){
+			if((file.type == 'image/jpeg' || file.type == 'image/png'|| file.type == 'image/jfif') && !p.notexif && typeof EXIF != 'undefined'){
 				EXIF.getData(file, function() {
 
 					
@@ -10186,10 +10188,6 @@
 
 		else return 0
 
-	}
-
-	isios = function () {
-		return (window.cordova && window.device && deep(window, 'device.platform') == 'iOS') || (navigator || {}).platform &&  /iPad|iPhone|iPod/.test(navigator.platform || '')
 	}
 
 	numberToBool = function(v){
