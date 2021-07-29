@@ -746,8 +746,6 @@ Application = function(p)
 
 	self.deviceReadyInit = function(p){
 
-		
-
 		self.el = {
 			content : 		$('#content'),
 			app : 			$('#application'),
@@ -785,10 +783,6 @@ Application = function(p)
 
 				p.clbk = function(){
 					navigator.splashscreen.hide();
-				}
-
-				if (window.Keyboard){
-					window.Keyboard.disableScroll(false)
 				}
 
 				self.init(p)

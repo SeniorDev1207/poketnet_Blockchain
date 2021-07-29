@@ -47,9 +47,7 @@ Platform = function (app, listofnodes) {
         'PVjvMwapTA29biRTsksXUBuVVf2HVwY7ps' : true,
         'PKSV2KXCdEtTtYb8rF3xMMgiiKe1oDstXR' : true,
         'PUqq6vksrmoMPRrRjZxCVQefqGLpuaqWii' : true,
-        'PMtmtctmBD9nHJFzmfXJR1G2busp8CjASs' : true,
-        'PNUMTC5CTH3F5LfQpkmj3MXcDnGNKTU4ov' : true,
-        'PSWR1jHNocGVVVFE3aoxFh8G85SQK3G9Ta' : true
+        'PMtmtctmBD9nHJFzmfXJR1G2busp8CjASs' : true
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
     
@@ -819,6 +817,17 @@ Platform = function (app, listofnodes) {
             },
 
             relay: true
+        },
+
+        "incorrectdonate" : {
+
+            message: function () {
+
+                return 'Incorrect donate'
+
+            },
+
+
         },
 
         "imageerror" : {
@@ -3138,7 +3147,7 @@ Platform = function (app, listofnodes) {
 
                 var regs = self.sdk.registrations.storage[address];
 
-                return (!self.sdk.registrations.storage[address + 'rm'] && regs > 2 /*&& regs <= 5*/)
+                return (!self.sdk.registrations.storage[address + 'rm'] && regs && regs <= 5)
              
             },
 
@@ -12418,7 +12427,12 @@ Platform = function (app, listofnodes) {
 
                             var inputs = [];
 
-                            if (unspent.length) {
+                            var totalInputs = 0;
+
+                            if (unspent.length && !(obj.donate && obj.donate.v.length)) {
+
+                                totalInputs += unspent[unspent.length - 1].amount;
+
                                 inputs = [{
 
                                     txId: unspent[unspent.length - 1].txid,
@@ -12429,7 +12443,7 @@ Platform = function (app, listofnodes) {
                                 }]
                             }
                             //remove for donations
-                            if (unspent.length > 60) {
+                            if (unspent.length > 60 && !(obj.donate && obj.donate.v.length)) {
                                 inputs.push({
                                     txId: unspent[unspent.length - 2].txid,
                                     vout: unspent[unspent.length - 2].vout,
@@ -12442,7 +12456,58 @@ Platform = function (app, listofnodes) {
                             /// ++++
 
 
-                            self.sdk.node.transactions.create[obj.type](inputs, obj, function (a, er, data) {
+                            var feerate = TXFEE;
+
+                            if (obj.donate && obj.donate.v.length){
+
+                                feerate = 0.00001;
+
+                                var totalDonate = 0;
+
+                                obj.donate.v.forEach(function(d){
+
+                                    totalDonate += Number(d.amount);
+
+                                })
+
+                                var lastUnspent = _.clone(unspent).reverse();
+
+                                for (var u of lastUnspent){
+
+                                    if (totalDonate + feerate >= totalInputs){
+
+                                        totalInputs += u.amount;
+
+                                        inputs.push({
+                                            txId: u.txid,
+                                            vout: u.vout,
+                                            amount: u.amount,
+                                            scriptPubKey: u.scriptPubKey,
+                                        })
+
+                                    } else {
+
+                                        break;
+                                    }
+
+                                }  
+
+                                if (totalDonate >= totalInputs){
+
+                                    sitemessage(self.app.localization.e('e13117'))
+
+                                    if (clbk){
+                                        clbk(null, self.app.localization.e('e13117'));
+                                    }
+
+                                    return;
+
+                                }
+
+                                feerate = Number((feerate * smulti).toFixed(0));
+                            } 
+
+                            self.sdk.node.transactions.create[obj.type](inputs, obj, feerate, function (a, er, data) {
 
                                 if (!a) {
                                     if ((er == -26 || er == -25 || er == 16) && !p.update) {
@@ -12461,9 +12526,6 @@ Platform = function (app, listofnodes) {
                                 if (regs && (regs == 4)) {
 
                                     self.sdk.registrations.add(addr, 5)
-                                    
-
-                                    platform.matrixchat.update()
 
                                     var cm = deep(app, 'modules.menu.module.restart')
                                     if (cm) cm()
@@ -12650,7 +12712,7 @@ Platform = function (app, listofnodes) {
                                 }
 
 
-                                if (unspents.length < 50 && amount > 2 * 10000000) {
+                                if (!(obj.donate && obj.donate.v.length) && unspents.length < 50 && amount > 2 * 10000000) {
 
                                     var ds = Number((amount / 2).toFixed(0))
 
@@ -12670,124 +12732,158 @@ Platform = function (app, listofnodes) {
                                 ///// add donations
 
 
-                                txb.addOutput(address.address, Number((amount - (fees || 0)).toFixed(0)));
+                                totalDonate = 0;
 
+                                if (obj.donate && obj.donate.v.length){
 
-                                ///// return funds
-                                outputs.push({
-                                    address: address.address,
-                                    amount: Number((amount - (fees || 0)).toFixed(0))
-                                })
+                                    obj.donate.v.forEach(function(d){       
+                                        var donate = Number(d.amount) * smulti;
 
-                                ///// add donations?
+                                        totalDonate += donate
 
-                                _.each(inputs, function (input, index) {
-                                    txb.sign(index, keyPair);
-                                })
+                                        txb.addOutput(d.address, donate);
+                                        outputs.push({
+                                            address: d.address, 
+                                            amount: donate
+                                        });
 
-                                var tx = txb.build()
-
-                                var hex = tx.toHex();
-
-
-
-                                if (p.pseudo) {
-                                    var alias = obj.export(true);
-                                    alias.txid = makeid();
-
-                                    if (clbk)
-                                        clbk(alias, null)
-                                }
-                                else {
-
-                                    var bids = _.map(inputs, function (i) {
-                                        return {
-                                            txid : i.txId,
-                                            vout : i.vout
-                                        }
                                     })
-
-                                    self.app.platform.sdk.node.transactions.blockUnspents(bids)
-
-                                    self.app.api.rpc('sendrawtransactionwithmessage', [hex, obj.export(), optstype]).then(d => {
-
-                                        var alias = obj.export(true);
-                                            alias.txid = d;
-                                            alias.address = address.address;
-                                            alias.type = obj.type
-                                            alias.time = self.currentTime()
-                                            alias.timeUpd = alias.time
-                                            alias.optype = optype
-
-                                            var count = deep(tempOptions, obj.type + ".count") || 'many'
-
-
-                                            if (!temp[obj.type] || count == 'one') {
-                                                temp[obj.type] = {};
-                                            }
-
-                                            temp[obj.type][d] = alias;
-
-                                            alias.inputs = inputs
-                                            alias.outputs = _.map(outputs, function(output){
-                                                return {
-                                                    address : output.address,
-                                                    amount : output.amount / smulti,
-                                                    deleted : output.deleted
-                                                }
-                                            })
-
-                                            self.sdk.node.transactions.saveTemp()
-
-                                            var ids = _.map(inputs, function (i) {
-
-                                                return {
-                                                    txid: i.txId,
-                                                    vout: i.vout
-                                                }
-
-                                            })
-
-                                            self.app.platform.sdk.node.transactions.clearUnspents(ids)
-
-                                            if (obj.ustate) {
-
-                                                var ustate = obj.ustate;
-
-                                                if (typeof obj.ustate == 'function') ustate = obj.ustate();
-
-                                                if (ustate) {
-                                                    var us = self.sdk.ustate.storage;
-
-                                                    if (us[address.address]) {
-                                                        us[address.address][obj.ustate + "_spent"]++
-                                                        us[address.address][obj.ustate + "_unspent"]--
-                                                    }
-
-                                                    _.each(self.sdk.ustate.clbks, function (c) {
-                                                        c()
-                                                    })
-                                                }
-
-
-
-
-                                            }
-
-
-                                            if (clbk)
-                                                clbk(alias)
-        
-                                    }).catch(e => {
-                                        self.app.platform.sdk.node.transactions.unblockUnspents(bids)
-
-
-                                        if (clbk) {
-                                            clbk(null, e.code, data)
-                                        }
-                                    })
+                                }       
 
                                     
+                                var totalReturn = Number((amount - totalDonate - (fees || 0)).toFixed(0));
+
+
+                                if (obj.donate && obj.donate.v.length && (totalReturn < 0 || totalDonate <= fees)){
+
+                                    if (clbk){
+                                        clbk(null, 'incorrectdonate')
+                                    }
+
+                                    return;
+
+                                } else {
+
+                                    txb.addOutput(address.address, totalReturn);
+                                                                       outputs.push({
+                                        address: address.address,
+                                        amount: totalReturn
+                                    })
+
+                                    _.each(inputs, function (input, index) {
+                                        txb.sign(index, keyPair);
+                                    })
+
+                                    var tx = txb.build()
+
+
+                                    if (obj.donate && obj.donate.v.length && !obj.fees.v){
+
+                                        var totalFees = Math.min(tx.virtualSize() * fees / smulti, 0.0999);
+
+                                        obj.fees.set(totalFees);
+
+                                        self.sdk.node.transactions.create.common(inputs, obj, totalFees * smulti, clbk, p);
+
+                                    } else {
+
+                                        var hex = tx.toHex();
+
+                                        if (p.pseudo) {
+                                            var alias = obj.export(true);
+                                            alias.txid = makeid();
+
+                                            if (clbk)
+                                                clbk(alias, null)
+                                        }
+                                        else {
+
+                                            var bids = _.map(inputs, function (i) {
+                                                return {
+                                                    txid : i.txId,
+                                                    vout : i.vout
+                                                }
+                                            })
+
+                                            self.app.platform.sdk.node.transactions.blockUnspents(bids)
+
+                                            self.app.api.rpc('sendrawtransactionwithmessage', [hex, obj.export(), optstype]).then(d => {
+
+
+                                                var alias = obj.export(true);
+                                                    alias.txid = d;
+                                                    alias.address = address.address;
+                                                    alias.type = obj.type
+                                                    alias.time = self.currentTime()
+                                                    alias.timeUpd = alias.time
+                                                    alias.optype = optype
+
+                                                    var count = deep(tempOptions, obj.type + ".count") || 'many'
+
+
+                                                    if (!temp[obj.type] || count == 'one') {
+                                                        temp[obj.type] = {};
+                                                    }
+
+                                                    temp[obj.type][d] = alias;
+
+                                                    alias.inputs = inputs
+                                                    alias.outputs = _.map(outputs, function(output){
+                                                        return {
+                                                            address : output.address,
+                                                            amount : output.amount / smulti,
+                                                            deleted : output.deleted
+                                                        }
+                                                    })
+
+                                                    self.sdk.node.transactions.saveTemp()
+
+                                                    var ids = _.map(inputs, function (i) {
+
+                                                        return {
+                                                            txid: i.txId,
+                                                            vout: i.vout
+                                                        }
+
+                                                    })
+
+                                                    self.app.platform.sdk.node.transactions.clearUnspents(ids)
+
+                                                    if (obj.ustate) {
+
+                                                        var ustate = obj.ustate;
+
+                                                        if (typeof obj.ustate == 'function') ustate = obj.ustate();
+
+                                                        if (ustate) {
+                                                            var us = self.sdk.ustate.storage;
+
+                                                            if (us[address.address]) {
+                                                                us[address.address][obj.ustate + "_spent"]++
+                                                                us[address.address][obj.ustate + "_unspent"]--
+                                                            }
+
+                                                            _.each(self.sdk.ustate.clbks, function (c) {
+                                                                c()
+                                                            })
+                                                        }
+
+                                                    }
+
+
+                                                    if (clbk)
+                                                        clbk(alias)
+
+                                            }).catch(e => {
+                                                self.app.platform.sdk.node.transactions.unblockUnspents(bids)
+
+
+                                                if (clbk) {
+                                                    clbk(null, e.code, data)
+                                                }
+                                            }) 
+                                        }
+                                    }
                                 }
 
                             }, address.address)
@@ -12927,7 +13023,7 @@ Platform = function (app, listofnodes) {
 
                     },
 
-                    share: function (inputs, share, clbk, p, fromTG) {
+                    share: function (inputs, share, fees, clbk, p, fromTG) {
 
                         var meta = self.sdk.usersettings.meta;
 
@@ -12953,7 +13049,7 @@ Platform = function (app, listofnodes) {
                           }
                         }
 
-                        this.common(inputs, share, TXFEE, clbk, p)
+                        this.common(inputs, share, fees, clbk, p)
                     },
 
                     userInfo: function (inputs, userInfo, clbk, p) {
@@ -12970,8 +13066,8 @@ Platform = function (app, listofnodes) {
                         this.common(inputs, complainShare, TXFEE, clbk, p)
                     },
 
-                    comment: function (inputs, comment, clbk, p) {
-                        this.common(inputs, comment, TXFEE, clbk, p)
+                    comment: function (inputs, comment, fees, clbk, p) {
+                        this.common(inputs, comment, fees, clbk, p)
                     },
 
                     commentShare: function (inputs, commentShare, clbk, p) {
@@ -16342,7 +16438,7 @@ Platform = function (app, listofnodes) {
 
                 if(exist) return Promise.resolve()
 
-                if(self.api.existanother(proxy, address)) return self.request.revokeall()
+                if(self.api.existanother(proxy, address)) return self.revokeall()
 
             }).then(r => {
                 return self.api.setToken(address, token, proxy)
@@ -16420,13 +16516,8 @@ Platform = function (app, listofnodes) {
                 FirebasePlugin.getToken(function(token) {
 
                     currenttoken = token
-                    platform.fcmtoken = token
 
-                    console.log("FCM TOKEN GET", token)
-
-                    platform.matrixchat.changeFcm()
-
-                    self.events()
+                    console.log('currenttoken', currenttoken)
 
                     if (clbk)
                         clbk(currenttoken)
@@ -16514,17 +16605,23 @@ Platform = function (app, listofnodes) {
                 
             });
 
-         
+            var trySettingTokenOnMatrix = function(token) {
+                // Update the token on the Matrix element if we can
+                if (platform && platform.matrixchat && platform.matrixchat.el) {
+                    platform.matrixchat.el.find('matrix-element').attr('fcmtoken', token);
+                    return;
+                }
+                // Else, wait a bit and retry
+                setTimeout(() => {
+                    trySettingTokenOnMatrix(token);
+                }, 1000);
+            }
+
             // When token is refreshed, update the matrix element for the Vue app
             FirebasePlugin.onTokenRefresh(function(token) {
 
-                console.log("FCM TOKEN REFRESH", token)
-
-                platform.fcmtoken = token   
-                currenttoken = token
-                platform.matrixchat.changeFcm()
-
-                //prepareclbk(token)
+                if (token && platform.app && platform.app.user && platform.app.user.getstate && platform.app.user.getstate() == 1)
+                    trySettingTokenOnMatrix(token);
                 
             }, function(error) {
                 console.error(error);
@@ -16532,31 +16629,28 @@ Platform = function (app, listofnodes) {
 
         }
 
-        var prepareclbk = function(token){
-
-            if (token){
-
-                var proxy = platform.app.api.get.current()
-
-                if (proxy){
-                    self.set(proxy.id).catch(e => {
-                        console.log("error", e)
-                    })
-                }
-
-            }
-
-        }
-
         self.init = function(clbk){
+
+            console.log('self.initself.init')
 
             self.prepare(function(token){
 
-                prepareclbk(token)
+                if (token){
+
+                    var proxy = platform.app.api.get.current()
+
+                    if (proxy){
+                        self.set(proxy.id).catch(e => {
+                            console.log("error", e)
+                        })
+                    }
+
+                }
 
             })
 
             if(clbk) clbk()
+            
         }
 
         self.prepare = function(clbk){
@@ -16564,7 +16658,7 @@ Platform = function (app, listofnodes) {
             self.storage.load()
 
 			if (using) {
-				
+				self.events()
 				self.permissions(clbk)
 			}
             else{
@@ -16947,7 +17041,7 @@ Platform = function (app, listofnodes) {
                 return filterXSS(deep(author, 'name') || author.address)
             },
 
-            user: function (author, html, gotoprofile, caption, extra, time) {
+            user: function (author, html, gotoprofile, caption, extra, time, donation) {
 
                 if (!author || !author.name) {
                     return html
@@ -17007,7 +17101,16 @@ Platform = function (app, listofnodes) {
                 }
 
                 if (caption) {
-                    h += " " + clearStringXss(caption)
+
+                    if (donation){
+
+                        h += " " + caption;
+
+                    } else {
+
+                        h += " " + clearStringXss(caption)
+
+                    }
                 }
 
                 h += '</div>\
@@ -18002,31 +18105,12 @@ Platform = function (app, listofnodes) {
 
                         })
                     })
-                    
 
                     platform.sdk.newmaterials.update(data)
 
                     platform.sdk.user.subscribeRef()
 
                     platform.matrixchat.init()
-
-                    ////////////////
-
-                    if(app.platform.sdk.address.pnet()){
-                        var addr = app.platform.sdk.address.pnet().address
-
-                        var regs = app.platform.sdk.registrations.storage[addr];
-
-                        if (regs == 5) {
-
-                            self.sdk.registrations.add(addr, 6)
-
-                            platform.matrixchat.update()
-                        }
-                    }
-                    
-
-                    ////////
 
                     setTimeout(function () {
                         platform.sdk.relayTransactions.send()
@@ -18213,6 +18297,8 @@ Platform = function (app, listofnodes) {
 
                 fastMessage: function (data) {
 
+                    console.log('fastMessage', data);
+
                     var text = '';
                     var html = '';
 
@@ -18225,6 +18311,7 @@ Platform = function (app, listofnodes) {
 
                         var me = platform.sdk.user.me()
                         if (me && me.relation(data.user.address, 'blocking')) {
+
                             return html
                         }
                         
@@ -18235,9 +18322,23 @@ Platform = function (app, listofnodes) {
 
                         text = self.tempates.comment(data.comment, self.tempates.share(data.share))
 
+                        var toptext = self.app.localization.e('e13337');
+
+                        if (data.donation && data.amount){
+
+                            var amount = String(Number(data.amount) / smulti || 0);
+                            toptext = '<span>' + self.app.localization.e('donated') + '</span>' + ' <span class="donate"> +' + amount + ' PKOIN </span>';
+                        }  
+
                         if (text) {
-                            html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + self.app.localization.e('e13337'), extra, data.time)
+                            var toptext =  self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time, data.donation);
+
+                            console.log('toptext', toptext);
+                            html += toptext
                         }
+
+                                             
+
                     }
 
                     if (data.reason == 'answer' && data.comment && data.share && data.user &&
@@ -18245,13 +18346,13 @@ Platform = function (app, listofnodes) {
 
                         text = self.tempates.comment(data.comment/*, self.tempates.share(data.share)*/)
 
-
-
                         if (text) {
-                            html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + self.app.localization.e('e13338'), extra, data.time)
+
+                            var toptext = self.app.localization.e('e13337')
+
+                            html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time)
                         }
                     }
-
 
                     return html;
 
@@ -19098,7 +19199,7 @@ Platform = function (app, listofnodes) {
 
                 if (data.txid) {
 
-                    if (txidstorage[data.txid]) return;
+                    if (txidstorage[data.txid] || (data.msg === 'transaction' && data.donation)) return;
 
                     txidstorage[data.txid] = true
 
@@ -19146,8 +19247,10 @@ Platform = function (app, listofnodes) {
 
                             if (html) {
 
-                                if(!self.showedIds[data.txid]) {
-                                    self.showedIds[data.txid] = true
+                                var txid = data.txid
+
+                                if(!self.showedIds[txid]) {
+                                    self.showedIds[txid] = true
 
 
                                     var message = self.fastMessage(html, function () {
@@ -20842,17 +20945,14 @@ Platform = function (app, listofnodes) {
 
                     var userinfo = deep(app, 'platform.sdk.user.storage.me')
 
-                    if (window.testpocketnet && state) {
 
-                    //if (window.testpocketnet && userinfo && !_.isEmpty(userinfo) && !(userinfo.temp || userinfo.relay || userinfo.fromstorage)) {
+                    if (window.testpocketnet && userinfo && !_.isEmpty(userinfo) && !(userinfo.temp || userinfo.relay || userinfo.fromstorage)) {
 
                             self.matrixchat.import(function(){
 
                                 self.matrixchat.inited = true
         
                                 var privatekey = self.app.user.private.value.toString('hex');
-
-                                console.log('localization', self.app.localization.key)
                     
                                 var matrix = `<div class="wrapper matrixchatwrapper">
                                     <matrix-element
@@ -20861,8 +20961,6 @@ Platform = function (app, listofnodes) {
                                         pocketnet="`+(isMobile() ? '' : 'true')+`"
                                         mobile="`+(isMobile() ? 'true' : '')+`" 
                                         ctheme="`+self.sdk.theme.current+`"
-                                        localization="`+self.app.localization.key+`"
-                                        fcmtoken="`+(self.fcmtoken || "")+`"
                                     >
                                     </matrix-element>
                                 </div>`
@@ -20880,22 +20978,10 @@ Platform = function (app, listofnodes) {
                 }
             })
         },
-
-        changeFcm : function(){
-            if (self.matrixchat.el){
-                self.matrixchat.el.find('matrix-element').attr('fcmtoken', self.fcmtoken)
-            }
-        },
         
         changeTheme : function(){
             if(self.matrixchat.el){
                 self.matrixchat.el.find('matrix-element').attr('ctheme', self.sdk.theme.current)
-            }
-        },
-
-        changeLocalization : function(){
-            if (self.matrixchat.el){
-                self.matrixchat.el.find('matrix-element').attr('localization', self.app.localization.key)
             }
         },
 
@@ -21009,23 +21095,6 @@ Platform = function (app, listofnodes) {
         },
 
         share : {
-
-            object : function(sharing){
-                if (self.matrixchat.core){
-
-                    self.matrixchat.core.apptochat()
-
-                    return self.matrixchat.core.share(sharing).catch(e => {
-
-                        self.matrixchat.core.backtoapp()
-
-                        return Promise.reject(e)
-                    })
-                }
-
-                return Promise.reject('matrixchat.core')
-            },
-
             url : function(url){
                 if (self.matrixchat.core){
 
@@ -21054,9 +21123,6 @@ Platform = function (app, listofnodes) {
             })
 
             core.backtoapp = function(link){
-
-                if(document.activeElement) document.activeElement.blur()
-
                 if (self.matrixchat.el)
                     self.matrixchat.el.removeClass('active')
 
@@ -21079,9 +21145,6 @@ Platform = function (app, listofnodes) {
             }
 
             core.apptochat = function(){
-
-                if(document.activeElement) document.activeElement.blur()
-                
                 if (self.matrixchat.el)
                     self.matrixchat.el.addClass('active')
 
@@ -21114,8 +21177,6 @@ Platform = function (app, listofnodes) {
             var c = deep(app, 'nav.clbks.history.navigation')
 
             if (c) c()
-
-            self.matrixchat.connect()
         },
 
         unlink : function(){    
@@ -21126,8 +21187,6 @@ Platform = function (app, listofnodes) {
             
             }
 
-
-            self.matrixchat.connectWith = null
 
             delete self.app.platform.ws.messages["new block"].clbks.matrixchat
             delete self.matrixchat.core
@@ -21142,11 +21201,6 @@ Platform = function (app, listofnodes) {
             if (c) c()
         },
 
-        update : function(){
-            if(!self.matrixchat.core) return
-
-            self.matrixchat.core.updateUser()
-        },
 
         transaction : function(id, roomid){
 
@@ -21159,21 +21213,7 @@ Platform = function (app, listofnodes) {
             if(!roomid) return
 
             self.matrixchat.core.mtrx.transaction(roomid, id)
-        },
-
-        connect : function(){
-            if(!self.matrixchat.connectWith) return
-            if(!self.matrixchat.core) return
-
-            self.matrixchat.core.apptochat()
-            self.matrixchat.core.connect(self.matrixchat.connectWith).then(r => {
-                self.matrixchat.connectWith = null
-            }).catch(e => {
-                console.log('e', e)
-                self.matrixchat.connectWith = null
-            })
-        },
-
+        }
     }
 
     self.initSounds = function () {
@@ -21434,97 +21474,6 @@ Platform = function (app, listofnodes) {
         }
     }
 
-    self.cordovaSetup = function(){
-
-        function setupOpenwith() {
-
-            if(!cordova.openwith) return
-
-            var mime = {
-
-                'image/jpeg' : 'images',
-                'image/jpg' : 'images',
-                'image/png' : 'images',
-                'image/webp' : 'images',
-                'application/pdf' : 'files',
-                'application/msword' : 'files',
-                'text/plain' : 'files'
-
-            }
- 
-            cordova.openwith.init();
-            cordova.openwith.addHandler(function(intent){
-                var sharing = {}
-       
-                if (intent.exit) { cordova.openwith.exit(); }
-
-                var promises = _.map(intent.items || [], (item) => {
-                    return new Promise((resolve, reject) => {
-
-                        if(!item.type || !mime[item.type]){
-                            resolve()
-                        }
-                        else{
-                            cordova.openwith.load(item, function(data) {
-                            
-                                item.data = data
-    
-                                resolve()
-                                
-                            });
-                        }
-
-                        
-                    }).then(r => {
-                        
-                        if (item.text){
-                            if(!sharing.messages) sharing.messages = []
-
-                            sharing.messages.push(item.text)
-                        }
-
-                        if(item.type && mime[item.type] && item.data){
-                            if(!sharing[mime[item.type]]){
-                                sharing[mime[item.type]] = []
-                            }
-
-                            sharing[mime[item.type]].push(item.data)
-                        }
-                        
-                        return Promise.resolve()
-                    })
-                })
-
-
-                Promise.all(promises).then(r => {
-                    if(_.isEmpty(sharing)){
-                        sitemessage(self.app.localization.e('e13293'))
-                    }
-                    else{
-                        self.matrixchat.share.object(sharing).catch(r => {
-
-                            sitemessage(self.app.localization.e('e13293'))
-
-                            console.log("R", r)
-                        })
-                    }
-                })
-            });
-
-        }
-
-
-        ///////////
-
-
-        if(window.cordova){
-            setupOpenwith()
-        }
-
-        
-
-    }
-
 
     self.navManager = function(){
 
@@ -21533,6 +21482,7 @@ Platform = function (app, listofnodes) {
             electron.ipcRenderer.on('nav-message', function (event, data) {
                 if (data.type == 'action') {
                     var route = data.msg
+
 
                     self.app.nav.api.load({
                         open: true,
@@ -21546,32 +21496,7 @@ Platform = function (app, listofnodes) {
 
         }
        
-        if (window.cordova && typeof universalLinks != 'undefined'){
 
-            universalLinks.subscribe('nav-message', function (eventData) {
-
-                var route = (eventData.url || '').replace('pocketnet://', '').replace('https://test.pocketnet.app/', '').replace('https://pocketnet.app/', '')
-
-                if (route){
-                    self.app.nav.api.load({
-                        open: true,
-                        href: route,
-                        history: true
-                    })
-                }
-
-                /////////////
-
-                var w = parameters(eventData.url, true).connect
-
-                self.matrixchat.connectWith = w || null
-
-                self.matrixchat.connect()
-
-                
-            });
-
-        }
     }
 
     self.navManager()
@@ -21584,9 +21509,8 @@ Platform = function (app, listofnodes) {
     self.cryptography = new self.Cryptography();
 
     self.autoUpdater()
-    self.cordovaSetup()
 
-    self.matrixchat.connectWith = parameters().connect
+   
 
     return self;
 
