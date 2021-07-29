@@ -175,16 +175,6 @@ nModule = function(){
 
 						};
 
-						console.log('insert', p, options);
-
-						var type = p.essenseData && p.essenseData.type
-
-						if (type){
-
-							options.type = type;
-
-						}
-
 						self .container = new insert.obj(options);
 							p.container = self.container;
 
