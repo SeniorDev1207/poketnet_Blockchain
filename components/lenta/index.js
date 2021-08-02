@@ -2086,7 +2086,6 @@ var lenta = (function(){
 						el : _el,
 
 						eid : txid + 'lenta',
-						
 
 						essenseData : {
 							close : function(){
@@ -2122,8 +2121,7 @@ var lenta = (function(){
 							count : share.comments,
 							init : essenseData.comments == 'all' ? false : init,
 							hr : hr,
-							receiver: share.address,
-							
+
 							renderClbk : function(){
 
 								//shareheights[txid] = actions.applyheightEl(shareheights[txid], _el, 'space')

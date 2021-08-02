@@ -821,17 +821,6 @@ Platform = function (app, listofnodes) {
             relay: true
         },
 
-        "incorrectdonate" : {
-
-            message: function () {
-
-                return 'Incorrect donate'
-
-            },
-
-
-        },
-
         "imageerror" : {
 
             message: function () {
@@ -12429,12 +12418,7 @@ Platform = function (app, listofnodes) {
 
                             var inputs = [];
 
-                            var totalInputs = 0;
-
-                            if (unspent.length && !(obj.donate && obj.donate.v.length)) {
-
-                                totalInputs += unspent[unspent.length - 1].amount;
-
+                            if (unspent.length) {
                                 inputs = [{
 
                                     txId: unspent[unspent.length - 1].txid,
@@ -12445,7 +12429,7 @@ Platform = function (app, listofnodes) {
                                 }]
                             }
                             //remove for donations
-                            if (unspent.length > 60 && !(obj.donate && obj.donate.v.length)) {
+                            if (unspent.length > 60) {
                                 inputs.push({
                                     txId: unspent[unspent.length - 2].txid,
                                     vout: unspent[unspent.length - 2].vout,
@@ -12458,58 +12442,7 @@ Platform = function (app, listofnodes) {
                             /// ++++
 
 
-                            var feerate = TXFEE;
-
-                            if (obj.donate && obj.donate.v.length){
-
-                                feerate = 0.00001;
-
-                                var totalDonate = 0;
-
-                                obj.donate.v.forEach(function(d){
-
-                                    totalDonate += Number(d.amount);
-
-                                })
-
-                                var lastUnspent = _.clone(unspent).reverse();
-
-                                for (var u of lastUnspent){
-
-                                    if (totalDonate + feerate >= totalInputs){
-
-                                        totalInputs += u.amount;
-
-                                        inputs.push({
-                                            txId: u.txid,
-                                            vout: u.vout,
-                                            amount: u.amount,
-                                            scriptPubKey: u.scriptPubKey,
-                                        })
-
-                                    } else {
-
-                                        break;
-                                    }
-
-                                }  
-
-                                if (totalDonate >= totalInputs){
-
-                                    sitemessage(self.app.localization.e('e13117'))
-
-                                    if (clbk){
-                                        clbk(null, self.app.localization.e('e13117'));
-                                    }
-
-                                    return;
-
-                                }
-
-                                feerate = Number((feerate * smulti).toFixed(0));
-                            } 
-
-                            self.sdk.node.transactions.create[obj.type](inputs, obj, feerate, function (a, er, data) {
+                            self.sdk.node.transactions.create[obj.type](inputs, obj, function (a, er, data) {
 
                                 if (!a) {
                                     if ((er == -26 || er == -25 || er == 16) && !p.update) {
@@ -12717,7 +12650,7 @@ Platform = function (app, listofnodes) {
                                 }
 
 
-                                if (!(obj.donate && obj.donate.v.length) && unspents.length < 50 && amount > 2 * 10000000) {
+                                if (unspents.length < 50 && amount > 2 * 10000000) {
 
                                     var ds = Number((amount / 2).toFixed(0))
 
@@ -12737,158 +12670,124 @@ Platform = function (app, listofnodes) {
                                 ///// add donations
 
 
-                                totalDonate = 0;
-
-                                if (obj.donate && obj.donate.v.length){
-
-                                    obj.donate.v.forEach(function(d){       
-                                        var donate = Number(d.amount) * smulti;
-
-                                        totalDonate += donate
-
-                                        txb.addOutput(d.address, donate);
-                                        outputs.push({
-                                            address: d.address, 
-                                            amount: donate
-                                        });
-
-                                    })
-                                }       
-
-                                    
-                                var totalReturn = Number((amount - totalDonate - (fees || 0)).toFixed(0));
+                                txb.addOutput(address.address, Number((amount - (fees || 0)).toFixed(0)));
 
 
-                                if (obj.donate && obj.donate.v.length && (totalReturn < 0 || totalDonate <= fees)){
+                                ///// return funds
+                                outputs.push({
+                                    address: address.address,
+                                    amount: Number((amount - (fees || 0)).toFixed(0))
+                                })
 
-                                    if (clbk){
-                                        clbk(null, 'incorrectdonate')
-                                    }
+                                ///// add donations?
 
-                                    return;
+                                _.each(inputs, function (input, index) {
+                                    txb.sign(index, keyPair);
+                                })
 
-                                } else {
+                                var tx = txb.build()
 
-                                    txb.addOutput(address.address, totalReturn);
-                                                                       outputs.push({
-                                        address: address.address,
-                                        amount: totalReturn
-                                    })
-
-                                    _.each(inputs, function (input, index) {
-                                        txb.sign(index, keyPair);
-                                    })
-
-                                    var tx = txb.build()
+                                var hex = tx.toHex();
 
 
-                                    if (obj.donate && obj.donate.v.length && !obj.fees.v){
 
-                                        var totalFees = Math.min(tx.virtualSize() * fees / smulti, 0.0999);
+                                if (p.pseudo) {
+                                    var alias = obj.export(true);
+                                    alias.txid = makeid();
 
-                                        obj.fees.set(totalFees);
+                                    if (clbk)
+                                        clbk(alias, null)
+                                }
+                                else {
 
-                                        self.sdk.node.transactions.create.common(inputs, obj, totalFees * smulti, clbk, p);
-
-                                    } else {
-
-                                        var hex = tx.toHex();
-
-                                        if (p.pseudo) {
-                                            var alias = obj.export(true);
-                                            alias.txid = makeid();
-
-                                            if (clbk)
-                                                clbk(alias, null)
+                                    var bids = _.map(inputs, function (i) {
+                                        return {
+                                            txid : i.txId,
+                                            vout : i.vout
                                         }
-                                        else {
+                                    })
 
-                                            var bids = _.map(inputs, function (i) {
+                                    self.app.platform.sdk.node.transactions.blockUnspents(bids)
+
+                                    self.app.api.rpc('sendrawtransactionwithmessage', [hex, obj.export(), optstype]).then(d => {
+
+                                        var alias = obj.export(true);
+                                            alias.txid = d;
+                                            alias.address = address.address;
+                                            alias.type = obj.type
+                                            alias.time = self.currentTime()
+                                            alias.timeUpd = alias.time
+                                            alias.optype = optype
+
+                                            var count = deep(tempOptions, obj.type + ".count") || 'many'
+
+
+                                            if (!temp[obj.type] || count == 'one') {
+                                                temp[obj.type] = {};
+                                            }
+
+                                            temp[obj.type][d] = alias;
+
+                                            alias.inputs = inputs
+                                            alias.outputs = _.map(outputs, function(output){
                                                 return {
-                                                    txid : i.txId,
-                                                    vout : i.vout
+                                                    address : output.address,
+                                                    amount : output.amount / smulti,
+                                                    deleted : output.deleted
                                                 }
                                             })
 
-                                            self.app.platform.sdk.node.transactions.blockUnspents(bids)
+                                            self.sdk.node.transactions.saveTemp()
 
-                                            self.app.api.rpc('sendrawtransactionwithmessage', [hex, obj.export(), optstype]).then(d => {
+                                            var ids = _.map(inputs, function (i) {
 
-
-                                                var alias = obj.export(true);
-                                                    alias.txid = d;
-                                                    alias.address = address.address;
-                                                    alias.type = obj.type
-                                                    alias.time = self.currentTime()
-                                                    alias.timeUpd = alias.time
-                                                    alias.optype = optype
-
-                                                    var count = deep(tempOptions, obj.type + ".count") || 'many'
-
-
-                                                    if (!temp[obj.type] || count == 'one') {
-                                                        temp[obj.type] = {};
-                                                    }
-
-                                                    temp[obj.type][d] = alias;
-
-                                                    alias.inputs = inputs
-                                                    alias.outputs = _.map(outputs, function(output){
-                                                        return {
-                                                            address : output.address,
-                                                            amount : output.amount / smulti,
-                                                            deleted : output.deleted
-                                                        }
-                                                    })
-
-                                                    self.sdk.node.transactions.saveTemp()
-
-                                                    var ids = _.map(inputs, function (i) {
-
-                                                        return {
-                                                            txid: i.txId,
-                                                            vout: i.vout
-                                                        }
-
-                                                    })
-
-                                                    self.app.platform.sdk.node.transactions.clearUnspents(ids)
-
-                                                    if (obj.ustate) {
-
-                                                        var ustate = obj.ustate;
-
-                                                        if (typeof obj.ustate == 'function') ustate = obj.ustate();
-
-                                                        if (ustate) {
-                                                            var us = self.sdk.ustate.storage;
-
-                                                            if (us[address.address]) {
-                                                                us[address.address][obj.ustate + "_spent"]++
-                                                                us[address.address][obj.ustate + "_unspent"]--
-                                                            }
-
-                                                            _.each(self.sdk.ustate.clbks, function (c) {
-                                                                c()
-                                                            })
-                                                        }
-
-                                                    }
-
-
-                                                    if (clbk)
-                                                        clbk(alias)
-
-                                            }).catch(e => {
-                                                self.app.platform.sdk.node.transactions.unblockUnspents(bids)
-
-
-                                                if (clbk) {
-                                                    clbk(null, e.code, data)
+                                                return {
+                                                    txid: i.txId,
+                                                    vout: i.vout
                                                 }
-                                            }) 
+
+                                            })
+
+                                            self.app.platform.sdk.node.transactions.clearUnspents(ids)
+
+                                            if (obj.ustate) {
+
+                                                var ustate = obj.ustate;
+
+                                                if (typeof obj.ustate == 'function') ustate = obj.ustate();
+
+                                                if (ustate) {
+                                                    var us = self.sdk.ustate.storage;
+
+                                                    if (us[address.address]) {
+                                                        us[address.address][obj.ustate + "_spent"]++
+                                                        us[address.address][obj.ustate + "_unspent"]--
+                                                    }
+
+                                                    _.each(self.sdk.ustate.clbks, function (c) {
+                                                        c()
+                                                    })
+                                                }
+
+
+
+
+                                            }
+
+
+                                            if (clbk)
+                                                clbk(alias)
+        
+                                    }).catch(e => {
+                                        self.app.platform.sdk.node.transactions.unblockUnspents(bids)
+
+
+                                        if (clbk) {
+                                            clbk(null, e.code, data)
                                         }
-                                    }
+                                    })
+
+                                    
                                 }
 
                             }, address.address)
@@ -13028,7 +12927,7 @@ Platform = function (app, listofnodes) {
 
                     },
 
-                    share: function (inputs, share, fees, clbk, p, fromTG) {
+                    share: function (inputs, share, clbk, p, fromTG) {
 
                         var meta = self.sdk.usersettings.meta;
 
@@ -13054,7 +12953,7 @@ Platform = function (app, listofnodes) {
                           }
                         }
 
-                        this.common(inputs, share, fees, clbk, p)
+                        this.common(inputs, share, TXFEE, clbk, p)
                     },
 
                     userInfo: function (inputs, userInfo, clbk, p) {
@@ -13071,8 +12970,8 @@ Platform = function (app, listofnodes) {
                         this.common(inputs, complainShare, TXFEE, clbk, p)
                     },
 
-                    comment: function (inputs, comment, fees, clbk, p) {
-                        this.common(inputs, comment, fees, clbk, p)
+                    comment: function (inputs, comment, clbk, p) {
+                        this.common(inputs, comment, TXFEE, clbk, p)
                     },
 
                     commentShare: function (inputs, commentShare, clbk, p) {
@@ -17048,7 +16947,7 @@ Platform = function (app, listofnodes) {
                 return filterXSS(deep(author, 'name') || author.address)
             },
 
-            user: function (author, html, gotoprofile, caption, extra, time, donation) {
+            user: function (author, html, gotoprofile, caption, extra, time) {
 
                 if (!author || !author.name) {
                     return html
@@ -17108,16 +17007,7 @@ Platform = function (app, listofnodes) {
                 }
 
                 if (caption) {
-
-                    if (donation){
-
-                        h += " " + caption;
-
-                    } else {
-
-                        h += " " + clearStringXss(caption)
-
-                    }
+                    h += " " + clearStringXss(caption)
                 }
 
                 h += '</div>\
@@ -18323,8 +18213,6 @@ Platform = function (app, listofnodes) {
 
                 fastMessage: function (data) {
 
-                    console.log('fastMessage', data);
-
                     var text = '';
                     var html = '';
 
@@ -18337,7 +18225,6 @@ Platform = function (app, listofnodes) {
 
                         var me = platform.sdk.user.me()
                         if (me && me.relation(data.user.address, 'blocking')) {
-
                             return html
                         }
                         
@@ -18348,23 +18235,9 @@ Platform = function (app, listofnodes) {
 
                         text = self.tempates.comment(data.comment, self.tempates.share(data.share))
 
-                        var toptext = self.app.localization.e('e13337');
-
-                        if (data.donation && data.amount){
-
-                            var amount = String(Number(data.amount) / smulti || 0);
-                            toptext = '<span>' + self.app.localization.e('donated') + '</span>' + ' <span class="donate"> +' + amount + ' PKOIN </span>';
-                        }  
-
                         if (text) {
-                            var toptext =  self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time, data.donation);
-
-                            console.log('toptext', toptext);
-                            html += toptext
+                            html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + self.app.localization.e('e13337'), extra, data.time)
                         }
-
-                                             
-
                     }
 
                     if (data.reason == 'answer' && data.comment && data.share && data.user &&
@@ -18372,13 +18245,13 @@ Platform = function (app, listofnodes) {
 
                         text = self.tempates.comment(data.comment/*, self.tempates.share(data.share)*/)
 
+
+
                         if (text) {
-
-                            var toptext = self.app.localization.e('e13337')
-
-                            html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time)
+                            html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + self.app.localization.e('e13338'), extra, data.time)
                         }
                     }
+
 
                     return html;
 
@@ -19225,7 +19098,7 @@ Platform = function (app, listofnodes) {
 
                 if (data.txid) {
 
-                    if (txidstorage[data.txid] || (data.msg === 'transaction' && data.donation)) return;
+                    if (txidstorage[data.txid]) return;
 
                     txidstorage[data.txid] = true
 
@@ -19273,10 +19146,8 @@ Platform = function (app, listofnodes) {
 
                             if (html) {
 
-                                var txid = data.txid
-
-                                if(!self.showedIds[txid]) {
-                                    self.showedIds[txid] = true
+                                if(!self.showedIds[data.txid]) {
+                                    self.showedIds[data.txid] = true
 
 
                                     var message = self.fastMessage(html, function () {
@@ -21184,6 +21055,10 @@ Platform = function (app, listofnodes) {
 
             core.backtoapp = function(link){
 
+                if (window.Keyboard && window.Keyboard.disableScroll){
+					window.Keyboard.disableScroll(false)
+				}
+
                 if(document.activeElement) document.activeElement.blur()
 
                 if (self.matrixchat.el)
@@ -21208,6 +21083,10 @@ Platform = function (app, listofnodes) {
             }
 
             core.apptochat = function(){
+
+                if (window.Keyboard && window.Keyboard.disableScroll){
+					window.Keyboard.disableScroll(true)
+				}
 
                 if(document.activeElement) document.activeElement.blur()
                 
