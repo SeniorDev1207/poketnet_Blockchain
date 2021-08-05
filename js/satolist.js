@@ -21652,13 +21652,16 @@ Platform = function (app, listofnodes) {
 
                     return new Promise((resolve, reject) => {
 
-                        if(!item.type || !mime[item.type]){
+                        console.log('item.type', item.type)
+                        console.log('item.data', item.base64)
+
+                        if(!item.type || !mime[item.type] || item.data){
                             resolve()
                         }
                         else{
                             cordova.openwith.load(item, function(data) {
                             
-                                item.data = data
+                                item.data = 'data:' + item.type + ';base64,' + data
     
                                 resolve()
                                 
