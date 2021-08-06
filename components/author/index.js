@@ -201,217 +201,192 @@ var author = (function(){
 		var reports = {}
 		
 		var initreports = function(){
-
-			var state = self.app.user.getstate()
-
-
-				reports = {
-					shares : {
-						name : self.app.localization.e('uposts').toUpperCase(),
-						mobile : '<i class="fas fa-align-justify"></i>',
-						id : 'shares',
-						render : 'lenta',
-						history : true,
-						if : function(){
-							return !self.app.curation() || self.user.isItMe(author.address)
-						},
-						count : function(){
-							return 0
-						}
+			reports = {
+				shares : {
+					name : self.app.localization.e('uposts').toUpperCase(),
+					mobile : '<i class="fas fa-align-justify"></i>',
+					id : 'shares',
+					render : 'lenta',
+					history : true,
+					if : function(){
+						return !self.app.curation() || self.user.isItMe(author.address)
 					},
-		
-					post : {
-						if : function(){
-							return false
-						},
-						id : 'post',
-						render : 'post',
-						count : function(){
-							return 0
-						}
+					count : function(){
+						return 0
+					}
+				},
+	
+				post : {
+					if : function(){
+						return false
 					},
+					id : 'post',
+					render : 'post',
+					count : function(){
+						return 0
+					}
+				},
+	
+				followers : {
+					name : self.app.localization.e('followers').toUpperCase(),
+					mobile : '<i class="fas fa-users"></i>',
+					id : 'followers',
+					render : 'followers',
+					history : true,
+					count : function(){
+	
+						var u = _.map(deep(author, 'data.subscribers') || [], function(a){
+							return a
+						})
 		
-					followers : {
-						name : self.app.localization.e('followers').toUpperCase(),
-						mobile : '<i class="fas fa-users"></i>',
-						id : 'followers',
-						render : 'followers',
-						history : true,
-						count : function(){
+						var blocked = deep(author, 'data.blocking') || []
 		
-							var u = _.map(deep(author, 'data.subscribers') || [], function(a){
-								return a
-							})
-			
-							var blocked = deep(author, 'data.blocking') || []
-			
-							u = _.filter(u, function(a){
-								return _.indexOf(blocked, a) == -1
-							})
-							
-							return u.length
+						u = _.filter(u, function(a){
+							return _.indexOf(blocked, a) == -1
+						})
 						
-						}
-					},
-		
-					contents : {
-						name : self.app.localization.e('followers').toUpperCase(),
-						mobile : '<i class="fas fa-users"></i>',
-						id : 'contents',
-						render : 'contents',
-						history : true,
-						if : function(){
-							return false
-						}
-						
-					},
-		
-					following : {
-						name : self.app.localization.e('following').toUpperCase(),
-						id : 'following',
-						mobile : '<i class="fas fa-user-plus"></i>',
-						render : 'following',
-						history : true,
-						count : function(){
-		
-							var u = _.map(deep(author, 'data.subscribes') || [], function(a){
-								return a.adddress
-							})
-			
-							var blocked = deep(author, 'data.blocking') || []
-			
-							u = _.filter(u, function(a){
-								return _.indexOf(blocked, a) == -1
-							})
-		
-							return u.length
-						}
-					},
-		
-					blocking : {
-						name : self.app.localization.e('blockedusers').toUpperCase(),
-						id : 'blocking',
-						mobile : '<i class="fas fa-user-slash"></i>',
-						render : 'blocking',
-						history : true,
-						if : function(){
-							if(self.user.isItMe(author.address)) return true
-						},
-						count : function(){
-		
-							var blocked = deep(author, 'data.blocking') || []
-		
-							return blocked.length
-						}
-					},
-		
+						return u.length
 					
+					}
+				},
+	
+				contents : {
+					name : self.app.localization.e('followers').toUpperCase(),
+					mobile : '<i class="fas fa-users"></i>',
+					id : 'contents',
+					render : 'contents',
+					history : true,
+					if : function(){
+						return false
+					}
+					
+				},
+	
+				following : {
+					name : self.app.localization.e('following').toUpperCase(),
+					id : 'following',
+					mobile : '<i class="fas fa-user-plus"></i>',
+					render : 'following',
+					history : true,
+					count : function(){
+	
+						var u = _.map(deep(author, 'data.subscribes') || [], function(a){
+							return a.adddress
+						})
 		
-					share : {
-						name : self.app.localization.e('share').toUpperCase() + ' <i class="fas fa-share-alt"></i>',
-						mobile : '<i class="fas fa-share-alt"></i>',
-						id : 'share',
-						if : function(){
-							return true
-						},
-						events : {
-							click : function(){
+						var blocked = deep(author, 'data.blocking') || []
 		
-								self.nav.api.load({
-									open : true,
-									href : 'socialshare2',
-									history : true,
-									inWnd : true,
-									uid : "authorshare",
-									essenseData : {
-										caption : "Share this author",
-										sharing : author.data.social(self.app),
-										embedding : {
-											type : 'channel',
-											id : author.address
-										}
+						u = _.filter(u, function(a){
+							return _.indexOf(blocked, a) == -1
+						})
+	
+						return u.length
+					}
+				},
+	
+				blocking : {
+					name : self.app.localization.e('blockedusers').toUpperCase(),
+					id : 'blocking',
+					mobile : '<i class="fas fa-user-slash"></i>',
+					render : 'blocking',
+					history : true,
+					if : function(){
+						if(self.user.isItMe(author.address)) return true
+					},
+					count : function(){
+	
+						var blocked = deep(author, 'data.blocking') || []
+	
+						return blocked.length
+					}
+				},
+	
+				
+	
+				share : {
+					name : self.app.localization.e('share').toUpperCase() + ' <i class="fas fa-share-alt"></i>',
+					mobile : '<i class="fas fa-share-alt"></i>',
+					id : 'share',
+					if : function(){
+						return true
+					},
+					events : {
+						click : function(){
+	
+							self.nav.api.load({
+								open : true,
+								href : 'socialshare2',
+								history : true,
+								inWnd : true,
+								uid : "authorshare",
+								essenseData : {
+									caption : "Share this author",
+									sharing : author.data.social(self.app),
+									embedding : {
+										type : 'channel',
+										id : author.address
 									}
-								})
-								
-							}
-						}
-					},
-
-					signin : {
-						name : self.app.localization.e('signinmenu').toUpperCase() + ' <i class="fas fa-sign-in-alt"></i>',
-						mobile : '<i class="fas fa-sign-in-alt"></i>',
-						id : 'signin',
-						if : function(){
-							return isMobile() && !state
-						},
-						events : {
-							click : function(){
-		
-								self.nav.api.load({
-									open : true,
-									href : 'authorization',
-									history : true
-								})
-								
-							}
-						}
-					},
-		
-					settings : {
-						name : self.app.localization.e('settings').toUpperCase() + ' <i class="fas fa-cog"></i>',
-						mobile : '<i class="fas fa-cog"></i>',
-						id : 'settings',
-						href : function(){
-		
-							if(!self.app.user.validate()){
-								return 'userpage'
-							}
-							else{
-								return 'userpage?id=ustate'
-							}
-		
+								}
+							})
 							
-						}, 
-						class : 'tosettings',
-		
-						if : function(){
-							if(self.user.isItMe(author.address) && !isTablet()) return true
 						}
-					},
-		
-					more : {
-						name : '<i class="fas fa-ellipsis-h"></i>',
-						mobile : '<i class="fas fa-ellipsis-h"></i>',
-						id : 'more',
-						class : 'more',
-		
-						if : function(){
-							if(!self.user.isItMe(author.address) && _state) return true
-						},
-		
-						events : {
-							click : function(){
-								renders.metmenu($(this))
-							}
+					}
+				},
+	
+				settings : {
+					name : self.app.localization.e('settings').toUpperCase() + ' <i class="fas fa-cog"></i>',
+					mobile : '<i class="fas fa-cog"></i>',
+					id : 'settings',
+					href : function(){
+	
+						if(!self.app.user.validate()){
+							return 'userpage'
 						}
-					},
-		
-		
-					info : {
-						name : self.app.localization.e('info') +  ' <i class="fas fa-info-circle"></i>',
-						mobile : '<i class="fas fa-info-circle"></i>',
-						id : 'info',
-						class : 'info',
-						render : 'info',
-						history : true,
-						if : function(){
-							return false
-							if(isTablet()) return true
+						else{
+							return 'userpage?id=ustate'
 						}
+	
+						
+					}, 
+					class : 'tosettings',
+	
+					if : function(){
+						if(self.user.isItMe(author.address) && !isTablet()) return true
+					}
+				},
+	
+				more : {
+					name : '<i class="fas fa-ellipsis-h"></i>',
+					mobile : '<i class="fas fa-ellipsis-h"></i>',
+					id : 'more',
+					class : 'more',
+	
+					if : function(){
+						if(!self.user.isItMe(author.address) && _state) return true
 					},
-					
-				}
-
+	
+					events : {
+						click : function(){
+							renders.metmenu($(this))
+						}
+					}
+				},
+	
+	
+				info : {
+					name : self.app.localization.e('info') +  ' <i class="fas fa-info-circle"></i>',
+					mobile : '<i class="fas fa-info-circle"></i>',
+					id : 'info',
+					class : 'info',
+					render : 'info',
+					history : true,
+					if : function(){
+						return false
+						if(isTablet()) return true
+					}
+				},
+				
+			}
 		}
 		
 		

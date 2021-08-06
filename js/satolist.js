@@ -16589,17 +16589,13 @@ Platform = function (app, listofnodes) {
                 if (data.data)
                     platform.ws.messageHandler(data.data)
 
-                if (data.room_id) {
+                if (data.tap == 'background' && data.room_id) {
 
                     // Wait until we can navigate Matrix
                     retry(function(){
-
                         return platform && platform.matrixchat && platform.matrixchat.core;
-
                     }, function(){
-
                         platform.matrixchat.core.goto(data.room_id);
-                        
                         if (platform.matrixchat.core.apptochat)
                             platform.matrixchat.core.apptochat();
                     });
@@ -21008,8 +21004,8 @@ Platform = function (app, listofnodes) {
                                     <matrix-element
                                         address="${a}"
                                         privatekey="${privatekey}"
-                                        pocketnet="`+( (isMobile() || isTablet()) ? '' : 'true')+`"
-                                        mobile="`+( (isMobile() || isTablet()) ? 'true' : '')+`" 
+                                        pocketnet="`+(isMobile() ? '' : 'true')+`"
+                                        mobile="`+(isMobile() ? 'true' : '')+`" 
                                         ctheme="`+self.sdk.theme.current+`"
                                         localization="`+self.app.localization.key+`"
                                         fcmtoken="`+(self.fcmtoken || "")+`"
@@ -21052,7 +21048,7 @@ Platform = function (app, listofnodes) {
         initevents : function(){
             if (self.matrixchat.el){
 
-                if(isTablet()){
+                if(isMobile()){
 
 					self.matrixchat.el.swipe({
 						allowPageScroll: "vertical", 

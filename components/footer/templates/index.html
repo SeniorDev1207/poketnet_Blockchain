@@ -21,32 +21,11 @@
                         <div class="footerContentTable table">
                             <div class="column">
 
-                                <div class="fitem localization">
-                                    <div class="label">
-
-                                        
-
-                                        <% if(_SEO) { %>
-
-                                            <%= app.localization.locLinks() %>
-
-                                        <% } else { %>
-
-                                            <div class="lang">
-									
-                                              
-                                                 <%-(lkey.name || '')%> 
-                                                
-                                                <i class="fas fa-caret-down"></i>
-
-                                            </div>
-
-                                        <% } %>
-
+                                <% if(!window.cordova && os() && app.platform.applications.ui[os()]) {%>
+                                    <div class="fitem">
+                                        <a href="applications"><%=e('e13120')%></a>
                                     </div>
-                                </div>
-
-                                
+                                <% } %>
                                
                             </div>
 
@@ -57,12 +36,22 @@
                                         <a href="about"><%=e('aboutus')%></a>
                                     </div>
                                 <% } %>
-                                
-                                <% if(!window.cordova && os() && app.platform.applications.ui[os()]) {%>
-                                    <div class="fitem">
-                                        <a href="applications"><%=e('e13120')%></a>
+                                <div class="fitem localization">
+                                    <div class="label">
+
+                                        <% if(_SEO) { %>
+
+                                            <%= app.localization.locLinks() %>
+
+                                        <% } else { %>
+
+                                            <%= loc.input() %>
+
+                                        <% } %>
+
                                     </div>
-                                <% } %>
+                                </div>
+
                                 
                             </div>
                         </div>

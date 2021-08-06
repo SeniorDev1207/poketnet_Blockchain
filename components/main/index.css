@@ -196,16 +196,14 @@
 #main .leftpanelcell,
 #main .upbuttonwrapper {
   opacity: 1;
-  -webkit-transition-delay: 0.5s;
-  -o-transition-delay: 0.5s;
-  -moz-transition-delay: 0.5s;
-  transition-delay: 0.5s;
-}
-#main .upbuttonwrapper {
   -moz-transition: 0.3s;
   -o-transition: 0.3s;
   -webkit-transition: 0.3s;
   transition: 0.3s;
+  -webkit-transition-delay: 0.5s;
+  -o-transition-delay: 0.5s;
+  -moz-transition-delay: 0.5s;
+  transition-delay: 0.5s;
 }
 #main.opensvishowed {
   min-height: 990px;
@@ -569,32 +567,30 @@ html.testpocketnet #main.testpocketnetbg {
   }
 }
 @media only screen and (max-width: 1024px) {
-  #main:not(.videomain) .mainpanelcell {
+  #main .mainpanelcell {
     display: none;
   }
-  #main:not(.videomain) .leftpanelcell {
+  #main .leftpanelcell {
     float: right;
   }
-  #main:not(.videomain) .lentacell {
+  #main .lentacell {
     margin-left: 0;
   }
 }
 /*t*/
 @media only screen and (max-width: 768px) {
+  html.toppanelshowed #main .maincntwrapper > div.work {
+    max-width: none;
+    padding: 0;
+  }
+  html.toppanelshowed #main .maincntwrapper > div.work > div {
+    padding-top: 120px;
+  }
   #main .mainpanelcell {
     display: block;
   }
   #main .leftpanelcell {
     float: left;
-  }
-  #main .lentacell {
-    margin-right: 0;
-  }
-  #main .leftpanelcell {
-    display: none;
-  }
-  #main.videomain .lentacell {
-    margin-left: 0;
   }
   #main .addbutton {
     display: none!important;
@@ -625,76 +621,6 @@ html.testpocketnet #main.testpocketnetbg {
   #main .bgCaption {
     display: none;
   }
-  #main .work.mwork {
-    padding: 0!important;
-  }
-  #main .work .work {
-    width: 100%!important;
-  }
-  #main #share {
-    max-width: 750px;
-  }
-  #main .smallpanell {
-    overflow: hidden;
-    background: #EFEFED;
-    padding: 0.5em 0;
-  }
-  #main .smallpanell .iconWrapper {
-    position: static;
-    margin: 0 auto;
-  }
-  #main .smallpanell .itemName {
-    display: none;
-  }
-  #main .smallpanell .item {
-    float: left;
-    position: relative;
-    margin: 0;
-    height: auto;
-    width: 33%;
-  }
-  #main .smallpanell .item.active .iconWrapper,
-  #main .smallpanell .item:hover .iconWrapper {
-    color: #00a4ff;
-    border-color: #00a4ff;
-  }
-  #main .smallpanell:hover .itemName {
-    display: none;
-  }
-}
-html.mobile #main .bgCaption,
-html.tablet #main .bgCaption {
-  display: none;
-}
-@media only screen and (max-width: 640px) {
-  html.toppanelshowed #main .maincntwrapper > div.work {
-    max-width: none;
-    padding: 0;
-  }
-  html.toppanelshowed #main .maincntwrapper > div.work > div {
-    padding-top: 120px;
-  }
-  html.scrollmodedown #main .maincntwrapper {
-    top: 0;
-  }
-  html.fullvideoshowedanimblock #main #maincntwrapper {
-    -moz-transition: 0s;
-    -o-transition: 0s;
-    -webkit-transition: 0s;
-    transition: 0s;
-  }
-  html.fullvideoshowedanimblock #main #maincntwrapper > div.work {
-    -moz-transition: 0s;
-    -o-transition: 0s;
-    -webkit-transition: 0s;
-    transition: 0s;
-  }
-  html.fullvideoshowed #main #maincntwrapper {
-    transform: none!important;
-  }
-  html.fullvideoshowed #main #maincntwrapper > div.work {
-    transform: none!important;
-  }
   #main .fxdsmall {
     width: 100%;
     position: static;
@@ -703,12 +629,6 @@ html.tablet #main .bgCaption {
   #main .maincntwrapperOvf {
     overflow: hidden;
     width: 100%;
-  }
-  #main .fxd {
-    padding-top: 0;
-  }
-  #main .panel {
-    border-radius: 3px;
   }
   #main .maincntwrapper {
     width: 300%;
@@ -746,14 +666,8 @@ html.tablet #main .bgCaption {
     overflow: auto;
     padding-bottom: 6em;
   }
-  #main .mainpanelcell {
-    display: block!important;
-  }
-  #main .leftpanelcell {
-    float: left!important;
-  }
   #main .lentacell {
-    margin-left: 33.333%!important;
+    margin-left: 33.333%;
     margin-right: 33.333%;
     padding-top: 0;
     width: 33.333%;
@@ -764,7 +678,6 @@ html.tablet #main .bgCaption {
     margin-left: 0;
     margin-right: 0;
     width: 33.333%;
-    display: block;
   }
   #main .mainpanelcell {
     margin-left: 0;
@@ -802,5 +715,68 @@ html.tablet #main .bgCaption {
   }
   #main.videomain .lentacellsvi {
     padding-top: 0;
+  }
+  #main .fxd {
+    padding-top: 0;
+  }
+  #main .panel {
+    border-radius: 3px;
+  }
+  #main .work.mwork {
+    padding: 0!important;
+  }
+  #main .work .work {
+    width: 100%!important;
+  }
+  #main #share {
+    max-width: 750px;
+  }
+  #main .smallpanell {
+    overflow: hidden;
+    background: #EFEFED;
+    padding: 0.5em 0;
+  }
+  #main .smallpanell .iconWrapper {
+    position: static;
+    margin: 0 auto;
+  }
+  #main .smallpanell .itemName {
+    display: none;
+  }
+  #main .smallpanell .item {
+    float: left;
+    position: relative;
+    margin: 0;
+    height: auto;
+    width: 33%;
+  }
+  #main .smallpanell .item.active .iconWrapper,
+  #main .smallpanell .item:hover .iconWrapper {
+    color: #00a4ff;
+    border-color: #00a4ff;
+  }
+  #main .smallpanell:hover .itemName {
+    display: none;
+  }
+  html.scrollmodedown #main .maincntwrapper {
+    top: 0;
+  }
+  html.fullvideoshowedanimblock #main #maincntwrapper {
+    -moz-transition: 0s;
+    -o-transition: 0s;
+    -webkit-transition: 0s;
+    transition: 0s;
+  }
+  html.fullvideoshowedanimblock #main #maincntwrapper > div.work {
+    -moz-transition: 0s;
+    -o-transition: 0s;
+    -webkit-transition: 0s;
+    transition: 0s;
+  }
+  html.fullvideoshowed #main #maincntwrapper {
+    transform: none!important;
+  }
+  html.fullvideoshowed #main #maincntwrapper > div.work {
+    transform: none!important;
   }
 }
