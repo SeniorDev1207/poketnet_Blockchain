@@ -381,54 +381,48 @@ var comments = (function(){
 
 				var storage = currents[id].export(true)
 
-				var sender = self.sdk.address.pnet().address;
+				self.nav.api.load({
+					open : true,
+					id : 'embeding',
+					inWnd : true,
 
-				var imgSender = deep(app, 'platform.sdk.usersl.storage.' + sender + '.image')
+					essenseData : {
+						type : 'donate',
+						storage : storage,
+						sender: deep(app, 'platform.sdk.usersl.storage.' + self.sdk.address.pnet().address + '.image'), 
+						receiver: deep(app, 'platform.sdk.usersl.storage.' + receiver + '.image'),
+						balance: balance,
+						on : {
 
-				var imgReceiver = deep(app, 'platform.sdk.usersl.storage.' + receiver + '.image');
+							added : function(value){
 
-				if (sender === receiver){
+								var result = Boolean(value);
 
-					sitemessage(self.app.localization.e('donateself'));
 
-				} else {
+								if (Number(value) < balance){
 
-					self.nav.api.load({
-						open : true,
-						id : 'embeding',
-						inWnd : true,
-	
-						essenseData : {
-							type : 'donate',
-							storage : storage,
-							sender: imgSender, 
-							receiver: imgReceiver,
-							balance: balance,
-							on : {
-	
-								added : function(value){
-	
-									var result = Boolean(value);
-	
-	
-									if (Number(value) < balance){
-	
-										if(!_.isArray(value)) value = [value]
-	
-										currents[id].donate.remove();
-	
-										currents[id].donate.set({
-											address: receiver,
-											amount: Number(value)
-										})
-	
-										if(!result && errors[type]){
-	
-											sitemessage(errors[type])
-	
-										}
+									if(!_.isArray(value)) value = [value]
 
-	
+									currents[id].donate.remove();
+
+									currents[id].donate.set({
+										address: receiver,
+										amount: Number(value)
+									})
+
+									if(!result && errors[type]){
+
+										sitemessage(errors[type])
+
+									}
+
+									if (receiver === self.sdk.address.pnet().address){
+
+										sitemessage(self.app.localization.e('donateself'));
+
+									} else {
+
+
 										if (result){
 
 											new Audio('sounds/donate.mp3').play();
@@ -437,25 +431,24 @@ var comments = (function(){
 
 										}	
 
-								
-	
-									} else {
-	
-										sitemessage(self.app.localization.e('incoins'))
 									}
-	
-				
-	
+
+
+								} else {
+
+									sitemessage(self.app.localization.e('incoins'))
 								}
+
+			
+
 							}
-						},
-	
-						clbk : function(s, p){
-							external = p
 						}
-					})
-	
-				}
+					},
+
+					clbk : function(s, p){
+						external = p
+					}
+				})
 
 			}, 
 
@@ -1399,13 +1392,6 @@ var comments = (function(){
 							this.setText(p.value)
 						}
 
-						if (p.donation && p.amount && p.editid){
-
-							var comment = currents[p.editid]
-							comment.amount.set(p.amount);
-
-						}
-
 						if (p.images){
 
 							if(p.editid && p.images.length){
@@ -1749,9 +1735,7 @@ var comments = (function(){
 					pid : comment.parentid,
 					aid : comment.answerid,
 					id : comment.id,
-					editid : comment.id,
-					amount: comment.amount,
-					donation: comment.donation
+					editid : comment.id
 				}
 
 				renders.post(function(area, el){
