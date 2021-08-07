@@ -779,7 +779,17 @@ Application = function(p)
 		if(typeof window.cordova != 'undefined')
 		{
 			document.addEventListener('deviceready', function(){
+
 				window.screen.orientation.lock('portrait')
+
+				/*if(isTablet()){
+					window.screen.orientation.lock('landscape')
+				}
+				else{
+					window.screen.orientation.lock('portrait')
+				}*/
+
+				
 
 				p || (p = {});
 
@@ -1011,10 +1021,10 @@ Application = function(p)
 			return "Pocketnet";
 		},
 	
-		saveFile: function(url, blob) {
+		saveFile: function(url, file) {
 			return new Promise((resolve, reject) => {
 				var storageLocation = self.storage.getStorageLocation();
-				// var blob = new Blob([file], { type: "image/png" });
+				var blob = new Blob([file], { type: file.type });
 				var name = $.md5(url);
 				window.resolveLocalFileSystemURL(storageLocation, function (fileSystem) {
 					fileSystem.getDirectory(self.storage.getStorageDirectory(), {
@@ -1056,16 +1066,34 @@ Application = function(p)
 					},
 					function (directory) {
 						directory.getFile(name, { create: false }, function (entry) {
+
+							console.log(entry)
+
 							entry.file(function(file) {
-								var readerBlob = new FileReader();                              
-								readerBlob.onload = function(event) {
-									var blob = new Blob([event.target.result], { name: "file" });
+
+								var reader = new FileReader();
+
+								console.log(file)
+
+								reader.onloadend = function() {
+						
+									var blob = new Blob([new Uint8Array(this.result)], { type: file.type || "file" });
+
+									console.log("BLOC", blob)
+
 									return resolve(blob);
 								};
-								readerBlob.readAsArrayBuffer(file);
+						
+								reader.readAsArrayBuffer(file);
+
+								
+
 							}, function(error) {
+								console.error(error)
 								return reject(error);
 							});
+
+
 						}, function (error) {
 							return reject(error);
 						});

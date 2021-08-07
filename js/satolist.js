@@ -4415,12 +4415,12 @@ Platform = function (app, listofnodes) {
 
                     return new Promise((resolve, reject) => {
 
-                        dialog({
+                        /*dialog({
                             html: "Pocketnet chat ask you to generate encryption keys. Do you want to proceed?",
                             btn1text: 'Generate Encryption Keys',
                             btn2text: self.app.localization.e('dno'),
 
-                            success: function () {
+                            success: function () {*/
 
                                 self.sdk.node.transactions.create.commonFromUnspent(
 
@@ -4446,7 +4446,7 @@ Platform = function (app, listofnodes) {
                                     }
                                 )
 
-                            },
+                            /*},
 
                             fail: function () {
                                 reject('no')
@@ -4455,7 +4455,7 @@ Platform = function (app, listofnodes) {
                             close: function () {
                                 reject('close')
                             }
-                        })
+                        })*/
 
                     })
 
@@ -16589,13 +16589,19 @@ Platform = function (app, listofnodes) {
                 if (data.data)
                     platform.ws.messageHandler(data.data)
 
-                if (data.tap == 'background' && data.room_id) {
+                console.log("DATA", data)
+
+                if (data.room_id) {
 
                     // Wait until we can navigate Matrix
                     retry(function(){
+
                         return platform && platform.matrixchat && platform.matrixchat.core;
+
                     }, function(){
+
                         platform.matrixchat.core.goto(data.room_id);
+                        
                         if (platform.matrixchat.core.apptochat)
                             platform.matrixchat.core.apptochat();
                     });
@@ -21004,8 +21010,8 @@ Platform = function (app, listofnodes) {
                                     <matrix-element
                                         address="${a}"
                                         privatekey="${privatekey}"
-                                        pocketnet="`+(isMobile() ? '' : 'true')+`"
-                                        mobile="`+(isMobile() ? 'true' : '')+`" 
+                                        pocketnet="`+( (isMobile() || isTablet()) ? '' : 'true')+`"
+                                        mobile="`+( (isMobile() || isTablet()) ? 'true' : '')+`" 
                                         ctheme="`+self.sdk.theme.current+`"
                                         localization="`+self.app.localization.key+`"
                                         fcmtoken="`+(self.fcmtoken || "")+`"
@@ -21017,7 +21023,7 @@ Platform = function (app, listofnodes) {
 
                                 self.matrixchat.el = $('.matrixchatwrapper')
                                 self.matrixchat.initevents()
-
+                                self.matrixchat.connect()
                                 
                             }, null, app);
 
@@ -21048,7 +21054,7 @@ Platform = function (app, listofnodes) {
         initevents : function(){
             if (self.matrixchat.el){
 
-                if(isMobile()){
+                if(isTablet()){
 
 					self.matrixchat.el.swipe({
 						allowPageScroll: "vertical", 
