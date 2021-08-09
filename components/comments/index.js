@@ -1794,9 +1794,7 @@ var comments = (function(){
 						answer : p.answer || '',
 						edit : p.edit || '',
 						preview : _preview,
-						mestate : mestate,
-						sender : self.app.platform.sdk.address.pnet().address,
-						receiver: receiver
+						mestate : mestate
 					},
 
 				}, function(_p){				
