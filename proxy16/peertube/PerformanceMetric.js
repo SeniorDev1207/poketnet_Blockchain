@@ -1,5 +1,5 @@
 class PerformanceMetric {
-  _ratings = [];
+  
 
   calculate(instance) {
     const { _ratings } = this;
@@ -19,7 +19,8 @@ class PerformanceMetric {
     }, 0);
   }
 
-  constructor(ratings = [], customCalculator) {
+  constructor(ratings, customCalculator) {
+    if(!ratings) ratings = []
     this._ratings = ratings;
 
     if (customCalculator) this.calculate = customCalculator;
