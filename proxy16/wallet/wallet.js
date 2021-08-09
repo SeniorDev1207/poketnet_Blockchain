@@ -149,7 +149,6 @@ var Wallet = function(p){
             console.log('addresses[key]', addresses[key])
 
             if(!addresses[key].keys){
-                console.log("ERROR")
                 _.each(self.clbks.error.ini, function(c){
                     c('privatekey', {
                         key : key
@@ -318,14 +317,12 @@ var Wallet = function(p){
 
         addressobj : function(options, key){
             var kp = null
-
-            console.log("options.privatekey", options.privatekey)
             
             try{
                 kp = self.pocketnet.kit.keyPair(options.privatekey)
             }
             catch(e){
-                console.log("E", e)
+                
             }
           
             return {
