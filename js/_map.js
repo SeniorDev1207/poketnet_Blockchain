@@ -421,7 +421,7 @@ __map =  {
 
 			},
 			redirect : {
-				auth : 'welcome'
+				auth : 'authorization'
 			},
 			
 			
@@ -939,9 +939,9 @@ __map =  {
 				el : 'content'
 			},
 			anonimus : true,
-			redirect : {
-				auth : 'welcome'
-			}
+			/*redirect : {
+				auth : 'authorization'
+			}*/
 			
 		},
 		oldchat : {

@@ -109,16 +109,6 @@ var socialshare2 = (function(){
 				}
 			},
 
-			connect: {
-				
-				settings : function(id){
-					return Promise.resolve(['black'])
-				},
-				action : function(settings, id){
-					return Promise.resolve('connect')
-				}
-			},
-
 			channel : {
 				settings : function(id){
 					return Promise.resolve(['black'])
@@ -695,7 +685,6 @@ var socialshare2 = (function(){
 
 				prepareParameters()
 
-				if(ed.notincludedRef) notincludedRef = ed.notincludedRef
 
 			    if(!ed.url){
 
@@ -724,8 +713,7 @@ var socialshare2 = (function(){
 				var data = {
 					caption : ed.caption,
 					style : ed.style || "",
-					eparameters : eparameters,
-					notincludedRef : ed.notincludedRef
+					eparameters : eparameters
 				};
 
 				clbk(data);
