@@ -181,7 +181,6 @@ var Peertube = function (settings) {
               return Promise.resolve();
             })
             .catch((e) => {
-              result.errors ? result.errors.push(e) : (result.errors = [e]);
               return Promise.resolve();
             });
         }),
@@ -200,16 +199,17 @@ var Peertube = function (settings) {
     stats() {
       const servers = Object.values(roys).map((roy) => roy.performance());
 
-      return Promise.all(servers)
-        .then((data) => {
-          var d = {};
-          _.each(data, function (dd) {
-            _.each(dd, function (currVal) {
-              d[currVal.host] = currVal.data;
-            });
-          });
 
-          return d;
+        return Promise.all(servers).then((data) => {
+          var d = {}
+          _.each(data, function(dd){
+            _.each(dd, function(currVal){
+              d[currVal.host] = currVal.data
+            })
+          })
+          
+
+          return d
 
           return data.flat().reduce(
             (accumulator, currVal) => ({
@@ -218,6 +218,8 @@ var Peertube = function (settings) {
             }),
             {},
           );
+
+
         })
         .catch((e = {}) =>
           Promise.reject({
@@ -274,7 +276,8 @@ var Peertube = function (settings) {
               });
             })
             .catch((e) => {
-              console.log('PEERTUBE ERROR', e);
+
+              console.log("PEERTUBE ERROR", e)
 
               if (!e) e = {};
 
