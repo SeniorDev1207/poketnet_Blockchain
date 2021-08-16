@@ -49,30 +49,15 @@ var lenta = (function(){
 
 		var essenserenderclbk = function(){
 
-			var rc = function(){
+			renderclbkSlowMade = slowMade(function(){
+
 				if(!essenseData.horizontal && el.c){
 					cachedHeight = el.c.height()
 				}
 				
 				if(essenseData.renderClbk) essenseData.renderClbk()
-			}
 
-			if(isMobile()){
-				renderclbkSlowMade = slowMade(function(){
-
-					if(!essenseData.horizontal && el.c){
-						cachedHeight = el.c.height()
-					}
-					
-					if(essenseData.renderClbk) essenseData.renderClbk()
-	
-				}, renderclbkSlowMade, 500)
-			}
-			else{
-				rc()
-			}
-
-			
+			}, renderclbkSlowMade, isMobile() ? 500 : 100)
 			
 		}
 
@@ -3098,10 +3083,6 @@ var lenta = (function(){
 										ended = true
 
 								}
-
-								if(!shares.length && !essenseData.ended){
-									ended = true
-								}
 		
 									
 							}
@@ -3136,12 +3117,12 @@ var lenta = (function(){
 							}
 							
 
-							//if (shares.length){
+							if (shares.length){
 
 								if (essenseData.hasshares){
 									essenseData.hasshares(shares)
 								}
-							//}
+							}
 
 
 
@@ -3748,9 +3729,6 @@ var lenta = (function(){
 			making = true;
 
 			actions.cleardelay()
-
-			if (self.app.fullscreenmode)
-				self.app.mobile.fullscreenmode(false)
 
 			var cache = 'clear';
 			var clear = true;

@@ -2041,6 +2041,7 @@ Platform = function (app, listofnodes) {
 
             if(!additional) additional = {}
 
+            console.log('id, el, clbk, p, additional', id, el, clbk, p, additional)
 
             app.nav.api.load({
                 open : true,
@@ -2274,6 +2275,8 @@ Platform = function (app, listofnodes) {
                     
                     p.sendclbk = function(d){
 
+                        console.log(d, p)
+
                         if (p.roomid && d.txid){
                             self.matrixchat.shareInChat.url(p.roomid, app.meta.protocol + '://i?stx=' + d.txid) /// change protocol
                         }
@@ -2293,6 +2296,8 @@ Platform = function (app, listofnodes) {
                         animation : false,
                         essenseData : p,
                         clbk : function(e, _p){
+
+                            console.log('dsdsds', _p)
 
                             es = _p
     
@@ -2437,6 +2442,7 @@ Platform = function (app, listofnodes) {
             var events = {
                 resize: function () {
 
+                    console.log("resize")
 
                     var mode = getmode();
 
@@ -4608,6 +4614,8 @@ Platform = function (app, listofnodes) {
                     }
                     
 
+                    console.log("err", err)
+
                     if (err){
 
                         var errtext = 'Undefined Error'
@@ -5680,6 +5688,7 @@ Platform = function (app, listofnodes) {
 
                     return self.sdk.node.get.timepr().then(r => {
 
+                        console.log("GETMISSED", n.storage.block)
 
                         return self.sdk.missed.get(n.storage.block)
                         
@@ -5707,6 +5716,8 @@ Platform = function (app, listofnodes) {
 
                     }).catch(e => {
 
+
+                        console.log("E", e)
 
                         n.inited = false;
                         n.loading = false;
@@ -5740,6 +5751,7 @@ Platform = function (app, listofnodes) {
                     }
                 }
 
+                console.log('block', block, self.currentBlock)
 
                 if(!self.sdk.address.pnet()) return Promise.reject('address')
                 if(!self.currentBlock) return Promise.reject('currentblock')
@@ -11631,6 +11643,7 @@ Platform = function (app, listofnodes) {
                         self.sdk.node.transactions.temp = JSON.parse(self.app.settings.get(self.sdk.address.pnet().address, 'temp2') || "{}")
 
 
+                        console.log('self.sdk.node.transactions.temp', self.sdk.node.transactions.temp)
                     }
                     else {
                         self.sdk.node.transactions.temp = {};
@@ -11725,6 +11738,8 @@ Platform = function (app, listofnodes) {
 
                 checkTemps: function (clbk) {
 
+                    console.log("checkTemps", this.temp)
+
                     /*if (clbk)
                         clbk()
                     return*/
@@ -11742,6 +11757,8 @@ Platform = function (app, listofnodes) {
                         })
                     })
 
+
+                    console.log('temps', temps)
 
                     lazyEach({
                         array: temps,
@@ -12780,6 +12797,8 @@ Platform = function (app, listofnodes) {
                         var k = smulti;
 
 
+                        console.log("txb", txb, inputs, outputs)
+
                         _.each(inputs, function (i) {
 
                             if (i.type == 'htlc'){
@@ -12859,6 +12878,7 @@ Platform = function (app, listofnodes) {
 
                         var addr = self.app.platform.sdk.address.pnet()
 
+                        console.log('addr', addr)
 
                         if (addr && self.nvadr[addr.address]){
                             error = null
@@ -12987,6 +13007,8 @@ Platform = function (app, listofnodes) {
                                     
                                 var totalReturn = Number((amount - totalDonate - (fees || 0)).toFixed(0));
 
+                                console.log('totalReturn', totalReturn, fees);
+
 
                                 if (obj.donate && obj.donate.v.length && (totalReturn < 0 || totalDonate <= fees)){
 
@@ -12997,6 +13019,8 @@ Platform = function (app, listofnodes) {
                                     return;
 
                                 } else {
+
+                                    console.log("P", p, totalReturn, address)
 
                                     txb.addOutput(address.address, totalReturn);
                                     outputs.push({
@@ -13159,6 +13183,8 @@ Platform = function (app, listofnodes) {
 
                             return removeEmptyHref(sanitizedHtml);
                         }
+
+                        console.log('message', message);
 
                         const token = meta.telegram.value;
 
@@ -15926,6 +15952,8 @@ Platform = function (app, listofnodes) {
                         addValue("tgto", channelName, chat.id);
                         addValue("tgfrom", channelName, chat.id);
 
+                        console.log('renderClbk', renderClbk);
+
                         if (renderClbk){
                             renderClbk();
                         }
@@ -16663,6 +16691,8 @@ Platform = function (app, listofnodes) {
             var token = currenttoken
 
 
+            console.log('getaddress', getaddress())
+
             return self.api.checkProxy(proxy).then(r => {
                 return  self.api.exist(proxy, address, token)
             }).then(exist => {
@@ -16674,6 +16704,7 @@ Platform = function (app, listofnodes) {
             }).then(r => {
                 return self.api.setToken(address, token, proxy)
             }).catch(e => {
+                console.log("E", e)
                 return Promise.resolve()
             })
             
@@ -16748,6 +16779,8 @@ Platform = function (app, listofnodes) {
                     currenttoken = token
                     platform.fcmtoken = token
 
+                    console.log("FCM TOKEN GET", token)
+
                     platform.matrixchat.changeFcm()
 
                     self.events()
@@ -16796,6 +16829,8 @@ Platform = function (app, listofnodes) {
 
                 if (data.data)
                     platform.ws.messageHandler(data.data)
+
+                console.log("DATA", data)
 
                 if (data.room_id) {
 
@@ -16850,6 +16885,8 @@ Platform = function (app, listofnodes) {
          
             // When token is refreshed, update the matrix element for the Vue app
             FirebasePlugin.onTokenRefresh(function(token) {
+
+                console.log("FCM TOKEN REFRESH", token)
 
                 platform.fcmtoken = token   
                 currenttoken = token
@@ -18557,6 +18594,8 @@ Platform = function (app, listofnodes) {
 
                 fastMessage: function (data) {
 
+                    console.log('fastMessage', data);
+
                     var text = '';
                     var html = '';
 
@@ -18591,6 +18630,7 @@ Platform = function (app, listofnodes) {
                         if (text) {
                             var toptext =  self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time, data.donation);
 
+                            console.log('toptext', toptext);
                             html += toptext
                         }
 
@@ -21186,6 +21226,7 @@ Platform = function (app, listofnodes) {
                 self.matrixchat.imported = true;
 
                 if(electron){
+                    console.log("HERE")
 
                     if(clbk) clbk()
                 }
@@ -21247,6 +21288,7 @@ Platform = function (app, listofnodes) {
         
                                 var privatekey = self.app.user.private.value.toString('hex');
 
+                                console.log('localization', self.app.localization.key)
                     
                                 var matrix = `<div class="wrapper matrixchatwrapper">
                                     <matrix-element
@@ -21319,6 +21361,7 @@ Platform = function (app, listofnodes) {
 
                 if(!self.ws) return
 
+                console.log("self.ws", self.ws)
 
                 var wsntemplates = self.ws.tempates
 
@@ -21452,6 +21495,7 @@ Platform = function (app, listofnodes) {
                 return !self.matrixchat.core.hiddenInParent
             }
 
+            console.log('self.matrixchat.core.isactive()', self.matrixchat.core.isactive())
 
             return self.matrixchat.core.isactive()
         },
@@ -21612,6 +21656,7 @@ Platform = function (app, listofnodes) {
             self.matrixchat.core.connect(self.matrixchat.connectWith).then(r => {
                 self.matrixchat.connectWith = null
             }).catch(e => {
+                console.log('e', e)
                 self.matrixchat.connectWith = null
             })
         },
@@ -21903,6 +21948,7 @@ Platform = function (app, listofnodes) {
             cordova.openwith.addHandler(function(intent){
                 var sharing = {}
        
+                console.log('intent', intent)
 
                 var promises = _.map(
                     _.filter(intent.items || [], function(i){return i}), 
@@ -21916,6 +21962,8 @@ Platform = function (app, listofnodes) {
 
                     return new Promise((resolve, reject) => {
 
+                        console.log('item.type', item.type)
+                        console.log('item.data', item.base64)
 
                         if(utitomime[item.type]) item.type = utitomime[item.type]
 
@@ -21971,6 +22019,7 @@ Platform = function (app, listofnodes) {
 
                             sitemessage(self.app.localization.e('e13293'))
 
+                            console.log("R", r)
                         })
 
                         

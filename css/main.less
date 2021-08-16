@@ -2165,7 +2165,7 @@ input[type=radio].radio:checked + label {
     right : 0;
     width : 100%;
     display: none;
-    z-index: 1005;
+    z-index: 2005;
 
     &.embeding{
         z-index: 2005; 
@@ -2814,7 +2814,11 @@ input[type=radio].radio:checked + label {
             }
         }
 
-        
+        &.optimized{
+            >div{
+                display: none!important;
+            }
+        }
     }
 }
 
@@ -5916,20 +5920,6 @@ html.stblack{
     #splashScreen{
         display: flex;
     }
-
-    html.mobile,
-    html.tablet{
-        #content{
-        
-
-            &.optimized{
-                >div{
-                    display: none!important;
-                }
-            }
-        }
-    }
-    
 
     
 }
