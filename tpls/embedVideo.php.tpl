@@ -11,7 +11,7 @@
         
             require_once('php/og.php'); 
 
-            $og = new OG($_GET, __VAR__.proxypath, "__VAR__.domain", "__VAR__.project");
+            $og = new OG($_GET, __VAR__.proxypath);
 
             $og->get();
             $og->echotags();
