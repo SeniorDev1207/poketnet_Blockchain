@@ -22,7 +22,6 @@ var instance = function (host, Roy) {
       return '/api/v1/videos/' + id;
     },
     performance: '/api/v1/server/stats',
-    channelVideos: ({ account }) => `/api/v1/accounts/${account}/videos`,
   };
 
   var statsRequest = function () {
@@ -78,7 +77,9 @@ var instance = function (host, Roy) {
     return inited;
   };
 
-  self.request = function (method, data, p = {}) {
+  self.request = function (method, data, p) {
+    if (!p) p = {};
+
     var responseTime = performance.now();
     var url = methods[method];
 
@@ -86,7 +87,7 @@ var instance = function (host, Roy) {
 
     if (typeof url == 'function') url = url(data);
 
-    return axios[p.type || 'get'](`http://${host}${url}`, {
+    return axios[p.type || 'get']('http://' + host + url, {
       timeout: p.timeout || Roy.parent.timeout() || 10000,
     })
       .then((result) => {

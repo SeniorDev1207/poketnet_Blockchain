@@ -1745,26 +1745,6 @@ __map =  {
 
 		
 	},
-	videoCabinet : {
-		uri : "videoCabinet",
-		href : "videoCabinet",
-		add : function(settings, p){
-
-			if(p.inTooltip)
-
-				return {
-					insert : 'tooltip'
-				}
-
-			else
-			{
-				return {
-					el : 'content'
-				}
-			}
-
-		},
-	},
 
 	dust : {
 		uri : "dust",

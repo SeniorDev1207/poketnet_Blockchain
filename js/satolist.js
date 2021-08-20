@@ -2152,8 +2152,7 @@ Platform = function (app, listofnodes) {
                         post : function(){
                         },	
                         absolute : true,
-                        repost  : p.repost,
-                        videoLink: p.videoLink,
+                        repost  : p.repost
                     }
                 })
             }, 50)
@@ -3866,6 +3865,8 @@ Platform = function (app, listofnodes) {
 
                     t.save()
                 }
+
+                app.mobile.statusbar.background()
             }
         },
 
@@ -20889,13 +20890,13 @@ Platform = function (app, listofnodes) {
             self.preparing = false;
 
 
-            self.prepareUser(function() {
-                if (typeof PeerTubePocketnet != 'undefined'){
-                    self.app.peertubeHandler = new PeerTubePocketnet(self.app);
-                    self.app.peertubeHandler.init()
-                }
-                clbk();
-            });
+            self.prepareUser(clbk);
+
+            if (typeof PeerTubePocketnet != 'undefined'){
+                self.app.peertubeHandler = new PeerTubePocketnet(self.app);
+                self.app.peertubeHandler.init()
+            }
+
         }).catch(e => {
             console.log("ERROR", e)
         })
@@ -21391,6 +21392,8 @@ Platform = function (app, listofnodes) {
                 _.each(self.matrixchat.clbks.SHOWING, function(c){
                     c(false)
                 })
+
+                $('html').removeClass('chatshowed')
             }
 
             core.apptochat = function(){
@@ -21416,6 +21419,8 @@ Platform = function (app, listofnodes) {
                 _.each(self.matrixchat.clbks.SHOWING, function(c){
                     c(true)
                 })
+
+                $('html').addClass('chatshowed')
             }
 
             self.matrixchat.core = core
@@ -21435,6 +21440,8 @@ Platform = function (app, listofnodes) {
             }
 
             var cm = deep(app, 'modules.menu.module.restart')
+
+            console.log("RESTART MENU", cm)
 
             if (cm) cm()
 
