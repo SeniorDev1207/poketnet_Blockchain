@@ -216,15 +216,6 @@ var userpage = (function(){
 				},
 			})
 
-			reports.push({
-				name : self.app.localization.e('videoCabinet'),
-				id : 'videoCabinet',
-				report : 'videoCabinet',
-				mobile : true,
-			})
-
-
-
 		//	var address = app.user.address.value;
 				
                 

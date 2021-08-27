@@ -1098,37 +1098,3 @@ ____loclib.streamLinks = "Streaming software links"
 ____loclib.linkRTMP = "RTMP Url"
 ____loclib.linkStreamKey = "Stream Key"
 
-
-
-____loclib.videoCabinet = "My Videos";	
-____loclib.uploadQuota = "Daily Uploading Quota";
-____loclib.attachVideoToPost = "Create Post With This Video";
-
-____loclib.linkToPost = "Link to Post";
-____loclib.attachVideoToPostShort = "Post";
-
-____loclib.totalStars = "Average rating (Total Votes)";
-____loclib.totalComments = "Total Comments";
-____loclib.totalViews = "Video Views";
-
-____loclib.enterVideoName = "Search by video name";
-
-____loclib.videoTranscoding = "Video is being processed and may not work properly / induce extended traffic consumption. Do you still want to post it?";
-____loclib.waitForTranscoding = "Wait for processing";
-
-____loclib.bonusProgram = "Bonus Program Status";
-____loclib.bonusProgramViews = "Total Video Views";
-____loclib.bonusProgramRatings = "Total Ratings";
-
-____loclib.sortBy = "Sort by:";
-____loclib.sortDirection = "Sort direction:";
-____loclib.sortDirectionAsc = "Ascending";
-____loclib.sortDirectionDesc = "Descending";
-____loclib.sortByName = "Name";
-____loclib.sortByCreatedAt = "Creation Date";
-____loclib.sortByDuration = "Duration";
-____loclib.sortByViews = "Views";
-
-____loclib.unableToAuthorize = "Unable to authorize";
-____loclib.unableToAuthorizeBody = "Unfortunately, the application cannot authenticate this account on the video server. You need at least 5 PKOIN or 100 reputation to upload videos. If you do, please try again later";
-

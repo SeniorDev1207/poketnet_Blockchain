@@ -935,6 +935,7 @@ __map =  {
 		userpage : {
 			uri : "userpage",
 			href : "userpage",
+			preshell : true,
 			add : {
 				el : 'content'
 			},
@@ -1648,6 +1649,7 @@ __map =  {
 			el : 'content'
 		},
 		anonimus : true,
+		preshell : true
 		
 	},
 
@@ -1664,6 +1666,7 @@ __map =  {
 	post : {
 		uri : "post",
 		href : "post",
+		preshell : true,
 		add : function(settings, p){
 
 			if(p.inWnd)
@@ -1744,26 +1747,6 @@ __map =  {
 		]
 
 		
-	},
-	videoCabinet : {
-		uri : "videoCabinet",
-		href : "videoCabinet",
-		add : function(settings, p){
-
-			if(p.inTooltip)
-
-				return {
-					insert : 'tooltip'
-				}
-
-			else
-			{
-				return {
-					el : 'content'
-				}
-			}
-
-		},
 	},
 
 	dust : {
