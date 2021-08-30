@@ -63,12 +63,12 @@ var Peertube = function (settings) {
     return 600000;
   };
 
-  self.request = function (method, data, host, parameters = {}) {
+  self.request = function (method, data, host) {
     var roy = getroy(host);
 
     if (!roy) return Promise.reject('roy');
 
-    return roy.request(method, data, parameters);
+    return roy.request(method, data);
   };
 
   self.inner = {
@@ -101,7 +101,7 @@ var Peertube = function (settings) {
       return keys[f.rand(0, keys.length - 1)];
     },
 
-    best: function ({ roy, type, address }) {
+    best: function ({ roy, type }) {
       if (!roy) roy = self.api.randroykey();
 
       roy = getroy(roy);
@@ -235,6 +235,14 @@ var Peertube = function (settings) {
           });
 
           return d;
+
+          return data.flat().reduce(
+            (accumulator, currVal) => ({
+              ...accumulator,
+              [currVal.host]: currVal.data,
+            }),
+            {},
+          );
         })
         .catch((e = {}) =>
           Promise.reject({
@@ -242,48 +250,6 @@ var Peertube = function (settings) {
             code: e.code || 500,
           }),
         );
-    },
-
-    roys: () =>
-      Promise.resolve(
-        Object.entries(roys).reduce(
-          (accumulator, [name, roy]) => ({
-            [name]: roy.best().host,
-            ...accumulator,
-          }),
-          {},
-        ),
-      ),
-
-    accountVideos({ account, servers = [], start, count }, cahce) {
-      const requestServers = servers.length
-        ? [...servers]
-        : Object.values(roys)
-            .map((roy) => roy.hosts().map((host) => host.host))
-            .flat();
-
-      return Promise.allSettled(
-        requestServers.map((server) =>
-          self.request('channelVideos', { account, start, count }, server, {
-            host: server,
-          }),
-        ),
-      )
-        .then((data) => {
-          const outputInfo = data
-            .map((serverData) => serverData.data)
-            .reduce(
-              (accum, currServer) => ({
-                total: accum.total + currServer.total,
-                data: accum.data.concat(currServer.data || []),
-              }),
-              { total: 0, data: [] },
-            );
-
-          console.log(outputInfo);
-          return outputInfo;
-        })
-        .catch(() => ({ total: 0, data: [] }));
     },
   };
 
