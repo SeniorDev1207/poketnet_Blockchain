@@ -528,6 +528,7 @@ Nav = function(app)
 
 						if(!p.goback){
 							app.actions.scrollToTop()
+				
 						}
 							
 
@@ -1040,20 +1041,6 @@ Nav = function(app)
 				link.off('click').on('click', function(){
 	
 					var ref = cordova.InAppBrowser.open(href, link.attr('cordovalink') || '_blank');
-
-					/*var scrollremoved = app.scrollRemoved
-
-					 '_blank', 'location=yes'
-
-					if (scrollremoved){
-						app.onScroll()
-					}
-
-					ref.addEventListener('exit', function(){
-						if (scrollremoved){
-							app.offScroll()
-						}
-					});*/
 
 					return false
 					

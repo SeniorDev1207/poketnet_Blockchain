@@ -102,12 +102,12 @@
 						display: block;
 					}
 
-					/*&:nth-last-child(2),
+					&:nth-last-child(2),
 					&:nth-last-child(3),
 					&:nth-last-child(4),
 					&:nth-last-child(5){
 						display: none;
-					}*/
+					}
 				}
 			}
 		}
@@ -250,6 +250,9 @@
 	}
 
 	.list{
+
+
+		
 				
 		.comment{
 			border-bottom : 1px solid @color-gray-slight;
@@ -333,6 +336,10 @@
 					.embedEmojiPrivew, .emojionearea-button{
 						right: 12px;
 					}
+
+
+
+					
 				}
 				
 				background: #fff;
@@ -346,6 +353,10 @@
 					}
 				}
 			}
+
+			/*&:nth-last-child(1){
+				border-bottom : 0;
+			}*/
 
 			&.showedreplies{
 				.replies{
@@ -362,7 +373,9 @@
 			&:hover{
 				.metatable{
 					>div{
+
 						&.panelWrapper{
+
 							.panel{
 								opacity: 1;
 							}
@@ -373,7 +386,9 @@
 
 			.metatable{
 				>div{
+
 					&.panelWrapper{
+
 						.temppanel{
 							display: none;
 							text-align: right;
@@ -383,6 +398,22 @@
 			}
 
 			&.temptransaction{
+				/*.metatable{
+					>div{
+
+						&.panelWrapper{
+
+							.panel{
+								display: none;
+							}
+
+							.temppanel{
+								display: block;
+							}
+						}
+					}
+				}*/
+
 				&.commentnotedited{
 					.commentpanel .items>div{
 						&.reply{
@@ -408,47 +439,39 @@
 					.icon{
 						position: relative;
 					}
-					
-					.donatedbefore{
-						position: absolute;
-						width: 42px;
-						height: 42px;
-						left : -2px;
-						top : -2px;
-						right: -2px;
-						z-index: 1;
-						background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-						background-size: 400% 400%;
-						border-radius: 50%;
-					}
 
 					.usericon{
-						position: absolute;
-						left : 0;
-						top : 0;
-						right: 0;
-						z-index: 2;
+						position: relative;
 						
 						&.donated{
 							
-							/*&:before{
-								z-index: 1;
+							&:after{
 								position: absolute;
 								left : -1px;
 								top : -1px;
 								right: -1px;
 								bottom : -1px;
-								border : 0;
+								animation: rotation 8s infinite linear;
+								border : 2px solid @color-main;
 								content : "";
-								background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-								background-size: 400% 400%;
-							}*/
+								border-radius: 50%;
+								border-image: linear-gradient(#0B0E7F , #0B95DD);
+								-moz-border-image: -moz-linear-gradient(#0B0E7F , #0B95DD);
+								-webkit-border-image: -webkit-linear-gradient(#0B0E7F , #0B95DD);
+								border-image-slice: 1;
+								filter: blur(5px);
+							}
 						}
+
+						
+
+						
+
 					}
 
 					.donater{
 						position: absolute;
-						/*animation: rotation 3s infinite linear;*/
+						animation: rotation 3s infinite linear;
 						top: -2px;
 						left: -2px;
 						width: 41px;
@@ -493,6 +516,7 @@
 						animation-iteration-count:  infinite;
 						animation-timing-function: linear;
 						animation-duration: 3s; 
+
 
 					}
 
@@ -583,6 +607,7 @@
 
 				.donateSum{
 					display: inline;
+					background: @color-main;
 					border-radius: 25px;
 					padding: @rhythm;
 					padding-left: @rhythm * 2;
@@ -592,8 +617,6 @@
 					font-size: .8em;
 					font-weight: 500;
 					white-space: nowrap;
-					background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-					background-size: 400% 400%;
 				}
 
 				.date{	
@@ -1792,26 +1815,13 @@ html.mobile{
 		.embedimages{
 			right: 12px!important;
 		}
-
-		.list{
-			.metatable{
-				>div{
-					&.panelWrapper{
-						.panel{
-							opacity: 1
-						}
-					}
-				}
-
-			}
-
-			
-		}
 	}
 }
 
 /*t*/ @media only screen and (max-width: 768px){
 	#comments{
+
+	
 
 		.repliesloaderWrapper,
 		.loaderWrapper{
@@ -2059,6 +2069,14 @@ html.mobile{
 				}
 
 				.postbody{
+				
+					//padding-left : @rhythm;
+					//background: #fff;
+					/*position : absolute;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					z-index: 1000;*/
 
 					.posttable{
 						>div{
@@ -2071,7 +2089,24 @@ html.mobile{
 
 							&.iconWrapper{
 								.icon{
-									
+									/*position: relative;
+									&:before{
+										color : @color-gray-light;
+										height: 38px;
+										width : 38px;
+										position: absolute;
+										left : 0;
+										right : 0;
+										line-height: 38px;
+										text-align : center;
+										font-weight: 700;
+										content : '\f00d';
+										font-family: "Font Awesome 5 Free";
+									}
+
+									.usericon{
+										display: none;
+									}*/
 								}
 							}
 						}

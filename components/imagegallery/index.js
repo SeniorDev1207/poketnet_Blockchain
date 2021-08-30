@@ -15,11 +15,6 @@ var imagegallery = (function(){
 
 		var making;
 
-		var hammers = {
-			f : null,
-			s : null
-		}
-
 		// Used to zoom images with mouse wheel or mobile gestures
 		var zoomData = {
 			current: {
@@ -272,7 +267,7 @@ var imagegallery = (function(){
 
 				el.imageNavigation.find('.number').html(helpers.nFormat(num + 1));
 
-				delete self.app.events.resize.imagegallery
+				$(window).off('resize', helpers.resize)
 
 				if(!p) p = {};
 
@@ -300,8 +295,7 @@ var imagegallery = (function(){
 						{
 							helpers.resize();
 
-							self.app.events.resize.imagegallery = helpers.resize
-
+							$(window).on('resize', helpers.resize)
 						}
 
 						// Prepare the zoom feature
@@ -343,18 +337,15 @@ var imagegallery = (function(){
 							},
 							pinchZoomOrigin: undefined
 						};
-
-						if(hammers.f) hammers.f.destroy()
-
 						// Instantiate hammer instance, and configure it
-						hammers.f = new Hammer(zoomData.imageContainer);
-						hammers.f.get('pan').set({ threshold: 0 });
-						hammers.f.get('pinch').set({ enable: true });
-						hammers.f.get('tap').set({ taps: 2 });
-						hammers.f.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+						var hammertime = new Hammer(zoomData.imageContainer);
+						hammertime.get('pan').set({ threshold: 0 });
+						hammertime.get('pinch').set({ enable: true });
+						hammertime.get('tap').set({ taps: 2 });
+						hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 
 						// Events for panning
-						hammers.f.on('pan', function(e) {
+						hammertime.on('pan', function(e) {
 							zoomData.imageContainer.style.transition = "none";
 							if (zoomData.lastEvent !== 'pan') {
 								zoomData.fixHammerjsDeltaIssue = {
@@ -367,7 +358,7 @@ var imagegallery = (function(){
 							zoomData.lastEvent = 'pan';
 							helpers.updateZoomedImage(false);
 						});
-						hammers.f.on('panend', function(e) {
+						hammertime.on('panend', function(e) {
 							zoomData.imageContainer.style.transition = (zoomData.current.z <= 1) ? "0.3s" : "none";
 							zoomData.last.x = zoomData.current.x;
 							zoomData.last.y = zoomData.current.y;
@@ -376,7 +367,7 @@ var imagegallery = (function(){
 						});
 
 						// Event for zooming with doubletap
-						hammers.f.on('doubletap', function(e) {
+						hammertime.on('doubletap', function(e) {
 							// How much we want to zoom when doubletapping
 							var scaleFactor = (zoomData.current.z > 1) ? -zoomData.current.z + 1 : 2;
 							zoomData.imageContainer.style.transition = "0.3s";
@@ -395,7 +386,7 @@ var imagegallery = (function(){
 						});
 
 						// Event for the swipe left and right
-						hammers.f.on('swipeleft swiperight', function(e) {
+						hammertime.on('swipeleft swiperight', function(e) {
 							// If we can pan horizontally, cancel the swipe
 							if (zoomData.imageContainerParent.width() < zoomData.current.width) return;
 							// Check if we need to go to previous or next image
@@ -405,7 +396,7 @@ var imagegallery = (function(){
 								actions.back();
 						});
 						// Event for the swipe up and down
-						hammers.f.on('swipeup swipedown', function(e) {
+						hammertime.on('swipeup swipedown', function(e) {
 							// If we can pan vertically, cancel the swipe
 							if (zoomData.imageContainerParent.height() < zoomData.current.height) return;
 							// Close the gallery
@@ -413,13 +404,13 @@ var imagegallery = (function(){
 						});
 
 						// Events for the pinch zoom
-						hammers.f.on('pinchstart', function(e) {
+						hammertime.on('pinchstart', function(e) {
 							zoomData.pinchStart.x = e.center.x;
 							zoomData.pinchStart.y = e.center.y;
 							zoomData.pinchZoomOrigin = helpers.getRelativePosition(zoomData.imageContainer, { x: zoomData.pinchStart.x, y: zoomData.pinchStart.y }, zoomData.originalSize, zoomData.current.z);
 							zoomData.lastEvent = 'pinchstart';
 						});
-						hammers.f.on('pinch', function(e) {
+						hammertime.on('pinch', function(e) {
 							var d = helpers.scaleFrom(zoomData.pinchZoomOrigin, zoomData.last.z, zoomData.last.z * e.scale);
 							// Update only if not reaching limits
 							if ((d.z + zoomData.last.z) <= zoomData.maxZoomAllowed && (d.z + zoomData.last.z) >= zoomData.minZoomAllowed) {
@@ -430,15 +421,15 @@ var imagegallery = (function(){
 							zoomData.lastEvent = 'pinch';
 							helpers.updateZoomedImage();
 						});
-						hammers.f.on('pinchend', function(e) {
+						hammertime.on('pinchend', function(e) {
 							zoomData.last.x = zoomData.current.x;
 							zoomData.last.y = zoomData.current.y;
 							zoomData.last.z = zoomData.current.z;
 							zoomData.lastEvent = 'pinchend';
 							// Temporarily disable panning
-							hammers.f.get('pan').set({ enable: false });
+							hammertime.get('pan').set({ enable: false });
 							setTimeout(() => {
-								hammers.f.get('pan').set({ enable: true });
+								hammertime.get('pan').set({ enable: true });
 							}, 200);
 						});
 
@@ -465,28 +456,26 @@ var imagegallery = (function(){
 							helpers.updateZoomedImage();
 						}, false);
 
-
-						if(hammers.s) hammers.s.destroy()
 						// Instance a second hammer instance for the swipping outside of the image
-						hammers.s = new Hammer(zoomData.fullContainer);
-						hammers.s.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-							// Event for the swipe left and right outside the image
-							hammers.s.on('swipeleft swiperight', function(e) {
-								// If we can pan horizontally, cancel the swipe
-								if ((zoomData.imageContainerParent.width() * 1.2) < zoomData.current.width) return;
-								// Check if we need to go to previous or next image
-								if (e.deltaX < 0)
-									actions.next();
-								else
-									actions.back();
-							});
-							// Event for the swipe up and down outside the image
-							hammers.s.on('swipeup swipedown', function(e) {
-								// If we can pan vertically, cancel the swipe
-								if ((zoomData.imageContainerParent.height() * 1.2) < zoomData.current.height) return;
-								// Close the gallery
-								self.closeContainer();
-							});
+						var hammertime2 = new Hammer(zoomData.fullContainer);
+						hammertime2.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+						// Event for the swipe left and right outside the image
+						hammertime2.on('swipeleft swiperight', function(e) {
+							// If we can pan horizontally, cancel the swipe
+							if ((zoomData.imageContainerParent.width() * 1.2) < zoomData.current.width) return;
+							// Check if we need to go to previous or next image
+							if (e.deltaX < 0)
+								actions.next();
+							else
+								actions.back();
+						});
+						// Event for the swipe up and down outside the image
+						hammertime2.on('swipeup swipedown', function(e) {
+							// If we can pan vertically, cancel the swipe
+							if ((zoomData.imageContainerParent.height() * 1.2) < zoomData.current.height) return;
+							// Close the gallery
+							self.closeContainer();
+						});
 
 					});
 
@@ -587,15 +576,9 @@ var imagegallery = (function(){
 
 				currentImage = null;
 
-				delete self.app.events.resize.imagegallery
-
+				$(window).off('resize', helpers.resize);
 
 				making = false;
-
-				_.each(hammers, function(h, i){
-					if(h) h.destroy
-					hammers[i] = null
-				})
 
 				//self.app.nav.api.history.removeParameters(['i', 'num', 's', 'com'])
 				//self.app.nav.api.history.removeParameters(['num'])
@@ -636,7 +619,7 @@ var imagegallery = (function(){
 			},
 
 			wnd : {			
-				class : 'allscreen black withoutButtons imageGallery fullscreenActive',
+				class : 'allscreen black withoutButtons imageGallery',
 			}
 		}
 	};

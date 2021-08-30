@@ -57,8 +57,7 @@ Platform = function (app, listofnodes) {
         'PL1wziiaQj7FLnoktuQQ1MKweYYbdcekRB' : true,
         'PMVvs8kvbskq6eVV8Q3oyjotbox9tBfvnp' : true,
         'PQ3hdiozrxtTf1UhuVfhUb9bcvrUzbzwRJ' : true,
-        'PCSxAFQCRZphi9W6nrV4tSQXKFfsxdxERA' : true,
-        'PGFKA1DieVsg9pQK4aBaEp5wpvaXpWtuVJ' : true
+        'PCSxAFQCRZphi9W6nrV4tSQXKFfsxdxERA' : true
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
 
@@ -2348,10 +2347,10 @@ Platform = function (app, listofnodes) {
             return n;
         },
 
-        authorlink: function (address, namelink) {
+        authorlink: function (address) {
             var name = deep(app, 'platform.sdk.usersl.storage.' + address + '.name');
 
-            if (name && (!isMobile() || namelink)) return encodeURIComponent(name.toLowerCase());
+            if (name) return encodeURIComponent(name.toLowerCase());
 
             else return 'author?address=' + address
         },
@@ -2625,37 +2624,7 @@ Platform = function (app, listofnodes) {
 
         },
 
-        mobiletooltip : function(_el, content, clbk, p){
-
-            var d = function(){
-                tooltipMobileDialog({
-
-                    html : content(),
-                    clbk : function(el){
-
-                        if(clbk) clbk(el)
-                    }
-                    
-                })
-            }
-
-            if(_el.attr('mobiletooltip')) return
-
-            d()
-
-            _el.on('click', function(){
-                d()
-            })
-
-            _el.attr('mobiletooltip', true)
-        },
-
         tooltip: function (_el, content, clbk, p) {
-
-            if (isMobile()){
-                return self.api.mobiletooltip(_el, content, clbk, p)
-            }
-            
             if (_el.hasClass('tooltipstered')) return;
 
             if (!p) p = {};
@@ -3058,6 +3027,8 @@ Platform = function (app, listofnodes) {
 
             d.share = share
 
+           
+
             self.app.platform.sdk.ustate.me(function (_mestate) {
 
                 sm.fastTemplate('metmenu', function (rendered, template) {
@@ -3073,39 +3044,18 @@ Platform = function (app, listofnodes) {
 
                         el.find('.opennewwindow').on('click', function(){
 
-                            self.app.mobile.vibration.small()
-
                             var href = 'https://'+window.location.hostname+'/' /// domain
 
-                            var path = ''
-
-                            if(d.share.itisvideo() && !window.cordova){
-                                path = 'index?video=1&v=' + id
+                            if(d.share.itisvideo()){
+                                href += 'index?video=1&v=' + id
                             }
                             else
                             {
-                                path = 'post?s=' + id
+                                href += 'index?post?s=' + id
                             }
 
-                            href += path
-
-                            app.nav
-
-                            if (window.cordova){
-
-                                if(!app.nav.current || app.nav.current.href != 'post'){
-                                    app.nav.api.load({
-                                        open: true,
-                                        href: path,
-                                        history: true,
-                                    })
-                                }
-                                else
-                                {
-                                    cordova.InAppBrowser.open(href, '_blank');
-                                }
-                                
-                               
+                            if(window.cordova){
+                                cordova.InAppBrowser.open(href, '_blank');
                             }
                             else{
                                 window.open(href, '_blank');
@@ -3116,94 +3066,70 @@ Platform = function (app, listofnodes) {
 
                             actions.htls(id)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.socialshare').on('click', function () {
 
-                            self.app.mobile.vibration.small()
+
                             actions.sharesocial(id)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
-                        })
-
-                        el.find('.startchat').on('click', function () {
-
-                            self.matrixchat.startchat(address)
-
-                            self.app.mobile.vibration.small()
-
-
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.subscribe').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             self.api.actions.subscribe(address, function (tx, error) {
                                 if (!tx) {
                                     self.errorHandler(error, true)
                                 }
                             })
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.unsubscribe').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             self.api.actions.unsubscribe(address, function (tx, error) {
                                 if (!tx) {
                                     self.errorHandler(error, true)
                                 }
                             })
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.complain').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             actions.complain(id)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.donate').on('click', function () {
-                            self.app.mobile.vibration.small()
-                            //actions.donate(id)
 
-                            self.ui.wallet.send({
-                                address : address
-                            })
+                            actions.donate(id)
 
-                            //f.deep(window, 'POCKETNETINSTANCE.platform.ui.wallet.send')
-
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.block').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             self.api.actions.blocking(address, function (tx, error) {
                                 if (!tx) {
                                     self.errorHandler(error, true)
                                 }
                             })
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.edit').on('click', function () {
 
-                            self.app.mobile.vibration.small()
+
                             var em = null;
                             var editing = d.share.alias()
 
@@ -3276,17 +3202,14 @@ Platform = function (app, listofnodes) {
                                 })
                             }
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.videoshare').on('click', function () {
-                            self.app.mobile.vibration.small()
                             actions.videoShare(share)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
                     })
 
@@ -3297,6 +3220,103 @@ Platform = function (app, listofnodes) {
 
 
     self.sdk = {
+
+        local: {
+
+            videos: {
+
+                allVideos: {},
+
+                init: function() {
+
+                    var v = self.sdk.local.videos.allVideos;
+
+                    if (window.cordova && window.cordova.file) {
+                        // Check if external storage is available, if not, use the internal
+                        var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
+                        // open target file for download
+                        window.resolveLocalFileSystemURL(storage, function(dirEntry) {
+                            // Create a downloads folder
+                            dirEntry.getDirectory('Downloads', { create: true }, function (dirEntry2) {
+                                var directoryReader = dirEntry2.createReader();
+                                directoryReader.readEntries(function(videoFolders) {
+                                    _.each(videoFolders, function(videoFolder) {
+                                        if (videoFolder.isDirectory) {
+                                            videoFolder.createReader().readEntries(function(files) {
+                                                var videoFile, infoFile;
+                                                v[videoFolder.name] = {};
+                                                _.each(files, function(file) {
+                                                    if (file.isFile && file.file) {
+                                                        file.file(function(fileDetails) {
+                                                            if (!videoFile && fileDetails.type == null) {
+                                                                videoFile = file;
+                                                                // Resolve internal URL
+                                                                window.resolveLocalFileSystemURL(videoFile.nativeURL, function(entry) {
+                                                                    videoFile.internalURL = entry.toInternalURL();
+                                                                    v[videoFolder.name].video = videoFile;
+                                                                });
+                                                            }
+                                                            if (!infoFile && file.name == 'info.json') {
+                                                                infoFile = file;
+                                                                // Read info file
+                                                                var reader = new FileReader();
+                                                                reader.onloadend = function() {
+                                                                    try {
+                                                                        v[videoFolder.name].infos = JSON.parse(this.result);
+                                                                    } catch(err){ }
+                                                                };
+                                                                reader.readAsText(fileDetails);
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    });
+
+                                });
+                            });
+                        });
+                    }
+
+                },
+
+                get: function(videoId) {
+                    var v = self.sdk.local.videos.allVideos;
+                    return v[videoId];
+                },
+
+                delete: function(videoId) {
+
+                    var v = self.sdk.local.videos.allVideos;
+
+                    if (window.cordova && window.cordova.file) {
+                        // Check if external storage is available, if not, use the internal
+                        var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
+                        // open target file for download
+                        window.resolveLocalFileSystemURL(storage, function(dirEntry) {
+                            // Create a downloads folder
+                            dirEntry.getDirectory('Downloads', { create: true }, function (dirEntry2) {
+                                dirEntry2.getDirectory(videoId, { create: false}, function(dirToDelete) {
+                                    dirToDelete.removeRecursively(function() {
+                                        // Success
+                                        delete v[videoId];
+                                        console.log(v);
+                                    });
+                                });
+                            });
+                        });
+                    }
+                },
+
+                add : function(videoId, video){
+                    var v = self.sdk.local.videos.allVideos;
+                    v[videoId] = video;
+                    console.log(v);
+                }
+            }
+
+        },
 
         registrations: {
             storage: {},
@@ -4035,18 +4055,11 @@ Platform = function (app, listofnodes) {
                     value: true
                 },
 
-                /*videoautoplay: {
+                videoautoplay: {
                     name: self.app.localization.e('e13277'),
                     id: 'videoautoplay',
                     type: "BOOLEAN",
                     value: true
-                },*/
-
-                videoautoplay2: {
-                    name: self.app.localization.e('e13277'),
-                    id: 'videoautoplay2',
-                    type: "BOOLEAN",
-                    value: false
                 },
 
                 autostart: {
@@ -4210,7 +4223,7 @@ Platform = function (app, listofnodes) {
                         name: self.app.localization.e('video'),
                         options: {
                             embedvideo: options.embedvideo,
-                            videoautoplay2: options.videoautoplay2
+                            videoautoplay: options.videoautoplay
 
                         }
                     },
@@ -5205,15 +5218,6 @@ Platform = function (app, listofnodes) {
 
                             return
                         }
-
-                        /*if (info.video_unspent <= num) {
-                            if (clbk)
-                                clbk('videounspent')
-
-                            return
-                        }*/
-
-                        
 
                         if (info.score_unspent <= num) {
                             if (clbk)
@@ -10461,6 +10465,7 @@ Platform = function (app, listofnodes) {
                     if (!s.ids) s.ids = {};
                     if (!s.ids[key] || refresh) s.ids[key] = [];
 
+
                     if (!txids.length) {
 
                         if (clbk)
@@ -10695,7 +10700,6 @@ Platform = function (app, listofnodes) {
                     d = _.filter(d || [], function (s) {
                         if (s.address) return true
                     })
-
 
                     var shares = _.map(d || [], function (share) {
 
@@ -21217,29 +21221,12 @@ Platform = function (app, listofnodes) {
                     if(clbk) clbk()
                 }
                 else{
-                    importScript('chat/matrix-element.min.js?v=6', clbk)
+                    importScript('chat/matrix-element.min.js?v=4', clbk)
                 }
                 
             }
 
             
-        },
-
-        startchat : function(address){
-            
-            if (self.matrixchat.core){
-
-                var link = 'contact?id=' + hexEncode(address)
-
-                if(isMobile()){
-                    self.matrixchat.core.apptochat(link)
-                }
-                else{
-                    self.matrixchat.core.gotoRoute(link)
-                }
-            }
-                
-
         },
 
         init : function(){
@@ -21264,7 +21251,6 @@ Platform = function (app, listofnodes) {
                     var userinfo = deep(app, 'platform.sdk.user.storage.me')
 
                     if (state) {
-                        
 
                     //if (window.testpocketnet && userinfo && !_.isEmpty(userinfo) && !(userinfo.temp || userinfo.relay || userinfo.fromstorage)) {
 
@@ -21461,6 +21447,8 @@ Platform = function (app, listofnodes) {
 
         backtoapp : function(){
 
+          
+
             if (self.matrixchat.core && !self.matrixchat.core.hiddenInParent){ 
                 self.matrixchat.core.backtoapp()
 
@@ -21496,8 +21484,6 @@ Platform = function (app, listofnodes) {
             
 
             core.backtoapp = function(link){
-                self.app.actions.restore()
-                app.el.html.removeClass('chatshowed')
 
                 if(document.activeElement) document.activeElement.blur()
 
@@ -21508,10 +21494,11 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
                 }
 
-                self.app.actions.onScroll()
-
                 if(isMobile())
                     app.nav.api.history.removeParameters(['pc'])
+
+                self.app.actions.onScroll()
+
                 if (link){
 
                     link = link.replace('https://' + self.app.options.url + '/', '')
@@ -21523,8 +21510,6 @@ Platform = function (app, listofnodes) {
                     })
                 }
 
-
-
                 _.each(self.matrixchat.clbks.SHOWING, function(c){
                     c(false)
                 })
@@ -21532,7 +21517,7 @@ Platform = function (app, listofnodes) {
                 
             }
 
-            core.apptochat = function(link){
+            core.apptochat = function(){
 
                 if(document.activeElement) document.activeElement.blur()
                 
@@ -21540,28 +21525,17 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.el.addClass('active')
 
                 self.app.actions.offScroll()
-                self.app.actions.playingvideo()
-                self.app.actions.optimize()   
                     
                 if(isMobile())
                     app.nav.api.history.addParameters({
                         'pc' : '1'
                     })
 
-                if (self.matrixchat.core){ 
-                    self.matrixchat.core.hiddenInParent = false 
-
-                    if(link){
-                        self.matrixchat.core.gotoRoute(link)
-                    }
-                
-                }
+                if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = false }
 
                 _.each(self.matrixchat.clbks.SHOWING, function(c){
                     c(true)
                 })
-
-
             }
 
             self.matrixchat.core = core
@@ -22021,6 +21995,7 @@ Platform = function (app, listofnodes) {
 
         if(window.cordova){
             setupOpenwith()
+            self.sdk.local.videos.init();
         }
 
         
