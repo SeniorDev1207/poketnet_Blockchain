@@ -193,7 +193,6 @@ var comments = (function(){
 					}
 				})	
 			},
-			
 
 			stateAction : function(clbk){
 
@@ -1204,14 +1203,11 @@ var comments = (function(){
 
 					}, function(__el){
 
-						console.log(__el)
-
 						__el.find('.edit').on('click', function(){
 
 							renders.edit(localParent, comment)
 
-							if (_el.tooltipster)
-								_el.tooltipster('hide')	
+							_el.tooltipster('hide')	
 						})
 
 						__el.find('.block').on('click', function(){
@@ -1225,8 +1221,7 @@ var comments = (function(){
 									parent.remove()
 								}
 
-								if (_el.tooltipster)
-									_el.tooltipster('hide')	
+								_el.tooltipster('hide')	
                             })
 
 							
@@ -1267,8 +1262,7 @@ var comments = (function(){
 
 							actions.sharesocial(comment)
 
-							if (_el.tooltipster)
-								_el.tooltipster('hide')	
+							_el.tooltipster('hide')	
 
 						})
 
@@ -1704,8 +1698,6 @@ var comments = (function(){
 
 						renders.cpreview()
 
-						return
-
 						caption = new Caption({
 							container: el.c,
 							caption: el.c.find('.captionfwrapper'),
@@ -1801,7 +1793,7 @@ var comments = (function(){
 						edit : p.edit || '',
 						preview : _preview,
 						mestate : mestate,
-						sender : self.app.platform.sdk.address.pnet() ? self.app.platform.sdk.address.pnet().address : null,
+						sender : self.app.platform.sdk.address.pnet().address,
 						receiver: receiver
 					},
 
@@ -2347,8 +2339,6 @@ var comments = (function(){
 					el.list.html('')
 
 				renders.list(p, function(){
-
-					if(!el.c) return
 
 					el.c.find('.loaderWrapper').addClass('hidden')
 

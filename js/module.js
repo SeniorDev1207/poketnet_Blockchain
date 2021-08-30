@@ -583,7 +583,7 @@ nModule = function(){
 				url = appPath + (self.componentsPath || "") + (p.turi || self.map.uri)
 			}
 
-				url += '/templates/' + p.name + '.html?v=126';
+				url += '/templates/' + p.name + '.html?v=124';
 			
 			self.ajax.run({
 				url : url,
@@ -625,45 +625,6 @@ nModule = function(){
 		return p.history && p.el
 	}
 
-	var beforegetdata = function(settings, clbk){
-
-		if (self.map.preshell && settings.el && isMobile()){
-
-			self.shell({
-
-				name :  'preshell',
-				el :   settings.el,
-				data : {},
-
-				animation: settings.animation,
-				fast : settings.fast
-
-			},
-
-			function(p){
-
-				if (primary(settings) && !settings.inWnd && !settings.noscroll && !settings.goback) {
-					self.app.actions.scrollToTop()
-				}
-
-				delete settings.animation
-
-				settings.fast = true
-
-				if (clbk)
-					clbk()
-
-			}, true)
-
-		}
-		else{
-
-			if (clbk)
-				clbk()
-
-		}
-	}
-
 	self.add = function(_settings, p){
 
 		topPreloader(10);
@@ -682,47 +643,44 @@ nModule = function(){
 		settings = _.extend(settings, add);
 		settings = _.extend(settings, p);	
 
-		beforegetdata(settings, function(){
-			self.user.isState(function(state){	
-				
-				
-				settings.getdata(function(data){
-					
 
-					topPreloader(45);
+		self.user.isState(function(state){	
+			
+			settings.getdata(function(data){
 
-					settings.data = data || {};
+				topPreloader(45);
 
-					if(p.preshell) p.preshell();
+				settings.data = data || {};
 
-					self.shell(settings, function(p){
+				if(p.preshell) p.preshell();
 
-						topPreloader(100);	
+				self.shell(settings, function(p){
 
-						p.clbk = addToFunction(p.clbk, function(){
+					topPreloader(100);	
 
-							if (primary(p) && !p.inWnd && !p.noscroll && !p.goback) {
-								self.app.actions.scrollToTop()
-							}
+					p.clbk = addToFunction(p.clbk, function(){
 
-							if (settings.auto){
-								settings.auto(p)
-							}
+						if (primary(p) && !p.inWnd && !p.noscroll && !p.goback) {
+							self.app.actions.scrollToTop()
+						}
 
-						})				
+						if (settings.auto){
+							settings.auto(p)
+						}
+
+					})				
 
 
-						if (settings.init)
-							settings.init(p)
+					if (settings.init)
+						settings.init(p)
 
-					}, frommodule)
+				}, frommodule)
 
-				}, {
-					state : state,
-					settings : settings
-				});	
+			}, {
+				state : state,
+				settings : settings
+			});	
 
-			})
 		})
 	}
 
