@@ -13,19 +13,21 @@
     .singleVideoSection {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
 
         padding: @rhythm * 2 0;
 
         border-bottom: 1px solid @color-gray-border;
 
         font-size: 1.1em;
+
+        &:hover {
+            background-color: fade(@color-gray-light, 15);
+        }
     }
 
     .videoName {
         width: 25%;
-
-        position: relative;
 
         font-size: 0.9em;
     }
@@ -33,67 +35,18 @@
     .videoTextContainer {
         text-overflow: ellipsis;
         overflow: hidden;
-        max-width: 250px;
+        max-width: 200px;
         white-space: nowrap;
 
         margin: 0;
-    }
 
-    .videoDescriptionText {
-        white-space: normal;
-        height: 60px;
-
-        font-size: 0.9em;
-
-        position: relative;
-
-        line-height: 20px;
-        display: -webkit-box;
-
-        -webkit-box-orient: vertical;
-        -moz-box-orient: vertical;
-        -ms-box-orient: vertical;
-        box-orient: vertical;
-
-        -webkit-line-clamp: 3;
-        -moz-line-clamp: 3;
-        -ms-line-clamp: 3;
-        line-clamp: 3;
-
-        overflow: hidden;
-    }
-
-    .transcodingPreloader {
-        color: rgba(0, 0, 0, 0.5);
-    }
-
-    .emptyDescription {
-        border-radius: 5px;
-
-        color: rgba(14, 28, 43, 0.4);
-
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
+        padding-left: 5px;
     }
 
     .videoNameDate {
-        color: rgba(14, 28, 43, 0.4);
-        font-size: 0.8em;
-        font-weight: bold;
 
         i {
             width: 20px;
-        }
-    }
-
-    .menuActivator {
-        cursor: pointer;
-
-        color: rgba(0, 0, 0, 0.5);
-
-        &:hover {
-            color: black;
         }
     }
 
@@ -110,12 +63,6 @@
         font-size: 0.8em;
     }
 
-    .videoStatsContainer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
     .videoStatsWrapper {
         p {
             margin: 0;
@@ -130,20 +77,20 @@
         }
 
         .singleStat {
-            color: rgba(14, 28, 43, 0.4);
+            color: rgba(0, 0, 0, 0.5);
 
-            cursor: pointer;
-        }
-
-        .starIcon {
-            color: #FFAE00;
+            &:hover {
+                text-decoration: underline;
+                color: #000000;
+                cursor: pointer;
+            }
         }
 
         font-size: 0.8em;
 
 
         min-width: 50px;
-        width: 15%;
+        width: 10%;
     }
 
     .videoPostLink {
@@ -167,8 +114,6 @@
 
         position: relative;
 
-        border-radius: 5px;
-
         .videoDuration {
             position: absolute;
 
@@ -177,8 +122,6 @@
             color: #fff;
 
             background-color: rgba(0, 0, 0, 0.5);
-
-            border-bottom-left-radius: 5px;
 
             bottom: 0;
 
@@ -203,7 +146,7 @@
 
     .ghostButton {
         background-color: transparent;
-        color: rgba(14, 28, 43, 0.4);
+        color: rgba(0, 0, 0, 0.5);
         border: none;
 
         &:hover {
@@ -778,6 +721,17 @@
         color: rgba(14, 28, 43, 0.4);
     }
 
+    .transcodingPreloader {
+        background-color: rgba(0, 0, 0, 0.8);
+
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .metricsContainer {
         height: 100%;
 
@@ -1096,24 +1050,5 @@ html.stblack {
             }
 
         }
-    }
-}
-
-//tooltip elements
-
-.handleVideoMenu {
-    .menuitem {
-        display: flex;
-    }
-}
-
-.editPreview {
-    position: relative;
-
-    .inputMenuWrapper {
-        position: absolute;
-
-        width: 100%;
-        height: 100%;
     }
 }
