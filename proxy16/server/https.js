@@ -23,7 +23,7 @@ var Server = function(settings, admins, manage){
 
     
 
-    self.cache = new Cache({ dontCache: settings.contCache})
+    self.cache = new Cache()
     self.listening = false;
     self.httplistening = false;
 

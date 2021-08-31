@@ -24,8 +24,6 @@ var main = (function(){
 
 		var wordsRegExp = /[,.!?;:() \n\r]/g
 
-		var lastStickyRefresh = 0
-
 		/*var mobilemodes = [{
 			mode : 'leftshow',
 			icon : 'fas fa-hashtag'
@@ -45,23 +43,16 @@ var main = (function(){
 		
 		var actions = {
 			
-			refreshSticky : function(alv){
+			refreshSticky : function(){
 
-				
-
-				var ns = self.app.lastScrollTop
-
-				if (hsready && (ns != lastStickyRefresh || alv)){
-
-					lastStickyRefresh = ns
-
+				if (hsready){
 					el.panel.hcSticky('refresh');
 					el.leftpanel.hcSticky('refresh');
 
-					/*setTimeout(function(){
+					setTimeout(function(){
 						if(el.panel) el.panel.hcSticky('refresh');
 						if(el.leftpanel) el.leftpanel.hcSticky('refresh');
-					}, 1000)*/
+					}, 1000)
 				}
 					
 			},
@@ -119,11 +110,7 @@ var main = (function(){
 
 			backtolenta : function(){
 				actions.backtolentaClear()
-
-				console.log('backtolenta', lastscroll)
-
-				self.app.actions.scroll(lastscroll)
-				//_scrollTop(lastscroll, null, 5)
+				_scrollTop(lastscroll, null, 5)
 				
 
 			},
@@ -160,8 +147,8 @@ var main = (function(){
 			},
 
 			up : function(){
-				self.app.actions.scroll(0)
-				//lastscroll = 0
+				self.actions.scroll(0)
+				lastscroll = 0
 			}
 
 		}
@@ -268,13 +255,12 @@ var main = (function(){
 
 			topvideos: function (show) {
 				
+
 				var showmoreby = el.topvideos
 
-				//showmoreby.removeClass('hasshares')
+				showmoreby.removeClass('hasshares')
 
 				if (show){
-
-					showmoreby.removeClass('hidden')
 					self.app.platform.papi.horizontalLenta(showmoreby, function (e,p) {
 
 						external = p
@@ -301,10 +287,8 @@ var main = (function(){
 						},
 						hasshares : function(shares){
 
-							console.log("HHHHshares", shares)
-
-							if (shares.length <= 2){
-								showmoreby.addClass('hidden')
+							if (shares.length > 2){
+								showmoreby.addClass('hasshares')
 							}
 							
 						},
@@ -337,16 +321,13 @@ var main = (function(){
 				}
 
 				else{
-
 					if(external){
 						external.destroy()
 						external = null
 					}
 
 					showmoreby.html('')
-					//showmoreby.removeClass('hasshares')
-
-					showmoreby.addClass('hidden')
+					showmoreby.removeClass('hasshares')
 				}
 
 				
@@ -412,7 +393,6 @@ var main = (function(){
 			},
 			lentawithsearch : function(clbk, p){
 
-				
 				if(searchvalue){
 
 					var value = searchvalue.replace('tag:', "#");
@@ -534,8 +514,6 @@ var main = (function(){
 						},
 						opensvi : function(id){
 
-							console.log('self.app.lastScrollTop', self.app.lastScrollTop)
-
 							lastscroll = self.app.lastScrollTop
 
 							el.c.addClass('opensvishowed')
@@ -574,10 +552,7 @@ var main = (function(){
 							events.up()
 						},
 
-						renderClbk : function(){
-
-							
-							actions.refreshSticky()
+						renderclbk : function(){
 						},
 						loader : loader
 					},
@@ -600,8 +575,6 @@ var main = (function(){
 
 			upbutton : function(){
 				if(upbutton) upbutton.destroy()
-
-				if(isMobile()) return
 
 				upbutton = self.app.platform.api.upbutton(el.up, {
 					top : function(){
@@ -699,12 +672,6 @@ var main = (function(){
 
 
 			self.app.events.scroll.main = actions.addbuttonscroll
-
-			self.app.events.resize.mainpage = function(){
-				setTimeout(function(){
-					actions.refreshSticky(true)
-				}, 500)
-			}
 
 
 			el.c.find('.backtolenta').on('click', actions.backtolenta)
@@ -812,9 +779,6 @@ var main = (function(){
 
 			if (currentMode == 'common' && !videomain && !searchvalue && !searchtags)
 				renders.topvideos(true)
-			else{
-				renders.topvideos(false)
-			}
 
 			
 				
@@ -822,8 +786,6 @@ var main = (function(){
 
 		var showCategories = function(t){
 			if (el.c && isMobile()){
-
-				self.app.mobile.vibration.small()
 
 				if (t){
 					el.c.addClass('leftshowed')
@@ -990,12 +952,9 @@ var main = (function(){
 
 			destroy : function(){
 
-				if(el.c) el.c.html('')
-
 				showCategories(false)
 
 				delete self.app.events.scroll.main
-				delete self.app.events.resize.mainpage
 					
 				self.app.el.html.removeClass('scrollmodedown')
 
@@ -1003,7 +962,7 @@ var main = (function(){
 
 				hsready = false
 
-
+				
 
 				//searchvalue = '', searchtags = null
 
@@ -1080,7 +1039,6 @@ var main = (function(){
 				roller = null
 				lenta = null
 				fixeddirection = null
-				lastStickyRefresh = 0
 
 				state.load();
 
@@ -1123,11 +1081,31 @@ var main = (function(){
 					el.c.addClass('videomain')
 				}
 
+				//renders.mobilemode()
+
 				make(function(){
 					p.clbk(null, p);
 				}, p)
 
-				
+				/*if(isMobile()){
+
+					el.c.find('.maincntwrapper').swipe({
+						allowPageScroll: "auto", 
+						swipeStatus : function(e, phase, direction, distance){
+
+							if(self.app.el.html.hasClass('fullvideoshowedanimblock')) return
+
+							if(el.topvideos.has(e.target).length > 0){
+								return true
+							}
+
+							actions.swipe(phase, direction, distance)
+
+							return true
+						},
+					})
+	
+				}*/
 				
 			}
 		}

@@ -11,7 +11,6 @@ var menu = (function(){
 			sitenameToNav = null,
 			plissing = null,
 			authorForSearch = null,
-			searchBackAction = null,
 			menusearch = null;
 
 		var loc = new Parameter({
@@ -121,40 +120,31 @@ var menu = (function(){
 				
 				if ((pn == 'index' || pn == 'author') && self.app.lastScrollTop > 45){
 
-					if(!el.nav.hasClass('active')){
-						el.nav.addClass('active')
-						el.c.addClass('menupanelactive') //// ??????
+					el.nav.addClass('active')
+					el.c.addClass('menupanelactive')
 
-						el.nav.find('.pcenterLabel').removeClass('active')
+					el.nav.find('.pcenterLabel').removeClass('active')
 
-			
-						el.postssearch.find('input').blur()
+					el.postssearch.find('input').blur()
 
-						if (menusearch)
-							menusearch.blur()
+					if (menusearch)
+						menusearch.blur()
 
-						var r = parameters(self.app.nav.current.completeHref, true).r || 'empty'
+					var r = parameters(self.app.nav.current.completeHref, true).r || 'empty'
 
-						var video = parameters(self.app.nav.current.completeHref, true).video;
+					var video = parameters(self.app.nav.current.completeHref, true).video;
 
-						if (video) r = 'video'
+					if (video) r = 'video'
 
-						if (pn == 'index'){
-							el.nav.find('.pcenterLabel[r="'+r+'"]').addClass('active')
-						}
+					if (pn == 'index'){
+						el.nav.find('.pcenterLabel[r="'+r+'"]').addClass('active')
 					}
-
-					
 						
 				}
 				else
-				{	
-
-					if (el.nav.hasClass('active')){
-						el.c.removeClass('menupanelactive')
-						el.nav.removeClass('active')
-					}
-					
+				{
+					el.c.removeClass('menupanelactive')
+					el.nav.removeClass('active')
 				}
 
 				actions.elswidth()
@@ -197,10 +187,7 @@ var menu = (function(){
 
 					var show = deep(self, 'app.platform.matrixchat.core.apptochat')
 
-					if (show) {
-						self.app.mobile.vibration.small()
-						show()
-					}
+					if (show) show()
 
 				},
 
@@ -285,7 +272,7 @@ var menu = (function(){
 
 			keyexport : {
 				click : function(){
-					self.app.mobile.vibration.small()
+
 					self.app.platform.ui.showmykey()
 
 				},
@@ -360,7 +347,7 @@ var menu = (function(){
 				},
 
 				click : function(el){
-					self.app.mobile.vibration.small()
+
 					if(isTablet())
 						self.nav.api.go({
 							href : 'userpage?id=notifications&report=notifications',
@@ -457,7 +444,6 @@ var menu = (function(){
 			search : {
 				fast : true,
 				click : function(){
-					self.app.mobile.vibration.small()
 					el.c.addClass('searchactive')
 
 					//if (el.c.hasClass('searchactive')){
@@ -568,8 +554,6 @@ var menu = (function(){
 						clbk : function(_el){
 
 							_el.find('input').on('blur', function(){
-
-								console.log('blur')
 
 								searchBlurTimer = slowMade(function(){
 
@@ -750,7 +734,6 @@ var menu = (function(){
 			newaccount: {
 				
 				click : function(){
-					self.app.mobile.vibration.small()
 					self.nav.api.go({
 						href : 'registration',
 						history : true,
@@ -779,12 +762,11 @@ var menu = (function(){
 						action()
 					}
 
-					if(!isMobile())
-						el.tooltipster({
-							theme: 'tooltipster-light',
-							maxWidth : 300,
-							zIndex : 200,
-						});
+					el.tooltipster({
+						theme: 'tooltipster-light',
+						maxWidth : 300,
+						zIndex : 200,
+					});
 				}
 			},
 
@@ -997,7 +979,6 @@ var menu = (function(){
 
 				},
 				click : function(){
-					self.app.mobile.vibration.small()
 					self.nav.api.go({
 						href : 'authorization',
 						history : true,
@@ -1011,7 +992,6 @@ var menu = (function(){
 
 				},
 				click : function(){
-					self.app.mobile.vibration.small()
 					self.nav.api.go({
 						href : 'registration',
 						history : true,
@@ -1030,7 +1010,7 @@ var menu = (function(){
 			}
 
 			el.c.find('.localization').on('click', function(){
-				self.app.mobile.vibration.small()
+
 				var items = []
 
 				_.each(self.app.localization.available, function(a){
@@ -1042,7 +1022,7 @@ var menu = (function(){
 
 
 							if (na && na.key != self.app.localization.key){
-								self.app.mobile.vibration.small()
+
 								self.app.localization.set(na.key);
 							}
 
@@ -1171,6 +1151,7 @@ var menu = (function(){
 		var make = function(){
 
 			self.app.user.isState(function(state){
+
 
 				if((parameters().ss || parameters().sst) && (isMobile() || self.app.nav.get.pathname() == 's')){
 
@@ -1334,6 +1315,7 @@ var menu = (function(){
 			},
 			
 			init : function(p){
+
 
 				el = {};
 				el.c = p.el.find('#' + self.map.id);

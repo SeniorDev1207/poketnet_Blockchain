@@ -57,7 +57,6 @@ var Exchanges = function(){
 
                 }).catch(e => {
 
-                    //console.log('bilaxy error', e)
 
                     return Promise.reject('notfound')
                 })
@@ -75,23 +74,19 @@ var Exchanges = function(){
                 })
             },
 
-            /*bitforex : function(){
-                 return axios.post(apis.bitforex).then(function(response) {
-
-                     
-                     const formatted_data = f.formatExchageKeys(response.data)
-
-                     console.log("formatted_data", formatted_data)
+            // bitforex : function(){
+            //     return axios.post(apis.bitforex).then(function(response) {
+            //         
+            //         const formatted_data = f.formatExchageKeys(response.data.data)
                     
-                     return f.getPkoinPrice(formatted_data, 'last')
+            //         return f.getPkoinPrice(formatted_data, 'last')
                 
-                 }).catch(e => {
+            //     }).catch(e => {
 
-                    console.log("EE", e)
 
-                     return Promise.reject('notfound')
-                 })
-            },*/
+            //         return Promise.reject('notfound')
+            //     })
+            // },
         }
        
     }

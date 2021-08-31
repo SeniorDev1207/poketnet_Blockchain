@@ -72,49 +72,43 @@ var help = (function(){
 				r : true,
 			},
 			{
-				d : 'March 2021',
-				n : 'PKOIN listed on Bilaxy, Digifinex, Bitforex',
-				r : true,
-			},
-			
-			{
-				d : 'June 2021',	
+				d : 'May 2021',	
 				n : 'Integration of PeerTube into '+self.app.meta.fullname+', upload of videos and live streams',
-				r : true,
+				r : false,
 			},
 			{
-				d : 'July 2021',
+				d : 'June 2021',
+				n : 'Rewrite of the backend to move to sqlite from Reindexer to make the node light on RAM use',
+				r : false,
+			},
+			{
+				d : 'June 2021',
 				n : 'Boost posts for Pocketcoin',
 				r : false,
 			},
 			{
-				d : 'August 2021',
+				d : 'June 2021',
 				n : 'Peer-to-peer encrypted chat, including group chat',
-				r : true,
+				r : false,
 			},
 			{
-				d : 'August 2021',
-				n : 'Livestream Pocketcoin donations',
-				r : true,
+				d : 'July 2021',
+				n : 'Livestream Pocketcoin dondations',
+				r : false,
 			},
 			{
-				d : 'September 2021',
-				n : 'Rewrite of the backend to move to sqlite from Reindexer to make the node light on RAM use',
+				d : 'July 2021',
+				n : ''+self.app.meta.fullname+' NFT 3.0',
+				r : false,
+			},
+			{
+				d : 'October 2021',
+				n : 'Decentralized reputation platform and crypto store',
 				r : false,
 			},
 			{
 				d : 'December 2021',
 				n : 'Decentralized alternative to adwords advertising through smart contracts',
-				r : false,
-			},
-			{
-				d : 'December 2021',
-				n : 'Decentralized reputation platform and crypto store',
-				r : false,
-			},
-			{
-				d : 'January 2022',
-				n : ''+self.app.meta.fullname+' NFT 3.0',
 				r : false,
 			},
 			{

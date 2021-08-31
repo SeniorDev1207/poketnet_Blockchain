@@ -105,9 +105,6 @@ var commentpanel = function(comment, _class){  %>
 						<% var src = deep(app, 'platform.sdk.usersl.storage.'+comment.address+'.image')  %>
 
 						<div class="icon">
-							<% if(comment.donation === 'true' && comment.amount) {%>
-								<div class="donatedbefore"></div>
-							<% } %>
 							<div class="usericon <% if(comment.donation === 'true' && comment.amount) {%> donated <% } %>" image="<%-src || ''%>">
 
 
@@ -167,7 +164,7 @@ var commentpanel = function(comment, _class){  %>
 								</div>
 
 								<div class="temppanel">
-									<div class="preloader5"><img src="./img/three-dots.svg"/></div>
+									<div class="preloader5"><span></span><span></span><span></span></div>
 								</div>
 
 							<% } %>
@@ -209,7 +206,7 @@ var commentpanel = function(comment, _class){  %>
 										l = app.platform.sdk.users.replacePattern(l, replaceNameNoComment)
 									}
 
-									m = app.actions.emoji(l) /*joypixels.toImage(l)*/
+									m = joypixels.toImage(l)
 
 								%>
 
@@ -287,7 +284,11 @@ var commentpanel = function(comment, _class){  %>
 					<% if(_class == 'firstcomment') {%>
 
 						<div class="repliesloaderWrapper hidden">
-							<div class="preloader5"><img src="./img/three-dots.svg"/></div>
+							<div class="preloader5">
+							    <span></span>
+							    <span></span>
+							    <span></span>
+							</div>
 						</div>
 
 						<div class="answers">

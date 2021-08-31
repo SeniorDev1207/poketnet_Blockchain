@@ -91,7 +91,14 @@ var userpage = (function(){
 				}
 			})
 
-		
+			/*reports.push({
+				name : "Messenger",
+				id : 'messenger',
+				report : 'messenger',
+				mobile : true
+			})*/
+
+			
 
 			reports.push({
 				name : self.app.localization.e('rwallet'),
@@ -209,30 +216,27 @@ var userpage = (function(){
 				},
 			})
 
-			if(self.app.user.validate()) {
+			reports.push({
+				name : self.app.localization.e('videoCabinet'),
+				id : 'videoCabinet',
+				report : 'videoCabinet',
+				mobile : true,
+			})
 
+
+
+		//	var address = app.user.address.value;
+				
+                
+		   
+		    /*if(_.indexOf(['PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82', 'PQxuDLBaetWEq9Wcx33VjhRfqtof1o8hDz', 'PEj7QNjKdDPqE9kMDRboKoCtp8V6vZeZPd'], address) > -1) {
 				reports.push({
-					name : self.app.localization.e('videoCabinet'),
-					id : 'videoCabinet',
-					report : 'videoCabinet',
-					mobile : true,
-
-					if : function(){
-
-						if (typeof mestate != 'undefined' && mestate && (
-					
-							(mestate.reputation > 50 || !mestate.trial || mestate.balance > 500000000)
-
-						)){
-							return true
-						}
-					}
+					name : self.app.localization.e('rconnection'),
+					id : 'connection',
+					report : 'connection',
+					mobile : false
 				})
-
-			}
-
-
-
+			}*/
 				
 		}
 

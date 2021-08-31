@@ -1130,6 +1130,8 @@ var oldchat = (function(){
 
 				var ed = deep(p, 'settings.essenseData') || {};
 
+				console.log('_chat', _chat)
+
 				if (_chat) 
 				{
 					chat = _chat.chat

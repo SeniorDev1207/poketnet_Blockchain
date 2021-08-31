@@ -118,9 +118,7 @@ __map =  {
 		{ c : 'lenta', n : 'groupshares' },
 		{ c : 'lenta', n : 'commentspreview' },
 		{ c : 'comments', n : 'index' },
-		{ c : 'lastcomments', n : 'lastcommentslist'},
-		{ c : 'author', n : 'preshell'},
-		{ c : 'post', n : 'preshell'}
+		{ c : 'lastcomments', n : 'lastcommentslist'}
 		/*,
 		{ c : '', n : '' },
 		{ c : '', n : '' },
@@ -937,7 +935,6 @@ __map =  {
 		userpage : {
 			uri : "userpage",
 			href : "userpage",
-			preshell : true,
 			add : {
 				el : 'content'
 			},
@@ -1651,7 +1648,6 @@ __map =  {
 			el : 'content'
 		},
 		anonimus : true,
-		preshell : true
 		
 	},
 
@@ -1668,7 +1664,6 @@ __map =  {
 	post : {
 		uri : "post",
 		href : "post",
-		preshell : true,
 		add : function(settings, p){
 
 			if(p.inWnd)
