@@ -202,7 +202,6 @@ ____loclib.sdisconnected = "Отсоединен от ноды";
 ____loclib.suseractivation = "Активация пользователя";
 ____loclib.sprofile = "Профиль";
 ____loclib.spc = "Количество постов";
-____loclib.spv = "Количество постов c видео";
 ____loclib.ssc = "Количество звезд";
 ____loclib.ccc = "Количество комментариев";
 ____loclib.crc = "Количество оценок комментариев";
@@ -535,8 +534,6 @@ ____loclib.editpost = "Редактировать публикацию"
 ____loclib.removepost = "Удалить публикацию"
 ____loclib.opennewwindow = "Открыть пост в новом окне"
 
-____loclib.unsubscribe = "Отписаться"
-____loclib.startchat = "Начать чат"
 ____loclib.reportpost = "Пожаловаться"
 ____loclib.donate = "Пожертвование"
 ____loclib.blockuser = "Заблокировать пользователя"
@@ -935,10 +932,5 @@ ____loclib.sortByViews = "Количеству просмотров";
 ____loclib.unableToAuthorize = "Ошибка авторизации";
 ____loclib.unableToAuthorizeBody = "К сожалению, у приложения не получилось авторизовать данный аккаунт на видео-сервере. Для того, чтобы получить возможность загрузки видео, необходимо иметь не менее 5 PKOIN или 100 репутации. Если ваш аккаунт соответствует данным требованиям, повторите попытку позже.";
 
-____loclib.emptyDescription = "Описание отсутствует";
-____loclib.transcodingShort = "Обработка";
-____loclib.editVideoDescription = "Изменить название/описание видео";
-____loclib.errorChangingDescription = "Ошибка изменения видео";
-
-____loclib.enterVideoName = "Введите название видео";
-____loclib.enterVideoDescription = "Введите описание видео";
+____loclib.downloaded = "Загружено";
+____loclib.downloadedEmpty = "Загруженные посты будут показаны здесь";

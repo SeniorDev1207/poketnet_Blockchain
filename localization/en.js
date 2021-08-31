@@ -199,7 +199,6 @@ ____loclib.sdisconnected = "Disconnected from node";
 ____loclib.suseractivation = "User Activation";
 ____loclib.sprofile = "Profile";
 ____loclib.spc = "Post count";
-____loclib.spv = "Video Post count";
 ____loclib.ssc = "Stars count";
 ____loclib.ccc = "Comments count";
 ____loclib.crc = "Comment Rate count";
@@ -567,9 +566,6 @@ ____loclib.editpost = "Edit Post"
 ____loclib.removepost = "Remove Post"
 ____loclib.opennewwindow = "Open Post in New Window"
 
-
-____loclib.unsubscribe = "Unsubscribe"
-____loclib.startchat = "Start chat"
 ____loclib.reportpost = "Report Post"
 ____loclib.donate = "Donate"
 ____loclib.blockuser = "Block User"
@@ -1136,10 +1132,5 @@ ____loclib.sortByViews = "Views";
 ____loclib.unableToAuthorize = "Unable to authorize";
 ____loclib.unableToAuthorizeBody = "Unfortunately, the application cannot authenticate this account on the video server. You need at least 5 PKOIN or 100 reputation to upload videos. If you do, please try again later";
 
-____loclib.emptyDescription = "Description is empty";
-____loclib.transcodingShort = "Processing";
-____loclib.editVideoDescription = "Edit video name/description";
-____loclib.errorChangingDescription = "Unable to change video name/description";
-
-____loclib.enterVideoName = "Enter video name";
-____loclib.enterVideoDescription = "Enter video description";
+____loclib.downloaded = "Downloaded";
+____loclib.downloadedEmpty = "Downloaded posts will be shown here";

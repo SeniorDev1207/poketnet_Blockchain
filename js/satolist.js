@@ -57,8 +57,7 @@ Platform = function (app, listofnodes) {
         'PL1wziiaQj7FLnoktuQQ1MKweYYbdcekRB' : true,
         'PMVvs8kvbskq6eVV8Q3oyjotbox9tBfvnp' : true,
         'PQ3hdiozrxtTf1UhuVfhUb9bcvrUzbzwRJ' : true,
-        'PCSxAFQCRZphi9W6nrV4tSQXKFfsxdxERA' : true,
-        'PGFKA1DieVsg9pQK4aBaEp5wpvaXpWtuVJ' : true
+        'PCSxAFQCRZphi9W6nrV4tSQXKFfsxdxERA' : true
         //'PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82' : true // test
     }
 
@@ -2037,11 +2036,7 @@ Platform = function (app, listofnodes) {
             })
         },
 
-        comment : function(id, el, clbk, p, additional){
-
-            if(!additional) additional = {}
-
-            console.log('id, el, clbk, p, additional', id, el, clbk, p, additional)
+        comment : function(id, el, clbk, p){
 
             app.nav.api.load({
                 open : true,
@@ -2055,9 +2050,8 @@ Platform = function (app, listofnodes) {
                     init : true,
                     preview : false,
                     fromtop : true,
-                    commentPs : additional.commentPs || p.commentPs,
-                    openapi : p.openapi,
-                  
+                    commentPs : p.commentPs,
+                    openapi : p.openapi
                 },
 
                 clbk : clbk
@@ -2144,8 +2138,6 @@ Platform = function (app, listofnodes) {
 
             globalpreloader(true, true)
 
-            const { name, description, tags } = p;
-
             setTimeout(function(){
                 app.nav.api.load({
                     open : true,
@@ -2165,9 +2157,6 @@ Platform = function (app, listofnodes) {
                         absolute : true,
                         repost  : p.repost,
                         videoLink: p.videoLink,
-                        name,
-                        description,
-                        tags,
                     }
                 })
             }, 50)
@@ -2358,10 +2347,10 @@ Platform = function (app, listofnodes) {
             return n;
         },
 
-        authorlink: function (address, namelink) {
+        authorlink: function (address) {
             var name = deep(app, 'platform.sdk.usersl.storage.' + address + '.name');
 
-            if (name && (!isMobile() || namelink)) return encodeURIComponent(name.toLowerCase());
+            if (name) return encodeURIComponent(name.toLowerCase());
 
             else return 'author?address=' + address
         },
@@ -2635,37 +2624,7 @@ Platform = function (app, listofnodes) {
 
         },
 
-        mobiletooltip : function(_el, content, clbk, p){
-
-            var d = function(){
-                tooltipMobileDialog({
-
-                    html : content(),
-                    clbk : function(el){
-
-                        if(clbk) clbk(el)
-                    }
-                    
-                })
-            }
-
-            if(_el.attr('mobiletooltip')) return
-
-            d()
-
-            _el.on('click', function(){
-                d()
-            })
-
-            _el.attr('mobiletooltip', true)
-        },
-
         tooltip: function (_el, content, clbk, p) {
-
-            if (isMobile()){
-                return self.api.mobiletooltip(_el, content, clbk, p)
-            }
-            
             if (_el.hasClass('tooltipstered')) return;
 
             if (!p) p = {};
@@ -3068,6 +3027,8 @@ Platform = function (app, listofnodes) {
 
             d.share = share
 
+           
+
             self.app.platform.sdk.ustate.me(function (_mestate) {
 
                 sm.fastTemplate('metmenu', function (rendered, template) {
@@ -3083,39 +3044,18 @@ Platform = function (app, listofnodes) {
 
                         el.find('.opennewwindow').on('click', function(){
 
-                            self.app.mobile.vibration.small()
-
                             var href = 'https://'+window.location.hostname+'/' /// domain
 
-                            var path = ''
-
-                            if(d.share.itisvideo() && !window.cordova){
-                                path = 'index?video=1&v=' + id
+                            if(d.share.itisvideo()){
+                                href += 'index?video=1&v=' + id
                             }
                             else
                             {
-                                path = 'post?s=' + id
+                                href += 'index?post?s=' + id
                             }
 
-                            href += path
-
-                            app.nav
-
-                            if (window.cordova){
-
-                                if(!app.nav.current || app.nav.current.href != 'post'){
-                                    app.nav.api.load({
-                                        open: true,
-                                        href: path,
-                                        history: true,
-                                    })
-                                }
-                                else
-                                {
-                                    cordova.InAppBrowser.open(href, '_blank');
-                                }
-                                
-                               
+                            if(window.cordova){
+                                cordova.InAppBrowser.open(href, '_blank');
                             }
                             else{
                                 window.open(href, '_blank');
@@ -3126,94 +3066,70 @@ Platform = function (app, listofnodes) {
 
                             actions.htls(id)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.socialshare').on('click', function () {
 
-                            self.app.mobile.vibration.small()
+
                             actions.sharesocial(id)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
-                        })
-
-                        el.find('.startchat').on('click', function () {
-
-                            self.matrixchat.startchat(address)
-
-                            self.app.mobile.vibration.small()
-
-
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.subscribe').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             self.api.actions.subscribe(address, function (tx, error) {
                                 if (!tx) {
                                     self.errorHandler(error, true)
                                 }
                             })
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.unsubscribe').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             self.api.actions.unsubscribe(address, function (tx, error) {
                                 if (!tx) {
                                     self.errorHandler(error, true)
                                 }
                             })
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
 
                         el.find('.complain').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             actions.complain(id)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.donate').on('click', function () {
-                            self.app.mobile.vibration.small()
-                            //actions.donate(id)
 
-                            self.ui.wallet.send({
-                                address : address
-                            })
+                            actions.donate(id)
 
-                            //f.deep(window, 'POCKETNETINSTANCE.platform.ui.wallet.send')
-
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.block').on('click', function () {
-                            self.app.mobile.vibration.small()
+
                             self.api.actions.blocking(address, function (tx, error) {
                                 if (!tx) {
                                     self.errorHandler(error, true)
                                 }
                             })
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.edit').on('click', function () {
 
-                            self.app.mobile.vibration.small()
+
                             var em = null;
                             var editing = d.share.alias()
 
@@ -3286,17 +3202,14 @@ Platform = function (app, listofnodes) {
                                 })
                             }
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
 
                         })
 
                         el.find('.videoshare').on('click', function () {
-                            self.app.mobile.vibration.small()
                             actions.videoShare(share)
 
-                            if (_el.tooltipster)
-                                _el.tooltipster('hide')
+                            _el.tooltipster('hide')
                         })
                     })
 
@@ -3307,6 +3220,172 @@ Platform = function (app, listofnodes) {
 
 
     self.sdk = {
+
+        local: {
+
+            shares: {
+
+                allShares: {},
+
+                init: function() {
+
+                    var v = self.sdk.local.shares.allShares;
+
+                    if (window.cordova && window.cordova.file) {
+                        // Check if external storage is available, if not, use the internal
+                        var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
+                        // open target file for download
+                        window.resolveLocalFileSystemURL(storage, function(dirEntry) {
+                            // Create a downloads folder
+                            dirEntry.getDirectory('posts', { create: true }, function (dirEntry2) {
+                                var shareReader = dirEntry2.createReader();
+                                shareReader.readEntries(function(shares) {
+                                    _.each(shares, function(shareFolder) {
+                                        if (shareFolder.isDirectory) {
+                                            v[shareFolder.name] = {};
+
+                                            // Look inside the videos folder
+                                            shareFolder.getDirectory('videos', { create: true }, function (videosFolder) {
+                                                v[shareFolder.name].videos = {};
+                                                var videosReader = videosFolder.createReader();
+                                                videosReader.readEntries(function(videoFolders) {
+                                                    _.each(videoFolders, function(videoFolder) {
+                                                        if (videoFolder.isDirectory) {
+                                                            v[shareFolder.name].videos[videoFolder.name] = {};
+                                                            videoFolder.createReader().readEntries(function(files) {
+                                                                var videoFile, infoFile;
+                                                                _.each(files, function(file) {
+                                                                    if (file.isFile && file.file) {
+                                                                        file.file(function(fileDetails) {
+                                                                            if (!videoFile && fileDetails.type == null) {
+                                                                                videoFile = file;
+                                                                                // Resolve internal URL
+                                                                                window.resolveLocalFileSystemURL(videoFile.nativeURL, function(entry) {
+                                                                                    videoFile.internalURL = entry.toInternalURL();
+                                                                                    v[shareFolder.name].videos[videoFolder.name].video = videoFile;
+                                                                                });
+                                                                            }
+                                                                            if (!infoFile && file.name == 'info.json') {
+                                                                                infoFile = file;
+                                                                                // Read info file
+                                                                                var reader = new FileReader();
+                                                                                reader.onloadend = function() {
+                                                                                    try {
+                                                                                        v[shareFolder.name].videos[videoFolder.name].infos = JSON.parse(this.result);
+                                                                                    } catch(err){ }
+                                                                                };
+                                                                                reader.readAsText(fileDetails);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            });
+                                                        }
+                                                    });
+                                                });
+                                            });
+
+                                            // Look for the share.json file
+                                            shareFolder.getFile('share.json', { create: false }, function(shareFile) {
+                                                shareFile.file(function(shareFileDetails) {
+                                                    // Read info file
+                                                    var reader = new FileReader();
+                                                    reader.onloadend = function() {
+                                                        try {
+                                                            v[shareFolder.name].share = JSON.parse(this.result);
+                                                            console.log(v);
+                                                        } catch(err){ }
+                                                    };
+                                                    reader.readAsText(shareFileDetails);
+                                                });
+                                            });
+
+                                        }
+                                    });
+                                });
+                            });
+                        });
+                    }
+
+                },
+
+                // Returns an array of all the shares ID
+                getAllIds: function() {
+                    res = [];
+                    for (const shareId in self.sdk.local.shares.allShares)
+                        res.push(shareId);
+                    return res;
+                },
+
+                get: function(shareId) {
+                    var v = self.sdk.local.shares.allShares;
+                    return v[shareId];
+                },
+
+                getVideo: function(videoId, shareId) {
+                    var video, shares = self.sdk.local.shares.allShares;
+                    try {
+                        if (shareId) {
+                            var share = shares[shareId];
+                            for (const vidId in share.videos) {
+                                if (vidId == videoId) {
+                                    video = share.videos[vidId];
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (const share in shares) {
+                                if (video) break;
+                                for (const vidId in shares[share].videos) {
+                                    if (vidId == videoId) {
+                                        video = shares[share].videos[vidId];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } catch(err) {}
+                    return video;
+                },
+
+                add : function(shareId, share){
+                    var v = self.sdk.local.shares.allShares;
+                    v[shareId] = share;
+                },
+
+                delete: function(shareId, clbk) {
+
+                    var v = self.sdk.local.shares.allShares;
+
+                    if (window.cordova && window.cordova.file) {
+                        // Check if external storage is available, if not, use the internal
+                        var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
+                        // open target file for download
+                        window.resolveLocalFileSystemURL(storage, function(dirEntry) {
+                            // Create a downloads folder
+                            dirEntry.getDirectory('posts', { create: true }, function (dirEntry2) {
+                                dirEntry2.getDirectory(shareId, { create: false}, function(dirToDelete) {
+                                    dirToDelete.removeRecursively(function() {
+                                        // Success
+                                        delete v[shareId];
+                                        if (clbk) clbk();
+                                    }, function(err) {
+                                        if (clbk) clbk();
+                                    });
+                                }, function(err) {
+                                    if (clbk) clbk();
+                                });
+                            }, function(err) {
+                                if (clbk) clbk();
+                            });
+                        }, function(err) {
+                            if (clbk) clbk();
+                        });
+                    }
+                }
+            }
+
+        },
 
         registrations: {
             storage: {},
@@ -4045,18 +4124,11 @@ Platform = function (app, listofnodes) {
                     value: true
                 },
 
-                /*videoautoplay: {
+                videoautoplay: {
                     name: self.app.localization.e('e13277'),
                     id: 'videoautoplay',
                     type: "BOOLEAN",
                     value: true
-                },*/
-
-                videoautoplay2: {
-                    name: self.app.localization.e('e13277'),
-                    id: 'videoautoplay2',
-                    type: "BOOLEAN",
-                    value: false
                 },
 
                 autostart: {
@@ -4220,7 +4292,7 @@ Platform = function (app, listofnodes) {
                         name: self.app.localization.e('video'),
                         options: {
                             embedvideo: options.embedvideo,
-                            videoautoplay2: options.videoautoplay2
+                            videoautoplay: options.videoautoplay
 
                         }
                     },
@@ -5215,15 +5287,6 @@ Platform = function (app, listofnodes) {
 
                             return
                         }
-
-                        /*if (info.video_unspent <= num) {
-                            if (clbk)
-                                clbk('videounspent')
-
-                            return
-                        }*/
-
-                        
 
                         if (info.score_unspent <= num) {
                             if (clbk)
@@ -10458,6 +10521,9 @@ Platform = function (app, listofnodes) {
                 getbyidsp: function (p, clbk, refresh) {
                     this.getbyids(p.txids, p.begin, 10, clbk, refresh)
                 },
+                getsavedbyids: function (p, clbk, refresh) {
+                    this.getbyids(p.txids, p.begin, 10, clbk, refresh)
+                },
                 getbyids: function (txids, begin, cnt, clbk, refresh) {
 
                     var s = this.storage;
@@ -10470,6 +10536,7 @@ Platform = function (app, listofnodes) {
 
                     if (!s.ids) s.ids = {};
                     if (!s.ids[key] || refresh) s.ids[key] = [];
+
 
                     if (!txids.length) {
 
@@ -10705,7 +10772,6 @@ Platform = function (app, listofnodes) {
                     d = _.filter(d || [], function (s) {
                         if (s.address) return true
                     })
-
 
                     var shares = _.map(d || [], function (share) {
 
@@ -18385,7 +18451,7 @@ Platform = function (app, listofnodes) {
 
                     platform.sdk.user.subscribeRef()
 
-                    
+                    platform.matrixchat.init()
 
                     ////////////////
 
@@ -18411,10 +18477,6 @@ Platform = function (app, listofnodes) {
 
 
                     clbk()
-
-                    setTimeout(function(){
-                        platform.matrixchat.init()
-                    }, 100)
                 },
 
                 refs: {
@@ -18965,7 +19027,7 @@ Platform = function (app, listofnodes) {
 
                         if (
 
-                            (data.upvoteVal <= 2 && platform.sdk.usersettings.meta.downvotes.value) ||
+                            (data.upvoteVal <= 2 && platform.sdk.usersettings.meta.downvotes.value && 2 == 1) ||
                             
                             (data.upvoteVal > 2 &&  platform.sdk.usersettings.meta.upvotes.value) 
                             
@@ -21231,29 +21293,12 @@ Platform = function (app, listofnodes) {
                     if(clbk) clbk()
                 }
                 else{
-                    importScript('chat/matrix-element.min.js?v=6', clbk)
+                    importScript('chat/matrix-element.min.js?v=4', clbk)
                 }
                 
             }
 
             
-        },
-
-        startchat : function(address){
-            
-            if (self.matrixchat.core){
-
-                var link = 'contact?id=' + hexEncode(address)
-
-                if(isMobile()){
-                    self.matrixchat.core.apptochat(link)
-                }
-                else{
-                    self.matrixchat.core.gotoRoute(link)
-                }
-            }
-                
-
         },
 
         init : function(){
@@ -21278,7 +21323,6 @@ Platform = function (app, listofnodes) {
                     var userinfo = deep(app, 'platform.sdk.user.storage.me')
 
                     if (state) {
-                        
 
                     //if (window.testpocketnet && userinfo && !_.isEmpty(userinfo) && !(userinfo.temp || userinfo.relay || userinfo.fromstorage)) {
 
@@ -21475,6 +21519,8 @@ Platform = function (app, listofnodes) {
 
         backtoapp : function(){
 
+          
+
             if (self.matrixchat.core && !self.matrixchat.core.hiddenInParent){ 
                 self.matrixchat.core.backtoapp()
 
@@ -21510,8 +21556,6 @@ Platform = function (app, listofnodes) {
             
 
             core.backtoapp = function(link){
-                self.app.actions.restore()
-                app.el.html.removeClass('chatshowed')
 
                 if(document.activeElement) document.activeElement.blur()
 
@@ -21522,10 +21566,11 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.core.hiddenInParent = isMobile() ? true : false 
                 }
 
-                self.app.actions.onScroll()
-
                 if(isMobile())
                     app.nav.api.history.removeParameters(['pc'])
+
+                self.app.actions.onScroll()
+
                 if (link){
 
                     link = link.replace('https://' + self.app.options.url + '/', '')
@@ -21537,8 +21582,6 @@ Platform = function (app, listofnodes) {
                     })
                 }
 
-
-
                 _.each(self.matrixchat.clbks.SHOWING, function(c){
                     c(false)
                 })
@@ -21546,7 +21589,7 @@ Platform = function (app, listofnodes) {
                 
             }
 
-            core.apptochat = function(link){
+            core.apptochat = function(){
 
                 if(document.activeElement) document.activeElement.blur()
                 
@@ -21554,28 +21597,17 @@ Platform = function (app, listofnodes) {
                     self.matrixchat.el.addClass('active')
 
                 self.app.actions.offScroll()
-                self.app.actions.playingvideo()
-                self.app.actions.optimize()   
                     
                 if(isMobile())
                     app.nav.api.history.addParameters({
                         'pc' : '1'
                     })
 
-                if (self.matrixchat.core){ 
-                    self.matrixchat.core.hiddenInParent = false 
-
-                    if(link){
-                        self.matrixchat.core.gotoRoute(link)
-                    }
-                
-                }
+                if (self.matrixchat.core){ self.matrixchat.core.hiddenInParent = false }
 
                 _.each(self.matrixchat.clbks.SHOWING, function(c){
                     c(true)
                 })
-
-
             }
 
             self.matrixchat.core = core
@@ -22035,6 +22067,7 @@ Platform = function (app, listofnodes) {
 
         if(window.cordova){
             setupOpenwith()
+            self.sdk.local.shares.init();
         }
 
         

@@ -3,6 +3,24 @@ var videoCabinet = (function () {
 
   var essenses = {};
 
+  var videoServers = {};
+
+  var peertubeServers = {};
+
+  var userQuota = {};
+
+  var blockChainInfo = [];
+
+  var perServerCounter = 10;
+
+  var ed = {};
+
+  var transcodingIntervals = {};
+
+  var startingPosition = 0;
+
+  var external = null;
+
   const ROTATE_ONE_PERCENTAGE = 3.6;
   const HALF_CIRCLE_ROTATE_PERCENTAGE = 50;
   const HUDRED_PERC = 100;
@@ -14,22 +32,12 @@ var videoCabinet = (function () {
   };
   const TRANSCODING_CHECK_INTERVAL = 20000;
 
+  let newVideosAreUploading = false;
 
   var Essense = function (p) {
     var primary = deep(p, 'history');
 
     var el;
-    var transcodingIntervals = {};
-    var ed = {};
-    let tagElement;
-    let tagArray = [];
-    let newVideosAreUploading = false;
-    var videoServers = {};
-    var peertubeServers = {};
-    var userQuota = {};
-    var blockChainInfo = [];
-    var external = null;
-    var perServerCounter = 10;
 
     var actions = {
       async getHosts() {
@@ -68,7 +76,7 @@ var videoCabinet = (function () {
             return data;
           })
           .catch(() => {
-            console.log(`Error loading ${server}`);
+            sitemessage(`Error loading ${server}`);
             return [];
           });
       },
@@ -189,103 +197,12 @@ var videoCabinet = (function () {
 
       videoFinishedTranscoding(id) {
         clearInterval(transcodingIntervals[id]);
-        delete transcodingIntervals[id]
         const videoElement = el.videoContainer.find(`[uuid="${id}"]`);
 
-        videoElement.find('.attachVideoToPost').removeClass('hidden');
         videoElement.find('.transcodingPreloader').addClass('hidden');
-      },
-
-      uploadVideoWallpaper: function (image, shareUrl) {
-        const parameters = {
-          thumbnailfile: image,
-        };
-
-        const settingsObject = {};
-
-        const urlMeta = self.app.peertubeHandler.parselink(shareUrl);
-
-        const host = urlMeta.host || null;
-
-        return self.app.platform.sdk.videos
-          .info([shareUrl])
-          .then(
-            () => (self.app.platform.sdk.videos.storage[shareUrl] || {}).data,
-          )
-          .then((res = {}) => {
-            if (res.aspectRatio) {
-              settingsObject.aspectRatio = res.aspectRatio;
-
-              return;
-            }
-
-            return self.app.peertubeHandler.api.videos
-              .getDirectVideoInfo({ id: urlMeta.id }, { host })
-              .then((res) => {
-                settingsObject.aspectRatio = res.aspectRatio;
-              });
-          })
-          .then(() => toDataURL(image))
-          .then((fileBase64) => {
-            return actions.resizeImage(fileBase64, settingsObject);
-          })
-          .then((img) => {
-            parameters.image = {
-              data: img,
-            };
-
-            return self.app.peertubeHandler.api.videos
-              .update(shareUrl, parameters, { host })
-              .then(() => img);
-          })
-          .catch((e) => {
-            const message = e.text || findResponseError(e) || 'Updating error';
-
-            sitemessage(message);
-          });
-      },
-
-      resizeImage: function (base64, settings = {}) {
-        const images = [
-          {
-            original: base64,
-            index: 0,
-          },
-        ];
-
-        return new Promise((resolve, reject) => {
-          self.nav.api.load({
-            open: true,
-            id: 'imageGalleryEdit',
-            inWnd: true,
-
-            essenseData: {
-              edit: true,
-              initialValue: 0,
-              images: images,
-              apply: true,
-              crop: {
-                aspectRatio: settings.aspectRatio || 16 / 9,
-                style: 'apply',
-                autoCropArea: 0.95,
-              },
-
-              success: function (i, editclbk) {
-                resize(images[0].original, 1920, 1080, function (resized) {
-                  const r = resized.split(',');
-
-                  if (r[1]) {
-                    editclbk();
-
-                    resolve(resized);
-                  } else {
-                    reject('error');
-                  }
-                });
-              },
-            },
-          });
-        });
+        videoElement
+          .find('.attachVideoToPost')
+          .attr('videoTranscoding', 'false');
       },
     };
 
@@ -318,17 +235,15 @@ var videoCabinet = (function () {
           activeServers.map((server) =>
             actions.getVideos(server, videoParameters),
           ),
-        )
-          .then((data = []) => {
-            const newVideos = data
-              .filter((item) => item.status === POSITIVE_STATUS)
-              .map((item) => item.value.data)
-              .flat();
-            newVideosAreUploading = false;
+        ).then((data = []) => {
+          const newVideos = data
+            .filter((item) => item.status === POSITIVE_STATUS)
+            .map((item) => item.value.data)
+            .flat();
+          newVideosAreUploading = false;
 
-            renders.videos(newVideos, videoPortionElement);
-          })
-          .catch(() => videoPortionElement.addClass('hidden'));
+          renders.videos(newVideos, videoPortionElement);
+        });
       },
 
       onSearchVideo() {
@@ -380,24 +295,6 @@ var videoCabinet = (function () {
             .filter((video) => video)
             .flat();
 
-        videos.forEach((video) => {
-          if (video.description) {
-            video.description = video.description
-              .replace(
-                `Watch more exciting videos at https://test.pocketnet.app/!`,
-                '',
-              )
-              .replace(
-                `Watch more exciting videos at https://pocketnet.app/!`,
-                '',
-              )
-              .replace(
-                `Watch more exciting videos at https://bastyon.com/!`,
-                '',
-              );
-          }
-        });
-
         self.shell(
           {
             name: 'videoList',
@@ -413,27 +310,50 @@ var videoCabinet = (function () {
               zIndex: 20,
             });
             const attachVideoToPost = p.el.find('.attachVideoToPost');
-            // const removeVideo = p.el.find('.removeVideo');
-            const menuActivator = p.el.find('.menuActivator');
+            const removeVideo = p.el.find('.removeVideo');
 
             //button for creating post with video
             attachVideoToPost.on('click', function () {
               const videoLink = $(this).attr('videoLink');
+              const transcodingInProgress =
+                $(this).attr('videoTranscoding') === true;
 
-              const meta = self.app.peertubeHandler.parselink(videoLink);
+              if (transcodingInProgress) {
+                dialog({
+                  html: self.app.localization.e('videoTranscoding'),
+                  btn1text: self.app.localization.e('spostnow'),
+                  btn2text: self.app.localization.e('waitForTranscoding'),
 
-              self.app.peertubeHandler.api.videos
-                .getDirectVideoInfo({ id: meta.id }, { host: meta.host })
-                .then((info) => {
-                  const { name, description, tags } = info;
-                  renders.addButton({ videoLink, name, description, tags });
+                  success: function () {
+                    renders.addButton(videoLink);
+                  },
                 });
+              } else {
+                renders.addButton(videoLink);
+              }
             });
-
-            menuActivator.on('click', function () {
+            //botton for video removing
+            removeVideo.on('click', function () {
               const videoLink = $(this).attr('videoLink');
 
-              return renders.metmenu($(this), videoLink);
+              const { host } = self.app.peertubeHandler.parselink(videoLink);
+
+              dialog({
+                html: self.app.localization.e('removeVideoDialog'),
+                btn1text: self.app.localization.e('remove'),
+                btn2text: self.app.localization.e('ucancel'),
+
+                success: function () {
+                  const videoPortionElement = actions.resetHosts();
+
+                  self.app.peertubeHandler.api.videos
+                    .remove(videoLink)
+                    .then(() => actions.getVideos(host))
+                    .then(() => renders.videos(null, videoPortionElement))
+                    .then(() => actions.getQuota())
+                    .then(() => renders.quota());
+                },
+              });
             });
 
             const blockchainStrings = videos.map(
@@ -444,19 +364,13 @@ var videoCabinet = (function () {
               p.el.find('.postingStatusWrapper').each(function () {
                 const currentElement = $(this);
 
-                const isTranscoding = currentElement.attr('isTranscoding');
-
                 const link = currentElement.attr('video');
 
                 if (blockChainInfo[link])
                   return renders.postLink(currentElement, link);
 
-                if (!isTranscoding) {
-                  currentElement
-                    .find('.attachVideoToPost')
-                    .removeClass('hidden');
-                  currentElement.find('.preloaderwr').addClass('hidden');
-                }
+                currentElement.find('.attachVideoToPost').removeClass('hidden');
+                currentElement.find('.preloaderwr').addClass('hidden');
               });
 
               p.el.find('.videoStatsWrapper').each(function () {
@@ -471,7 +385,7 @@ var videoCabinet = (function () {
             });
 
             p.el.find('[videoTranscoding="true"]').each(function () {
-              const videoLink = $(this).attr('video');
+              const videoLink = $(this).attr('videoLink');
 
               const meta = self.app.peertubeHandler.parselink(videoLink);
 
@@ -576,71 +490,39 @@ var videoCabinet = (function () {
         });
       },
       //button in video table for adding post with video to blockchain
-      addButton(parameters) {
-        self.app.platform.ui.share(parameters);
+      addButton(videoLink) {
+        self.app.platform.ui.share({ videoLink });
       },
       //get link to existing video post
       postLink(element, link) {
         const linkInfo = blockChainInfo[link];
 
-        if(isMobile()){
-          element.html(
-            `<a class="videoPostLink" href="index?video=1&v=${
-              linkInfo.txid
-            }"><i class="far fa-check-circle"></i>${self.app.localization.e(
-              'linkToPost',
-            )}</a>`,
-          );
-  
-          self.nav.api.links(null, element);
-        }
-
-        else{
-
-
-          element.html(
-            `<span class="videoPostLinkinWindow"><i class="far fa-check-circle"></i>${self.app.localization.e(
-              'linkToPost',
-            )}</span>`,
-          );
-
-          element.find('.videoPostLinkinWindow').on('click', function(){
-            var ed = {
-              share : linkInfo.txid,
-              close : function(){
-              }
-            }
-            self.nav.api.load({
-              open : true,
-              href : 'post?s=' + linkInfo.txid,
-              inWnd : true,
-              history : true,
-              essenseData : ed
-            })
-          })
-
-          
-        }
-
-
-
+        element.html(
+          `<a class="videoPostLink" href="https://${
+            self.app.options.url
+          }/index?s=${
+            linkInfo.txid
+          }"><i class="far fa-check-circle"></i>${self.app.localization.e(
+            'linkToPost',
+          )}</a>`,
+        );
       },
       //render single video stats column in video table
       videoStats(element, link, host, uuid) {
         const linkInfo = blockChainInfo[link] || {};
-        const videoInfo =
-          (peertubeServers[host].videos || []).find((video) => video.uuid === uuid) ||
-          {};
+        const videoInfo = peertubeServers[host].videos.find(
+          (video) => video.uuid === uuid,
+        );
 
         self.shell(
           {
             name: 'videoStats',
             el: element,
             data: {
-              views: +videoInfo.views || 0,
+              views: +videoInfo.views || '-',
               starsCount: +linkInfo.scoreSum || 0,
-              starsSum: +linkInfo.scoreCnt || 0,
-              comments: +linkInfo.comments || 0,
+              starsSum: +linkInfo.scoreCnt || '-',
+              comments: +linkInfo.comments || '-',
             },
           },
           (p) => {
@@ -655,7 +537,7 @@ var videoCabinet = (function () {
       //add new container for a protion of videos (lazyload)
       newVideoContainer() {
         const videoPortionElement = $(
-          '<div class="videoPage"><div class="preloaderwr"><div class="preloader5"><img src="./img/three-dots.svg"/></div></div></div>',
+          '<div class="videoPage"><div class="preloaderwr"><div class="preloader5"><span></span><span></span><span></span></div></div></div>',
         );
 
         el.videoContainer.append(videoPortionElement);
@@ -672,273 +554,6 @@ var videoCabinet = (function () {
           },
           (p) => {},
         );
-      },
-      //render menu with video controls
-      metmenu(_el, videoLink) {
-        const data = {};
-
-        const meta = self.app.peertubeHandler.parselink(videoLink);
-
-        self.fastTemplate(
-          'metmenu',
-          (rendered, template) => {
-            self.app.platform.api.tooltip(
-              _el,
-              () => template(data),
-              (element) => {
-                //remove user video (popup menu)
-                element.find('.remove').on('click', function () {
-                  
-
-                  const { host } = meta;
-
-                  dialog({
-                    html: self.app.localization.e('removeVideoDialog'),
-                    btn1text: self.app.localization.e('remove'),
-                    btn2text: self.app.localization.e('ucancel'),
-
-                    success() {
-                      self.app.peertubeHandler.api.videos
-                        .remove(videoLink)
-                        .then(() => {
-                          el.videoContainer
-                            .find(`.singleVideoSection[uuid="${meta.id}"]`)
-                            .addClass('hidden');
-                        });
-                    },
-                  });
-
-                  if(_el.tooltipster)
-                    _el.tooltipster('hide');
-                });
-
-                //edit wallpaper in menu
-                initUpload({
-                  el: element.find('.editPreview .inputMenuWrapper'),
-
-                  ext: ['png', 'jpeg', 'jpg', 'webp', 'jfif'],
-
-                  dropZone: element.find('.editPreview'),
-
-                  multiple: false,
-
-                  action: function (file, clbk) {
-                    
-
-                    actions
-                      .uploadVideoWallpaper(file.file, videoLink)
-                      .then((img) => {
-                        const previewContainer = el.videoContainer.find(
-                          `.singleVideoSection[uuid="${meta.id}"] .videoAvatar`,
-                        );
-                        previewContainer.attr(
-                          'style',
-                          `background-image: url("${img}")`,
-                        );
-                      });
-
-                    if(_el.tooltipster)
-                      _el.tooltipster('hide');
-                  },
-
-                  onError: function (er, file, text) {
-                    sitemessage(text);
-                  },
-                });
-
-                //render edit description form
-                element.find('.editText').on('click', function () {
-                  
-
-                  self.app.peertubeHandler.api.videos
-                    .getDirectVideoInfo({ id: meta.id }, { host: meta.host })
-                    .then((videoData) => {
-                      self.fastTemplate('editDescription', (rendered) => {
-                        dialog({
-                          html: rendered,
-
-                          wrap: true,
-
-                          success: function (d) {
-                            const name = d.el.find('.videoNameInput').val();
-                            const description = d.el
-                              .find('.videoDescriptionInput')
-                              .val();
-
-                            const parameters = {};
-
-                            if (name) parameters.name = name;
-                            if (description)
-                              parameters.description = description;
-
-                            parameters.tags = tagArray;
-
-                            const { host } = videoLink;
-
-                            return self.app.peertubeHandler.api.videos
-                              .update(videoLink, parameters, { host })
-                              .then(() => {
-                                const textContainert = el.videoContainer.find(
-                                  `.singleVideoSection[uuid="${meta.id}"]`,
-                                );
-
-                                if (name)
-                                  textContainert
-                                    .find('.videoNameText')
-                                    .text(name);
-                                if (description)
-                                  textContainert
-                                    .find('.videoDescriptionText')
-                                    .text(description);
-
-                                d.close();
-                                tagElement = {};
-                                tagArray = [];
-                              })
-                              .catch((err) => {
-                                tagElement = {};
-                                tagArray = [];
-                                d.close();
-
-                                sitemessage(
-                                  self.app.localization.e(
-                                    'errorChangingDescription',
-                                  ),
-                                );
-                              });
-                          },
-
-                          clbk: function (editDialogEl) {
-                            tagElement = editDialogEl.find('.videoTagsWrapper');
-                            tagArray = [...videoData.tags];
-                            renders.tags(tagElement, tagArray);
-
-                            editDialogEl
-                              .find('.videoNameInput')
-                              .val(videoData.name);
-                            editDialogEl
-                              .find('.videoDescriptionInput')
-                              .val(videoData.description);
-                          },
-
-                          class: 'editVideoDialog',
-                        });
-                      });
-                    })
-                    .catch(() =>
-                      sitemessage(
-                        self.app.localization.e('errorChangingDescription'),
-                      ),
-                    );
-
-                    if(_el.tooltipster)
-                    _el.tooltipster('hide');
-                });
-              },
-            );
-          },
-          data,
-        );
-      },
-      //render tagline
-      tags(element, tagArray) {
-        const tagActions = {
-          //tag-related funcitons
-          tagsFromText(text) {
-            var words = text.split(wordsRegExp);
-
-            var tags = _.filter(words, function (w) {
-              if (w[0] == '#') {
-                w = w.replace(/#/g, '');
-
-                if (!w) return false;
-
-                return true;
-              }
-            });
-
-            _.each(tags, function (tag, i) {
-              tags[i] = tag.replace(/\#/g, '');
-            });
-
-            return tags;
-          },
-
-          _addtag(tag) {
-            if (tagArray.length < 5) {
-              removeEqual(tagArray, tag);
-              tagArray.push(tag);
-              return true;
-            }
-
-            return false;
-          },
-
-          addTags(tags) {
-            _.find(tags, function (tag) {
-              if (!tagActions._addtag(tag)) {
-                sitemessage(self.app.localization.e('e13162'));
-
-                return true;
-              }
-            });
-          },
-
-          addTag(tag) {
-            //tag = tag.replace(/#/g, '')
-
-            if (!tagActions._addtag(tag)) {
-              sitemessage(self.app.localization.e('e13162'));
-            }
-          },
-
-          _removetag(tag) {
-            removeEqual(tagArray, tag);
-          },
-
-          removeTags(tags) {
-            _.each(tags, function (tag) {
-              tagActions._removetag(tag);
-            });
-          },
-
-          removeTag(tag) {
-            tagActions._removetag(tag);
-          },
-        };
-
-        self.nav.api.load({
-          open: true,
-          id: 'taginput',
-          el: element,
-          eid: 'articletags',
-          animation: false,
-          essenseData: {
-            tags: () => tagArray,
-
-            removeTag: function (tag) {
-              tagActions.removeTag(tag);
-              renders.tags(tagElement, tagArray);
-            },
-
-            removeTags: function (tag) {
-              tagActions.removeTags(tag);
-              renders.tags(tagElement, tagArray);
-            },
-
-            addTag: function (tag) {
-              tagActions.addTag(tag);
-              renders.tags(tagElement, tagArray);
-            },
-
-            addTags: function (tags) {
-              tagActions.addTags(tags);
-              renders.tags(tagElement, tagArray);
-            },
-          },
-
-          clbk: function (e, p) {},
-        });
       },
     };
 
@@ -994,12 +609,6 @@ var videoCabinet = (function () {
 
       destroy: function () {
         el.windowElement.off('scroll', events.onPageScroll);
-
-        _.each(transcodingIntervals, function(i){
-          clearInterval(i)
-        })
-
-        transcodingIntervals = {}
 
         el = {};
       },

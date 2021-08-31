@@ -150,8 +150,6 @@ User = function(app, p) {
 			})
 		}
 
-		console.log("mnemonic")
-
 		if(!bitcoin.bip39.validateMnemonic(mnemonic)){
 
 			self.setKeysPairFromPrivate(mnemonic, function(result){
@@ -457,12 +455,9 @@ User = function(app, p) {
 	}
 
 	self.setKeys = function(mnemonic, clbk){
-
-
-		console.log("self.setKeys", mnemonic)
-
 		var keyPair =  self.keysFromMnemo(mnemonic)  
 		
+
 	    self.setKeysPair(keyPair, clbk)
     	
 	}

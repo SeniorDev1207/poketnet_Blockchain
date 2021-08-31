@@ -294,7 +294,6 @@ PeerTubePocketnet = function (app) {
       formdata: true,
       authorization: true,
       renew: true,
-      axios: true,
     },
 
     totalViews: {
@@ -369,11 +368,7 @@ PeerTubePocketnet = function (app) {
           var formData = new FormData();
 
           _.each(data, function (d, i) {
-            if (Array.isArray(d)) {
-              d.map((elem) => formData.append(`${i}[]`, elem));
-            } else {
-              formData.append(i, d);
-            }
+            formData.append(i, d);
           });
 
           data = formData;
@@ -548,10 +543,6 @@ PeerTubePocketnet = function (app) {
 
         if (parameters.description) {
           data.description = parameters.description;
-        }
-
-        if (parameters.tags) {
-          data.tags = parameters.tags;
         }
 
         if (_.isEmpty(data)) return Promise.reject(error('updateempty'));
