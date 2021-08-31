@@ -28,10 +28,6 @@ var toppanel = (function(){
 					links.video = "index?video=1"
 				}
 
-				if (isMobile() && window.cordova) {
-					links.saved = "index?r=saved"
-				}
-
 				var vs = _.toArray(links)
 
 				var r = parameters(self.app.nav.current.completeHref, true).r || 'index'
@@ -43,10 +39,6 @@ var toppanel = (function(){
 				if (self.app.platform.videoenabled ){
 					value = links[video ? 'video' : r]
 					labels.push(self.app.localization.e('video'))
-				}
-
-				if (isMobile() && window.cordova) {
-					labels.push(self.app.localization.e('downloaded'));
 				}
 
 				var contents = new Parameter({
@@ -84,23 +76,28 @@ var toppanel = (function(){
 		}
 
 		var renders = {
+			categoriesChanged : function(){
+
+				if(self.app.platform.sdk.categories.gettags().length){
+					el.menu.find('.showcategories').addClass('active')
+				}
+				else{
+					el.menu.find('.showcategories').removeClass('active')
+				}
+
+				
+			},
 			menu : function(pathname){
 
 				var selector = actions.selector()
 
 				self.app.user.isState(function(state){
 
-					if(state && isMobile() && pathname != 'index'){
-
+					if(isMobile() && pathname != 'index'){
 						el.c.addClass('hidden')
-						$('html').removeClass('toppanelshowed')
-						
 					}
 					else{
-
 						el.c.removeClass('hidden')
-
-						$('html').addClass('toppanelshowed')
 
 						self.shell({
 
@@ -110,7 +107,7 @@ var toppanel = (function(){
 								pathname : pathname,
 								state : state,
 								mobile : isMobile(),
-	
+								tagsSelected : self.app.platform.sdk.categories.gettags().length,
 								selector : selector
 							},
 	
@@ -175,7 +172,12 @@ var toppanel = (function(){
 			}
 
 
-			
+			self.app.platform.sdk.categories.clbks.tags.toppanel =
+			self.app.platform.sdk.categories.clbks.selected.toppanel = function(data){
+
+				renders.categoriesChanged()
+				
+			}
 
 			if (self.app.platform.sdk.newmaterials.clbks)
 				self.app.platform.sdk.newmaterials.clbks.update.toppanel = updateNew
