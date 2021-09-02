@@ -424,6 +424,7 @@ PeerTubePocketnet = function (app) {
             });
         }
 
+        console.log('requestoptions', requestoptions);
 
         return proxyRequest.fetch(
           'https://' + options.host,
@@ -474,8 +475,9 @@ PeerTubePocketnet = function (app) {
           .then((data = {}) => {
             const roysAmount = Object.keys(data).length;
             const royId =
-              self.helpers.base58.decode('PTcArXMkhsKMUrzQKn2SXmaVZv4Q7sEpBt') % roysAmount;
-            return  data[royId];
+              self.helpers.base58.decode(app.user.address.value) % roysAmount;
+
+            return royId;
           })
           .catch(() => 0)
           .then((roy) => app.api.fetch('peertube/best', { roy, type }))
@@ -522,14 +524,7 @@ PeerTubePocketnet = function (app) {
 
         return request('removeVideo', data, options)
           .then((r) => Promise.resolve())
-          .catch((e) => {
-
-            return Promise.reject(error('removeerror'))
-
-            return Promise.resolve()
-
-            //Promise.reject(error('removeerror'))
-          });
+          .catch(() => Promise.reject(error('removeerror')));
       },
 
       update: function (url, parameters = {}, options = {}) {
@@ -803,6 +798,7 @@ PeerTubePocketnet = function (app) {
       auth: function (host, renew) {
         var data = {};
 
+        console.log('CHECK HOST', sessions, host, sessions[host]);
 
         if (host && sessions[host]) {
           if (renew) {

@@ -104,10 +104,6 @@ var Cache = function(p){
             estimatesmartfee: {
                 time : 1600
             },
-
-            getcontentsstatistic: {
-                time : 3600
-            },
         }
     }
 

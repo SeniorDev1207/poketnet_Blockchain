@@ -227,10 +227,8 @@ var filluserfast = (function(){
 						}
 
 
-						if (isMobile()){
-							self.app.platform.ui.showmykey({
-								afterregistration : true
-							})
+						if(isMobile()){
+							self.app.platform.ui.showmykey()
 						}
 						else{
 							self.app.platform.ui.showmykeyfast()

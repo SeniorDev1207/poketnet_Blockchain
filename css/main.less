@@ -2168,6 +2168,10 @@ input[type=radio].radio:checked + label {
     z-index: 1005;
 
     &.embeding{
+        z-index: 2005
+    }
+
+    &.embeding{
         z-index: 2005; 
     }
 
@@ -2814,7 +2818,11 @@ input[type=radio].radio:checked + label {
             }
         }
 
-        
+        &.optimized{
+            >div{
+                display: none!important;
+            }
+        }
     }
 }
 
@@ -3466,10 +3474,6 @@ input[type=radio].radio:checked + label {
     .thwrapper{
         padding : 0;
         max-width: 450px;
-        background: transparent;
-        width: 93%;
-        margin : 0 auto;
-        border : 0;
     }
 
     .buttons{
@@ -3484,18 +3488,11 @@ input[type=radio].radio:checked + label {
         .item{
             padding : 4 * @rhythm 2 * @rhythm;
             text-align: center;
-            background: #fff;
+            border-bottom : 1px solid @color-gray-slight;
             cursor: pointer;
-            border-radius: 3px;
 
             &.itemmain{
                 color : @color-main;
-            }
-
-            &.itemclose{
-                margin-top : 2 * @rhythm;
-                background: fade(@color-gray-mlight, 10);
-                backdrop-filter: blur(4px);
             }
 
             &:nth-last-child(1){
@@ -4576,6 +4573,20 @@ input[type=radio].radio:checked + label {
 
 
 	}
+    &.downloadMenu{
+
+        .menuitem {
+            .label {
+                display: flex;
+                justify-content: space-between;
+
+                span.lightColor {
+                    color : @color-gray-mlight;
+                }
+            }
+        }
+
+    }
 }
 
 .matrixchatwrapper{
@@ -4941,6 +4952,10 @@ html.cordova{
             color : #fff;
             box-shadow: none;
         }
+    }
+
+    .letter{
+        font-size: 1.5em;
     }
 
     &:hover{
@@ -5857,8 +5872,8 @@ html.stblack{
             left: 0;
             right: 0;
             padding-top : 0;
-            z-index: 3;
-            
+            z-index: 10;
+
         }
 
         .contentWrapper{
@@ -5927,20 +5942,6 @@ html.stblack{
     #splashScreen{
         display: flex;
     }
-
-    html.mobile,
-    html.tablet{
-        #content{
-        
-
-            &.optimized{
-                >div{
-                    display: none!important;
-                }
-            }
-        }
-    }
-    
 
     
 }

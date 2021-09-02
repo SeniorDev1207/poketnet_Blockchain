@@ -286,9 +286,7 @@ var menu = (function(){
 			keyexport : {
 				click : function(){
 					self.app.mobile.vibration.small()
-					self.app.platform.ui.showmykey({
-						showsavelabel : true
-					})
+					self.app.platform.ui.showmykey()
 
 				},
 

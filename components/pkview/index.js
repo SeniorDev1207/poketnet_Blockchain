@@ -8,28 +8,10 @@ var pkview = (function(){
 
 		var primary = deep(p, 'history');
 
-		var el, current = {}, ed = {}
+		var el, current = {};
 
 		var actions = {
-			saveqr : function(qr, clbk){
 
-				var name = 'pkey_'+self.app.platform.currentTime()
-
-				if (window.cordova){
-					var image = b64toBlob(qr._oDrawing._elImage.currentSrc.split(',')[1], 'image/png', 512);		
-					p_saveAsWithCordova(image, name + '.png', function(){
-						clbk()
-					})
-
-				}
-				else{
-					p_saveAs({
-						file : qr._oDrawing._elImage.currentSrc,
-						format : 'png',
-						name : name
-					})
-				}
-			}
 		}
 
 		var events = {
@@ -38,7 +20,6 @@ var pkview = (function(){
 
 		var renders = {
 			qrcode : function(el, m){
-				
 
 				var qrcode = new QRCode(el[0], {
 					text: m,
@@ -122,17 +103,13 @@ var pkview = (function(){
 				}, function(p){
 
 					var m = p.el.find('.mnemonicKey')
-					var name = 'pkey_'+self.app.platform.currentTime()
+
 
 					renders.mnemonicEffect(m, false, function(){
 					
 					});
 
 					var qr = renders.qrcode(p.el.find('.qrcode'), current.mk)
-
-					p.el.find('.qrcode img').attr('save', name + '.png')
-
-					self.app.mobile.saveImages.init(p.el.find('.qrcode img'))
 
 					p.el.find('.copy').on('click', function(){
 						copyText(p.el.find('.hiddenMnemonicKey'))
@@ -142,15 +119,13 @@ var pkview = (function(){
 
 					p.el.find('.save').on('click', function(){
 
-						actions.saveqr(clbk)
-
-						/*var text = p.el.find('.qrcode img').attr('src')
+						var text = p.el.find('.qrcode img').attr('src')
 
 						p_saveAs({
 							file : text,
 							format : 'png',
 							name : 'pocketnetkey'
-						})*/
+						})
 
 						/*if(window.cordova){
 							p_saveAsWithCordova(b64toBlob(text, 'image/png'), 'pocketnet_' + rand(1000, 9999) + '.png')
@@ -177,13 +152,12 @@ var pkview = (function(){
 										class : 'itemmain',
 										action : function(clbk){
 
-											actions.saveqr(qr, clbk)
 
-											/*var image = b64toBlob(qr._oDrawing._elImage.currentSrc.split(',')[1], 'image/png', 512);		
+											var image = b64toBlob(qr._oDrawing._elImage.currentSrc.split(',')[1], 'image/png', 512);		
 
 											p_saveAsWithCordova(image, 'pkey_'+self.app.platform.currentTime()+'.png', function(){
 												clbk()
-											})*/
+											})
 
 											
 										}
@@ -273,10 +247,7 @@ var pkview = (function(){
 						renders.key()
 
 						setTimeout(function(){
-
-							if (ed.showsavelabel)
-								renders.dontshowagain()
-
+							renders.dontshowagain()
 						}, 2000)
 					}
 					else
@@ -302,10 +273,6 @@ var pkview = (function(){
 			getdata : function(clbk, p){
 
 				var data = {};
-
-				ed = p.settings.essenseData || {}
-
-				data.ed = ed
 
 				clbk(data);
 

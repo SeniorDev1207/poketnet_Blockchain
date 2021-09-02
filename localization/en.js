@@ -50,7 +50,7 @@ return h
 }
 
 ____loclib.generatepkey = "Generate Private Key";
-____loclib.rtip3 = "Write this login key down or save it as a QR code. We do not store your personal data. It cannot be recovered if lost! ";
+____loclib.rtip3 = "Write this login key down and save it as a QR code. We do not store your personal data. It cannot be recovered if lost! ";
 ____loclib.saveqrcode = "Save Qr Code" 
 ____loclib.copyprivkey = "Copy Private Key"
 ____loclib.rcontinue = "Continue"
@@ -1136,6 +1136,8 @@ ____loclib.sortByViews = "Views";
 ____loclib.unableToAuthorize = "Unable to authorize";
 ____loclib.unableToAuthorizeBody = "Unfortunately, the application cannot authenticate this account on the video server. You need at least 5 PKOIN or 100 reputation to upload videos. If you do, please try again later";
 
+____loclib.downloaded = "Downloaded";
+____loclib.downloadedEmpty = "Downloaded posts will be shown here";
 ____loclib.emptyDescription = "Description is empty";
 ____loclib.transcodingShort = "Processing";
 ____loclib.editVideoDescription = "Edit video name/description";
@@ -1143,9 +1145,3 @@ ____loclib.errorChangingDescription = "Unable to change video name/description";
 
 ____loclib.enterVideoName = "Enter video name";
 ____loclib.enterVideoDescription = "Enter video description";
-
-
-____loclib.doyouwantseepk = "Do you really want to see your private key?";
-____loclib.copycode = "Copy Private Key";
-____loclib.privatekeyqr = "Private key QR code";
-____loclib.saveimage = "Save image";
