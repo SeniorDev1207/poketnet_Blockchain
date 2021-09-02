@@ -95,7 +95,7 @@ var metadisplay = function(){ %>
 			
 			
 
-			<div class="metapanel">
+			<div class="metapanel <%-share.txid%> invisible">
 				<% if(typeof openapi == 'undefined' || !openapi) {%>
 				<div class="metapanelitem metmenu">
 					<i class="fas fa-ellipsis-h"></i>
@@ -105,6 +105,31 @@ var metadisplay = function(){ %>
 						
 					</div>
 				<% } %>
+
+				<% if(share.itisvideo()) { %>
+					<div class="metapanelitem canDownloadBtn">
+						<div class="downloadBtn <%-share.txid%>">
+							<i class="fas fa-download"></i>
+						</div>
+					</div>
+
+					<div class="metapanelitem downloadingBtn">
+						<div class="downloadLoader">Downloading...</div>
+					</div>
+
+					<div class="metapanelitem downloadedBtn">
+						<div class="downloadDone">
+							<i class="fas fa-check-circle"></i>
+						</div>
+					</div>
+					<div class="metapanelitem downloadedBtn">
+						<div class="deleteBtn <%-share.txid%>">
+							<i class="fas fa-trash"></i>
+						</div>
+					</div>
+				<% } %>
+
+
 			</div>
 			
 
@@ -222,7 +247,7 @@ var metadisplay = function(){ %>
 
 				<% } %>
  
-				<div class="images shareImages hideOnFullVideo unselectable">
+				<div class="images hideOnFullVideo">
 					<div class="imagesContainer <%-icClass%>">
 						<% _.each(share.images, function(image){ %>
 
@@ -284,12 +309,25 @@ var metadisplay = function(){ %>
 					<a href="<%-app.platform.api.authorlink(share.address)%>">
 
 
-						<% var src = deep(app, 'platform.sdk.usersl.storage.'+share.address+'.image')  %>
+						<% 
+							var src = deep(app, 'platform.sdk.usersl.storage.'+share.address+'.image');
+							var name = deep(app, 'platform.sdk.usersl.storage.'+share.address+'.name');
+							var letter = name ? name[0] : ''; 	
+						%>
 
 						<div class="icon">
 							<div class="usericon usericonsbsa another" image="<%-src || ''%>">
-								<% if(!src) {%>
+
+								<% if(!src && letter) { %>
+
+									<span class="letter">
+										<%-letter.toUpperCase()%>
+									</span>
+				
+								<% } else if (!src) { %>
+				
 									<svg width="30" height="30" data-jdenticon-value="<%-share.address%>"></svg>
+				
 								<% } %>
 
 								<% if(deep(app, 'platform.real.'+share.address)) {%>

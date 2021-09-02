@@ -1433,7 +1433,7 @@ Application = function(p)
 					})
 				}
 			},
-			dialog : function(name, src, removesharing){
+			dialog : function(name, src){
 				srcToData(src, function(base64){
 
 					var items = [
@@ -1447,26 +1447,23 @@ Application = function(p)
 						}
 					]
 
-					if(!removesharing){
-						if (window.cordova && window.plugins && window.plugins.socialsharing){
+					if (window.cordova && window.plugins && window.plugins.socialsharing){
 
-							items.push({
-								text : app.localization.e('share'),
-								class : 'itemmain',
-								action : function(clbk){
-	
-									var options = {
-										files : [base64]
-									}
-	
-									window.plugins.socialsharing.shareWithOptions(options);
-		
+						items.push({
+							text : app.localization.e('share'),
+							class : 'itemmain',
+							action : function(clbk){
+
+								var options = {
+									files : [base64]
 								}
-							})
+
+								window.plugins.socialsharing.shareWithOptions(options);
 	
-						}
+							}
+						})
+
 					}
-					
 
 					
 
@@ -1485,7 +1482,6 @@ Application = function(p)
 
 							var name = this.attr('save')
 							var src = this.attr('src') || this.attr('i')
-							var removesharing = this.attr('removesharing')
 	
 							self.mobile.saveImages.dialog(name, src)
 

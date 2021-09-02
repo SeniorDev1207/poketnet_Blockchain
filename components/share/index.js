@@ -1629,10 +1629,7 @@ var share = (function(){
 
                             Plyr.setup('#' + self.map.id + ' .js-player', function(player) {
 
-								try{
-									player.muted = false
-								}catch(e){}
-								
+								player.muted = false
 							}, {
 								denyPeertubeAutoPlay: true,
 							});

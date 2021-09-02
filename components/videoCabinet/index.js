@@ -379,6 +379,7 @@ var videoCabinet = (function () {
           ),
         )
           .then((data = []) => {
+
             const newVideos = data
               .filter((item) => item.status === POSITIVE_STATUS)
               .map((item) => item.value.data)
@@ -494,11 +495,7 @@ var videoCabinet = (function () {
             menuActivator.on('click', function () {
               const videoLink = $(this).attr('videoLink');
 
-              return renders.metmenu(
-                $(this),
-                videoLink,
-                blockChainInfo[videoLink] ? true : false,
-              );
+              return renders.metmenu($(this), videoLink);
             });
 
             const blockchainStrings = videos.map(
@@ -730,10 +727,8 @@ var videoCabinet = (function () {
         );
       },
       //render menu with video controls
-      metmenu(_el, videoLink, isVideoPosted) {
-        const data = {
-          isVideoPosted,
-        };
+      metmenu(_el, videoLink) {
+        const data = {};
 
         const meta = self.app.peertubeHandler.parselink(videoLink);
 
