@@ -2041,7 +2041,6 @@ Platform = function (app, listofnodes) {
 
             if(!additional) additional = {}
 
-            console.log('id, el, clbk, p, additional', id, el, clbk, p, additional)
 
             app.nav.api.load({
                 open : true,
@@ -2195,14 +2194,14 @@ Platform = function (app, listofnodes) {
 
             dialog({
                 html: p.text || self.app.localization.e('e13188'),
-                btn1text: self.app.localization.e('e13261'),
+                btn1text: p.successLabel || self.app.localization.e('e13261'),
                 btn2text: p.faillabel || self.app.localization.e('e13262'),
 
                 class: 'zindex accepting accepting2 ',
 
                 success: function () {
 
-                    if (!isMobile()) {
+                   /* if (!isMobile()) {
 
                         app.nav.api.load({
 
@@ -2220,7 +2219,7 @@ Platform = function (app, listofnodes) {
                             }
                         })
 
-                    }
+                    }*/
 
                     app.nav.api.load({
 
@@ -2230,7 +2229,9 @@ Platform = function (app, listofnodes) {
                         href: 'pkview',
 
                         essenseData: {
-                            dumpkey: true
+                            dumpkey: true,
+                            showsavelabel : p.showsavelabel,
+                            afterregistration : p.afterregistration
                         },
 
                         clbk: function (p, s) {
@@ -2275,8 +2276,6 @@ Platform = function (app, listofnodes) {
                     
                     p.sendclbk = function(d){
 
-                        console.log(d, p)
-
                         if (p.roomid && d.txid){
                             self.matrixchat.shareInChat.url(p.roomid, app.meta.protocol + '://i?stx=' + d.txid) /// change protocol
                         }
@@ -2296,8 +2295,6 @@ Platform = function (app, listofnodes) {
                         animation : false,
                         essenseData : p,
                         clbk : function(e, _p){
-
-                            console.log('dsdsds', _p)
 
                             es = _p
     
@@ -2442,7 +2439,6 @@ Platform = function (app, listofnodes) {
             var events = {
                 resize: function () {
 
-                    console.log("resize")
 
                     var mode = getmode();
 
@@ -3307,171 +3303,6 @@ Platform = function (app, listofnodes) {
 
 
     self.sdk = {
-
-        local: {
-
-            shares: {
-
-                allShares: {},
-
-                init: function() {
-
-                    var v = self.sdk.local.shares.allShares;
-
-                    if (window.cordova && window.cordova.file) {
-                        // Check if external storage is available, if not, use the internal
-                        var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
-                        // open target file for download
-                        window.resolveLocalFileSystemURL(storage, function(dirEntry) {
-                            // Create a downloads folder
-                            dirEntry.getDirectory('posts', { create: true }, function (dirEntry2) {
-                                var shareReader = dirEntry2.createReader();
-                                shareReader.readEntries(function(shares) {
-                                    _.each(shares, function(shareFolder) {
-                                        if (shareFolder.isDirectory) {
-                                            v[shareFolder.name] = {};
-
-                                            // Look inside the videos folder
-                                            shareFolder.getDirectory('videos', { create: true }, function (videosFolder) {
-                                                v[shareFolder.name].videos = {};
-                                                var videosReader = videosFolder.createReader();
-                                                videosReader.readEntries(function(videoFolders) {
-                                                    _.each(videoFolders, function(videoFolder) {
-                                                        if (videoFolder.isDirectory) {
-                                                            v[shareFolder.name].videos[videoFolder.name] = {};
-                                                            videoFolder.createReader().readEntries(function(files) {
-                                                                var videoFile, infoFile;
-                                                                _.each(files, function(file) {
-                                                                    if (file.isFile && file.file) {
-                                                                        file.file(function(fileDetails) {
-                                                                            if (!videoFile && fileDetails.type == null) {
-                                                                                videoFile = file;
-                                                                                // Resolve internal URL
-                                                                                window.resolveLocalFileSystemURL(videoFile.nativeURL, function(entry) {
-                                                                                    videoFile.internalURL = entry.toInternalURL();
-                                                                                    v[shareFolder.name].videos[videoFolder.name].video = videoFile;
-                                                                                });
-                                                                            }
-                                                                            if (!infoFile && file.name == 'info.json') {
-                                                                                infoFile = file;
-                                                                                // Read info file
-                                                                                var reader = new FileReader();
-                                                                                reader.onloadend = function() {
-                                                                                    try {
-                                                                                        v[shareFolder.name].videos[videoFolder.name].infos = JSON.parse(this.result);
-                                                                                    } catch(err){ }
-                                                                                };
-                                                                                reader.readAsText(fileDetails);
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                });
-                                                            });
-                                                        }
-                                                    });
-                                                });
-                                            });
-
-                                            // Look for the share.json file
-                                            shareFolder.getFile('share.json', { create: false }, function(shareFile) {
-                                                shareFile.file(function(shareFileDetails) {
-                                                    // Read info file
-                                                    var reader = new FileReader();
-                                                    reader.onloadend = function() {
-                                                        try {
-                                                            v[shareFolder.name].share = JSON.parse(this.result);
-                                                        } catch(err){ }
-                                                    };
-                                                    reader.readAsText(shareFileDetails);
-                                                });
-                                            });
-
-                                        }
-                                    });
-                                });
-                            });
-                        });
-                    }
-
-                },
-
-                // Returns an array of all the shares ID
-                getAllIds: function() {
-                    res = [];
-                    for (const shareId in self.sdk.local.shares.allShares)
-                        res.push(shareId);
-                    return res;
-                },
-
-                get: function(shareId) {
-                    var v = self.sdk.local.shares.allShares;
-                    return v[shareId];
-                },
-
-                getVideo: function(videoId, shareId) {
-                    var video, shares = self.sdk.local.shares.allShares;
-                    try {
-                        if (shareId) {
-                            var share = shares[shareId];
-                            for (const vidId in share.videos) {
-                                if (vidId == videoId) {
-                                    video = share.videos[vidId];
-                                    break;
-                                }
-                            }
-                        } else {
-                            for (const share in shares) {
-                                if (video) break;
-                                for (const vidId in shares[share].videos) {
-                                    if (vidId == videoId) {
-                                        video = shares[share].videos[vidId];
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } catch(err) {}
-                    return video;
-                },
-
-                add : function(shareId, share){
-                    var v = self.sdk.local.shares.allShares;
-                    v[shareId] = share;
-                },
-
-                delete: function(shareId, clbk) {
-
-                    var v = self.sdk.local.shares.allShares;
-
-                    if (window.cordova && window.cordova.file) {
-                        // Check if external storage is available, if not, use the internal
-                        var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
-                        // open target file for download
-                        window.resolveLocalFileSystemURL(storage, function(dirEntry) {
-                            // Create a downloads folder
-                            dirEntry.getDirectory('posts', { create: true }, function (dirEntry2) {
-                                dirEntry2.getDirectory(shareId, { create: false}, function(dirToDelete) {
-                                    dirToDelete.removeRecursively(function() {
-                                        // Success
-                                        delete v[shareId];
-                                        if (clbk) clbk();
-                                    }, function(err) {
-                                        if (clbk) clbk();
-                                    });
-                                }, function(err) {
-                                    if (clbk) clbk();
-                                });
-                            }, function(err) {
-                                if (clbk) clbk();
-                            });
-                        }, function(err) {
-                            if (clbk) clbk();
-                        });
-                    }
-                }
-            }
-
-        },
 
         registrations: {
             storage: {},
@@ -4740,7 +4571,7 @@ Platform = function (app, listofnodes) {
 
                         self.app.nav.api.load({
                             open: true,
-                            href: 'userpage?id=test&opeanimage=true',
+                            href: 'userpage?id=test',
                             history: true
                         })
 
@@ -4778,8 +4609,6 @@ Platform = function (app, listofnodes) {
                         err = null
                     }
                     
-
-                    console.log("err", err)
 
                     if (err){
 
@@ -5105,9 +4934,7 @@ Platform = function (app, listofnodes) {
 
                                         delete localStorage[adr + 'subscribeRef'];
 
-                                        var src = r.image;
-                                        var name = r.name;
-                                        var letter = name ? name[0] : '';
+                                        var src = r.image
 
                                         var h = '<div class="refaddWrapper">'
 
@@ -5120,14 +4947,8 @@ Platform = function (app, listofnodes) {
 
                                         h += '<div class="usericon" image="' + (src || '') + '">'
 
-                                        if (!src && letter) {
-
-                                            h += '<span class="letter">' + letter.toUpperCase() + '</span>';
-
-                                        } else if (!src){
-
+                                        if (!src) {
                                             h += '<svg width="40" height="40" data-jdenticon-value="' + adrref + '"></svg>'
-
                                         }
 
                                         h += '</div>'
@@ -5861,7 +5682,6 @@ Platform = function (app, listofnodes) {
 
                     return self.sdk.node.get.timepr().then(r => {
 
-                        console.log("GETMISSED", n.storage.block)
 
                         return self.sdk.missed.get(n.storage.block)
                         
@@ -5889,8 +5709,6 @@ Platform = function (app, listofnodes) {
 
                     }).catch(e => {
 
-
-                        console.log("E", e)
 
                         n.inited = false;
                         n.loading = false;
@@ -5924,7 +5742,6 @@ Platform = function (app, listofnodes) {
                     }
                 }
 
-                console.log('block', block, self.currentBlock)
 
                 if(!self.sdk.address.pnet()) return Promise.reject('address')
                 if(!self.currentBlock) return Promise.reject('currentblock')
@@ -8139,6 +7956,11 @@ Platform = function (app, listofnodes) {
                             id : 'c7'
                         },
                         {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
+                        },
+                        {
                             name : "Sports",
                             tags : ['sports'],
                             id : 'c8'
@@ -8236,6 +8058,11 @@ Platform = function (app, listofnodes) {
                             name : "Автомобили/Гонки",
                             tags : ['auto', 'racing'],
                             id : 'c7'
+                        },
+                        {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
                         },
                         {
                             name : "Спорт",
@@ -8337,6 +8164,11 @@ Platform = function (app, listofnodes) {
                             id : 'c7'
                         },
                         {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
+                        },
+                        {
                             name : "運動",
                             tags : ['運動'],
                             id : 'c8'
@@ -8434,6 +8266,11 @@ Platform = function (app, listofnodes) {
                             name : "자동차/레이싱 ",
                             tags : ['자동차', '레이싱'],
                             id : 'c7'
+                        },
+                        {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
                         },
                         {
                             name : "스포츠",
@@ -8535,6 +8372,11 @@ Platform = function (app, listofnodes) {
                             id : 'c7'
                         },
                         {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
+                        },
+                        {
                             name : "Sport",
                             tags : ['Sport'],
                             id : 'c8'
@@ -8634,6 +8476,11 @@ Platform = function (app, listofnodes) {
                             id : 'c7'
                         },
                         {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
+                        },
+                        {
                             name : "Deporte",
                             tags : ['deporte'],
                             id : 'c8'
@@ -8731,6 +8578,11 @@ Platform = function (app, listofnodes) {
                             name : "Autos/Rennen ",
                             tags : ['autos', 'rennen'],
                             id : 'c7'
+                        },
+                        {
+                            name : "Bastyon/Pocketnet",
+                            tags : ['bastyon', 'pocketnet'],
+                            id : 'c71'
                         },
                         {
                             name : "Sport",
@@ -10631,47 +10483,6 @@ Platform = function (app, listofnodes) {
                 getbyidsp: function (p, clbk, refresh) {
                     this.getbyids(p.txids, p.begin, 10, clbk, refresh)
                 },
-                getsavedbyids: function (p, clbk) {
-                    if (!p.txids.length) {
-                        if (clbk)
-                            clbk([], null, p);
-                        return;
-                    }
-                    var loadedShares = [];
-                    _.each(p.txids, function (txid) {
-                        var curShare = self.sdk.local.shares.get(txid);
-                        if (curShare) {
-
-                            if (!curShare || !curShare.share || !curShare.share.user || !curShare.share.user.adr || !curShare.share.share)
-                                return;
-
-                            // Prepare user
-                            var newUser = self.sdk.users.prepareuser(curShare.share.user, curShare.share.user.adr);
-                            self.sdk.usersl.storage[newUser.address] = newUser;
-
-                            // Prepare share
-                            var newShare = new pShare();
-                            newShare._import(curShare.share.share);
-                            newShare.txid = txid;
-                            newShare.address = newUser.address;
-
-                            loadedShares.push(newShare);
-
-                            if (!self.sdk.node.shares.storage.trx)
-                                self.sdk.node.shares.storage.trx = {};
-
-                            self.sdk.node.shares.storage.trx[txid] = newShare;
-
-                        }
-                    });
-
-                    if (clbk) {
-                        clbk(loadedShares, null, {
-                            count: p.txids.length
-                        });
-                    }
-
-                },
                 getbyids: function (txids, begin, cnt, clbk, refresh) {
 
                     var s = this.storage;
@@ -11857,7 +11668,6 @@ Platform = function (app, listofnodes) {
                         self.sdk.node.transactions.temp = JSON.parse(self.app.settings.get(self.sdk.address.pnet().address, 'temp2') || "{}")
 
 
-                        console.log('self.sdk.node.transactions.temp', self.sdk.node.transactions.temp)
                     }
                     else {
                         self.sdk.node.transactions.temp = {};
@@ -11952,8 +11762,6 @@ Platform = function (app, listofnodes) {
 
                 checkTemps: function (clbk) {
 
-                    console.log("checkTemps", this.temp)
-
                     /*if (clbk)
                         clbk()
                     return*/
@@ -11971,8 +11779,6 @@ Platform = function (app, listofnodes) {
                         })
                     })
 
-
-                    console.log('temps', temps)
 
                     lazyEach({
                         array: temps,
@@ -13011,8 +12817,6 @@ Platform = function (app, listofnodes) {
                         var k = smulti;
 
 
-                        console.log("txb", txb, inputs, outputs)
-
                         _.each(inputs, function (i) {
 
                             if (i.type == 'htlc'){
@@ -13092,7 +12896,6 @@ Platform = function (app, listofnodes) {
 
                         var addr = self.app.platform.sdk.address.pnet()
 
-                        console.log('addr', addr)
 
                         if (addr && self.nvadr[addr.address]){
                             error = null
@@ -13221,8 +13024,6 @@ Platform = function (app, listofnodes) {
                                     
                                 var totalReturn = Number((amount - totalDonate - (fees || 0)).toFixed(0));
 
-                                console.log('totalReturn', totalReturn, fees);
-
 
                                 if (obj.donate && obj.donate.v.length && (totalReturn < 0 || totalDonate <= fees)){
 
@@ -13233,8 +13034,6 @@ Platform = function (app, listofnodes) {
                                     return;
 
                                 } else {
-
-                                    console.log("P", p, totalReturn, address)
 
                                     txb.addOutput(address.address, totalReturn);
                                     outputs.push({
@@ -13397,8 +13196,6 @@ Platform = function (app, listofnodes) {
 
                             return removeEmptyHref(sanitizedHtml);
                         }
-
-                        console.log('message', message);
 
                         const token = meta.telegram.value;
 
@@ -16166,8 +15963,6 @@ Platform = function (app, listofnodes) {
                         addValue("tgto", channelName, chat.id);
                         addValue("tgfrom", channelName, chat.id);
 
-                        console.log('renderClbk', renderClbk);
-
                         if (renderClbk){
                             renderClbk();
                         }
@@ -16905,8 +16700,6 @@ Platform = function (app, listofnodes) {
             var token = currenttoken
 
 
-            console.log('getaddress', getaddress())
-
             return self.api.checkProxy(proxy).then(r => {
                 return  self.api.exist(proxy, address, token)
             }).then(exist => {
@@ -16918,7 +16711,6 @@ Platform = function (app, listofnodes) {
             }).then(r => {
                 return self.api.setToken(address, token, proxy)
             }).catch(e => {
-                console.log("E", e)
                 return Promise.resolve()
             })
             
@@ -16993,8 +16785,6 @@ Platform = function (app, listofnodes) {
                     currenttoken = token
                     platform.fcmtoken = token
 
-                    console.log("FCM TOKEN GET", token)
-
                     platform.matrixchat.changeFcm()
 
                     self.events()
@@ -17043,8 +16833,6 @@ Platform = function (app, listofnodes) {
 
                 if (data.data)
                     platform.ws.messageHandler(data.data)
-
-                console.log("DATA", data)
 
                 if (data.room_id) {
 
@@ -17099,8 +16887,6 @@ Platform = function (app, listofnodes) {
          
             // When token is refreshed, update the matrix element for the Vue app
             FirebasePlugin.onTokenRefresh(function(token) {
-
-                console.log("FCM TOKEN REFRESH", token)
 
                 platform.fcmtoken = token   
                 currenttoken = token
@@ -17537,9 +17323,7 @@ Platform = function (app, listofnodes) {
 
                 var h = '';
 
-                var src = deep(author, 'image');
-                var name = deep(author, 'name');
-                var letter = name ? name[0] : '';
+                var src = deep(author, 'image')
 
 
                 var link = '<a href="' + encodeURI(clearStringXss(author.name.toLowerCase())) + '">'
@@ -17559,11 +17343,6 @@ Platform = function (app, listofnodes) {
                 if (gotoprofile) h += link
 
                 h += '<div class="usericon" image="' + clearStringXss(src || '') + '">'
-
-                if (!src && letter){
-
-                    h += '<span class="letter">' + letter.toUpperCase() + '</span>';
-                }
 
 
                 if(deep(platform, 'real.'+author.address)) {
@@ -18815,8 +18594,6 @@ Platform = function (app, listofnodes) {
 
                 fastMessage: function (data) {
 
-                    console.log('fastMessage', data);
-
                     var text = '';
                     var html = '';
 
@@ -18851,7 +18628,6 @@ Platform = function (app, listofnodes) {
                         if (text) {
                             var toptext =  self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time, data.donation);
 
-                            console.log('toptext', toptext);
                             html += toptext
                         }
 
@@ -18871,22 +18647,6 @@ Platform = function (app, listofnodes) {
                             html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time)
                         }
                     }
-
-                    if (data.reason == 'system') {
-
-                        // text = self.tempates.comment(data.comment/*, self.tempates.share(data.share)*/)
-
-                        // if (text) {
-
-                        //     var toptext = self.app.localization.e('e13337')
-
-                        //     html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time)
-                        // }
-
-                        console.log('data!!', data, data.text);
-                        html += `<div><b>System notification</b></div><div class="text">${data.text}</div>`;
-                    }
-
 
                     return html;
 
@@ -19708,7 +19468,6 @@ Platform = function (app, listofnodes) {
 
         self.messageHandler = function (data, clbk) {
 
-
             data || (data = {})
 
             if (data.msg || data.mesType) {
@@ -19725,7 +19484,6 @@ Platform = function (app, listofnodes) {
                 if(!data.electronSettings) data.electronSettings = {}
 
                 if (!m) m = {}
-
 
                 if (m.checkHandler) {
                     if (!m.checkHandler(data, m)) {
@@ -19744,12 +19502,13 @@ Platform = function (app, listofnodes) {
                 }
 
 
+
                 var clbks = function (loadedData) {
 
                     data.loadedData = true;
 
                     var audio = deep(m, 'audio')
-                    
+
                     _.each(m.clbks, function (clbk) {
                         clbk(data, loadedData);
                     })
@@ -19775,10 +19534,10 @@ Platform = function (app, listofnodes) {
 
                         }
 
-
                         if (m.fastMessage && !m.refs.all && !m.refs[data.RefID]) {
 
                             var html = m.fastMessage(data, loadedData);
+
 
                             if (html) {
 
@@ -19812,6 +19571,9 @@ Platform = function (app, listofnodes) {
                                     return
                                 }
 
+
+
+
                             }
 
 
@@ -19834,7 +19596,6 @@ Platform = function (app, listofnodes) {
                         clbk()
 
                 }
-
 
                 if(m.electronSettings) data.electronSettings = _.clone(m.electronSettings)
 
@@ -20068,16 +19829,31 @@ Platform = function (app, listofnodes) {
 
             //platform.matrixchat.notify.event()
 
-            // self.messageHandler({
-            //     addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM",
-            //     addrFrom: "PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S",
-            //     mesType: "post",
-            //     msg: "comment",
-            //     text: "Please, set avatar",
-            //     reason: "system",
-            //     time: "1619697839",
-            // })
+            /* 
+            self.messageHandler({
+                addr: "PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82"
+                amount: "166666"
+                msg: "transaction"
+                node: "64.235.45.119:38081:8087"
+                nout: "7"
+                time: 1629883584
+                txid: "4e73740eba080aae73aceb80636dcf8f3fe8aed1a9c8c7de417a59ee2d54d357"
+            })
+            
 
+            */
+
+            /*self.messageHandler({
+                addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM",
+                addrFrom: "PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S",
+                mesType: "post",
+                msg: "comment",
+                nblock: 1154467,
+                posttxid: "37348021a565fa549dfae5e9fb855c40dadae4456bda1cb1bfd3d3398081db91",
+                reason: "post",
+                time: "1619697839",
+                txid: "60c46a7b6ce852cab2c168ad09293fcf4afbfc9f6c47ba1ec9ce5426184b6019"
+            })*/
 
             /*self.messageHandler({
                 msg: "sharepocketnet",
@@ -20140,8 +19916,22 @@ Platform = function (app, listofnodes) {
                 txid: "b52f38b272b7a18c0947b853ee35fee2aa0e0105aa86daa9cd1efcb35b54f036"
             })*/
 
+            /*
+            addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM"
+            blockhash: "12ba464105e4b29bef43f3b893d60348fe056488834cbb2d43780c1432477bf6"
+            contentsLang: {}
+            height: 1334998
+            msg: "new block"
+            node: "216.108.231.40:38081:8087"
+            shares: 0
+            time: "1630599808"
+
+            */
+
+
 		}, 6000)
     }
+    
     
     
     
@@ -21447,7 +21237,6 @@ Platform = function (app, listofnodes) {
                 self.matrixchat.imported = true;
 
                 if(electron){
-                    console.log("HERE")
 
                     if(clbk) clbk()
                 }
@@ -21509,7 +21298,6 @@ Platform = function (app, listofnodes) {
         
                                 var privatekey = self.app.user.private.value.toString('hex');
 
-                                console.log('localization', self.app.localization.key)
                     
                                 var matrix = `<div class="wrapper matrixchatwrapper">
                                     <matrix-element
@@ -21582,7 +21370,6 @@ Platform = function (app, listofnodes) {
 
                 if(!self.ws) return
 
-                console.log("self.ws", self.ws)
 
                 var wsntemplates = self.ws.tempates
 
@@ -21716,7 +21503,6 @@ Platform = function (app, listofnodes) {
                 return !self.matrixchat.core.hiddenInParent
             }
 
-            console.log('self.matrixchat.core.isactive()', self.matrixchat.core.isactive())
 
             return self.matrixchat.core.isactive()
         },
@@ -21877,7 +21663,6 @@ Platform = function (app, listofnodes) {
             self.matrixchat.core.connect(self.matrixchat.connectWith).then(r => {
                 self.matrixchat.connectWith = null
             }).catch(e => {
-                console.log('e', e)
                 self.matrixchat.connectWith = null
             })
         },
@@ -22169,7 +21954,6 @@ Platform = function (app, listofnodes) {
             cordova.openwith.addHandler(function(intent){
                 var sharing = {}
        
-                console.log('intent', intent)
 
                 var promises = _.map(
                     _.filter(intent.items || [], function(i){return i}), 
@@ -22183,8 +21967,6 @@ Platform = function (app, listofnodes) {
 
                     return new Promise((resolve, reject) => {
 
-                        console.log('item.type', item.type)
-                        console.log('item.data', item.base64)
 
                         if(utitomime[item.type]) item.type = utitomime[item.type]
 
@@ -22240,7 +22022,6 @@ Platform = function (app, listofnodes) {
 
                             sitemessage(self.app.localization.e('e13293'))
 
-                            console.log("R", r)
                         })
 
                         
@@ -22256,7 +22037,6 @@ Platform = function (app, listofnodes) {
 
         if(window.cordova){
             setupOpenwith()
-            self.sdk.local.shares.init();
         }
 
         

@@ -9,8 +9,7 @@ _.each(messages, function(message){
 
 
 
-	var n = deep(app, 'platform.sdk.usersl.storage.'+message.f+'.name') || message.f;
-	var letter = n ? n[0] : '';
+	var n = deep(app, 'platform.sdk.usersl.storage.'+message.f+'.name') || message.f
 
 	var name = n
 	
@@ -59,16 +58,8 @@ _.each(messages, function(message){
 				<a href="<%-app.platform.api.authorlink(message.f)%>">
 					<div class="usericon" image="<%-src || ''%>">
 
-						<% if(!src && letter) {%>
-
-							<span class="letter">
-								<%-letter.toUpperCase()%>
-							</span>
-
-						<% } else if (!src) { %>
-
+						<% if(!src) {%>
 							<svg width="35" height="35" data-jdenticon-value="<%-message.f%>"></svg>
-
 						<% } %>
 						
 					</div>

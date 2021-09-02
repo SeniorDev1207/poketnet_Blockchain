@@ -96,7 +96,7 @@ var test = (function(){
 			valid : function(v1, v2){
 				if(!actions.equal((v1), (v2))){
 
-					if(trim(v1.name)) return true
+					if(trim(v1.name) && v1.image) return true
 
 				}
 			},
@@ -277,6 +277,8 @@ var test = (function(){
 								el.c.find('.errorname').fadeOut();
 
 								topPreloader(70)
+								
+
 								userInfo.uploadImage(self.app, function(err){
 
 									if (err){
@@ -393,8 +395,18 @@ var test = (function(){
 
 							topPreloader(100)
 
+							var txt = 'This username is taken in ' + self.app.meta.fullname
+
 							el.c.find('.errorname').fadeIn();
-							el.c.find('.errorname span').html('This username is taken in ' + self.app.meta.fullname);									
+							el.c.find('.errorname span').html(txt);
+
+							var pn = el.c.find('[parameter="name"] input')
+
+								pn.focus()
+
+								_scrollTo(pn)
+							
+							sitemessage(txt)
 						}
 					})
 
@@ -1008,7 +1020,6 @@ var test = (function(){
 
 				el.c.find('.referalMaketWrapper').remove()
 			})
-			
 		}
 
 		var make = function(){
