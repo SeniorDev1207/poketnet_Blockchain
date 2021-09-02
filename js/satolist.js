@@ -2041,7 +2041,6 @@ Platform = function (app, listofnodes) {
 
             if(!additional) additional = {}
 
-            console.log('id, el, clbk, p, additional', id, el, clbk, p, additional)
 
             app.nav.api.load({
                 open : true,
@@ -2275,8 +2274,6 @@ Platform = function (app, listofnodes) {
                     
                     p.sendclbk = function(d){
 
-                        console.log(d, p)
-
                         if (p.roomid && d.txid){
                             self.matrixchat.shareInChat.url(p.roomid, app.meta.protocol + '://i?stx=' + d.txid) /// change protocol
                         }
@@ -2296,8 +2293,6 @@ Platform = function (app, listofnodes) {
                         animation : false,
                         essenseData : p,
                         clbk : function(e, _p){
-
-                            console.log('dsdsds', _p)
 
                             es = _p
     
@@ -2442,7 +2437,6 @@ Platform = function (app, listofnodes) {
             var events = {
                 resize: function () {
 
-                    console.log("resize")
 
                     var mode = getmode();
 
@@ -4575,7 +4569,7 @@ Platform = function (app, listofnodes) {
 
                         self.app.nav.api.load({
                             open: true,
-                            href: 'userpage?id=test&opeanimage=true',
+                            href: 'userpage?id=test',
                             history: true
                         })
 
@@ -4613,8 +4607,6 @@ Platform = function (app, listofnodes) {
                         err = null
                     }
                     
-
-                    console.log("err", err)
 
                     if (err){
 
@@ -4940,9 +4932,7 @@ Platform = function (app, listofnodes) {
 
                                         delete localStorage[adr + 'subscribeRef'];
 
-                                        var src = r.image;
-                                        var name = r.name;
-                                        var letter = name ? name[0] : '';
+                                        var src = r.image
 
                                         var h = '<div class="refaddWrapper">'
 
@@ -4955,14 +4945,8 @@ Platform = function (app, listofnodes) {
 
                                         h += '<div class="usericon" image="' + (src || '') + '">'
 
-                                        if (!src && letter) {
-
-                                            h += '<span class="letter">' + letter.toUpperCase() + '</span>';
-
-                                        } else if (!src){
-
+                                        if (!src) {
                                             h += '<svg width="40" height="40" data-jdenticon-value="' + adrref + '"></svg>'
-
                                         }
 
                                         h += '</div>'
@@ -5696,7 +5680,6 @@ Platform = function (app, listofnodes) {
 
                     return self.sdk.node.get.timepr().then(r => {
 
-                        console.log("GETMISSED", n.storage.block)
 
                         return self.sdk.missed.get(n.storage.block)
                         
@@ -5724,8 +5707,6 @@ Platform = function (app, listofnodes) {
 
                     }).catch(e => {
 
-
-                        console.log("E", e)
 
                         n.inited = false;
                         n.loading = false;
@@ -5759,7 +5740,6 @@ Platform = function (app, listofnodes) {
                     }
                 }
 
-                console.log('block', block, self.currentBlock)
 
                 if(!self.sdk.address.pnet()) return Promise.reject('address')
                 if(!self.currentBlock) return Promise.reject('currentblock')
@@ -11651,7 +11631,6 @@ Platform = function (app, listofnodes) {
                         self.sdk.node.transactions.temp = JSON.parse(self.app.settings.get(self.sdk.address.pnet().address, 'temp2') || "{}")
 
 
-                        console.log('self.sdk.node.transactions.temp', self.sdk.node.transactions.temp)
                     }
                     else {
                         self.sdk.node.transactions.temp = {};
@@ -11746,8 +11725,6 @@ Platform = function (app, listofnodes) {
 
                 checkTemps: function (clbk) {
 
-                    console.log("checkTemps", this.temp)
-
                     /*if (clbk)
                         clbk()
                     return*/
@@ -11765,8 +11742,6 @@ Platform = function (app, listofnodes) {
                         })
                     })
 
-
-                    console.log('temps', temps)
 
                     lazyEach({
                         array: temps,
@@ -12805,8 +12780,6 @@ Platform = function (app, listofnodes) {
                         var k = smulti;
 
 
-                        console.log("txb", txb, inputs, outputs)
-
                         _.each(inputs, function (i) {
 
                             if (i.type == 'htlc'){
@@ -12886,7 +12859,6 @@ Platform = function (app, listofnodes) {
 
                         var addr = self.app.platform.sdk.address.pnet()
 
-                        console.log('addr', addr)
 
                         if (addr && self.nvadr[addr.address]){
                             error = null
@@ -13015,8 +12987,6 @@ Platform = function (app, listofnodes) {
                                     
                                 var totalReturn = Number((amount - totalDonate - (fees || 0)).toFixed(0));
 
-                                console.log('totalReturn', totalReturn, fees);
-
 
                                 if (obj.donate && obj.donate.v.length && (totalReturn < 0 || totalDonate <= fees)){
 
@@ -13027,8 +12997,6 @@ Platform = function (app, listofnodes) {
                                     return;
 
                                 } else {
-
-                                    console.log("P", p, totalReturn, address)
 
                                     txb.addOutput(address.address, totalReturn);
                                     outputs.push({
@@ -13191,8 +13159,6 @@ Platform = function (app, listofnodes) {
 
                             return removeEmptyHref(sanitizedHtml);
                         }
-
-                        console.log('message', message);
 
                         const token = meta.telegram.value;
 
@@ -15960,8 +15926,6 @@ Platform = function (app, listofnodes) {
                         addValue("tgto", channelName, chat.id);
                         addValue("tgfrom", channelName, chat.id);
 
-                        console.log('renderClbk', renderClbk);
-
                         if (renderClbk){
                             renderClbk();
                         }
@@ -16699,8 +16663,6 @@ Platform = function (app, listofnodes) {
             var token = currenttoken
 
 
-            console.log('getaddress', getaddress())
-
             return self.api.checkProxy(proxy).then(r => {
                 return  self.api.exist(proxy, address, token)
             }).then(exist => {
@@ -16712,7 +16674,6 @@ Platform = function (app, listofnodes) {
             }).then(r => {
                 return self.api.setToken(address, token, proxy)
             }).catch(e => {
-                console.log("E", e)
                 return Promise.resolve()
             })
             
@@ -16787,8 +16748,6 @@ Platform = function (app, listofnodes) {
                     currenttoken = token
                     platform.fcmtoken = token
 
-                    console.log("FCM TOKEN GET", token)
-
                     platform.matrixchat.changeFcm()
 
                     self.events()
@@ -16837,8 +16796,6 @@ Platform = function (app, listofnodes) {
 
                 if (data.data)
                     platform.ws.messageHandler(data.data)
-
-                console.log("DATA", data)
 
                 if (data.room_id) {
 
@@ -16893,8 +16850,6 @@ Platform = function (app, listofnodes) {
          
             // When token is refreshed, update the matrix element for the Vue app
             FirebasePlugin.onTokenRefresh(function(token) {
-
-                console.log("FCM TOKEN REFRESH", token)
 
                 platform.fcmtoken = token   
                 currenttoken = token
@@ -17331,9 +17286,7 @@ Platform = function (app, listofnodes) {
 
                 var h = '';
 
-                var src = deep(author, 'image');
-                var name = deep(author, 'name');
-                var letter = name ? name[0] : '';
+                var src = deep(author, 'image')
 
 
                 var link = '<a href="' + encodeURI(clearStringXss(author.name.toLowerCase())) + '">'
@@ -17353,11 +17306,6 @@ Platform = function (app, listofnodes) {
                 if (gotoprofile) h += link
 
                 h += '<div class="usericon" image="' + clearStringXss(src || '') + '">'
-
-                if (!src && letter){
-
-                    h += '<span class="letter">' + letter.toUpperCase() + '</span>';
-                }
 
 
                 if(deep(platform, 'real.'+author.address)) {
@@ -18609,8 +18557,6 @@ Platform = function (app, listofnodes) {
 
                 fastMessage: function (data) {
 
-                    console.log('fastMessage', data);
-
                     var text = '';
                     var html = '';
 
@@ -18645,7 +18591,6 @@ Platform = function (app, listofnodes) {
                         if (text) {
                             var toptext =  self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time, data.donation);
 
-                            console.log('toptext', toptext);
                             html += toptext
                         }
 
@@ -18665,22 +18610,6 @@ Platform = function (app, listofnodes) {
                             html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time)
                         }
                     }
-
-                    if (data.reason == 'system') {
-
-                        // text = self.tempates.comment(data.comment/*, self.tempates.share(data.share)*/)
-
-                        // if (text) {
-
-                        //     var toptext = self.app.localization.e('e13337')
-
-                        //     html += self.tempates.user(data.user, '<div class="text">' + text + '</div>', true, ' ' + toptext, extra, data.time)
-                        // }
-
-                        console.log('data!!', data, data.text);
-                        html += `<div><b>System notification</b></div><div class="text">${data.text}</div>`;
-                    }
-
 
                     return html;
 
@@ -19502,7 +19431,6 @@ Platform = function (app, listofnodes) {
 
         self.messageHandler = function (data, clbk) {
 
-
             data || (data = {})
 
             if (data.msg || data.mesType) {
@@ -19519,7 +19447,6 @@ Platform = function (app, listofnodes) {
                 if(!data.electronSettings) data.electronSettings = {}
 
                 if (!m) m = {}
-
 
                 if (m.checkHandler) {
                     if (!m.checkHandler(data, m)) {
@@ -19538,12 +19465,13 @@ Platform = function (app, listofnodes) {
                 }
 
 
+
                 var clbks = function (loadedData) {
 
                     data.loadedData = true;
 
                     var audio = deep(m, 'audio')
-                    
+
                     _.each(m.clbks, function (clbk) {
                         clbk(data, loadedData);
                     })
@@ -19569,10 +19497,10 @@ Platform = function (app, listofnodes) {
 
                         }
 
-
                         if (m.fastMessage && !m.refs.all && !m.refs[data.RefID]) {
 
                             var html = m.fastMessage(data, loadedData);
+
 
                             if (html) {
 
@@ -19606,6 +19534,9 @@ Platform = function (app, listofnodes) {
                                     return
                                 }
 
+
+
+
                             }
 
 
@@ -19628,7 +19559,6 @@ Platform = function (app, listofnodes) {
                         clbk()
 
                 }
-
 
                 if(m.electronSettings) data.electronSettings = _.clone(m.electronSettings)
 
@@ -19862,16 +19792,31 @@ Platform = function (app, listofnodes) {
 
             //platform.matrixchat.notify.event()
 
-            // self.messageHandler({
-            //     addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM",
-            //     addrFrom: "PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S",
-            //     mesType: "post",
-            //     msg: "comment",
-            //     text: "Please, set avatar",
-            //     reason: "system",
-            //     time: "1619697839",
-            // })
+            /* 
+            self.messageHandler({
+                addr: "PR7srzZt4EfcNb3s27grgmiG8aB9vYNV82"
+                amount: "166666"
+                msg: "transaction"
+                node: "64.235.45.119:38081:8087"
+                nout: "7"
+                time: 1629883584
+                txid: "4e73740eba080aae73aceb80636dcf8f3fe8aed1a9c8c7de417a59ee2d54d357"
+            })
+            
 
+            */
+
+            /*self.messageHandler({
+                addr: "PQ8AiCHJaTZAThr2TnpkQYDyVd1Hidq4PM",
+                addrFrom: "PKpdrwDVGfuBaSBvboAAMwhovFmGX8qf8S",
+                mesType: "post",
+                msg: "comment",
+                nblock: 1154467,
+                posttxid: "37348021a565fa549dfae5e9fb855c40dadae4456bda1cb1bfd3d3398081db91",
+                reason: "post",
+                time: "1619697839",
+                txid: "60c46a7b6ce852cab2c168ad09293fcf4afbfc9f6c47ba1ec9ce5426184b6019"
+            })*/
 
             /*self.messageHandler({
                 msg: "sharepocketnet",
@@ -21241,7 +21186,6 @@ Platform = function (app, listofnodes) {
                 self.matrixchat.imported = true;
 
                 if(electron){
-                    console.log("HERE")
 
                     if(clbk) clbk()
                 }
@@ -21303,7 +21247,6 @@ Platform = function (app, listofnodes) {
         
                                 var privatekey = self.app.user.private.value.toString('hex');
 
-                                console.log('localization', self.app.localization.key)
                     
                                 var matrix = `<div class="wrapper matrixchatwrapper">
                                     <matrix-element
@@ -21376,7 +21319,6 @@ Platform = function (app, listofnodes) {
 
                 if(!self.ws) return
 
-                console.log("self.ws", self.ws)
 
                 var wsntemplates = self.ws.tempates
 
@@ -21510,7 +21452,6 @@ Platform = function (app, listofnodes) {
                 return !self.matrixchat.core.hiddenInParent
             }
 
-            console.log('self.matrixchat.core.isactive()', self.matrixchat.core.isactive())
 
             return self.matrixchat.core.isactive()
         },
@@ -21671,7 +21612,6 @@ Platform = function (app, listofnodes) {
             self.matrixchat.core.connect(self.matrixchat.connectWith).then(r => {
                 self.matrixchat.connectWith = null
             }).catch(e => {
-                console.log('e', e)
                 self.matrixchat.connectWith = null
             })
         },
@@ -21963,7 +21903,6 @@ Platform = function (app, listofnodes) {
             cordova.openwith.addHandler(function(intent){
                 var sharing = {}
        
-                console.log('intent', intent)
 
                 var promises = _.map(
                     _.filter(intent.items || [], function(i){return i}), 
@@ -21977,8 +21916,6 @@ Platform = function (app, listofnodes) {
 
                     return new Promise((resolve, reject) => {
 
-                        console.log('item.type', item.type)
-                        console.log('item.data', item.base64)
 
                         if(utitomime[item.type]) item.type = utitomime[item.type]
 
@@ -22034,7 +21971,6 @@ Platform = function (app, listofnodes) {
 
                             sitemessage(self.app.localization.e('e13293'))
 
-                            console.log("R", r)
                         })
 
                         

@@ -576,7 +576,7 @@ var Proxy = function (settings, manage, test) {
 	self.peertube = {
 		init: function () {
 
-			var ins = {1 : ['pocketnetpeertube1.nohost.me', 'pocketnetpeertube2.nohost.me'], 5 : ['pocketnetpeertube5.nohost.me', 'pocketnetpeertube7.nohost.me'], 6 : ['pocketnetpeertube4.nohost.me', 'pocketnetpeertube6.nohost.me']}
+			var ins = {1 : ['pocketnetpeertube1.nohost.me'/*, 'pocketnetpeertube2.nohost.me'*/], 5 : ['pocketnetpeertube5.nohost.me', 'pocketnetpeertube7.nohost.me'], 6 : ['pocketnetpeertube4.nohost.me', 'pocketnetpeertube6.nohost.me']}
 
 			if (test){
 				ins = {0 : ['pocketnetpeertube3.nohost.me']}
@@ -956,6 +956,7 @@ var Proxy = function (settings, manage, test) {
 							node = nodeManager.nodesmap[options.node];
 						}
 
+
 						if (!node || options.auto)
 							node = nodeManager.selectProbability(); //nodeManager.selectbest()
 
@@ -1121,8 +1122,6 @@ var Proxy = function (settings, manage, test) {
 					if (!_node) {
 						return Promise.reject('cantselect');
 					}
-
-					console.log('_node.test(scenario)', scenario)
 
 					return _node.test(scenario).then(r => {
 						return Promise.resolve({

@@ -2168,10 +2168,6 @@ input[type=radio].radio:checked + label {
     z-index: 1005;
 
     &.embeding{
-        z-index: 2005
-    }
-
-    &.embeding{
         z-index: 2005; 
     }
 
@@ -2818,11 +2814,7 @@ input[type=radio].radio:checked + label {
             }
         }
 
-        &.optimized{
-            >div{
-                display: none!important;
-            }
-        }
+        
     }
 }
 
@@ -4940,10 +4932,6 @@ html.cordova{
         }
     }
 
-    .letter{
-        font-size: 1.5em;
-    }
-
     &:hover{
         .realperson{
             opacity: 0.1;
@@ -5928,6 +5916,20 @@ html.stblack{
     #splashScreen{
         display: flex;
     }
+
+    html.mobile,
+    html.tablet{
+        #content{
+        
+
+            &.optimized{
+                >div{
+                    display: none!important;
+                }
+            }
+        }
+    }
+    
 
     
 }
