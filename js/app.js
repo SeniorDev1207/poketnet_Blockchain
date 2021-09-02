@@ -1433,44 +1433,57 @@ Application = function(p)
 					})
 				}
 			},
-			dialog : function(name, src){
-				srcToData(src, function(base64){
+			dialog : function(name, src, dar){
+				
 
-					var items = [
-						{
-							text : app.localization.e('saveimage'),
-							class : 'itemmain',
-							action : function(clbk){
+				var items = [
+					{
+						text : app.localization.e('saveimage'),
+						class : 'itemmain',
+						action : function(clbk){
+
+							globalpreloader(true, true)
+
+							srcToData(src, function(base64){
 
 								self.mobile.saveImages.save(base64, name)
-							}
+
+								successCheck()
+
+								globalpreloader(false)
+
+							})
 						}
-					]
-
-					if (window.cordova && window.plugins && window.plugins.socialsharing){
-
-						items.push({
-							text : app.localization.e('share'),
-							class : 'itemmain',
-							action : function(clbk){
-
-								var options = {
-									files : [base64]
-								}
-
-								window.plugins.socialsharing.shareWithOptions(options);
-	
-							}
-						})
-
 					}
+				]
+
+					/*if(!removesharing){
+						if (window.cordova && window.plugins && window.plugins.socialsharing){
+
+							items.push({
+								text : app.localization.e('share'),
+								class : 'itemmain',
+								action : function(clbk){
+	
+									var options = {
+										files : [base64]
+									}
+	
+									window.plugins.socialsharing.shareWithOptions(options);
+		
+								}
+							})
+	
+						}
+					}*/
+					
 
 					
 
 					menuDialog({
 						items : items
 					})
-				})
+				
 			},
 			init : function(_el){
 
@@ -1482,6 +1495,7 @@ Application = function(p)
 
 							var name = this.attr('save')
 							var src = this.attr('src') || this.attr('i')
+							var removesharing = this.attr('removesharing')
 	
 							self.mobile.saveImages.dialog(name, src)
 

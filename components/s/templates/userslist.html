@@ -11,25 +11,12 @@
 
 				<div class="pictureWrapper">
 					
-					<% 
-						var src = user.i;
-						var name = user.name;
-						var letter = name ? name[0] : ''; 
-					%>
+					<% var src = user.i  %>
 					
 					<div class="icon">
 						<div class="usericon" image="<%-src || ''%>">
-
-							<% if(!src && letter) { %>
-
-								<span class="letter">
-									<%-letter.toUpperCase()%>
-								</span>
-			
-							<% } else if (!src) { %>
-			
+							<% if(!src) {%>
 								<svg width="30" height="30" data-jdenticon-value="<%-user.address%>"></svg>
-			
 							<% } %>
 						</div>
 					</div>

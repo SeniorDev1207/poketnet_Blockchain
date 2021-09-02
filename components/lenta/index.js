@@ -538,13 +538,6 @@ var lenta = (function(){
 							players[share.txid].id = vel.attr('pid')
 							players[share.txid].shadow = false
 
-							var videoId = (player.embed && player.embed.details && player.embed.details.uuid) ? player.embed.details.uuid : player.localVideoId;
-							if (videoId && self.sdk.local.shares.getVideo(videoId, share.txid) != undefined) {
-								renders.setShareDownload(share.txid, 'downloaded');
-							} else {
-								renders.setShareDownload(share.txid, 'canDownload');
-							}
-
 							actions.setVolume(players[share.txid])
 
 							if (video){
@@ -613,8 +606,8 @@ var lenta = (function(){
 
 					s.logoType = self.app.meta.fullname
 
-					renders.setShareDownload(share.txid, 'invisible');
-
+					//https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4
+					
 					PlyrEx(pels[0], s, callback, readyCallback)
 
 				}
@@ -685,8 +678,9 @@ var lenta = (function(){
 					}
 
 
-					renders.share(share, clbk, true)
+					renders.share(share, null, true)
 
+					
 				}
 				
 
@@ -1834,148 +1828,6 @@ var lenta = (function(){
 				actions.postscores(id)
 			},
 
-			downloadVideo : function() {
-				var id = $(this).closest('.share').attr('id');
-				var dwnloadBtn = el.c.find('.downloadBtn.' + id);
-				if (!players[id] || !players[id].p || !players[id].p.embed) return;
-				var embed = players[id].p.embed;
-				if (!embed.details || !embed.details.uuid || !embed.details.streamingPlaylists || embed.details.streamingPlaylists.length <= 0) return;
-				var streamingPlaylist = embed.details.streamingPlaylists[0];
-				if (!streamingPlaylist || !streamingPlaylist.files || streamingPlaylist.files.length <= 0) return;
-				// Generate the HTML menu
-				var menuContent = '<div class="sharepostmenu downloadMenu">';
-				_.each(streamingPlaylist.files, function(file) {
-					if (!file || !file.resolution || !file.resolution.label || !file.fileDownloadUrl) return;
-					menuContent += `<div class="menuitem table"><div class="label download${file.resolution.id}"><span>${file.resolution.label}</span>`;
-					if (file.size)
-						menuContent += `<span class="lightColor">${formatBytes(file.size)}</span>`;
-					menuContent += `</div></div>`;
-				});
-				menuContent += "</div>";
-				// Open the menu
-				self.app.platform.api.tooltip(dwnloadBtn, function() {
-					return menuContent;
-				}, function(tooltip)  {
-					_.each(streamingPlaylist.files, function(file) {
-						if (!file || !file.resolution || !file.resolution.id) return;
-						tooltip.find('.label.download' + file.resolution.id).on('click', function() {
-							events.downloadVideoFromUrl(embed.details.uuid, file, embed.details, id);
-						});
-					});
-				});
-			},
-
-			downloadVideoFromUrl: function(id, video, videoDetails, shareId) {
-				if (!video || !video.fileDownloadUrl) return;
-				var share = self.app.platform.sdk.node.shares.storage.trx[shareId];
-				var user = deep(self.app, 'platform.sdk.usersl.storage.' + share.address);
-				// Mobile
-				if (isMobile() && window.cordova && window.cordova.file) {
-					// Check if external storage is available, if not, use the internal
-					var storage = (window.cordova.file.externalDataDirectory) ? window.cordova.file.externalDataDirectory : window.cordova.file.dataDirectory;
-					// open target file for download
-					window.resolveLocalFileSystemURL(storage, function(dirEntry) {
-						// Create a posts folder
-						dirEntry.getDirectory('posts', { create: true }, function (dirEntry11) {
-							dirEntry11.getDirectory(shareId, { create: true }, function (dirEntry2) {
-								// Create share.json file
-								var shareInfos = {
-									share: share.export(),
-									user: user.export()
-								}
-								// Create JSON file for share informations
-								dirEntry2.getFile('share.json', { create: true }, function (shareFile) {
-									// Write into file
-									shareFile.createWriter(function (fileWriter) {
-										fileWriter.write(shareInfos);
-									});
-								});
-
-
-								dirEntry2.getDirectory('videos', { create: true }, function (dirEntry3) {
-									// Get/create a folder for this video
-									dirEntry3.getDirectory(id, { create: true }, function (dirEntry4) {
-										var infos = {
-											thumbnail: 'https://' + videoDetails.from + videoDetails.thumbnailPath
-										}
-										// Create JSON file for video informations
-										dirEntry4.getFile('info.json', { create: true }, function (infoFile) {
-											// Write into file
-											infoFile.createWriter(function (fileWriter) {
-												fileWriter.write(infos);
-											});
-										});
-										// Download the video
-										dirEntry4.getFile(video.resolution.id + '', { create: true }, function (targetFile) {
-											var downloader = new BackgroundTransfer.BackgroundDownloader();
-											// Create a new download operation.
-											var download = downloader.createDownload(video.fileDownloadUrl, targetFile, "Bastyon: Downloading video");
-											renders.setShareDownload(shareId, 'downloading');
-											// Start the download and persist the promise to be able to cancel the download.
-											app.downloadPromise = download.startAsync().then(function(e) {
-												// Success
-												console.log("success");
-												// Resolve internal URL
-												window.resolveLocalFileSystemURL(targetFile.nativeURL, function(entry) {
-													targetFile.internalURL = entry.toInternalURL();
-													shareInfos.videos = {};
-													shareInfos.videos[id] = { video: targetFile,  infos: infos };
-													self.sdk.local.shares.add(shareId, shareInfos);
-													actions.openPost(shareId, function() {
-														setTimeout(() => {
-															delete el[shareId];
-															renders.setShareDownload(shareId, 'downloaded');
-															events.sharesPreInitVideo();
-															events.videosInview();
-															events.sharesInview();
-															events.resize();
-														}, 200);
-													});
-												});
-											}, function(e) {
-												// Error
-												console.log("error");
-												console.log(e);
-												renders.setShareDownload(shareId, 'canDownload');
-											}, function(e) {
-												// Progress
-												// console.log("progress");
-												// console.log(e);
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				}
-				// Desktop
-				else {
-					var a = document.createElement("a");
-					a.href = video.fileDownloadUrl;
-					a.setAttribute("download", video.resolution.id + '.mp4');
-					a.click();
-				}
-			},
-
-			deleteVideo : function(){
-				var id = $(this).closest('.share').attr('id');
-				if (!players[id] || !players[id].p || !players[id].p.localVideoId) return;
-				players[id].p.destroy();
-				self.sdk.local.shares.delete(id, function() {
-					actions.openPost(id, function() {
-						setTimeout(() => {
-							delete el[id];
-							renders.setShareDownload(id, 'canDownload');
-							events.sharesPreInitVideo();
-							events.videosInview();
-							events.sharesInview();
-							events.resize();
-						}, 200);
-					});
-				});
-			},
-
 			like : function(){
 
 				var p = $(this).closest('.stars');
@@ -2761,8 +2613,8 @@ var lenta = (function(){
 
 				var sel =  el.share[s.txid] 
 
-				var _el = sel.find(".image");
-				var images = sel.find(".images");
+				var _el = sel.find(".shareImages .image");
+				var images = sel.find(".shareImages");
 
 				if(images.hasClass('active') || !_el.length || !images.length){
 
@@ -2784,6 +2636,8 @@ var lenta = (function(){
 
 							var imagesWrapperWidth = el.width(),
 								imagesWrapperHeight = el.height();
+
+								console.log(el.height(), el, image.images)
 
 							_.each(image.images, function(img, n){
 
@@ -2812,8 +2666,10 @@ var lenta = (function(){
 									imagesWrapperWidth = w
 								}
 
-								if(_img.height > _img.width || isMobile() || self.app.width <= 768){
+								if(_img.height > _img.width || (isMobile() || self.app.width <= 768)){
 									ac = 'h2'
+
+									console.log("_w * (_img.height / _img.width)", _w * (_img.height / _img.width))
 
 									el.height(_w * (_img.height / _img.width))
 									imagesWrapperHeight = _w * (_img.height / _img.width)
@@ -2872,7 +2728,7 @@ var lenta = (function(){
 
 					});
 
-					self.app.mobile.saveImages.init(_el)
+					
 
 				})
 				
@@ -3121,37 +2977,6 @@ var lenta = (function(){
 				this.shares(shares, clbk, {
 					noview : true
 				})
-			},
-
-			// Update the download button for this share
-			// {shareId}: The tx ID of the share
-			// {action}:
-			//		canDownload: Show the download button
-			//		downloading: Show the spinner
-			//		downloaded: Show the green check and delete button
-			//		invisible: Hide everything
-			setShareDownload : function(shareId, action){
-				// Check if we have the HTML elements for this share
-				if (!el[shareId])
-					el[shareId] = el.c.find('.metapanel.' + shareId);
-				switch (action) {
-					case 'canDownload':
-						console.log('canDownload');
-						el[shareId].removeClass('downloading downloaded invisible').addClass('canDownload');
-						break;
-					case 'downloading':
-						console.log('downloading');
-						el[shareId].removeClass('canDownload downloaded invisible').addClass('downloading');
-						break;
-					case 'downloaded':
-						console.log('downloaded');
-						el[shareId].removeClass('downloading canDownload invisible').addClass('downloaded');
-						break;
-					case 'invisible':
-						console.log('invisible');
-						el[shareId].removeClass('downloading downloaded canDownload').addClass('invisible');
-						break;
-				}
 			}
 		}
 
@@ -3387,10 +3212,14 @@ var lenta = (function(){
 									loader = 'recommended'
 								}
 
-								else if(recommended == 'hot'){
+								else
+
+								if(recommended == 'hot'){
 								}
 
-								else if(recommended == 'b'){
+								else
+
+								if(recommended == 'b'){
 									loader = 'getbyidsp'
 									_beginmaterial = essenseData.beginmaterial
 								}
@@ -3412,11 +3241,6 @@ var lenta = (function(){
 
 							if(essenseData.txids && recommended != 'b'){
 								loader = 'txids'
-							}
-
-							if(recommended == 'saved'){
-								loader = 'getsavedbyids';
-								essenseData.txids = self.app.platform.sdk.local.shares.getAllIds();
 							}
 
 							if (essenseData.loaderkey) loader = essenseData.loaderkey
@@ -3485,12 +3309,10 @@ var lenta = (function(){
 					loader = 'recommended'
 				}
 
-				else if(recommended == 'b'){
-					loader = 'getbyidsp'
-				}
+				else
 
-				else if(recommended == 'saved'){
-					loader = 'getsavedbyids';
+				if(recommended == 'b'){
+					loader = 'getbyidsp'
 				}
 
 				else
@@ -3564,8 +3386,6 @@ var lenta = (function(){
 			el.c.on('click', '.metmenu', events.metmenu)
 			el.c.on('click', '.showmorebyauthor', events.showmorebyauthor)
 			el.c.on('click', '.commentsAction', events.toComments)
-			el.c.on('click', '.downloadBtn', events.downloadVideo)
-			el.c.on('click', '.deleteBtn', events.deleteVideo)
 
 			el.c.find('.loadmore button').on('click', events.loadmore)
 			el.c.find('.loadprev button').on('click', events.loadprev)
@@ -4147,10 +3967,6 @@ var lenta = (function(){
 
 					recommended = false;
 
-				}
-
-				if (essenseData.saved || _s.saved){
-					recommended = 'saved';
 				}
 
 				canloadprev = !!!essenseData.txids || false
