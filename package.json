@@ -160,7 +160,8 @@
             "artifactName": "${productName}_${platform}_${arch}.${ext}",
             "category": "Network",
             "executableName": "Pocketnet",
-            "description": "${productName} Desktop Browser"
+            "description": "${productName} Desktop Browser",
+            "license": "Apache-2.0"
         },
         "win": {
             "target": "nsis",
