@@ -383,6 +383,10 @@ var comments = (function(){
 
 				var sender = self.sdk.address.pnet().address;
 
+				var imgSender = deep(app, 'platform.sdk.usersl.storage.' + sender + '.image')
+
+				var imgReceiver = deep(app, 'platform.sdk.usersl.storage.' + receiver + '.image');
+
 				if (sender === receiver){
 
 					sitemessage(self.app.localization.e('donateself'));
@@ -397,8 +401,8 @@ var comments = (function(){
 						essenseData : {
 							type : 'donate',
 							storage : storage,
-							sender: sender, 
-							receiver: receiver,
+							sender: imgSender, 
+							receiver: imgReceiver,
 							balance: balance,
 							on : {
 	
@@ -684,7 +688,9 @@ var comments = (function(){
 
 						var name = (deep(self.app, 'platform.sdk.usersl.storage.'+address+'.name') || address)
 
-						var str = '@' + name + ', '
+						console.log("NAME", name)
+
+						var str = '@' + name + '  '
 
 						if(address == self.app.platform.sdk.address.pnet().address || !name) str = ''
 
