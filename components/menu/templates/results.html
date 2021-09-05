@@ -21,9 +21,7 @@
 
 										<% 
 
-											var src = user.i  || user.image;
-											var name = user.name;
-											var letter = name ? name[0] : '';
+											var src = user.i  || user.image
 											
 										%>
 
@@ -43,14 +41,6 @@
 														<i class="fas fa-check fa-stack-1x"></i>
 													  </span>
 												</div>
-											<% } else if (!src && letter) {%>
-
-												<span 
-													class="letter"
-												>
-													<%-letter.toUpperCase()%>
-												</span>
-							
 											<% } %>
 										</div>
 									</div>

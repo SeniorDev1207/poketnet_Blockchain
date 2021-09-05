@@ -937,14 +937,10 @@ ____loclib.sortByViews = "Количеству просмотров";
 ____loclib.unableToAuthorize = "Ошибка авторизации";
 ____loclib.unableToAuthorizeBody = "К сожалению, у приложения не получилось авторизовать данный аккаунт на видео-сервере. Для того, чтобы получить возможность загрузки видео, необходимо иметь не менее 5 PKOIN или 100 репутации. Если ваш аккаунт соответствует данным требованиям, повторите попытку позже.";
 
-____loclib.downloaded = "Загружено";
-____loclib.downloadedEmpty = "Загруженные посты будут показаны здесь";
 ____loclib.emptyDescription = "Описание отсутствует";
 ____loclib.transcodingShort = "Обработка";
 ____loclib.editVideoDescription = "Изменить название/описание видео";
 ____loclib.errorChangingDescription = "Ошибка изменения видео";
-____loclib.downloadVideo = "Скачать видео";
-____loclib.selectQuality = "Выберите качество:";
 
 ____loclib.enterVideoName = "Введите название видео";
 ____loclib.enterVideoDescription = "Введите описание видео";
