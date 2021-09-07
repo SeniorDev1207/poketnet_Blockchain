@@ -1037,36 +1037,23 @@ var author = (function(){
 
 		var initEvents = function(){
 
-
-			var src = deep(author, 'data.image')
-			console.log('src', src);
-
-			if (!src){
-
-
-				el.usericon.addClass('active')
-
-				self.app.platform.api.plissing({
-					el : el.usericon,
-				})
-	
-				el.usericon.on('click', function(){
-					self.app.nav.api.load({
-						open: true,
-						href: 'userpage?id=test',
-						history: true
-					})
-				})
-	
-
-			}
-
-
 			el.up.on('click', events.up)
 
 			el.subscribe.find('.subscribe').on('click', events.subscribe)
 			el.subscribe.find('.unsubscribe').on('click', events.unsubscribe)
 			el.c.find('.notificationturn').on('click', events.subscribePrivate)
+
+			el.c.find('.changeaccount').on('click', function(){
+				self.nav.api.go({
+					open : true,
+					href : 'accounts',
+					inWnd : true,
+
+					essenseData : {
+						toaccpage : true
+					}
+				})
+			})
 
 			el.caption.find('.startchat').on('click', events.startchat)
 
@@ -1384,9 +1371,8 @@ var author = (function(){
 				el.caption = el.c.find('.bgCaption')
 				el.fxd = el.c.find('.fxd')
 				el.subscribe = el.c.find('.subscribebuttonstop');
-				el.up = el.c.find('.upbuttonwrapper');
-				el.w = $(window);
-				el.usericon = el.c.find('.usericon');
+				el.up = el.c.find('.upbuttonwrapper')
+				el.w = $(window)
 
 				el.contents = el.c.find('.contentswrapper')
 

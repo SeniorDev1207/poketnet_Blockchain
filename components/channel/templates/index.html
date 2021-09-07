@@ -1,6 +1,5 @@
 <% 
 var name = app.platform.api.name(author.address) 
-var letter = name ? name[0] : '';
 %>
 
 <div id="<%-module.map.id%>">
@@ -13,18 +12,9 @@ var letter = name ? name[0] : '';
 
 					<div class="usericon" image="<%-src || ''%>">
 
-						<% if(!src && letter) {%>
-
-							<span class="letter">
-								<%-letter.toUpperCase()%>
-							</span>
-
-						<% } else if (!src) { %>
-
+						<% if(!src) {%>
 							<i class="far fa-user"></i>
-
 						<% } %>
-
 					</div>
 				</div>
 
