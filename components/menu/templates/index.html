@@ -1,5 +1,3 @@
-
-
 <div id="<%-module.map.id%>" class="unselectablemobile">
 
 	<div class="menuWrapper">
@@ -38,13 +36,6 @@
 											</div>
 										<% } %>
 
-										<% if(typeof _Electron != 'undefined' && window.electron) {%>
-											<div class="pcenterCell">
-												<div class="pcenterLabel toppost " r="saved">
-													<a href="index?r=saved"  handler="true"><%=e('downloaded')%></a>
-												</div>
-											</div>
-										<% } %>
 										
 										<div class="pcenterCell">
 											<div class="pcenterLabel toppost " r="recommended">
@@ -142,27 +133,14 @@
 						<div class="items">
 							<div class="item table right user" events="userpage unselectable">
 
-								<% 
-								
-								var src = deep(app, 'platform.sdk.user.storage.me.image')  
-
-								var name = app.platform.api.clearname(deep(app, 'platform.sdk.user.storage.me.name') || (user.address.value && user.address.value.toString('hex')) )
-								var letter = name ? name[0] : ''
-
-								%>
+								<% var src = deep(app, 'platform.sdk.user.storage.me.image')  %>
 								
 								<div class="icon">
 									<a href="<%-app.platform.api.authorlink(user.address.value.toString('hex'))%>">	
 										<div class="usericon" image="<%-src || ''%>">
 
-											<% if(!src && letter) {%>
+											<% if(!src) {%>
 
-												<span class="letter">
-													<%-letter.toUpperCase()%>
-												</span>
-
-											<% } else if (!src) { %>
-	
 												<i class="far fa-user"></i>
 
 											<% } %>

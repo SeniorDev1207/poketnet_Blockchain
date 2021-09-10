@@ -8,6 +8,10 @@ var videoCabinet = (function () {
   const HUDRED_PERC = 100;
   const LAZYLOAD_PERCENTAGE = 0.9;
   const POSITIVE_STATUS = 'fulfilled';
+  const BONUS_PROGRAM_REQUIREMENTS = {
+    bonusProgramViews: 10000,
+    bonusProgramRatings: 500,
+  };
   const TRANSCODING_CHECK_INTERVAL = 20000;
 
   var Essense = function (p) {
@@ -179,6 +183,7 @@ var videoCabinet = (function () {
               {
                 parameterName: 'bonusProgramViews',
                 value: result,
+                requiredValue: BONUS_PROGRAM_REQUIREMENTS.bonusProgramViews,
               },
               el.bonusProgramContainerStars,
             );
@@ -188,6 +193,7 @@ var videoCabinet = (function () {
               {
                 parameterName: 'bonusProgramViews',
                 value: 0,
+                requiredValue: BONUS_PROGRAM_REQUIREMENTS.bonusProgramViews,
               },
               el.bonusProgramContainerStars,
             ),
@@ -196,50 +202,36 @@ var videoCabinet = (function () {
         actions
           .getTotalRatings()
           .then((result) => {
-            const renderingStarts =
-              result.scoreCnt && result.scoreSum
-                ? `${(result.scoreSum / result.scoreCnt).toFixed(1)} (${
-                    result.scoreCnt
-                  }) <i class="fas fa-star"></i>`
-                : `&mdash;`;
+            var rendering = '&mdash;';
 
-            const renderingUsers = `${result.countLikers}  <i class="fas fa-users"></i>`;
+            if (result.scoreCnt && result.scoreSum) {
+              rendering =
+                (result.scoreSum / result.scoreCnt).toFixed(1) +
+                ' (' +
+                result.scoreCnt +
+                ') ' +
+                '<i class="fas fa-star"></i> ' +
+                result.countLikers +
+                ' <i class="fas fa-users"></i>';
+            }
 
             renders.bonusProgram(
               {
                 parameterName: 'bonusProgramRatings',
-                value: renderingStarts,
+                value: rendering,
+                requiredValue: BONUS_PROGRAM_REQUIREMENTS.bonusProgramRatings,
               },
               el.bonusProgramContainerViews,
-            );
-
-            renders.bonusProgram(
-              {
-                parameterName: 'UniqueUsers',
-                value: renderingUsers,
-              },
-              el.bonusProgramContainerUniqueUsers,
             );
           })
           .catch((e) => {
             renders.bonusProgram(
               {
                 parameterName: 'bonusProgramRatings',
-                value: `<span class="errorLoading"><i class="fas fa-exclamation-circle"></i> ${self.app.localization.e(
-                  'ErrorLoadingRates',
-                )}</span>`,
+                value: 0,
+                requiredValue: BONUS_PROGRAM_REQUIREMENTS.bonusProgramRatings,
               },
               el.bonusProgramContainerViews,
-            );
-
-            renders.bonusProgram(
-              {
-                parameterName: 'UniqueUsers',
-                value: `<span class="errorLoading"><i class="fas fa-exclamation-circle"></i> ${self.app.localization.e(
-                  'ErrorLoadingRates',
-                )}</span>`,
-              },
-              el.bonusProgramContainerUniqueUsers,
             );
           });
       },
@@ -1119,9 +1111,6 @@ var videoCabinet = (function () {
         el.bonusProgramContainerViews = el.c.find('.leaderBoardContainerViews');
         el.bonusProgramContainerStars = el.c.find(
           '.leaderBoardContainerRatings',
-        );
-        el.bonusProgramContainerUniqueUsers = el.c.find(
-          '.leaderBoardContainerUniqueUsers',
         );
 
         el.sortTypeSelect = el.c.find('.sortTypeSelect');

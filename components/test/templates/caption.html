@@ -6,25 +6,16 @@
 				<div class="icon">
 
 					<% 
-						var src = tempInfo.image;
-						var name = tempInfo.name;
-						var letter = name ? name[0] : '';
+						var src = tempInfo.image 
 					%>
 
 					<div class="usericon" image="<%-src || ''%>">
 
-						<% if(!src && letter) {%>
+						<% if(!src) {%>
 
-							<span class="letter">
-								<%-letter.toUpperCase()%>
-							</span>
-	
-						<% } else if (!src) { %>
-	
 							<svg width="40" height="40" data-jdenticon-value="<%-user.address.value.toString('hex')%>"></svg>
-	
+
 						<% } %>
-						
 
 						<div class="uloader">
 							<div class="preloader5"><img src="./img/three-dots.svg"/></div>
