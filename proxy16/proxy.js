@@ -236,9 +236,7 @@ var Proxy = function (settings, manage, test) {
 			wss: self.wss.info(true)
 		}
 
-		console.log('iu', i)
-
-		var count = Math.max(f.deep(i, 'wss.users') || 1)
+		var count = Math.max(f.deep(i, 'wss.users.length') || 1)
 
 		if (count < 1) count = 1
 

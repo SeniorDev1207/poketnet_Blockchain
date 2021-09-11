@@ -945,6 +945,9 @@ ____loclib.editVideoDescription = "Изменить название/описа�
 ____loclib.errorChangingDescription = "Ошибка изменения видео";
 ____loclib.downloadVideo = "Скачать видео";
 ____loclib.selectQuality = "Выберите качество:";
+____loclib.downloadedVideos = "Загруженные видео";
+____loclib.deleteAllDownloadedVideos = "Удалить все загруженные видео";
+____loclib.videosDeleted = "Видео удалено!";
 
 ____loclib.enterVideoName = "Введите название видео";
 ____loclib.enterVideoDescription = "Введите описание видео";
@@ -956,6 +959,3 @@ ____loclib.saveimage = "Сохранить изображение";
 
 ____loclib.showAllButton = "Подробнее";
 ____loclib.hideAllButton = "Скрыть";
-
-____loclib.UniqueUsers = "Уникальные Пользователи";
-____loclib.ErrorLoadingRates = "Ошибка Загрузки";

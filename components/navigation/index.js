@@ -164,7 +164,14 @@ var navigation = (function(){
 
 			getdata : function(clbk, p){
 
+				console.log("P", p)
+
+
+
+				
+
 				var data = {};
+
 
 				w = $(window)
 
