@@ -83,6 +83,8 @@ var Wss = function(node, service){
             ws.close();
         }
 
+        
+
         emitting = {}
 
         ws = null
@@ -91,6 +93,8 @@ var Wss = function(node, service){
     self.connect = function(user){
 
         var path = `ws://${node.host}:${node.ws}/ws`;
+
+
 
         if(!ws){
             ws = new WebSocket(path);        

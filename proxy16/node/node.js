@@ -4,6 +4,7 @@ var f = require('../functions');
 const { performance } = require('perf_hooks');
 var Test = require('./testnode.js');
 var Wss  = require('./wss.js');
+const { map } = require('lodash');
 
 var Node = function(options, manager){
 
@@ -21,21 +22,20 @@ var Node = function(options, manager){
     self.name = options.name || "Pocketnet Node"
     self.stable = options.stable || false
     self.addedby = options.addedby || ''
+    //self.currentBlock = 0
     self.peer = options.peer || false
     self.local = options.local || false
     self.testing = false
-    self.id = f.makeid()
 
     var statisticInterval = null
     var changeNodeUsersInterval = null
+
+
     var notactualevents = 360000 //mult
     var checkEventsLength = 100 
-    var getinfointervaltime = 120000 
-    var lastinfoTime = null
-    var lastSuccessInfoTime = null
+    var getinfointervaltime = 60000 
+    var lastinfoTime = f.now()
     var maxevents = 1000
-
-    var freeze = false
 
     var test = new Test(self, manager)
 
@@ -56,14 +56,6 @@ var Node = function(options, manager){
                 wss.service = null
                 serviceConnection()
             })
-
-        }
-    }
-
-    var closeService = function(){
-        if (wss.service){
-            wss.service.disconnect()
-            wss.service = null
         }
     }
 
@@ -145,6 +137,7 @@ var Node = function(options, manager){
     self.wskey = self.host + ":" + self.ws
     self.ckey = self.host + ":" + self.port + ":" + self.ws
 
+
     self.rpc = new RpcClient({
         protocol: 'http',
         user: self.rpcuser,
@@ -185,16 +178,12 @@ var Node = function(options, manager){
                     }
     
                 }	
-
-                if (method == 'getnodeinfo'){
-
-                    self.statistic.add({
-                        code : code,
-                        difference : difference
-                    })
     
-                }
-                   
+                self.statistic.add({
+                    code : code,
+                    difference : difference
+                })
+    
                 if(!err){
                     return Promise.resolve(data.result)
                 }
@@ -222,7 +211,7 @@ var Node = function(options, manager){
 
             var push = _.clone(p)
 
-                push.time = new Date()
+                push.time = f.now()
 
             self.events.push(push)
 
@@ -240,21 +229,6 @@ var Node = function(options, manager){
             return self.events
         },
 
-        /*usage : function(){
-            var s = self.statistic.get()
-
-            var ul = _.toArray(wss.users).length
-
-            if(!s.success && !s.failed) return 'undefined'
-
-            if (s.success > 0 && s.time < 1000 && ul < 1000){
-                return 'can'
-            }
-
-            return 
-
-        },*/
-
         rating : function(){
 
             if(cachedrating){
@@ -269,6 +243,9 @@ var Node = function(options, manager){
             var lastblock = self.lastblock() || {}
 
             var status = self.chainStatus()
+
+            
+
             ///
 
             var difference = status.difference || 0
@@ -280,14 +257,10 @@ var Node = function(options, manager){
             if (status.fork && difference > 5 || difference > 100) return 0
             if(!s.success || !lastblock.height) return 0
             if (self.testing) return 0
-
-            if(!self.inited) return 0
             ///
 
             var time = s.time;
             var rate = (self.statistic.rate() || 0) + 1
-            var usersl = _.toArray(wss.users).length + 1
-            var userski = 1
 
             if (time && time > 0 && time <= 200) time = 200
             if (time && time > 200 && time <= 400) time = 300
@@ -297,7 +270,6 @@ var Node = function(options, manager){
             if (time && time > 2300 && time <= 4000) time = 3100
             if (time && time > 4000 && time <= 7000) time = 5300
             if (time && time > 7000 && time <= 15000) time = 10000
-            if (time && time > 15000) time = 30000
 
             if (rate <= 2) rate = 1.5
             if (rate > 2 && rate <= 4) rate = 3
@@ -307,11 +279,7 @@ var Node = function(options, manager){
             if (rate > 30 && rate <= 50) rate = 40
             if (rate > 50 && rate <= 100) rate = 75
 
-            if (usersl > 0 && usersl <= 10) userski = 1
-            if (usersl > 10 && usersl <= 100) userski = 10
-            if (usersl > 100 && usersl <= 500) userski = 100
-            if (usersl > 500 && usersl <= 1000) userski = 500
-            if (usersl > 1000) userski = 1000
+            var userski = 1 //_.toArray(wss.users).length + 1
 
             var result = (s.percent  * (lastblock.height || 1) ) / 
             ( userski * rate * (time) * (difference + 1) )
@@ -373,7 +341,7 @@ var Node = function(options, manager){
         },
 
         rate : function(){
-            var s = f.date.addseconds(new Date(), -10)
+            var s = f.date.addseconds(f.now(), -10)
             var l = self.events.length
             var c = 0
 
@@ -397,8 +365,7 @@ var Node = function(options, manager){
                 time : 0,
                 count : self.events.length,
                 allcount : self.eventsCount,
-                rate : self.statistic.rate(),
-                date : lastinfoTime
+                rate : self.statistic.rate()
             }
 
             _.each(self.events, function(l){
@@ -432,13 +399,14 @@ var Node = function(options, manager){
 
                     self.statistic.clearOld()
 
-                    if (self.events.length < 1 + checkEventsLength || !lastinfoTime || f.date.addseconds(lastinfoTime, notactualevents / 1000) < new Date()){
+
+                    if (self.events.length < 1 + checkEventsLength || f.date.addseconds(lastinfoTime, notactualevents / 1000) < f.now()){
 
                         self.info().catch(e => {})
 
                     }
 
-                }, getinfointervaltime)
+                }, getinfointervaltime * 10)
             }
         },
 
@@ -451,7 +419,7 @@ var Node = function(options, manager){
 
         clearOld : function(){
 
-            var timecheck = f.date.addseconds(new Date(), -notactualevents / 1000)
+            var timecheck = f.date.addseconds(f.now(), -notactualevents / 1000)
 
             self.events = _.filter(self.events, function(e){
 
@@ -607,15 +575,12 @@ var Node = function(options, manager){
             return Promise.resolve(lastinfo || {})
         }
 
-        lastinfoTime = new Date()
 
         return self.rpcs('getnodeinfo').then(info => {
 
+
             lastinfo = info
-
-            self.bchain = info.chain
-
-            lastSuccessInfoTime = new Date()
+            lastinfoTime = f.now()
 
             if (info.proxies){
 
@@ -627,7 +592,9 @@ var Node = function(options, manager){
 
             self.addblock(info.lastblock)
             
-            /*timedifference(info.time)*/
+            /*self.currentBlock = info.lastblock.height
+            
+            timedifference(info.time)*/
 
             return Promise.resolve(info)
         })  
@@ -666,8 +633,7 @@ var Node = function(options, manager){
             canuse : (s.success > 0 && lastblock.height) ? true : false,
             local : self.local || false,
             peer : self.peer,
-            wssusers : _.toArray(wss.users).length,
-            bchain : self.bchain
+            wssusers : _.toArray(wss.users).length
         }
     }
 
@@ -705,18 +671,23 @@ var Node = function(options, manager){
     }
 
     self.reservice = function(){
-        closeService()
-        serviceConnection()
+        if (wss.service){
+            wss.service.disconnect()
+        }
+        else{
+            serviceConnection()
+        }
     }
 
     self.init = function(){
+
+        
         self.statistic.interval()
+
         serviceConnection()
 
-        if(!changeNodeUsersInterval)
-            changeNodeUsersInterval = setInterval(changeNodeUsers, 10000)
-
-        self.inited = true
+        /*if(!changeNodeUsersInterval)
+            changeNodeUsersInterval = setInterval(changeNodeUsers, 100000)*/
 
         return self
     }
@@ -725,15 +696,15 @@ var Node = function(options, manager){
         self.statistic.clearinterval()
 
         if(changeNodeUsersInterval){
-
             clearInterval(changeNodeUsersInterval)
-
             changeNodeUsersInterval = null
         }
 
-        closeService()
+        if (wss.service) {
+            wss.service.disconnect()
 
-        self.inited = false
+            
+        }
     }
 
     self.wss = {

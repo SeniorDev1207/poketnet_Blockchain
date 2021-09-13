@@ -370,10 +370,7 @@ var authorization = (function(){
 						fast : deep(p, 'settings.essenseData.fast') || false
 					};
 
-					
 					clbk(data);
-
-					
 				}
 
 			},

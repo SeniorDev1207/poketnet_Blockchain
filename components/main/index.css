@@ -111,10 +111,6 @@
 #main #share {
   min-height: 130px;
 }
-#main .mainpanelcell,
-#main .leftpanelcell {
-  min-height: 1024px;
-}
 #main .leftpanelsvicell,
 #main .leftpanelcell {
   width: 242px;

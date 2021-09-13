@@ -4,14 +4,6 @@ if (typeof _Electron != 'undefined') {
     electron = require('electron');
 }
 
-
-var rand = function(min, max){
-    min = parseInt(min);
-    max = parseInt(max);
-    return Math.floor( Math.random() * (max - min + 1) ) + min;
-}
-
-
 var ProxyRequest = function(app = {}, proxy){
     var self = this
 
@@ -232,7 +224,7 @@ var Proxy16 = function(meta, app, api){
 
     self.changeNode = function(node){
 
-        if (node && (!self.current || self.current.key != node.key)){
+        if (node && self.current.key != node.key){
             self.current = node
 
             app.platform.ws.reconnect()
@@ -421,8 +413,6 @@ var Proxy16 = function(meta, app, api){
         return promise.then(r => {
             return Promise.resolve(r)
         }).catch(e => {
-
-            if (options.fnode && e) e.code = 700
 
             if (e.code == 408 && options.node && trying < 3 && !options.fnode){
 
@@ -665,13 +655,9 @@ var Api = function(app){
                 },  
                 init : function(){
 
-                    var initialProxies = deep(app, 'options.listofproxies') || []
-
                     return this.addlocalelectronproxy().then(r => {
 
-
-
-                        this.addlist(initialProxies)
+                        this.addlist(deep(app, 'options.listofproxies') || [])
 
                         /*setTimeout(() => {
                             this.addlist([{
@@ -693,8 +679,6 @@ var Api = function(app){
 
                         var oldc = localStorage['currentproxy']
 
-                        console.log('oldc', oldc)
-
                         if (oldc){
                             return self.set.current(oldc)
                         }
@@ -707,21 +691,8 @@ var Api = function(app){
 
                     }).then(() => {
 
-                        console.log("CUR", current)
-
-                        if(!current && initialProxies.length){
-
-                            var rps = initialProxies[rand(0, initialProxies.length - 1)]
-
-                            if(rps){
-                                var randproxy = rps.host + ":" + rps.port + ":" + rps.wss
-
-                                console.log('randproxy', randproxy)
-
-                                current = randproxy //proxies[0].id ??
-                            }
-
-                            
+                        if(!current && proxies.length){
+                            current = 'pocketnet.app:8899:8099' //proxies[0].id ??
                         }
 
                         inited = true
@@ -797,11 +768,7 @@ var Api = function(app){
         if(!options) 
             options = {}
 
-        var wprx = null
-
         return getproxy(options.proxy).then(proxy => {
-
-            wprx = proxy
 
             return proxy.rpc(method, parameters, options.rpc)
 
@@ -815,41 +782,14 @@ var Api = function(app){
 
         }).catch(e => {
 
-            if(!e) e = 'TypeError: Failed to fetch'
+            if(e == 'TypeError: Failed to fetch' || e == 'proxy' || (e.code == 408 || e.code == -28)){
 
-            if(!e.code){
-                self.changeProxyIfNeedWithDirect()
-            }
-
-            if (e.code != 700){
-
-                if (e == 'TypeError: Failed to fetch' || e == 'proxy' || (e.code == 408 || e.code == -28)){
-
-                    app.apiHandlers.error({
-                        rpc : true
-                    })
-
-                }
+                app.apiHandlers.error({
+                    rpc : true
+                })
             }
 
             return Promise.reject(e)
-
-        })
-    }
-
-    self.changeProxyIfNeedWithDirect = function(){
-
-        return self.changeProxyIfNeed().then(l => {
-
-            if(!l){
-                var proxy = self.get.direct() 
-                if (proxy){
-                    return self.set.current(proxy.id)
-                }
-            }
-            return Promise.resolve()
-        }).catch(() => {
-            return Promise.resolve()
         })
     }
 
@@ -961,7 +901,7 @@ var Api = function(app){
 
             localStorage['currentproxy'] = current
 
-            if (reconnectws && app.platform.ws)
+            if (reconnectws)
                 app.platform.ws.reconnect()
 
             return Promise.resolve()
@@ -1044,60 +984,7 @@ var Api = function(app){
             if(_proxies.length){
                 return _proxies[0]
             }
-        },
-
-        proxywithwallet : function(){
-
-            var f = false
-            var e = false
-            var es = 0
-
-            _.each(proxies, function(p){
-                p.get.info().then(r => {
-
-                    var wallet = deep(r, 'info.wallet.addresses.registration') || {}
-
-                    console.log('walletwallet', wallet)
-
-                    if (wallet.ready && wallet.unspents){
-                        f = p
-                    }
-
-                    return Promise.resolve()
-
-                }).catch(e => {
-                    return Promise.resolve()
-                }).finally(() => {
-                    es++
-
-                    if(es >= proxies.length){
-                        e = true
-                    }
-
-                    return Promise.resolve()
-                })
-            })
-
-            return pretry(function(){
-                return e || f
-            }).then(() => {
-                return Promise.resolve(f)
-            })
-
-            
         }
-    }
-
-    var changeProxyFly = function(){
-
-        return self.get.working().then(wproxies => {
-            if (wproxies.length){ 
-                return self.set.current(wproxies[0].id)
-            }
-
-            return Promise.reject('unableChangeProxy')
-        })
-        
     }
 
 
@@ -1114,13 +1001,14 @@ var Api = function(app){
 
         return promise.then(r => {
             if(r){
-                console.log("HERE")
                 return Promise.resolve(1)
             }
             else{
                 return self.get.working().then(wproxies => {
                     if (wproxies.length){ 
-                        self.set.current(wproxies[0].id, true)
+                        
+                        self.set.current(wproxies[0].id)
+
                     }
 
                     return Promise.resolve(wproxies.length)

@@ -250,11 +250,9 @@ var System16 = function(app, proxy, direct){
     self.wsssend = function(data){
 
         var pack = {
-            wss : true,
+            wssdummy : true,
             data : data
         }
-
-        console.log("SEND PACK", pack)
 
         return request(pack)
     }
