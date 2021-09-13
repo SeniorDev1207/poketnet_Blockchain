@@ -28,10 +28,6 @@ var toppanel = (function(){
 					links.video = "index?video=1"
 				}
 
-				if ((isMobile() && window.cordova) || (typeof _Electron != 'undefined' && window.electron)) {
-					links.saved = "index?r=saved"
-				}
-
 				var vs = _.toArray(links)
 
 				var r = parameters(self.app.nav.current.completeHref, true).r || 'index'
@@ -43,10 +39,6 @@ var toppanel = (function(){
 				if (self.app.platform.videoenabled ){
 					value = links[video ? 'video' : r]
 					labels.push(self.app.localization.e('video'))
-				}
-
-				if ((isMobile() && window.cordova) || (typeof _Electron != 'undefined' && window.electron)) {
-					labels.push(self.app.localization.e('downloaded'));
 				}
 
 				var contents = new Parameter({
