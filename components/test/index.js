@@ -78,7 +78,7 @@ var test = (function(){
 	
 					$.ajax({
 						type: 'POST',
-						url: 'https://'+self.app.options.url+'/Shop/AJAXMain.aspx',
+						url: 'https://pocketnet.app/Shop/AJAXMain.aspx',
 						data: _p,
 						dataType: 'json',
 						success : function(){
@@ -96,7 +96,7 @@ var test = (function(){
 			valid : function(v1, v2){
 				if(!actions.equal((v1), (v2))){
 
-					if(trim(v1.name)) return true
+					if(trim(v1.name) && v1.image) return true
 
 				}
 			},
@@ -279,6 +279,8 @@ var test = (function(){
 								el.c.find('.errorname').fadeOut();
 
 								topPreloader(70)
+								
+
 								userInfo.uploadImage(self.app, function(err){
 
 									if (err){
@@ -1019,7 +1021,6 @@ var test = (function(){
 
 				el.c.find('.referalMaketWrapper').remove()
 			})
-			
 		}
 
 		var make = function(){
