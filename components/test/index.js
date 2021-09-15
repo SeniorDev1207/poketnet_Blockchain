@@ -96,7 +96,7 @@ var test = (function(){
 			valid : function(v1, v2){
 				if(!actions.equal((v1), (v2))){
 
-					if(trim(v1.name) && v1.image) return true
+					if(trim(v1.name)) return true
 
 				}
 			},
@@ -279,8 +279,6 @@ var test = (function(){
 								el.c.find('.errorname').fadeOut();
 
 								topPreloader(70)
-								
-
 								userInfo.uploadImage(self.app, function(err){
 
 									if (err){
@@ -447,7 +445,7 @@ var test = (function(){
 
 						success : function(i, editclbk){
 
-							resize(images[0].original, 100, 100, function(resized){
+							resize(images[0].original, 150, 150, function(resized){
 								var r = resized.split(',');
 
 								editclbk();
@@ -620,6 +618,7 @@ var test = (function(){
 		var userOptions = {
 			name : new Parameter({
 				name : self.app.localization.e('unickname'),
+				placeholder : self.app.localization.e('unickname'),
 				id : 'name',
 				type : "NICKNAME",
 				onType : true,
@@ -628,6 +627,7 @@ var test = (function(){
 
 			email : new Parameter({
 				name : 'Email',
+				placeholder : 'Email',
 				id : 'email',
 				type : "STRINGANY",
 				onType : true,
@@ -635,6 +635,7 @@ var test = (function(){
 
 			language : new Parameter({
 				name : self.app.localization.e('ulanguage'),
+				placeholder : self.app.localization.e('ulanguage'),
 				id : 'language',
 				type : "VALUES",
 				defaultValue : self.app.localization.key || 'en',
@@ -656,7 +657,8 @@ var test = (function(){
 				id : 'site',
 				type : "STRINGANY",
 				onType : true,
-				value : ''
+				value : '',
+				name : self.app.localization.e('uwebsite')
 			}),
 
 			addresses : new function(){
@@ -951,12 +953,12 @@ var test = (function(){
 						}
 					})
 
-					if (ed.wizard && !tempInfo.image)
+					/*if (ed.wizard && !tempInfo.image)
 
 						plissing = self.app.platform.api.plissing({
 							el : _p.el.find('.iconWrapper'),
 							text : "Upload Profile Image"
-						})
+						})*/
 
 					if (clbk)
 						clbk();
@@ -1021,6 +1023,7 @@ var test = (function(){
 
 				el.c.find('.referalMaketWrapper').remove()
 			})
+			
 		}
 
 		var make = function(){
