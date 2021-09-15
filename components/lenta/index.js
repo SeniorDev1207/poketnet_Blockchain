@@ -1939,57 +1939,40 @@ var lenta = (function(){
 			},
 
 			deleteVideo : function(){
-				var shareEl = $(this).closest('.share');
-				var id = shareEl.attr('id');
-				if (!players[id] || !players[id].p || !players[id].p.localVideoId)
-					return;
-				// Ask user for confirmation
-				dialog({
-					html:  self.app.localization.e('deleteVideoDialog'),
-					btn1text: self.app.localization.e('dyes'),
-					btn2text: self.app.localization.e('dno'),
-					success: function () {
-						// User wants to delete the video
-						players[id].p.destroy();
-						self.sdk.local.shares.delete(id, function() {
-							// If we are in the Downloaded feed, simply remove the share
-							if (recommended == 'saved') {
-								shareEl.remove();
-								return;
-							}
-							if (isMobile()) {
-								actions.openPost(id, function() {
-									setTimeout(() => {
-										delete el[id];
-										renders.setShareDownload(id, 'canDownload');
-										events.sharesPreInitVideo();
-										events.videosInview();
-										events.sharesInview();
-										events.resize();
-									}, 200);
-								});
-							}
-							else if (typeof _Electron != 'undefined' && window.electron) {
-								var share = self.app.platform.sdk.node.shares.storage.trx[id];
-								// Update share video player
-								delete initedcommentes[id];
-								if (players[id])
-									delete players[id];
-								// Update share video player
-								renders.share(share, function() {
-									setTimeout(() => {
-										delete el[id];
-										renders.setShareDownload(id, 'canDownload');
-										events.sharesPreInitVideo();
-										events.videosInview();
-										events.sharesInview();
-										events.resize();
-									}, 200);
-								}, true);
-							}
+				var id = $(this).closest('.share').attr('id');
+				if (!players[id] || !players[id].p || !players[id].p.localVideoId) return;
+				players[id].p.destroy();
+				self.sdk.local.shares.delete(id, function() {
+					if (isMobile()) {
+						actions.openPost(id, function() {
+							setTimeout(() => {
+								delete el[id];
+								renders.setShareDownload(id, 'canDownload');
+								events.sharesPreInitVideo();
+								events.videosInview();
+								events.sharesInview();
+								events.resize();
+							}, 200);
 						});
-					},
-					class : 'deleteDownloadVideoDialog'
+					}
+					else if (typeof _Electron != 'undefined' && window.electron) {
+						var share = self.app.platform.sdk.node.shares.storage.trx[id];
+						// Update share video player
+						delete initedcommentes[id];
+						if (players[id])
+							delete players[id];
+						// Update share video player
+						renders.share(share, function() {
+							setTimeout(() => {
+								delete el[id];
+								renders.setShareDownload(id, 'canDownload');
+								events.sharesPreInitVideo();
+								events.videosInview();
+								events.sharesInview();
+								events.resize();
+							}, 200);
+						}, true);
+					}
 				});
 			},
 
@@ -3153,7 +3136,7 @@ var lenta = (function(){
 			setShareDownload : function(shareId, action){
 				// Check if we have the HTML elements for this share
 				if (!el[shareId])
-					el[shareId] = el.c.find('.metapanel.' + shareId + ' .downloadMetapanel');
+					el[shareId] = el.c.find('.metapanel.' + shareId);
 				switch (action) {
 					case 'canDownload':
 						console.log('canDownload');
@@ -3718,7 +3701,7 @@ var lenta = (function(){
 
 				}
 
-				if(!essenseData.notscrollloading){
+				if(!essenseData.notscrollloading && recommended != 'saved'){
 
 					//el.w.on('scroll', events.sharesInview);
 

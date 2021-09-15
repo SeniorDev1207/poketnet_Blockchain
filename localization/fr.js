@@ -819,6 +819,4 @@ ____loclib.downloadVideo = "Télécharger vidéo";
 ____loclib.selectQuality = "Sélectionnez la qualité:";
 ____loclib.downloadedVideos = "Vidéos téléchargées";
 ____loclib.deleteAllDownloadedVideos = "Supprimer les vidéos téléchargées";
-____loclib.deleteVideoDialog = "Etes-vous sûr de vouloir supprimer cette vidéo ?";
-____loclib.deleteAllVideoDialog = "Etes-vous sûr de vouloir supprimer toutes les vidéos ?";
 ____loclib.videosDeleted = "Vidéos supprimées!";
