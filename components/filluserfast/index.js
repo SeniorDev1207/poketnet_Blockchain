@@ -241,9 +241,7 @@ var filluserfast = (function(){
 							})
 						}
 						else{
-							self.app.platform.ui.showmykeyfast({
-								showsavelabel : true
-							})
+							self.app.platform.ui.showmykeyfast()
 						}
 						
 					}
